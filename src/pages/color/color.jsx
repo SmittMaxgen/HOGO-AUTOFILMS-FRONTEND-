@@ -87,6 +87,23 @@ const Color = () => {
     return Object.keys(temp).length === 0;
   };
 
+  const handleStatusToggle = (item) => {
+    const data = new FormData();
+    data.append("status", !item.status);
+
+    dispatch(
+      updateColor({
+        id: item.id,
+        data,
+      }),
+    )
+      .unwrap()
+      .then(() => {
+        dispatch(getColors());
+      })
+      .catch(console.error);
+  };
+
   const handleSubmit = () => {
     if (!validate()) return;
 
@@ -226,6 +243,9 @@ const Color = () => {
                     label={item.status ? "Active" : "Inactive"}
                     size="small"
                     color={item.status ? "success" : "default"}
+                    clickable
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleStatusToggle(item)}
                   />
                 </TableCell>
                 <TableCell>

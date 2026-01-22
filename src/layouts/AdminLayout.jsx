@@ -226,9 +226,9 @@ const AdminLayout = () => {
 
         <Box
           className={`${classes.sidebarItem} ${
-            isActive("/colors") ? classes.activeItem : ""
+            isActive("/colour") ? classes.activeItem : ""
           }`}
-          onClick={() => handleNavigate("/colors")}
+          onClick={() => handleNavigate("/colour")}
         >
           <SubdirectoryArrowRightIcon /> Colors
         </Box>
