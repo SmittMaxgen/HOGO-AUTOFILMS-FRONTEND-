@@ -1,0 +1,9 @@
+export const selectColors = (state) => state.color.colors;
+export const selectColorLoading = (state) => state.color.loading;
+export const selectColorError = (state) => state.color.error;
+export const selectCreateColorLoading = (state) => state.color.createLoading;
+export const selectCreateColorSuccess = (state) => state.color.createSuccess;
+export const selectUpdateColorLoading = (state) => state.color.updateLoading;
+export const selectUpdateColorSuccess = (state) => state.color.updateSuccess;
+export const selectDeleteColorLoading = (state) => state.color.deleteLoading;
+export const selectDeleteColorSuccess = (state) => state.color.deleteSuccess;

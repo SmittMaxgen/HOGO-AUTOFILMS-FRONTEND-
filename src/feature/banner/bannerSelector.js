@@ -1,0 +1,9 @@
+export const selectBannerList = (state) => state.banner.banners;
+export const selectBannerLoading = (state) => state.banner.loading;
+export const selectBannerError = (state) => state.banner.error;
+export const selectBannerUpdateLoading = (state) => state.banner.updateLoading;
+export const selectBannerUpdateError = (state) => state.banner.updateError;
+export const selectBannerUpdateSuccess = (state) => state.banner.updateSuccess;
+export const selectBannerDeleteLoading = (state) => state.banner.deleteLoading;
+export const selectBannerDeleteError = (state) => state.banner.deleteError;
+export const selectBannerDeleteSuccess = (state) => state.banner.deleteSuccess;

@@ -1,0 +1,34 @@
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "../pages/auth/Login";
+import Dashboard from "../pages/dashboard/Dashboard";
+import Banner from "../pages/banner/Banner";
+import Color from "../pages/color/color";
+import Material from "../pages/material/Material";
+import Product from "../pages/product/Products";
+import ProtectedRoute from "./ProtectedRoutes";
+import AdminLayout from "../layouts/AdminLayout";
+
+const AppRoutes = () => {
+  const token = localStorage.getItem("token");
+
+  return (
+    <Routes>
+      <Route
+        path="/login"
+        element={token ? <Navigate to="/dashboard" replace /> : <Login />}
+      />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/products" element={<Product />} />
+          <Route path="/banners" element={<Banner />} />
+          <Route path="/colors" element={<Color />} />
+          <Route path="/materials" element={<Material />} />
+        </Route>
+      </Route>
+    </Routes>
+  );
+};
+
+export default AppRoutes;
