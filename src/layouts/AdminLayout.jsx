@@ -10,49 +10,120 @@ import CategoryIcon from "@mui/icons-material/Category";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import HogoLogo from "../../public/hogoAFM.png";
+import { AdminUser } from "../feature/Admin/adminThunks";
+import { selectAdminList } from "../feature/Admin/adminSelector";
+
+const SIDEBAR_BG = "#7E7E7E";
+const ACTIVE_BG = "#D20000";
+const ACTIVE_HOVER = "#ED3434";
 
 const useStyles = makeStyles(() => ({
   root: {
     display: "flex",
     minHeight: "100vh",
+    backgroundColor: "#f4f6f8",
   },
+
   sidebar: {
-    width: 200,
-    backgroundColor: "#F3A5A7",
-    padding: "1rem",
+    width: 240,
+    backgroundColor: SIDEBAR_BG,
+    color: "#fff",
+    padding: "1.2rem",
+    display: "flex",
+    flexDirection: "column",
   },
+
   profileBox: {
     textAlign: "center",
-    marginBottom: "1rem",
+    marginBottom: "1.5rem",
   },
+
   avatar: {
-    backgroundColor: "#E74B4E",
+    width: 56,
+    height: 56,
     margin: "0 auto 0.5rem",
+    backgroundColor: ACTIVE_BG,
+    fontSize: "1.4rem",
+    fontWeight: 600,
   },
+
+  adminName: {
+    fontWeight: 600,
+    fontSize: "1rem",
+  },
+
+  adminEmail: {
+    fontSize: "0.8rem",
+    opacity: 0.85,
+  },
+
+  divider: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+    margin: "12px 0",
+  },
+
+  /* ---------- MENU ITEM ---------- */
   sidebarItem: {
     display: "flex",
     alignItems: "center",
-    padding: "0.75rem 1rem",
-    borderRadius: 8,
+    gap: 12,
+    padding: "10px 14px",
+    borderRadius: 10,
     cursor: "pointer",
-    marginBottom: 8,
+    fontSize: "0.95rem",
     fontWeight: 500,
-    transition: "0.2s ease",
+    marginBottom: 6,
+    transition: "all 0.25s ease",
+    "& svg": {
+      fontSize: 20,
+      opacity: 0.9,
+    },
     "&:hover": {
-      backgroundColor: "#ED787A",
-    },
-    "& svg": {
-      marginRight: 10,
+      backgroundColor: ACTIVE_HOVER,
     },
   },
+
   activeItem: {
-    backgroundColor: "#E74B4E",
-    color: "#fff",
-    "& svg": {
-      color: "#fff",
+    backgroundColor: ACTIVE_BG,
+    boxShadow: "0 4px 10px rgba(0,0,0,0.25)",
+    "&:hover": {
+      backgroundColor: ACTIVE_BG,
     },
   },
+
+  spacer: {
+    flexGrow: 1,
+  },
+
+  logoutBox: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    padding: "10px 14px",
+    borderRadius: 10,
+    cursor: "pointer",
+    transition: "0.25s",
+    "&:hover": {
+      backgroundColor: "#ED3434",
+    },
+  },
+
+  logoAvatar: {
+    width: 36,
+    height: 36,
+    backgroundColor: "#fff",
+    "& img": {
+      width: "70%",
+      height: "70%",
+      objectFit: "contain",
+    },
+  },
+
+  logoutText: {
+    fontWeight: 500,
+  },
+
   content: {
     flex: 1,
     padding: "2rem",
@@ -65,28 +136,24 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-
   const admin = useSelector((state) => state.auth.user);
 
-  // 🔹 Active tab (localStorage fallback)
   const [activePath, setActivePath] = useState(
     localStorage.getItem("activeTab") || location.pathname,
   );
-
-  // 🔹 Keep active tab in sync with URL
+  const adminList = useSelector(selectAdminList);
+  console.log("adminList:::::::::::::::::::::::>>.>>>>", adminList);
   useEffect(() => {
     setActivePath(location.pathname);
     localStorage.setItem("activeTab", location.pathname);
   }, [location.pathname]);
 
-  // 🔹 Redirect ONLY if user lands on "/"
   useEffect(() => {
     const savedTab = localStorage.getItem("activeTab");
-
     if (location.pathname === "/" && savedTab) {
       navigate(savedTab, { replace: true });
     }
-  }, []); // run once on mount
+  }, []);
 
   const isActive = (path) => activePath.startsWith(path);
 
@@ -100,18 +167,26 @@ const AdminLayout = () => {
     localStorage.removeItem("activeTab");
     dispatch(logout());
   };
-
+  useEffect(() => {
+    dispatch(AdminUser());
+  }, [dispatch]);
   return (
     <Box className={classes.root}>
       {/* SIDEBAR */}
       <Box className={classes.sidebar}>
         <Box className={classes.profileBox}>
-          <Avatar className={classes.avatar}>{admin?.name?.[0] || "A"}</Avatar>
-          <Typography fontWeight={600}>{admin?.name}</Typography>
-          <Typography variant="body2">{admin?.email}</Typography>
+          <Avatar className={classes.avatar}>
+            {adminList?.name?.[0] || "A"}
+          </Avatar>
+          <Typography className={classes.adminName}>
+            {adminList?.name}
+          </Typography>
+          <Typography className={classes.adminEmail}>
+            {adminList?.email}
+          </Typography>
         </Box>
 
-        <Divider sx={{ mb: 1 }} />
+        <Divider className={classes.divider} />
 
         <Box
           className={`${classes.sidebarItem} ${
@@ -129,6 +204,15 @@ const AdminLayout = () => {
           onClick={() => handleNavigate("/products")}
         >
           <InventoryIcon /> Products
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/category") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/category")}
+        >
+          <CategoryIcon /> Category
         </Box>
 
         <Box
@@ -158,15 +242,19 @@ const AdminLayout = () => {
           <ShoppingBagIcon /> Materials
         </Box>
 
-        <Divider sx={{ mt: 1 }} />
+        <Box className={classes.spacer} />
 
-        <Box className={classes.sidebarItem} onClick={handleLogout}>
-          <AccountCircleIcon style={{ color: "red" }} />{" "}
-          <p style={{ color: "red" }}> Logout</p>
+        <Divider className={classes.divider} />
+
+        <Box className={classes.logoutBox} onClick={handleLogout}>
+          <Avatar className={classes.logoAvatar}>
+            <img src={HogoLogo} alt="Hogo Logo" />
+          </Avatar>
+          <Typography className={classes.logoutText}>Logout</Typography>
         </Box>
       </Box>
 
-      {/* PAGE CONTENT */}
+      {/* CONTENT */}
       <Box className={classes.content}>
         <Outlet />
       </Box>

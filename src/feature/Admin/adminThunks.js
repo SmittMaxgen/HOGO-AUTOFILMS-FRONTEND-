@@ -5,9 +5,7 @@ export const AdminUser = createAsyncThunk(
   "admin/AdminUser",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        `/admin_data/${payload ? payload : ""}`,
-      );
+      const response = await axiosInstance.get(`/admin_profile/`);
       console.log("(response::::", response);
       return response.data;
     } catch (error) {

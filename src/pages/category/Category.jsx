@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
-  getBanners,
-  createBanner,
-  updateBanner,
-  deleteBanner,
-} from "../../feature/banner/bannerThunks";
+  getCategory,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from "../../feature/category/categoryThunks";
+
 import {
-  selectBannerList,
-  selectBannerLoading,
-} from "../../feature/banner/bannerSelector";
+  selectCategoryList,
+  selectCategoryLoading,
+} from "../../feature/category/categorySelector";
 
 import {
   Box,
@@ -30,32 +32,30 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
-  CircularProgress,
 } from "@mui/material";
 
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CategoryIcon from "@mui/icons-material/Category";
+import ImageIcon from "@mui/icons-material/Image";
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 
-const Banner = () => {
+const Category = () => {
   const dispatch = useDispatch();
-  const banners = useSelector(selectBannerList);
-  const loading = useSelector(selectBannerLoading);
+  const categories = useSelector(selectCategoryList);
+  const loading = useSelector(selectCategoryLoading);
 
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
-
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
   const [form, setForm] = useState({
-    title: "",
+    name: "",
     image: null,
-    CTA_text: "",
-    CTA_link: "",
     order: 1,
     status: true,
   });
@@ -63,13 +63,12 @@ const Banner = () => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    dispatch(getBanners());
+    dispatch(getCategory());
   }, [dispatch]);
-
-  /* ================= HANDLERS ================= */
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
+
     if (type === "file") {
       setForm((prev) => ({ ...prev, [name]: files[0] }));
     } else if (type === "checkbox") {
@@ -81,7 +80,7 @@ const Banner = () => {
 
   const validate = () => {
     const temp = {};
-    if (!form.title) temp.title = "Title is required";
+    if (!form.name) temp.name = "Category name is required";
     if (!form.image && !editId) temp.image = "Image is required";
     setErrors(temp);
     return Object.keys(temp).length === 0;
@@ -89,10 +88,8 @@ const Banner = () => {
 
   const resetForm = () => {
     setForm({
-      title: "",
+      name: "",
       image: null,
-      CTA_text: "",
-      CTA_link: "",
       order: 1,
       status: true,
     });
@@ -105,92 +102,94 @@ const Banner = () => {
     if (!validate()) return;
 
     const data = new FormData();
-    data.append("title", form.title);
+    data.append("name", form.name);
     if (form.image) data.append("image", form.image);
-    data.append("CTA_text", form.CTA_text);
-    data.append("CTA_link", form.CTA_link);
     data.append("order", form.order);
     data.append("status", form.status);
 
     const action = editId
-      ? updateBanner({ id: editId, data })
-      : createBanner(data);
+      ? updateCategory({ id: editId, data })
+      : createCategory(data);
 
     dispatch(action)
       .unwrap()
       .then(() => {
         resetForm();
-        dispatch(getBanners());
+        dispatch(getCategory());
       })
       .catch(console.error);
   };
 
-  const handleEdit = (banner) => {
-    setEditId(banner.id);
+  const handleEdit = (item) => {
+    setEditId(item.id);
     setForm({
-      title: banner.title || "",
+      name: item.name || "",
       image: null,
-      CTA_text: banner.CTA_text || "",
-      CTA_link: banner.CTA_link || "",
-      order: banner.order || 1,
-      status: banner.status ?? true,
+      order: item.order || 1,
+      status: item.status ?? true,
     });
     setIsEditing(true);
   };
 
   const handleDelete = (id) => {
-    if (!window.confirm("Are you sure you want to delete this banner?")) return;
+    if (!window.confirm("Are you sure you want to delete this category?"))
+      return;
 
-    dispatch(deleteBanner(id))
+    dispatch(deleteCategory(id))
       .unwrap()
-      .then(() => dispatch(getBanners()))
+      .then(() => dispatch(getCategory()))
       .catch(console.error);
   };
 
-  const paginatedData = banners.slice(
+  const paginatedData = categories?.data?.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage,
   );
 
-  if (loading) return <Typography>Loading banners...</Typography>;
+  if (loading) return <Typography>Loading categories...</Typography>;
 
   if (isEditing) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <Box width="100%" maxWidth={700}>
-          {/* Header */}
+        <Box width="100%" maxWidth={600}>
           <Stack direction="row" alignItems="center" spacing={1} mb={3}>
             <IconButton onClick={resetForm}>
               <ArrowBackIcon />
             </IconButton>
             <Typography variant="h5" fontWeight={600}>
-              {editId ? "Edit Banner" : "Create Banner"}
+              {editId ? "Edit Category" : "Create Category"}
             </Typography>
           </Stack>
 
-          {/* Form */}
           <Paper sx={{ p: 3 }}>
             <Stack spacing={2}>
               <TextField
-                label="Title"
-                name="title"
-                value={form.title}
+                label="Category Name"
+                name="name"
+                value={form.name}
                 onChange={handleChange}
-                error={!!errors.title}
-                helperText={errors.title}
+                error={!!errors.name}
+                helperText={errors.name}
                 fullWidth
+                InputProps={{
+                  startAdornment: <CategoryIcon sx={{ mr: 1 }} />,
+                }}
               />
 
-              <Button variant="outlined" component="label">
+              {/* <Button
+                variant="outlined"
+                component="label"
+                startIcon={<ImageIcon />}
+              >
                 {editId ? "Change Image" : "Upload Image"}
                 <input
                   type="file"
+                  hidden
                   name="image"
                   accept="image/*"
-                  hidden
                   onChange={handleChange}
                 />
-              </Button>
+              </Button> */}
 
               {errors.image && (
                 <Typography color="error">{errors.image}</Typography>
@@ -203,28 +202,15 @@ const Banner = () => {
               )}
 
               <TextField
-                label="CTA Text"
-                name="CTA_text"
-                value={form.CTA_text}
-                onChange={handleChange}
-                fullWidth
-              />
-
-              <TextField
-                label="CTA Link"
-                name="CTA_link"
-                value={form.CTA_link}
-                onChange={handleChange}
-                fullWidth
-              />
-
-              <TextField
-                label="Order"
+                label="Display Order"
                 type="number"
                 name="order"
                 value={form.order}
                 onChange={handleChange}
                 fullWidth
+                InputProps={{
+                  startAdornment: <FormatListNumberedIcon sx={{ mr: 1 }} />,
+                }}
               />
 
               <FormControlLabel
@@ -264,17 +250,17 @@ const Banner = () => {
           fontWeight={700}
           sx={{ color: "#7E7E7E", mb: 2 }}
         >
-          Banners
+          Categories
         </Typography>
-        {/* <Typography variant="h4">Banners</Typography> */}
         <Button
           variant="contained"
+          startIcon={<AddIcon />}
           onClick={() => {
             resetForm();
             setIsEditing(true);
           }}
         >
-          Create Banner
+          Create Category
         </Button>
       </Stack>
 
@@ -282,73 +268,56 @@ const Banner = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Sr.No</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>CTA Text</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              {[
+                "Sr",
+                // "Image",
+                "Name",
+                "Status",
+                "Actions",
+              ].map((h) => (
+                <TableCell key={h} sx={{ fontWeight: 700 }}>
+                  {h}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {paginatedData.map((item, index) => (
-              <TableRow key={item.id}>
+            {paginatedData?.map((item, index) => (
+              <TableRow key={item.id} hover>
                 <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
+
                 {/* <TableCell>
                   <Avatar
-                    // src={item.image}
-
                     src={`https://hogofilm.pythonanywhere.com/${item?.image}`}
                     variant="rounded"
-                    sx={{ width: 80, height: 45 }}
+                    sx={{ width: 52, height: 52 }}
                   />
                 </TableCell> */}
-                <TableCell>
-                  <Box sx={{ position: "relative", width: 48, height: 48 }}>
-                    {!imageLoaded && (
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          inset: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          zIndex: 1,
-                        }}
-                      >
-                        <CircularProgress size={20} />
-                      </Box>
-                    )}
 
-                    <Avatar
-                      src={`https://hogofilm.pythonanywhere.com/${item?.image}`}
-                      variant="rounded"
-                      sx={{ width: 48, height: 48 }}
-                      imgProps={{
-                        onLoad: () => setImageLoaded(true),
-                        onError: () => setImageLoaded(true),
-                      }}
-                    />
-                  </Box>
+                <TableCell>
+                  <Typography fontWeight={600}>{item.name}</Typography>
                 </TableCell>
-                <TableCell>{item.title}</TableCell>
-                <TableCell>{item.CTA_text}</TableCell>
+
                 <TableCell>
                   <Chip
                     label={item.status ? "Active" : "Inactive"}
-                    color={item.status ? "success" : "default"}
                     size="small"
+                    color={item.status ? "success" : "default"}
                   />
                 </TableCell>
-                <TableCell align="center">
-                  <IconButton color="primary">
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton color="warning" onClick={() => handleEdit(item)}>
+
+                <TableCell>
+                  <IconButton
+                    size="small"
+                    color="warning"
+                    onClick={() => handleEdit(item)}
+                  >
                     <EditIcon />
                   </IconButton>
+
                   <IconButton
+                    size="small"
                     color="error"
                     onClick={() => handleDelete(item.id)}
                   >
@@ -358,10 +327,10 @@ const Banner = () => {
               </TableRow>
             ))}
 
-            {banners.length === 0 && (
+            {categories?.data?.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} align="center">
-                  No banners found
+                <TableCell colSpan={5} align="center">
+                  No categories found
                 </TableCell>
               </TableRow>
             )}
@@ -371,13 +340,13 @@ const Banner = () => {
 
       <Stack alignItems="flex-end" mt={3}>
         <Pagination
-          count={Math.ceil(banners.length / rowsPerPage)}
+          count={Math.ceil(categories?.data?.length / rowsPerPage)}
           page={page}
-          onChange={(_, value) => setPage(value)}
+          onChange={(_, v) => setPage(v)}
         />
       </Stack>
     </Box>
   );
 };
 
-export default Banner;
+export default Category;

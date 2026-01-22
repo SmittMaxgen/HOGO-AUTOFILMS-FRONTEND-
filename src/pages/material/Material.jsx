@@ -16,35 +16,33 @@ import {
 
 import {
   Box,
+  Paper,
+  Stack,
+  Typography,
+  Button,
+  IconButton,
+  TextField,
+  FormControlLabel,
+  Checkbox,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Typography,
   Chip,
-  IconButton,
   Pagination,
-  Stack,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
-import Loader from "../../components/commonComponents/Loader";
 const Material = () => {
   const dispatch = useDispatch();
+
   const materials = useSelector(selectMaterials);
   const loading = useSelector(selectMaterialLoading);
   const createLoading = useSelector(selectCreateMaterialLoading);
@@ -54,45 +52,29 @@ const Material = () => {
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
 
-  // Dialog open
-  const [open, setOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
 
-  // Form state
-  const [form, setForm] = useState({
-    title: "",
-    status: true,
-  });
-
+  const [form, setForm] = useState({ title: "", status: true });
   const [errors, setErrors] = useState({});
-  const [editId, setEditId] = useState(null); // store id for editing
 
   useEffect(() => {
     dispatch(getMaterials());
   }, [dispatch]);
 
-  // Refresh list on successful creation
   useEffect(() => {
     if (createSuccess) {
       dispatch(getMaterials());
-      handleClose();
+      handleReset();
     }
   }, [createSuccess, dispatch]);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setOpen(false);
-    setForm({ title: "", status: true });
-    setErrors({});
-    setEditId(null);
-  };
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (type === "checkbox") {
-      setForm((prev) => ({ ...prev, [name]: checked }));
-    } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
-    }
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const validate = () => {
@@ -102,52 +84,104 @@ const Material = () => {
     return Object.keys(temp).length === 0;
   };
 
-  // Handle create or update submit
   const handleSubmit = () => {
     if (!validate()) return;
 
-    if (editId) {
-      // Update material
-      const payload = { id: editId, data: form };
-      dispatch(updateMaterials(payload))
+    if (isEditing && editId) {
+      dispatch(updateMaterials({ id: editId, data: form }))
         .unwrap()
-        .then(() => {
-          dispatch(getMaterials());
-          handleClose();
-        })
-        .catch((err) => console.error(err));
+        .then(() => dispatch(getMaterials()))
+        .catch(console.error);
     } else {
-      // Create material
       dispatch(createMaterials(form));
     }
   };
 
   const handleEdit = (item) => {
-    setForm({ title: item.title, status: item.status });
+    setIsEditing(true);
     setEditId(item.id);
-    handleOpen();
+    setForm({ title: item.title, status: item.status });
   };
+
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this material?")) {
       dispatch(deleteMaterials(id))
         .unwrap()
-        .then(() => {
-          dispatch(getMaterials()); // refresh list after deletion
-        })
-        .catch((err) => console.error(err));
+        .then(() => dispatch(getMaterials()))
+        .catch(console.error);
     }
   };
-  const paginatedData = materials.slice(
+
+  const handleReset = () => {
+    setForm({ title: "", status: true });
+    setErrors({});
+    setEditId(null);
+    setIsEditing(false);
+  };
+
+  const paginatedData = materials?.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage,
   );
 
-  if (loading)
+  if (loading) return <Typography>Loading materials...</Typography>;
+
+  if (isEditing) {
     return (
-      <Typography>
-        <Loader text="Materials Loading ..." />
-      </Typography>
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Box width="100%" maxWidth={600}>
+          <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+            <IconButton onClick={handleReset}>
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h5" fontWeight={600}>
+              {editId ? "Edit Material" : "Create Material"}
+            </Typography>
+          </Stack>
+
+          <Paper sx={{ p: 3 }}>
+            <Stack spacing={2}>
+              <TextField
+                label="Material Name"
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                error={!!errors.title}
+                helperText={errors.title}
+                fullWidth
+              />
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={form.status}
+                    name="status"
+                    onChange={handleChange}
+                  />
+                }
+                label="Active"
+              />
+
+              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+                <Button onClick={handleReset}>Cancel</Button>
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={createLoading || updateLoading}
+                >
+                  {createLoading || updateLoading
+                    ? "Saving..."
+                    : editId
+                      ? "Update"
+                      : "Save"}
+                </Button>
+              </Stack>
+            </Stack>
+          </Paper>
+        </Box>
+      </Box>
     );
+  }
 
   return (
     <Box>
@@ -157,9 +191,15 @@ const Material = () => {
         alignItems="center"
         mb={3}
       >
-        <Typography variant="h4">Materials</Typography>
-        <Button variant="contained" color="primary" onClick={handleOpen}>
-          {editId ? "Edit Material" : "Create Material"}
+        <Typography variant="h4" fontWeight={700}>
+          Materials
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setIsEditing(true)}
+        >
+          Create Material
         </Button>
       </Stack>
 
@@ -167,16 +207,16 @@ const Material = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Sr.No</TableCell>
-              <TableCell>Material Name</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              {["Sr", "Material Name", "Status", "Actions"].map((h) => (
+                <TableCell key={h} sx={{ fontWeight: 700 }}>
+                  {h}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
-
           <TableBody>
-            {paginatedData.map((item, index) => (
-              <TableRow key={item.id}>
+            {paginatedData?.map((item, index) => (
+              <TableRow key={item.id} hover>
                 <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                 <TableCell>
                   <Typography fontWeight={600}>{item.title}</Typography>
@@ -184,11 +224,11 @@ const Material = () => {
                 <TableCell>
                   <Chip
                     label={item.status ? "Active" : "Inactive"}
-                    color={item.status ? "success" : "default"}
                     size="small"
+                    color={item.status ? "success" : "default"}
                   />
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   <IconButton color="primary">
                     <VisibilityIcon />
                   </IconButton>
@@ -205,7 +245,7 @@ const Material = () => {
               </TableRow>
             ))}
 
-            {materials.length === 0 && (
+            {materials?.length === 0 && (
               <TableRow>
                 <TableCell colSpan={4} align="center">
                   No materials found
@@ -216,61 +256,14 @@ const Material = () => {
         </Table>
       </TableContainer>
 
-      {/* Pagination */}
       <Stack alignItems="flex-end" mt={3}>
         <Pagination
-          count={Math.ceil(materials.length / rowsPerPage)}
+          count={Math.ceil((materials?.length || 0) / rowsPerPage)}
           page={page}
-          onChange={(_, value) => setPage(value)}
+          onChange={(_, v) => setPage(v)}
           color="primary"
         />
       </Stack>
-
-      {/* Create / Edit Material Dialog */}
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {editId ? "Edit Material" : "Create Material"}
-        </DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} mt={1}>
-            <TextField
-              label="Material Name"
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              error={!!errors.title}
-              helperText={errors.title}
-              fullWidth
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={form.status}
-                  name="status"
-                  onChange={handleChange}
-                />
-              }
-              label="Active"
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={createLoading || updateLoading}
-          >
-            {createLoading || updateLoading
-              ? editId
-                ? "Updating..."
-                : "Saving..."
-              : editId
-                ? "Update"
-                : "Save"}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };

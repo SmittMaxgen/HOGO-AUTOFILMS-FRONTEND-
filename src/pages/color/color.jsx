@@ -18,31 +18,29 @@ import {
 
 import {
   Box,
+  Paper,
+  Stack,
+  Typography,
+  Button,
+  IconButton,
+  TextField,
+  FormControlLabel,
+  Checkbox,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Typography,
   Chip,
-  IconButton,
   Pagination,
-  Stack,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const Color = () => {
   const dispatch = useDispatch();
@@ -52,56 +50,34 @@ const Color = () => {
   const createSuccess = useSelector(selectCreateColorSuccess);
   const updateLoading = useSelector(selectUpdateColorLoading);
   const updateSuccess = useSelector(selectUpdateColorSuccess);
+  const deleteLoading = useSelector(selectDeleteColorLoading);
 
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
 
-  const [open, setOpen] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
-  // Form state
-  const [form, setForm] = useState({
-    colour_name: "",
-    status: true,
-  });
-
+  const [form, setForm] = useState({ colour_name: "", status: true });
   const [errors, setErrors] = useState({});
 
-  // Fetch colors
   useEffect(() => {
     dispatch(getColors());
   }, [dispatch]);
 
-  // Refresh list on successful creation or update
   useEffect(() => {
     if (createSuccess || updateSuccess) {
       dispatch(getColors());
-      handleClose();
+      handleReset();
     }
   }, [createSuccess, updateSuccess, dispatch]);
 
-  const handleOpen = () => {
-    setIsEdit(false);
-    setEditId(null);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setForm({ colour_name: "", status: true });
-    setErrors({});
-    setIsEdit(false);
-    setEditId(null);
-  };
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (type === "checkbox") {
-      setForm((prev) => ({ ...prev, [name]: checked }));
-    } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
-    }
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const validate = () => {
@@ -114,40 +90,98 @@ const Color = () => {
   const handleSubmit = () => {
     if (!validate()) return;
 
-    if (isEdit && editId) {
-      // Update existing color
+    if (isEditing && editId) {
       dispatch(updateColor({ id: editId, data: form }));
     } else {
-      // Create new color
       dispatch(createColor(form));
     }
   };
 
   const handleEdit = (color) => {
-    setIsEdit(true);
+    setIsEditing(true);
     setEditId(color.id);
-    setForm({
-      colour_name: color.colour_name,
-      status: color.status,
-    });
-    setOpen(true);
+    setForm({ colour_name: color.colour_name, status: color.status });
   };
-  const deleteLoading = useSelector(selectDeleteColorLoading);
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this color?")) {
       dispatch(deleteColor(id))
         .unwrap()
-        .then(() => {
-          dispatch(getColors()); // refresh list after deletion
-        })
-        .catch((err) => console.error(err));
+        .then(() => dispatch(getColors()))
+        .catch(console.error);
     }
   };
+
+  const handleReset = () => {
+    setForm({ colour_name: "", status: true });
+    setErrors({});
+    setEditId(null);
+    setIsEditing(false);
+  };
+
   const paginatedData = colors?.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage,
   );
+
+  if (isEditing) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Box width="100%" maxWidth={600}>
+          {/* Header */}
+          <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+            <IconButton onClick={handleReset}>
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h5" fontWeight={600}>
+              {editId ? "Edit Color" : "Create Color"}
+            </Typography>
+          </Stack>
+
+          {/* Form */}
+          <Paper sx={{ p: 3 }}>
+            <Stack spacing={2}>
+              <TextField
+                label="Color Name"
+                name="colour_name"
+                value={form.colour_name}
+                onChange={handleChange}
+                error={!!errors.colour_name}
+                helperText={errors.colour_name}
+                fullWidth
+              />
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={form.status}
+                    name="status"
+                    onChange={handleChange}
+                  />
+                }
+                label="Active"
+              />
+
+              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+                <Button onClick={handleReset}>Cancel</Button>
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={createLoading || updateLoading}
+                >
+                  {createLoading || updateLoading
+                    ? "Saving..."
+                    : isEditing
+                      ? "Update"
+                      : "Save"}
+                </Button>
+              </Stack>
+            </Stack>
+          </Paper>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -157,9 +191,15 @@ const Color = () => {
         alignItems="center"
         mb={3}
       >
-        <Typography variant="h4">Colors</Typography>
-        <Button variant="contained" color="primary" onClick={handleOpen}>
-          {isEdit ? "Edit Color" : "Create Color"}
+        <Typography variant="h4" fontWeight={700}>
+          Colors
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setIsEditing(true)}
+        >
+          Create Color
         </Button>
       </Stack>
 
@@ -167,15 +207,16 @@ const Color = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Sr.No</TableCell>
-              <TableCell>Color Name</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              {["Sr", "Color Name", "Status", "Actions"].map((h) => (
+                <TableCell key={h} sx={{ fontWeight: 700 }}>
+                  {h}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
             {paginatedData?.map((item, index) => (
-              <TableRow key={item.id}>
+              <TableRow key={item.id} hover>
                 <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                 <TableCell>
                   <Typography fontWeight={600}>{item.colour_name}</Typography>
@@ -183,11 +224,11 @@ const Color = () => {
                 <TableCell>
                   <Chip
                     label={item.status ? "Active" : "Inactive"}
-                    color={item.status ? "success" : "default"}
                     size="small"
+                    color={item.status ? "success" : "default"}
                   />
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   <IconButton color="primary">
                     <VisibilityIcon />
                   </IconButton>
@@ -196,6 +237,7 @@ const Color = () => {
                   </IconButton>
                   <IconButton
                     color="error"
+                    disabled={deleteLoading}
                     onClick={() => handleDelete(item.id)}
                   >
                     <DeleteIcon />
@@ -216,54 +258,12 @@ const Color = () => {
 
       <Stack alignItems="flex-end" mt={3}>
         <Pagination
-          count={Math.ceil(colors?.length / rowsPerPage)}
+          count={Math.ceil((colors?.length || 0) / rowsPerPage)}
           page={page}
-          onChange={(_, value) => setPage(value)}
+          onChange={(_, v) => setPage(v)}
           color="primary"
         />
       </Stack>
-
-      {/* Create/Edit Color Dialog */}
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>{isEdit ? "Edit Color" : "Create Color"}</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} mt={1}>
-            <TextField
-              label="Color Name"
-              name="colour_name"
-              value={form.colour_name}
-              onChange={handleChange}
-              error={!!errors.colour_name}
-              helperText={errors.colour_name}
-              fullWidth
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={form.status}
-                  name="status"
-                  onChange={handleChange}
-                />
-              }
-              label="Active"
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={createLoading || updateLoading}
-          >
-            {createLoading || updateLoading
-              ? "Saving..."
-              : isEdit
-                ? "Update"
-                : "Save"}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };

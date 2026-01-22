@@ -251,9 +251,9 @@ const Dashboard = () => {
     { title: "Orders", count: 5, color: "#871214" },
     { title: "Inquiries", count: 0, color: "#5A0C0E" },
   ];
-  useEffect(() => {
-    dispatch(AdminUser(1)); // calls /admin_data/1
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(AdminUser());
+  // }, [dispatch]);
 
   return (
     <Box display="flex">

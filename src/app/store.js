@@ -5,6 +5,7 @@ import colorReducer from "../feature/color/colorSlice";
 import materialReducer from "../feature/material/materialSlice";
 import bannerReducer from "../feature/banner/bannerSlice";
 import productReducer from "../feature/products/productSlice";
+import categoryReducer from "../feature/category/categorySlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     color: colorReducer,
     material: materialReducer,
     product: productReducer,
+    category: categoryReducer,
   },
 });

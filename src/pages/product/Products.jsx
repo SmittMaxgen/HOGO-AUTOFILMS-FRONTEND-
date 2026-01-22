@@ -1,293 +1,74 @@
-// // import { useEffect } from "react";
-// // import { useDispatch, useSelector } from "react-redux";
-// // import { getProducts } from "../../feature/products/productThunks";
-
-// // const Product = () => {
-// //   const dispatch = useDispatch();
-// //   const { list, loading } = useSelector((state) => state.product);
-
-// //   useEffect(() => {
-// //     dispatch(getProducts());
-// //   }, [dispatch]);
-
-// //   if (loading) return <p>Loading products...</p>;
-
-// //   return (
-// //     <div>
-// //       <h2>Products</h2>
-
-// //       {list.map((p) => (
-// //         <div key={p.id} style={{ marginBottom: 16 }}>
-// //           <h4>{p.product_name}</h4>
-// //           <img src={p.thumbnail_image} width="120" />
-// //           <p>MRP: ₹{p.mrp}</p>
-// //           <p>Category: {p.category_name}</p>
-// //         </div>
-// //       ))}
-// //     </div>
-// //   );
-// // };
-
-// // export default Product;
-// import { useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import { getProducts } from "../../feature/products/productThunks";
-
-// import {
-//   Box,
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableContainer,
-//   TableHead,
-//   TableRow,
-//   Paper,
-//   Avatar,
-//   Chip,
-//   IconButton,
-//   Typography,
-//   Pagination,
-//   Stack,
-// } from "@mui/material";
-
-// import VisibilityIcon from "@mui/icons-material/Visibility";
-// import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
-
-// const Product = () => {
-//   const dispatch = useDispatch();
-//   const { list, loading } = useSelector((state) => state.product);
-
-//   // frontend pagination
-//   const [page, setPage] = useState(1);
-//   const rowsPerPage = 5;
-
-//   useEffect(() => {
-//     dispatch(getProducts());
-//   }, [dispatch]);
-
-//   if (loading) {
-//     return <Typography>Loading products...</Typography>;
-//   }
-
-//   const paginatedData = list.slice(
-//     (page - 1) * rowsPerPage,
-//     page * rowsPerPage,
-//   );
-
-//   return (
-//     <Box>
-//       <Typography variant="h4" mb={3}>
-//         Products
-//       </Typography>
-
-//       <TableContainer component={Paper}>
-//         <Table>
-//           <TableHead>
-//             <TableRow>
-//               <TableCell>Sr.No</TableCell>
-//               <TableCell>Image</TableCell>
-//               <TableCell>Product Name</TableCell>
-//               <TableCell>Category</TableCell>
-//               <TableCell>Brand</TableCell>
-//               <TableCell>MOQ</TableCell>
-//               <TableCell>Status</TableCell>
-//               <TableCell align="center">Actions</TableCell>
-//             </TableRow>
-//           </TableHead>
-
-//           <TableBody>
-//             {paginatedData.map((p, index) => (
-//               <TableRow key={p.id}>
-//                 <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-//                 {console.log("p====>>>", p)}
-//                 <TableCell>
-//                   <Avatar
-//                     src={`https://hogofilm.pythonanywhere.com/${p.thumbnail_image}`}
-//                     variant="rounded"
-//                     sx={{ width: 50, height: 50 }}
-//                   />
-//                 </TableCell>
-
-//                 <TableCell>
-//                   <Typography fontWeight={600}>{p.product_name}</Typography>
-//                 </TableCell>
-
-//                 <TableCell>{p.category_name}</TableCell>
-//                 <TableCell>{p.brand || "-"}</TableCell>
-//                 <TableCell>{p.moq || 1}</TableCell>
-
-//                 <TableCell>
-//                   <Chip
-//                     label={p.status ? "Active" : "Inactive"}
-//                     color={p.status ? "success" : "default"}
-//                     size="small"
-//                   />
-//                 </TableCell>
-
-//                 <TableCell align="center">
-//                   <IconButton color="primary">
-//                     <VisibilityIcon />
-//                   </IconButton>
-
-//                   <IconButton color="warning">
-//                     <EditIcon />
-//                   </IconButton>
-
-//                   <IconButton color="error">
-//                     <DeleteIcon />
-//                   </IconButton>
-//                 </TableCell>
-//               </TableRow>
-//             ))}
-
-//             {list.length === 0 && (
-//               <TableRow>
-//                 <TableCell colSpan={8} align="center">
-//                   No products found
-//                 </TableCell>
-//               </TableRow>
-//             )}
-//           </TableBody>
-//         </Table>
-//       </TableContainer>
-
-//       {/* Pagination */}
-//       <Stack alignItems="flex-end" mt={3}>
-//         <Pagination
-//           count={Math.ceil(list.length / rowsPerPage)}
-//           page={page}
-//           onChange={(_, value) => setPage(value)}
-//           color="primary"
-//         />
-//       </Stack>
-//     </Box>
-//   );
-// };
-
-// export default Product;
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getProducts,
   createProducts,
+  updateProducts,
+  deleteProducts,
 } from "../../feature/products/productThunks";
+
 import {
   Box,
+  Paper,
+  Stack,
+  Typography,
+  Button,
+  IconButton,
+  TextField,
+  FormControlLabel,
+  Checkbox,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Avatar,
   Chip,
-  IconButton,
-  Typography,
   Pagination,
-  Stack,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  MenuItem,
-  FormControlLabel,
-  Checkbox,
+  Avatar,
+  CircularProgress,
 } from "@mui/material";
 
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import CategoryIcon from "@mui/icons-material/Category";
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
+import ImageIcon from "@mui/icons-material/Image";
 
 const Product = () => {
   const dispatch = useDispatch();
-  const { list, loading } = useSelector((state) => state.product);
-  const createLoading = useSelector((state) => state.product.createLoading);
+  const { list, loading, createLoading, updateLoading } = useSelector(
+    (state) => state.product,
+  );
 
-  // Pagination
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
 
-  // Dialog state
-  const [open, setOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
 
-  // Form state
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const [form, setForm] = useState({
     product_name: "",
-    product_codes: "",
-    sku: "",
-    category_id: "",
     category_name: "",
-    film_type: "",
-    finish: "",
-    application_area: "",
-    thickness: "",
-    specification: "",
-    warranty: "",
+    mrp: "",
+    thumbnail_image: "",
+    status: true,
     adhesive: false,
     anti_yellowing: false,
     scratch_resistant: false,
     uv_resistance: false,
-    hydrophobic: "",
-    stain_resistant: "",
-    elongation: "",
-    tear_strength: "",
-    mrp: "",
-    thumbnail_image: "",
-    gallery_images: "",
-    installation_video_url: "",
-    status: true,
   });
 
-  // Validation errors
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
-
-  if (loading) return <Typography>Loading products...</Typography>;
-
-  const paginatedData = list.slice(
-    (page - 1) * rowsPerPage,
-    page * rowsPerPage,
-  );
-
-  // Form handlers
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setOpen(false);
-    setForm({
-      product_name: "",
-      product_codes: "",
-      sku: "",
-      category_id: "",
-      category_name: "",
-      film_type: "",
-      finish: "",
-      application_area: "",
-      thickness: "",
-      specification: "",
-      warranty: "",
-      adhesive: false,
-      anti_yellowing: false,
-      scratch_resistant: false,
-      uv_resistance: false,
-      hydrophobic: "",
-      stain_resistant: "",
-      elongation: "",
-      tear_strength: "",
-      mrp: "",
-      thumbnail_image: "",
-      gallery_images: "",
-      installation_video_url: "",
-      status: true,
-    });
-    setErrors({});
-  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -301,19 +82,193 @@ const Product = () => {
     const temp = {};
     if (!form.product_name) temp.product_name = "Required";
     if (!form.category_name) temp.category_name = "Required";
-    if (!form.mrp || isNaN(form.mrp)) temp.mrp = "Valid MRP required";
-    if (!form.thumbnail_image) temp.thumbnail_image = "Thumbnail URL required";
+    if (!form.mrp) temp.mrp = "Required";
+    if (!form.thumbnail_image) temp.thumbnail_image = "Required";
     setErrors(temp);
     return Object.keys(temp).length === 0;
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!validate()) return;
 
-    dispatch(createProducts(form)).then(() => {
-      handleClose();
+    if (isEditing && editId) {
+      dispatch(updateProducts({ id: editId, data: form }))
+        .unwrap()
+        .then(() => dispatch(getProducts()))
+        .catch(console.error);
+    } else {
+      dispatch(createProducts(form))
+        .unwrap()
+        .then(() => dispatch(getProducts()));
+    }
+
+    handleReset();
+  };
+
+  const handleEdit = (item) => {
+    setIsEditing(true);
+    setEditId(item.id);
+    setForm({
+      product_name: item.product_name,
+      category_name: item.category_name,
+      mrp: item.mrp,
+      thumbnail_image: item.thumbnail_image,
+      status: item.status,
+      adhesive: item.adhesive,
+      anti_yellowing: item.anti_yellowing,
+      scratch_resistant: item.scratch_resistant,
+      uv_resistance: item.uv_resistance,
     });
   };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      dispatch(deleteProducts(id))
+        .unwrap()
+        .then(() => dispatch(getProducts()))
+        .catch(console.error);
+    }
+  };
+
+  const handleReset = () => {
+    setForm({
+      product_name: "",
+      category_name: "",
+      mrp: "",
+      thumbnail_image: "",
+      status: true,
+      adhesive: false,
+      anti_yellowing: false,
+      scratch_resistant: false,
+      uv_resistance: false,
+    });
+    setErrors({});
+    setEditId(null);
+    setIsEditing(false);
+  };
+
+  const paginatedData = list.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage,
+  );
+
+  if (loading) return <Typography>Loading products...</Typography>;
+
+  if (isEditing) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Box width="100%" maxWidth={800}>
+          <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+            <IconButton onClick={handleReset}>
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h5" fontWeight={600}>
+              {editId ? "Edit Product" : "Add Product"}
+            </Typography>
+          </Stack>
+
+          <Paper sx={{ p: 3 }}>
+            <Stack spacing={2}>
+              <TextField
+                label="Product Name"
+                name="product_name"
+                fullWidth
+                value={form.product_name}
+                onChange={handleChange}
+                error={!!errors.product_name}
+                helperText={errors.product_name}
+                InputProps={{ startAdornment: <CategoryIcon sx={{ mr: 1 }} /> }}
+              />
+              <TextField
+                label="Category"
+                name="category_name"
+                fullWidth
+                value={form.category_name}
+                onChange={handleChange}
+                error={!!errors.category_name}
+              />
+              <TextField
+                label="MRP"
+                name="mrp"
+                fullWidth
+                value={form.mrp}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: <CurrencyRupeeIcon sx={{ mr: 1 }} />,
+                }}
+              />
+              <TextField
+                label="Thumbnail URL"
+                name="thumbnail_image"
+                fullWidth
+                value={form.thumbnail_image}
+                onChange={handleChange}
+                InputProps={{ startAdornment: <ImageIcon sx={{ mr: 1 }} /> }}
+              />
+
+              <Stack direction="row" spacing={2}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={form.status}
+                      name="status"
+                      onChange={handleChange}
+                    />
+                  }
+                  label="Active"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={form.adhesive}
+                      name="adhesive"
+                      onChange={handleChange}
+                    />
+                  }
+                  label="Adhesive"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={form.anti_yellowing}
+                      name="anti_yellowing"
+                      onChange={handleChange}
+                    />
+                  }
+                  label="Anti Yellowing"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={form.scratch_resistant}
+                      name="scratch_resistant"
+                      onChange={handleChange}
+                    />
+                  }
+                  label="Scratch Resistant"
+                />
+              </Stack>
+
+              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+                <Button onClick={handleReset}>Cancel</Button>
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={createLoading || updateLoading}
+                >
+                  {createLoading || updateLoading
+                    ? "Saving..."
+                    : editId
+                      ? "Update"
+                      : "Save"}
+                </Button>
+              </Stack>
+            </Stack>
+          </Paper>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -323,56 +278,109 @@ const Product = () => {
         alignItems="center"
         mb={3}
       >
-        <Typography variant="h4">Products</Typography>
-        <Button variant="contained" color="primary" onClick={handleOpen}>
+        <Typography
+          variant="h4"
+          fontWeight={700}
+          sx={{ color: "#7E7E7E", mb: 2 }}
+        >
+          Products
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setIsEditing(true)}
+        >
           Add Product
         </Button>
       </Stack>
 
-      <TableContainer component={Paper}>
+      <TableContainer
+        component={Paper}
+        sx={{ borderRadius: 3, boxShadow: "0 6px 20px rgba(0,0,0,0.08)" }}
+      >
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Sr.No</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Product Name</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Brand</TableCell>
-              <TableCell>MOQ</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              {[
+                "Sr",
+                "Image",
+                "Product",
+                "Category",
+                "MRP",
+                "Status",
+                "Actions",
+              ].map((h) => (
+                <TableCell key={h} sx={{ fontWeight: 700 }}>
+                  {h}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData.map((p, index) => (
-              <TableRow key={p.id}>
-                <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                <TableCell>
+            {paginatedData.map((p, i) => (
+              <TableRow key={p.id} hover>
+                <TableCell>{(page - 1) * rowsPerPage + i + 1}</TableCell>
+                {/* <TableCell>
                   <Avatar
                     src={`https://hogofilm.pythonanywhere.com/${p.thumbnail_image}`}
                     variant="rounded"
-                    sx={{ width: 50, height: 50 }}
+                    sx={{ width: 48, height: 48 }}
                   />
+                </TableCell> */}
+                <TableCell>
+                  <Box sx={{ position: "relative", width: 48, height: 48 }}>
+                    {!imageLoaded && (
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          inset: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          zIndex: 1,
+                        }}
+                      >
+                        <CircularProgress size={20} />
+                      </Box>
+                    )}
+
+                    <Avatar
+                      src={`https://hogofilm.pythonanywhere.com/${p.thumbnail_image}`}
+                      variant="rounded"
+                      sx={{ width: 48, height: 48 }}
+                      imgProps={{
+                        onLoad: () => setImageLoaded(true),
+                        onError: () => setImageLoaded(true),
+                      }}
+                    />
+                  </Box>
                 </TableCell>
                 <TableCell>{p.product_name}</TableCell>
                 <TableCell>{p.category_name}</TableCell>
-                <TableCell>{p.brand || "-"}</TableCell>
-                <TableCell>{p.moq || 1}</TableCell>
+                <TableCell>₹ {p.mrp}</TableCell>
                 <TableCell>
                   <Chip
                     label={p.status ? "Active" : "Inactive"}
-                    color={p.status ? "success" : "default"}
                     size="small"
+                    color={p.status ? "success" : "default"}
                   />
                 </TableCell>
-                <TableCell align="center">
-                  <IconButton color="primary">
+                <TableCell>
+                  <IconButton size="small">
                     <VisibilityIcon />
                   </IconButton>
-                  <IconButton color="warning">
+                  <IconButton
+                    size="small"
+                    color="warning"
+                    onClick={() => handleEdit(p)}
+                  >
                     <EditIcon />
                   </IconButton>
-                  <IconButton color="error">
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => handleDelete(p.id)}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
@@ -380,7 +388,7 @@ const Product = () => {
             ))}
             {list.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={7} align="center">
                   No products found
                 </TableCell>
               </TableRow>
@@ -393,203 +401,9 @@ const Product = () => {
         <Pagination
           count={Math.ceil(list.length / rowsPerPage)}
           page={page}
-          onChange={(_, value) => setPage(value)}
-          color="primary"
+          onChange={(_, v) => setPage(v)}
         />
       </Stack>
-
-      {/* Add Product Dialog */}
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogTitle>Add Product</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} mt={1}>
-            <TextField
-              label="Product Name"
-              name="product_name"
-              value={form.product_name}
-              onChange={handleChange}
-              error={!!errors.product_name}
-              helperText={errors.product_name}
-              fullWidth
-            />
-            <TextField
-              label="Product Codes"
-              name="product_codes"
-              value={form.product_codes}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="SKU"
-              name="sku"
-              value={form.sku}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Category Name"
-              name="category_name"
-              value={form.category_name}
-              onChange={handleChange}
-              error={!!errors.category_name}
-              helperText={errors.category_name}
-              fullWidth
-            />
-            <TextField
-              label="MRP"
-              name="mrp"
-              value={form.mrp}
-              onChange={handleChange}
-              error={!!errors.mrp}
-              helperText={errors.mrp}
-              fullWidth
-            />
-            <TextField
-              label="Thumbnail URL"
-              name="thumbnail_image"
-              value={form.thumbnail_image}
-              onChange={handleChange}
-              error={!!errors.thumbnail_image}
-              helperText={errors.thumbnail_image}
-              fullWidth
-            />
-            <TextField
-              label="Gallery Images URL"
-              name="gallery_images"
-              value={form.gallery_images}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Installation Video URL"
-              name="installation_video_url"
-              value={form.installation_video_url}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Film Type"
-              name="film_type"
-              value={form.film_type}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Finish"
-              name="finish"
-              value={form.finish}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Application Area"
-              name="application_area"
-              value={form.application_area}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Thickness"
-              name="thickness"
-              value={form.thickness}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Specification"
-              name="specification"
-              value={form.specification}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Warranty"
-              name="warranty"
-              value={form.warranty}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Hydrophobic"
-              name="hydrophobic"
-              value={form.hydrophobic}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Stain Resistant"
-              name="stain_resistant"
-              value={form.stain_resistant}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Elongation"
-              name="elongation"
-              value={form.elongation}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Tear Strength"
-              name="tear_strength"
-              value={form.tear_strength}
-              onChange={handleChange}
-              fullWidth
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={form.adhesive}
-                  name="adhesive"
-                  onChange={handleChange}
-                />
-              }
-              label="Adhesive"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={form.anti_yellowing}
-                  name="anti_yellowing"
-                  onChange={handleChange}
-                />
-              }
-              label="Anti Yellowing"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={form.scratch_resistant}
-                  name="scratch_resistant"
-                  onChange={handleChange}
-                />
-              }
-              label="Scratch Resistant"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={form.uv_resistance}
-                  name="uv_resistance"
-                  onChange={handleChange}
-                />
-              }
-              label="UV Resistance"
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={createLoading}
-          >
-            {createLoading ? "Saving..." : "Save"}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };
