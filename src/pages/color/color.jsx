@@ -61,6 +61,9 @@ const Color = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
+  const [isViewing, setIsViewing] = useState(false);
+  const [viewColor, setViewColor] = useState(null);
+
   const [form, setForm] = useState({ colour_name: "", status: true });
   const [errors, setErrors] = useState({});
 
@@ -115,6 +118,10 @@ const Color = () => {
     } else {
       dispatch(createColor(form));
     }
+  };
+  const handleView = (color) => {
+    setViewColor(color);
+    setIsViewing(true);
   };
 
   const handleEdit = (color) => {
@@ -205,6 +212,44 @@ const Color = () => {
       </Box>
     );
   }
+  if (isViewing && viewColor) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Box width="100%" maxWidth={600}>
+          {/* Header */}
+          <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+            <IconButton
+              onClick={() => {
+                setIsViewing(false);
+                setViewColor(null);
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <CommonLabel>View Color</CommonLabel>
+          </Stack>
+
+          {/* Read-only form */}
+          <Paper sx={{ p: 3 }}>
+            <Stack spacing={2}>
+              <TextField
+                label="Color Name"
+                value={viewColor.colour_name}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+
+              <FormControlLabel
+                control={<Checkbox checked={viewColor.status} disabled />}
+                label="Active"
+              />
+            </Stack>
+          </Paper>
+        </Box>
+      </Box>
+    );
+  }
+
   if (loading) return <Loader text="Loading colors..." fullScreen={true} />;
 
   return (
@@ -260,7 +305,7 @@ const Color = () => {
                   />
                 </TableCell>
                 <TableCell>
-                  <IconButton color="primary">
+                  <IconButton color="primary" onClick={() => handleView(item)}>
                     <VisibilityIcon />
                   </IconButton>
                   <IconButton color="warning" onClick={() => handleEdit(item)}>

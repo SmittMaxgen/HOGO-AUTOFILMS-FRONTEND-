@@ -142,7 +142,6 @@ const AdminLayout = () => {
     localStorage.getItem("activeTab") || location.pathname,
   );
   const adminList = useSelector(selectAdminList);
-  console.log("adminList:::::::::::::::::::::::>>.>>>>", adminList);
   useEffect(() => {
     setActivePath(location.pathname);
     localStorage.setItem("activeTab", location.pathname);

@@ -35,7 +35,11 @@ export const updateProducts = createAsyncThunk(
   "product/updateProducts",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.patch(`/products/${payload}`);
+      console.log("payload:::", payload);
+      const response = await axiosInstance.patch(
+        `/products/${payload.id}/`,
+        payload.data,
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(

@@ -58,6 +58,9 @@ const Material = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
+  const [isViewing, setIsViewing] = useState(false);
+  const [viewMaterial, setViewMaterial] = useState(null);
+
   const [form, setForm] = useState({ title: "", status: true });
   const [errors, setErrors] = useState({});
 
@@ -113,6 +116,10 @@ const Material = () => {
     } else {
       dispatch(createMaterials(form));
     }
+  };
+  const handleView = (material) => {
+    setViewMaterial(material);
+    setIsViewing(true);
   };
 
   const handleEdit = (item) => {
@@ -205,6 +212,43 @@ const Material = () => {
       </Box>
     );
   }
+  if (isViewing && viewMaterial) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Box width="100%" maxWidth={600}>
+          {/* Header */}
+          <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+            <IconButton
+              onClick={() => {
+                setIsViewing(false);
+                setViewMaterial(null);
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <CommonLabel>View Material</CommonLabel>
+          </Stack>
+
+          {/* Read-only form */}
+          <Paper sx={{ p: 3 }}>
+            <Stack spacing={2}>
+              <TextField
+                label="Material Name"
+                value={viewMaterial.title}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+
+              <FormControlLabel
+                control={<Checkbox checked={viewMaterial.status} disabled />}
+                label="Active"
+              />
+            </Stack>
+          </Paper>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -259,7 +303,7 @@ const Material = () => {
                   />
                 </TableCell>
                 <TableCell>
-                  <IconButton color="primary">
+                  <IconButton color="primary" onClick={() => handleView(item)}>
                     <VisibilityIcon />
                   </IconButton>
                   <IconButton color="warning" onClick={() => handleEdit(item)}>

@@ -40,6 +40,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CategoryIcon from "@mui/icons-material/Category";
 import ImageIcon from "@mui/icons-material/Image";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import Loader from "../../components/commonComponents/Loader";
 import CommonButton from "../../components/commonComponents/CommonButton";
@@ -52,6 +53,9 @@ const Category = () => {
 
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
+
+  const [isViewing, setIsViewing] = useState(false);
+  const [viewItem, setViewItem] = useState(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -137,13 +141,17 @@ const Category = () => {
       })
       .catch(console.error);
   };
+  const handleView = (item) => {
+    setViewItem(item);
+    setIsViewing(true);
+  };
 
   const handleEdit = (item) => {
     setEditId(item.id);
     setForm({
       name: item.name || "",
       image: null,
-      order: item.order || 1,
+      // order: item.order || 1,
       status: item.status ?? true,
     });
     setIsEditing(true);
@@ -223,7 +231,7 @@ const Category = () => {
                 </Typography>
               )}
 
-              <TextField
+              {/* <TextField
                 label="Display Order"
                 type="number"
                 name="order"
@@ -233,7 +241,7 @@ const Category = () => {
                 InputProps={{
                   startAdornment: <FormatListNumberedIcon sx={{ mr: 1 }} />,
                 }}
-              />
+              /> */}
 
               <FormControlLabel
                 control={
@@ -252,6 +260,59 @@ const Category = () => {
                   Save
                 </Button>
               </Stack>
+            </Stack>
+          </Paper>
+        </Box>
+      </Box>
+    );
+  }
+  if (isViewing && viewItem) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Box width="100%" maxWidth={600}>
+          <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+            <IconButton
+              onClick={() => {
+                setIsViewing(false);
+                setViewItem(null);
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <CommonLabel>View Category</CommonLabel>
+          </Stack>
+
+          <Paper sx={{ p: 3 }}>
+            <Stack spacing={2}>
+              <TextField
+                label="Category Name"
+                fullWidth
+                value={viewItem.name}
+                InputProps={{ readOnly: true }}
+              />
+
+              <TextField
+                label="Display Order"
+                fullWidth
+                value={viewItem.order}
+                InputProps={{ readOnly: true }}
+              />
+
+              <FormControlLabel
+                control={<Checkbox checked={viewItem.status} disabled />}
+                label="Active"
+              />
+
+              {viewItem.image && (
+                <Box mt={2}>
+                  <Typography variant="subtitle2">Category Image</Typography>
+                  <Avatar
+                    src={`https://hogofilm.pythonanywhere.com/${viewItem.image}`}
+                    variant="rounded"
+                    sx={{ width: 120, height: 120, mt: 1 }}
+                  />
+                </Box>
+              )}
             </Stack>
           </Paper>
         </Box>
@@ -330,6 +391,9 @@ const Category = () => {
                 </TableCell>
 
                 <TableCell>
+                  <IconButton size="small" onClick={() => handleView(item)}>
+                    <VisibilityIcon />
+                  </IconButton>
                   <IconButton
                     size="small"
                     color="warning"

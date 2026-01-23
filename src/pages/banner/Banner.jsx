@@ -58,6 +58,9 @@ const Banner = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
+  const [isViewing, setIsViewing] = useState(false);
+  const [viewBanner, setViewBanner] = useState(null);
+
   const [form, setForm] = useState({
     title: "",
     image: null,
@@ -123,6 +126,11 @@ const Banner = () => {
       })
       .catch(console.error);
   };
+  const handleView = (banner) => {
+    setViewBanner(banner);
+    setIsViewing(true);
+  };
+
   const handleSubmit = () => {
     if (!validate()) return;
 
@@ -277,6 +285,73 @@ const Banner = () => {
       </Box>
     );
   }
+  if (isViewing && viewBanner) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Box width="100%" maxWidth={700}>
+          <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+            <IconButton
+              onClick={() => {
+                setIsViewing(false);
+                setViewBanner(null);
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <CommonLabel>View Banner</CommonLabel>
+          </Stack>
+
+          <Paper sx={{ p: 3 }}>
+            <Stack spacing={2}>
+              <TextField
+                label="Title"
+                value={viewBanner.title}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+
+              {viewBanner.image && (
+                <Box>
+                  <Typography variant="subtitle2">Banner Image</Typography>
+                  <Avatar
+                    src={`https://hogofilm.pythonanywhere.com/${viewBanner.image}`}
+                    variant="rounded"
+                    sx={{ width: 200, height: 100, mt: 1 }}
+                  />
+                </Box>
+              )}
+
+              <TextField
+                label="CTA Text"
+                value={viewBanner.CTA_text}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+
+              <TextField
+                label="CTA Link"
+                value={viewBanner.CTA_link}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+
+              <TextField
+                label="Order"
+                value={viewBanner.order}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+
+              <FormControlLabel
+                control={<Checkbox checked={viewBanner.status} disabled />}
+                label="Active"
+              />
+            </Stack>
+          </Paper>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -369,7 +444,19 @@ const Banner = () => {
                   />
                 </TableCell>
                 <TableCell align="center">
-                  <IconButton color="primary">
+                  {/* <IconButton color="primary">
+                    <VisibilityIcon />
+                  </IconButton>
+                  <IconButton color="warning" onClick={() => handleEdit(item)}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    color="error"
+                    onClick={() => handleDelete(item.id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton> */}
+                  <IconButton color="primary" onClick={() => handleView(item)}>
                     <VisibilityIcon />
                   </IconButton>
                   <IconButton color="warning" onClick={() => handleEdit(item)}>
