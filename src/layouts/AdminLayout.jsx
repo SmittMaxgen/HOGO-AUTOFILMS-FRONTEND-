@@ -309,6 +309,7 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     flexDirection: "column",
     transition: "width 0.3s ease",
+    boxShadow: "4px 0 15px rgba(0, 0, 0, 0.2)",
   },
 
   sidebarExpanded: {
@@ -458,8 +459,21 @@ const AdminLayout = ({ toggleTheme, mode }) => {
       >
         {/* TOGGLE BUTTON (TOP) */}
         <IconButton
-          className={classes.toggleBtn}
           onClick={() => setCollapsed(!collapsed)}
+          sx={{
+            width: 36,
+            height: 36,
+            mb: 2,
+            alignSelf: collapsed ? "center" : "flex-end",
+            color: "#fff",
+            borderRadius: "50%",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+            transition: "all 0.25s ease",
+            "&:hover": {
+              backgroundColor: "#ED3434",
+              transform: "scale(1.05)",
+            },
+          }}
         >
           {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </IconButton>
