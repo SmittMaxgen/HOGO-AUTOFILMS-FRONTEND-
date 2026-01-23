@@ -38,6 +38,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useParams } from "react-router-dom";
+import Loader from "../../components/commonComponents/Loader";
 
 const Banner = () => {
   const dispatch = useDispatch();
@@ -103,7 +104,22 @@ const Banner = () => {
     setEditId(null);
     setIsEditing(false);
   };
+  const handleStatusToggle = (item) => {
+    const data = new FormData();
+    data.append("status", !item.status);
 
+    dispatch(
+      updateBanner({
+        id: item.id,
+        data,
+      }),
+    )
+      .unwrap()
+      .then(() => {
+        dispatch(getBanners());
+      })
+      .catch(console.error);
+  };
   const handleSubmit = () => {
     if (!validate()) return;
 
@@ -155,7 +171,7 @@ const Banner = () => {
     page * rowsPerPage,
   );
 
-  if (loading) return <Typography>Loading banners...</Typography>;
+  if (loading) return <Loader text="Loading banners..." fullScreen={true} />;
 
   if (isEditing) {
     return (
@@ -340,8 +356,11 @@ const Banner = () => {
                 <TableCell>
                   <Chip
                     label={item.status ? "Active" : "Inactive"}
-                    color={item.status ? "success" : "default"}
                     size="small"
+                    color={item.status ? "success" : "default"}
+                    clickable
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleStatusToggle(item)}
                   />
                 </TableCell>
                 <TableCell align="center">

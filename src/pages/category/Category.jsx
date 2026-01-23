@@ -41,6 +41,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CategoryIcon from "@mui/icons-material/Category";
 import ImageIcon from "@mui/icons-material/Image";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import Loader from "../../components/commonComponents/Loader";
 
 const Category = () => {
   const dispatch = useDispatch();
@@ -97,7 +98,22 @@ const Category = () => {
     setEditId(null);
     setIsEditing(false);
   };
+  const handleStatusToggle = (item) => {
+    const data = new FormData();
+    data.append("status", !item.status);
 
+    dispatch(
+      updateCategory({
+        id: item.id,
+        data,
+      }),
+    )
+      .unwrap()
+      .then(() => {
+        dispatch(getCategory());
+      })
+      .catch(console.error);
+  };
   const handleSubmit = () => {
     if (!validate()) return;
 
@@ -146,7 +162,7 @@ const Category = () => {
     page * rowsPerPage,
   );
 
-  if (loading) return <Typography>Loading categories...</Typography>;
+  if (loading) return <Loader text="Loading categories..." fullScreen={true} />;
 
   if (isEditing) {
     return (
@@ -304,6 +320,9 @@ const Category = () => {
                     label={item.status ? "Active" : "Inactive"}
                     size="small"
                     color={item.status ? "success" : "default"}
+                    clickable
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleStatusToggle(item)}
                   />
                 </TableCell>
 

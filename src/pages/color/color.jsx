@@ -41,6 +41,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import Loader from "../../components/commonComponents/Loader";
 
 const Color = () => {
   const dispatch = useDispatch();
@@ -199,6 +200,7 @@ const Color = () => {
       </Box>
     );
   }
+  if (loading) return <Loader text="Loading colors..." fullScreen={true} />;
 
   return (
     <Box>
@@ -208,7 +210,11 @@ const Color = () => {
         alignItems="center"
         mb={3}
       >
-        <Typography variant="h4" fontWeight={700}>
+        <Typography
+          variant="h4"
+          fontWeight={700}
+          sx={{ color: "#7E7E7E", mb: 2 }}
+        >
           Colors
         </Typography>
         <Button

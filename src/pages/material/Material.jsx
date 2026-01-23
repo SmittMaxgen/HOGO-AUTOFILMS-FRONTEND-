@@ -40,6 +40,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
+import Loader from "../../components/commonComponents/Loader";
 const Material = () => {
   const dispatch = useDispatch();
 
@@ -83,7 +84,22 @@ const Material = () => {
     setErrors(temp);
     return Object.keys(temp).length === 0;
   };
+  const handleStatusToggle = (item) => {
+    const data = new FormData();
+    data.append("status", !item.status);
 
+    dispatch(
+      updateMaterials({
+        id: item.id,
+        data,
+      }),
+    )
+      .unwrap()
+      .then(() => {
+        dispatch(getMaterials());
+      })
+      .catch(console.error);
+  };
   const handleSubmit = () => {
     if (!validate()) return;
 
@@ -124,7 +140,7 @@ const Material = () => {
     page * rowsPerPage,
   );
 
-  if (loading) return <Typography>Loading materials...</Typography>;
+  if (loading) return <Loader text="Loading materials..." fullScreen={true} />;
 
   if (isEditing) {
     return (
@@ -191,7 +207,11 @@ const Material = () => {
         alignItems="center"
         mb={3}
       >
-        <Typography variant="h4" fontWeight={700}>
+        <Typography
+          variant="h4"
+          fontWeight={700}
+          sx={{ color: "#7E7E7E", mb: 2 }}
+        >
           Materials
         </Typography>
         <Button
@@ -226,6 +246,9 @@ const Material = () => {
                     label={item.status ? "Active" : "Inactive"}
                     size="small"
                     color={item.status ? "success" : "default"}
+                    clickable
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleStatusToggle(item)}
                   />
                 </TableCell>
                 <TableCell>

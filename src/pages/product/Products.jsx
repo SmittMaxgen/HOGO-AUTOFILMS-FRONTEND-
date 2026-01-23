@@ -37,6 +37,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import CategoryIcon from "@mui/icons-material/Category";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import ImageIcon from "@mui/icons-material/Image";
+import Loader from "../../components/commonComponents/Loader";
 
 const Product = () => {
   const dispatch = useDispatch();
@@ -152,7 +153,7 @@ const Product = () => {
     page * rowsPerPage,
   );
 
-  if (loading) return <Typography>Loading products...</Typography>;
+  if (loading) return <Loader text="Loading products..." fullScreen={true} />;
 
   if (isEditing) {
     return (
