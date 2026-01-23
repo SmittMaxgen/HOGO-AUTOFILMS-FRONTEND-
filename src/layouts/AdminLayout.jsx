@@ -351,8 +351,10 @@ const useStyles = makeStyles(() => ({
   },
 
   divider: {
-    backgroundColor: "rgba(255,255,255,0.2)",
+    width: "auto",
+    backgroundColor: "rgba(255, 255, 255, 1)",
     margin: "12px 0",
+    marginBottom: "7px",
   },
 
   sidebarItem: {
@@ -461,6 +463,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         <IconButton
           onClick={() => setCollapsed(!collapsed)}
           sx={{
+            position: "absolute",
             width: 36,
             height: 36,
             mb: 2,
@@ -477,6 +480,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </IconButton>
+        {/* <Divider className={classes.divider} /> */}
 
         {/* PROFILE */}
         {!collapsed && (
@@ -488,11 +492,11 @@ const AdminLayout = ({ toggleTheme, mode }) => {
               <Typography className={classes.adminName}>
                 {adminList?.name}
               </Typography>
-              <Typography className={classes.adminEmail}>
+              {/* <Typography className={classes.adminEmail}>
                 {adminList?.email}
-              </Typography>
+              </Typography> */}
             </Box>
-            <Divider className={classes.divider} />
+            {/* <Divider className={classes.divider} /> */}
           </>
         )}
 
@@ -559,7 +563,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
 
         <Box className={classes.spacer} />
 
-        <Divider className={classes.divider} />
+        {/* <Divider className={classes.divider} /> */}
 
         {/* THEME TOGGLE */}
         <Box display="flex" justifyContent="center">
