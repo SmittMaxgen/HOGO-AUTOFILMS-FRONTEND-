@@ -42,6 +42,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Loader from "../../components/commonComponents/Loader";
+import CommonButton from "../../components/commonComponents/CommonButton";
+import CommonLabel from "../../components/commonComponents/CommonLabel";
 
 const Color = () => {
   const dispatch = useDispatch();
@@ -137,6 +139,11 @@ const Color = () => {
     setIsEditing(false);
   };
 
+  const handleAddColor = () => {
+    handleReset();
+    setIsEditing(true);
+  };
+
   const paginatedData = colors?.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage,
@@ -151,9 +158,7 @@ const Color = () => {
             <IconButton onClick={handleReset}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h5" fontWeight={600}>
-              {editId ? "Edit Color" : "Create Color"}
-            </Typography>
+            <CommonLabel>{editId ? "Edit Color" : "Create Color"}</CommonLabel>
           </Stack>
 
           {/* Form */}
@@ -217,13 +222,13 @@ const Color = () => {
         >
           Colors
         </Typography>
-        <Button
+        <CommonButton
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => setIsEditing(true)}
+          onClick={() => handleAddColor()}
         >
-          Create Color
-        </Button>
+          Add Colors
+        </CommonButton>
       </Stack>
 
       <TableContainer component={Paper}>

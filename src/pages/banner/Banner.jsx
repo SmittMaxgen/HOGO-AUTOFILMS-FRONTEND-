@@ -33,12 +33,15 @@ import {
   CircularProgress,
 } from "@mui/material";
 
+import AddIcon from "@mui/icons-material/Add";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useParams } from "react-router-dom";
 import Loader from "../../components/commonComponents/Loader";
+import CommonButton from "../../components/commonComponents/CommonButton";
+import CommonLabel from "../../components/commonComponents/CommonLabel";
 
 const Banner = () => {
   const dispatch = useDispatch();
@@ -165,7 +168,10 @@ const Banner = () => {
       .then(() => dispatch(getBanners()))
       .catch(console.error);
   };
-
+  const handleAddBanner = () => {
+    resetForm();
+    setIsEditing(true);
+  };
   const paginatedData = banners.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage,
@@ -182,9 +188,9 @@ const Banner = () => {
             <IconButton onClick={resetForm}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h5" fontWeight={600}>
+            <CommonLabel>
               {editId ? "Edit Banner" : "Create Banner"}
-            </Typography>
+            </CommonLabel>
           </Stack>
 
           {/* Form */}
@@ -201,7 +207,9 @@ const Banner = () => {
               />
 
               <Button variant="outlined" component="label">
-                {editId ? "Change Image" : "Upload Image"}
+                <CommonLabel>
+                  {editId ? "Change Image" : "Upload Image"}
+                </CommonLabel>
                 <input
                   type="file"
                   name="image"
@@ -285,16 +293,13 @@ const Banner = () => {
         >
           Banners
         </Typography>
-        {/* <Typography variant="h4">Banners</Typography> */}
-        <Button
+        <CommonButton
           variant="contained"
-          onClick={() => {
-            resetForm();
-            setIsEditing(true);
-          }}
+          startIcon={<AddIcon />}
+          onClick={() => handleAddBanner()}
         >
-          Create Banner
-        </Button>
+          Add Banner
+        </CommonButton>
       </Stack>
 
       <TableContainer component={Paper}>

@@ -41,6 +41,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import Loader from "../../components/commonComponents/Loader";
+import CommonButton from "../../components/commonComponents/CommonButton";
+import CommonLabel from "../../components/commonComponents/CommonLabel";
 const Material = () => {
   const dispatch = useDispatch();
 
@@ -135,6 +137,11 @@ const Material = () => {
     setIsEditing(false);
   };
 
+  const handleAddMaterial = () => {
+    handleReset();
+    setIsEditing(true);
+  };
+
   const paginatedData = materials?.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage,
@@ -150,9 +157,9 @@ const Material = () => {
             <IconButton onClick={handleReset}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h5" fontWeight={600}>
+            <CommonLabel>
               {editId ? "Edit Material" : "Create Material"}
-            </Typography>
+            </CommonLabel>
           </Stack>
 
           <Paper sx={{ p: 3 }}>
@@ -214,13 +221,13 @@ const Material = () => {
         >
           Materials
         </Typography>
-        <Button
+        <CommonButton
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => setIsEditing(true)}
+          onClick={() => handleAddMaterial()}
         >
-          Create Material
-        </Button>
+          Add Materials
+        </CommonButton>
       </Stack>
 
       <TableContainer component={Paper}>

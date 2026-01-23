@@ -42,6 +42,8 @@ import CategoryIcon from "@mui/icons-material/Category";
 import ImageIcon from "@mui/icons-material/Image";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import Loader from "../../components/commonComponents/Loader";
+import CommonButton from "../../components/commonComponents/CommonButton";
+import CommonLabel from "../../components/commonComponents/CommonLabel";
 
 const Category = () => {
   const dispatch = useDispatch();
@@ -157,6 +159,10 @@ const Category = () => {
       .catch(console.error);
   };
 
+  const handleAddCategory = () => {
+    resetForm();
+    setIsEditing(true);
+  };
   const paginatedData = categories?.data?.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage,
@@ -172,9 +178,9 @@ const Category = () => {
             <IconButton onClick={resetForm}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h5" fontWeight={600}>
+            <CommonLabel>
               {editId ? "Edit Category" : "Create Category"}
-            </Typography>
+            </CommonLabel>
           </Stack>
 
           <Paper sx={{ p: 3 }}>
@@ -268,16 +274,13 @@ const Category = () => {
         >
           Categories
         </Typography>
-        <Button
+        <CommonButton
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => {
-            resetForm();
-            setIsEditing(true);
-          }}
+          onClick={() => handleAddCategory()}
         >
-          Create Category
-        </Button>
+          Add Category
+        </CommonButton>
       </Stack>
 
       <TableContainer component={Paper}>

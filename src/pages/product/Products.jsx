@@ -38,6 +38,8 @@ import CategoryIcon from "@mui/icons-material/Category";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import ImageIcon from "@mui/icons-material/Image";
 import Loader from "../../components/commonComponents/Loader";
+import CommonButton from "../../components/commonComponents/CommonButton";
+import CommonLabel from "../../components/commonComponents/CommonLabel";
 
 const Product = () => {
   const dispatch = useDispatch();
@@ -163,9 +165,7 @@ const Product = () => {
             <IconButton onClick={handleReset}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h5" fontWeight={600}>
-              {editId ? "Edit Product" : "Add Product"}
-            </Typography>
+            <CommonLabel>{editId ? "Edit Product" : "Add Product"}</CommonLabel>
           </Stack>
 
           <Paper sx={{ p: 3 }}>
@@ -286,13 +286,13 @@ const Product = () => {
         >
           Products
         </Typography>
-        <Button
+        <CommonButton
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setIsEditing(true)}
         >
           Add Product
-        </Button>
+        </CommonButton>
       </Stack>
 
       <TableContainer
