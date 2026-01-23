@@ -341,8 +341,20 @@ const useStyles = makeStyles(() => ({
   },
 
   adminName: {
+    fontSize: "0.95rem",
     fontWeight: 600,
-    fontSize: "1rem",
+    color: "#ffffff",
+    lineHeight: 1.2,
+    letterSpacing: "0.3px",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  adminRole: {
+    fontSize: "0.72rem",
+    fontWeight: 500,
+    color: "rgba(255,255,255,0.65)",
+    marginTop: 2,
   },
 
   adminEmail: {
@@ -489,12 +501,14 @@ const AdminLayout = ({ toggleTheme, mode }) => {
               <Avatar className={classes.avatar}>
                 {adminList?.name?.[0] || "A"}
               </Avatar>
-              <Typography className={classes.adminName}>
-                {adminList?.name}
-              </Typography>
-              {/* <Typography className={classes.adminEmail}>
-                {adminList?.email}
-              </Typography> */}
+              <Box>
+                <Typography className={classes.adminName}>
+                  {adminList?.name || "Admin User"}
+                </Typography>
+                <Typography className={classes.adminRole}>
+                  Administrator
+                </Typography>
+              </Box>
             </Box>
             {/* <Divider className={classes.divider} /> */}
           </>
