@@ -268,8 +268,6 @@ const Product = () => {
       anti_yellowing: item.anti_yellowing || "",
       scratch_resistant: item.scratch_resistant || "",
       uv_resistance: item.uv_resistance || "",
-      stain_resistant: item.stain_resistant || "",
-      elongation: item.elongation || "",
     });
   };
 
