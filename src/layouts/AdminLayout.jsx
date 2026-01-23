@@ -443,6 +443,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
   };
 
   const handleLogout = () => {
+    navigate("/");
     localStorage.removeItem("activeTab");
     dispatch(logout());
   };
