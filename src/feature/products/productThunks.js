@@ -53,7 +53,7 @@ export const deleteProducts = createAsyncThunk(
   "product/deleteProducts",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/products/${payload}`);
+      const response = await axiosInstance.delete(`/products/${payload}/`);
       return response.data;
     } catch (error) {
       return rejectWithValue(

@@ -41,6 +41,10 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import CategoryIcon from "@mui/icons-material/Category";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import ImageIcon from "@mui/icons-material/Image";
+import BrushIcon from "@mui/icons-material/Brush";
+import WbSunnyIcon from "@mui/icons-material/WbSunny";
+import SecurityIcon from "@mui/icons-material/Security";
+
 import Loader from "../../components/commonComponents/Loader";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
@@ -79,13 +83,14 @@ const Product = () => {
     mrp: "",
     thumbnail_image: null,
     status: true,
-    adhesive: false,
-    anti_yellowing: false,
-    scratch_resistant: false,
+    adhesive: "",
+    anti_yellowing: "",
+    scratch_resistant: "",
     uv_resistance: false,
   });
 
   const [errors, setErrors] = useState({});
+  console.log("errors", errors);
   const { list: categoryList, loading: categoryLoading } = useSelector(
     (state) => state.category,
   );
@@ -267,14 +272,24 @@ const Product = () => {
   const handleReset = () => {
     setForm({
       product_name: "",
+      product_codes: "",
+      sku: "",
+      category_name: "",
       category_id: null,
       material_id: null,
+      colour_id: null,
+      application_area: "",
+      film_type: "",
+      finish: "",
+      specification: "",
+      thickness: "",
+      warranty: "",
       mrp: "",
-      thumbnail_image: "",
+      thumbnail_image: null,
       status: true,
-      adhesive: false,
-      anti_yellowing: false,
-      scratch_resistant: false,
+      adhesive: "",
+      anti_yellowing: "",
+      scratch_resistant: "",
       uv_resistance: false,
     });
     setErrors({});
@@ -501,6 +516,38 @@ const Product = () => {
               />
 
               <TextField
+                label="Adhesive"
+                name="adhesive"
+                fullWidth
+                value={form.adhesive}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: <BrushIcon sx={{ mr: 1 }} />,
+                }}
+              />
+
+              <TextField
+                label="Anti Yellowing"
+                name="anti_yellowing"
+                fullWidth
+                value={form.anti_yellowing}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: <WbSunnyIcon sx={{ mr: 1 }} />,
+                }}
+              />
+
+              <TextField
+                label="Scratch Resistant"
+                name="scratch_resistant"
+                fullWidth
+                value={form.scratch_resistant}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: <SecurityIcon sx={{ mr: 1 }} />,
+                }}
+              />
+              <TextField
                 label="Thumbnail Image"
                 fullWidth
                 value={form.thumbnail_image?.name || ""}
@@ -542,36 +589,6 @@ const Product = () => {
                     />
                   }
                   label="Active"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={form.adhesive}
-                      name="adhesive"
-                      onChange={handleChange}
-                    />
-                  }
-                  label="Adhesive"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={form.anti_yellowing}
-                      name="anti_yellowing"
-                      onChange={handleChange}
-                    />
-                  }
-                  label="Anti Yellowing"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={form.scratch_resistant}
-                      name="scratch_resistant"
-                      onChange={handleChange}
-                    />
-                  }
-                  label="Scratch Resistant"
                 />
               </Stack>
 
