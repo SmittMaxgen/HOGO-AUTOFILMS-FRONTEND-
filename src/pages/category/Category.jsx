@@ -84,7 +84,7 @@ const Category = () => {
   const validate = () => {
     const temp = {};
     if (!form.name) temp.name = "Category name is required";
-    if (!form.image && !editId) temp.image = "Image is required";
+    // if (!form.image && !editId) temp.image = "Image is required";
     setErrors(temp);
     return Object.keys(temp).length === 0;
   };
