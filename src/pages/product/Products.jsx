@@ -80,6 +80,10 @@ const Product = () => {
     specification: "",
     thickness: "",
     warranty: "",
+    hydrophobic: "",
+    stain_resistant: "",
+    elongation: "",
+    tear_strength: "",
     mrp: "",
     thumbnail_image: null,
     status: true,
@@ -88,7 +92,6 @@ const Product = () => {
     scratch_resistant: "",
     uv_resistance: false,
   });
-
   const [errors, setErrors] = useState({});
   console.log("errors", errors);
   const { list: categoryList, loading: categoryLoading } = useSelector(
@@ -156,6 +159,10 @@ const Product = () => {
     if (!form.specification) temp.specification = "Required";
     if (!form.thickness) temp.thickness = "Required";
     if (!form.warranty) temp.warranty = "Required";
+    if (!form.hydrophobic) temp.hydrophobic = "Required";
+    if (!form.stain_resistant) temp.stain_resistant = "Required";
+    if (!form.elongation) temp.elongation = "Required";
+    if (!form.tear_strength) temp.tear_strength = "Required";
     if (!form.mrp) temp.mrp = "Required";
     if (!form.thumbnail_image) temp.thumbnail_image = "Required";
     setErrors(temp);
@@ -196,6 +203,10 @@ const Product = () => {
     formData.append("specification", form.specification);
     formData.append("thickness", form.thickness);
     formData.append("warranty", form.warranty);
+    formData.append("hydrophobic", form.hydrophobic);
+    formData.append("stain_resistant", form.stain_resistant);
+    formData.append("elongation", form.elongation);
+    formData.append("tear_strength", form.tear_strength);
     formData.append("mrp", form.mrp);
     formData.append("status", form.status);
     formData.append("adhesive", form.adhesive);
@@ -241,6 +252,10 @@ const Product = () => {
       thickness: item.thickness || "",
       specification: item.specification || "",
       warranty: item.warranty || "",
+      hydrophobic: item.hydrophobic || "",
+      stain_resistant: item.stain_resistant || "",
+      elongation: item.elongation || "",
+      tear_strength: item.tear_strength || "",
       mrp: item.mrp || "",
       thumbnail_image: item.thumbnail_image || null,
       image1: item.image1 || null,
@@ -253,10 +268,8 @@ const Product = () => {
       anti_yellowing: item.anti_yellowing || "",
       scratch_resistant: item.scratch_resistant || "",
       uv_resistance: item.uv_resistance || "",
-      hydrophobic: item.hydrophobic || "",
       stain_resistant: item.stain_resistant || "",
       elongation: item.elongation || "",
-      tear_strength: item.tear_strength || "",
     });
   };
 
@@ -284,6 +297,10 @@ const Product = () => {
       specification: "",
       thickness: "",
       warranty: "",
+      hydrophobic: "",
+      stain_resistant: "",
+      elongation: "",
+      tear_strength: "",
       mrp: "",
       thumbnail_image: null,
       status: true,
@@ -400,7 +417,45 @@ const Product = () => {
                 error={!!errors.warranty}
                 helperText={errors.warranty}
               />
+              <TextField
+                label="Hydrophobic"
+                name="hydrophobic"
+                fullWidth
+                value={form.hydrophobic}
+                onChange={handleChange}
+                error={!!errors.hydrophobic}
+                helperText={errors.hydrophobic}
+              />
 
+              <TextField
+                label="Stain Resistant"
+                name="stain_resistant"
+                fullWidth
+                value={form.stain_resistant}
+                onChange={handleChange}
+                error={!!errors.stain_resistant}
+                helperText={errors.stain_resistant}
+              />
+
+              <TextField
+                label="Elongation"
+                name="elongation"
+                fullWidth
+                value={form.elongation}
+                onChange={handleChange}
+                error={!!errors.elongation}
+                helperText={errors.elongation}
+              />
+
+              <TextField
+                label="Tear Strength"
+                name="tear_strength"
+                fullWidth
+                value={form.tear_strength}
+                onChange={handleChange}
+                error={!!errors.tear_strength}
+                helperText={errors.tear_strength}
+              />
               <Autocomplete
                 options={categoryList?.data || []}
                 loading={categoryLoading}
@@ -708,7 +763,37 @@ const Product = () => {
                 value={viewItem.warranty}
                 InputProps={{ readOnly: true }}
               />
+              <TextField
+                label="Hydrophobic"
+                name="hydrophobic"
+                fullWidth
+                value={form.hydrophobic}
+                onChange={handleChange}
+              />
 
+              <TextField
+                label="Stain Resistant"
+                name="stain_resistant"
+                fullWidth
+                value={form.stain_resistant}
+                onChange={handleChange}
+              />
+
+              <TextField
+                label="Elongation"
+                name="elongation"
+                fullWidth
+                value={form.elongation}
+                onChange={handleChange}
+              />
+
+              <TextField
+                label="Tear Strength"
+                name="tear_strength"
+                fullWidth
+                value={form.tear_strength}
+                onChange={handleChange}
+              />
               <Stack direction="row" spacing={2}>
                 <FormControlLabel
                   control={<Checkbox checked={viewItem.status} disabled />}
