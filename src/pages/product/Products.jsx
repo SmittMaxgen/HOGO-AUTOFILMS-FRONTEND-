@@ -765,7 +765,7 @@ const Product = () => {
                 label="Hydrophobic"
                 name="hydrophobic"
                 fullWidth
-                value={form.hydrophobic}
+                value={viewItem.hydrophobic}
                 onChange={handleChange}
               />
 
@@ -773,7 +773,7 @@ const Product = () => {
                 label="Stain Resistant"
                 name="stain_resistant"
                 fullWidth
-                value={form.stain_resistant}
+                value={viewItem.stain_resistant}
                 onChange={handleChange}
               />
 
@@ -781,7 +781,7 @@ const Product = () => {
                 label="Elongation"
                 name="elongation"
                 fullWidth
-                value={form.elongation}
+                value={viewItem.elongation}
                 onChange={handleChange}
               />
 
@@ -789,7 +789,30 @@ const Product = () => {
                 label="Tear Strength"
                 name="tear_strength"
                 fullWidth
-                value={form.tear_strength}
+                value={viewItem.tear_strength}
+                onChange={handleChange}
+              />
+
+              <TextField
+                label="Adhesive"
+                name="adhesive"
+                fullWidth
+                value={viewItem.adhesive}
+              />
+
+              <TextField
+                label="Anti Yellowing"
+                name="anti_yellowing"
+                fullWidth
+                value={viewItem.anti_yellowing}
+                onChange={handleChange}
+              />
+
+              <TextField
+                label="Scratch Resistant"
+                name="scratch_resistant"
+                fullWidth
+                value={viewItem.scratch_resistant}
                 onChange={handleChange}
               />
               <Stack direction="row" spacing={2}>
@@ -797,7 +820,7 @@ const Product = () => {
                   control={<Checkbox checked={viewItem.status} disabled />}
                   label="Active"
                 />
-                <FormControlLabel
+                {/* <FormControlLabel
                   control={<Checkbox checked={viewItem.adhesive} disabled />}
                   label="Adhesive"
                 />
@@ -812,7 +835,7 @@ const Product = () => {
                     <Checkbox checked={viewItem.scratch_resistant} disabled />
                   }
                   label="Scratch Resistant"
-                />
+                /> */}
               </Stack>
 
               {viewItem.thumbnail_image && (
