@@ -49,7 +49,7 @@ const CommonButton = ({
         },
 
         "&.Mui-disabled": {
-          backgroundColor: "#7E7E7E",
+          // backgroundColor: "#7E7E7E",
           color: "#FAFAFA",
           borderColor: "#7E7E7E",
           boxShadow: "none",

@@ -103,7 +103,7 @@ const Login = () => {
             disabled={loading}
             sx={{
               bgcolor: "#ff2d3d",
-              color: "#fff",
+              // color: "#fff",
               py: 1.4,
               borderRadius: "12px",
               fontSize: "16px",

@@ -213,7 +213,7 @@ const useStyles = makeStyles(() => ({
   main: {
     flex: 1,
     padding: "2rem",
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
   },
 
   avatar: {

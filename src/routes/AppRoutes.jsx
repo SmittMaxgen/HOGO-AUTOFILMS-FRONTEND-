@@ -9,7 +9,7 @@ import Product from "../pages/product/Products";
 import ProtectedRoute from "./ProtectedRoutes";
 import AdminLayout from "../layouts/AdminLayout";
 
-const AppRoutes = () => {
+const AppRoutes = ({ toggleTheme, mode }) => {
   const token = localStorage.getItem("token");
 
   return (
@@ -19,7 +19,7 @@ const AppRoutes = () => {
         element={token ? <Navigate to="/dashboard" replace /> : <Login />}
       />
       <Route element={<ProtectedRoute />}>
-        <Route element={<AdminLayout />}>
+        <Route element={<AdminLayout toggleTheme={toggleTheme} mode={mode} />}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/products" element={<Product />} />

@@ -14,6 +14,10 @@ import HogoLogo from "../../public/hogoAFM.png";
 import { AdminUser } from "../feature/Admin/adminThunks";
 import { selectAdminList } from "../feature/Admin/adminSelector";
 
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import IconButton from "@mui/material/IconButton";
+
 const SIDEBAR_BG = "#7E7E7E";
 const ACTIVE_BG = "#D20000";
 const ACTIVE_HOVER = "#ED3434";
@@ -22,13 +26,13 @@ const useStyles = makeStyles(() => ({
   root: {
     display: "flex",
     minHeight: "100vh",
-    backgroundColor: "#f4f6f8",
+    // backgroundColor: "#f4f6f8",
   },
 
   sidebar: {
-    width: 240,
+    width: 270,
     backgroundColor: SIDEBAR_BG,
-    color: "#fff",
+    // color: "#fff",
     padding: "1.2rem",
     display: "flex",
     flexDirection: "column",
@@ -112,7 +116,7 @@ const useStyles = makeStyles(() => ({
   logoAvatar: {
     width: 36,
     height: 36,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     "& img": {
       width: "70%",
       height: "70%",
@@ -127,11 +131,11 @@ const useStyles = makeStyles(() => ({
   content: {
     flex: 1,
     padding: "2rem",
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
   },
 }));
 
-const AdminLayout = () => {
+const AdminLayout = ({ toggleTheme, mode }) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
@@ -244,6 +248,11 @@ const AdminLayout = () => {
         <Box className={classes.spacer} />
 
         <Divider className={classes.divider} />
+        <Box display="flex" justifyContent="center" mb={1}>
+          <IconButton onClick={toggleTheme} sx={{ color: "#fff" }}>
+            {mode === "dark" ?  <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
+        </Box>
 
         <Box className={classes.logoutBox} onClick={handleLogout}>
           <Avatar className={classes.logoAvatar}>
