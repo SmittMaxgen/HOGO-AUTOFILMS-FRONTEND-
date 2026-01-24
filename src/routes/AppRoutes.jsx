@@ -6,7 +6,12 @@ import Color from "../pages/color/color";
 import Material from "../pages/material/Material";
 import Category from "../pages/category/Category";
 import Product from "../pages/product/Products";
+import Cost from "../pages/cost/Cost";
+import Shipment from "../pages/shipment/Shipment";
+import ShipmentProducts from "../pages/shipmentProduct/ShipmentProduct";
+
 import ProtectedRoute from "./ProtectedRoutes";
+
 import AdminLayout from "../layouts/AdminLayout";
 
 const AppRoutes = ({ toggleTheme, mode }) => {
@@ -27,6 +32,9 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/colour" element={<Color />} />
           <Route path="/materials" element={<Material />} />
           <Route path="/category" element={<Category />} />
+          <Route path="/costs" element={<Cost />} />
+          <Route path="/shipments" element={<Shipment />} />
+          <Route path="/shipments_products" element={<ShipmentProducts />} />
         </Route>
       </Route>
     </Routes>

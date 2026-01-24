@@ -1,62 +1,62 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
-export const getProducts = createAsyncThunk(
-  "product/getProducts",
+export const getCost = createAsyncThunk(
+  "cost/getCost",
   async (payload, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
-        `/products/${payload ? payload : ""}`,
+        `/costs/${payload ? payload : ""}`,
       );
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch products !",
+        error.response?.data?.message || "Failed to fetch costs !",
       );
     }
   },
 );
 
-export const createProducts = createAsyncThunk(
-  "product/createProducts",
+export const createCost = createAsyncThunk(
+  "cost/createCost",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/products/`, payload);
+      const response = await axiosInstance.post(`/costs/`, payload);
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to create product !",
+        error.response?.data?.message || "Failed to create costs !",
       );
     }
   },
 );
 
-export const updateProducts = createAsyncThunk(
-  "product/updateProducts",
+export const updateCost = createAsyncThunk(
+  "cost/updateCost",
   async (payload, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.patch(
-        `/products/${payload.id}/`,
+        `/costs/${payload.id}/`,
         payload.data,
       );
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to create product !",
+        error.response?.data?.message || "Failed to update costs !",
       );
     }
   },
 );
 
-export const deleteProducts = createAsyncThunk(
-  "product/deleteProducts",
+export const deleteCost = createAsyncThunk(
+  "cost/deleteCost",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/products/${payload}/`);
+      const response = await axiosInstance.delete(`/costs/${payload}/`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to create product !",
+        error.response?.data?.message || "Failed to delete cost !",
       );
     }
   },

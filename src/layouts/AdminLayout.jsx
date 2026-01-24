@@ -285,6 +285,9 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
 
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
@@ -449,7 +452,11 @@ const AdminLayout = ({ toggleTheme, mode }) => {
     dispatch(AdminUser());
   }, [dispatch]);
 
-  const isActive = (path) => activePath.startsWith(path);
+  const isActive = (path) => {
+    return (
+      location.pathname === path || location.pathname.startsWith(path + "/")
+    );
+  };
 
   const handleNavigate = (path) => {
     setActivePath(path);
@@ -573,6 +580,34 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <ShoppingBagIcon />
           {!collapsed && "Materials"}
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/costs") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/costs")}
+        >
+          <CurrencyRupeeIcon />
+          {!collapsed && "Costs"}
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${isActive("/shipments") ? classes.activeItem : ""}`}
+          onClick={() => handleNavigate("/shipments")}
+        >
+          <LocalShippingIcon />
+          {!collapsed && "Shipments"}
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/shipments_products") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/shipments_products")}
+        >
+          <Inventory2Icon />
+          {!collapsed && "Shipment Products"}
         </Box>
 
         <Box className={classes.spacer} />

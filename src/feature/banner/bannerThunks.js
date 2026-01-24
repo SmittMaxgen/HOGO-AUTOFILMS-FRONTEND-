@@ -1,12 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
-/**
- * GET banners
- * payload (optional):
- *  - id → fetch single banner
- *  - null → fetch all banners
- */
 export const getBanners = createAsyncThunk(
   "banner/getBanners",
   async (payload, { rejectWithValue }) => {
@@ -40,12 +34,10 @@ export const updateBanner = createAsyncThunk(
   "banner/updateBanner",
   async (payload, { rejectWithValue }) => {
     try {
-      console.log("update banner payload====>>", payload);
-
-      const { id, data } = payload; // data is the FormData
+      const { id, data } = payload;
       const response = await axiosInstance.patch(`/banner/${id}/`, data, {
         headers: {
-          "Content-Type": "multipart/form-data", // important for file uploads
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -62,9 +54,7 @@ export const deleteBanner = createAsyncThunk(
   "banner/deleteBanner",
   async (payload, { rejectWithValue }) => {
     try {
-      console.log("update banner payload====>>", payload);
 
-      // const { id, data } = payload; // data is the FormData
       const response = await axiosInstance.delete(`/banner/${payload}/`);
 
       return response.data;

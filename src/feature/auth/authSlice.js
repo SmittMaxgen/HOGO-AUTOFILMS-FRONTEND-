@@ -35,22 +35,18 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ⏳ Pending
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      // ✅ Success
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.access_token;
         state.isAuthenticated = true;
-        console.log("action:::::", action);
         localStorage.setItem("token", action.payload.access_token);
       })
 
-      // ❌ Error
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

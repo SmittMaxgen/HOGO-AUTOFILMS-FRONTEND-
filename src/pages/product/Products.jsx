@@ -48,6 +48,7 @@ import SecurityIcon from "@mui/icons-material/Security";
 import Loader from "../../components/commonComponents/Loader";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
+import CommonToast from "../../components/commonComponents/Toster";
 
 const Product = () => {
   const dispatch = useDispatch();
@@ -93,7 +94,6 @@ const Product = () => {
     uv_resistance: false,
   });
   const [errors, setErrors] = useState({});
-  console.log("errors", errors);
   const { list: categoryList, loading: categoryLoading } = useSelector(
     (state) => state.category,
   );
@@ -214,7 +214,6 @@ const Product = () => {
     formData.append("scratch_resistant", form.scratch_resistant);
     formData.append("uv_resistance", form.uv_resistance);
 
-    // ✅ Add file if exists
     if (form.thumbnail_image instanceof File) {
       formData.append("thumbnail_image", form.thumbnail_image);
     }
@@ -222,11 +221,15 @@ const Product = () => {
     if (isEditing && editId) {
       dispatch(updateProducts({ id: editId, data: formData }))
         .unwrap()
-        .then(() => dispatch(getProducts()));
+        .then(() => dispatch(getProducts()).unwrap())
+        .then(() => CommonToast("Product updated successfully", "success"))
+        .catch(() => CommonToast("Failed to update product", "error"));
     } else {
       dispatch(createProducts(formData))
         .unwrap()
-        .then(() => dispatch(getProducts()));
+        .then(() => dispatch(getProducts()).unwrap())
+        .then(() => CommonToast("Product created successfully", "success"))
+        .catch(() => CommonToast("Failed to create product", "error"));
     }
 
     handleReset();
@@ -275,8 +278,9 @@ const Product = () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       dispatch(deleteProducts(id))
         .unwrap()
+        .then(() => CommonToast("Product deleted successfully", "success"))
         .then(() => dispatch(getProducts()))
-        .catch(console.error);
+        .catch(() => CommonToast("Failed to create Product ", "error"));
     }
   };
 

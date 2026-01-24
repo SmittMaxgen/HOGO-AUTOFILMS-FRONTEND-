@@ -237,7 +237,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const adminList = useSelector(selectAdminList);
-  console.log("adminList:::", adminList);
   const adminLoading = useSelector(selectAdminLoading);
 
   const cards = [

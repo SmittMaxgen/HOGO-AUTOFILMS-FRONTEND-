@@ -43,6 +43,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import Loader from "../../components/commonComponents/Loader";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
+import CommonToast from "../../components/commonComponents/Toster";
 const Material = () => {
   const dispatch = useDispatch();
 
@@ -89,34 +90,47 @@ const Material = () => {
     setErrors(temp);
     return Object.keys(temp).length === 0;
   };
+
   const handleStatusToggle = (item) => {
     const data = new FormData();
     data.append("status", !item.status);
 
-    dispatch(
-      updateMaterials({
-        id: item.id,
-        data,
-      }),
-    )
+    dispatch(updateMaterials({ id: item.id, data }))
       .unwrap()
       .then(() => {
         dispatch(getMaterials());
+        CommonToast(
+          `Material ${!item.status ? "activated" : "deactivated"} successfully`,
+          "success",
+        );
       })
-      .catch(console.error);
+      .catch(() => CommonToast("Failed to update status", "error"));
   };
+
   const handleSubmit = () => {
     if (!validate()) return;
 
     if (isEditing && editId) {
       dispatch(updateMaterials({ id: editId, data: form }))
         .unwrap()
-        .then(() => dispatch(getMaterials()))
-        .catch(console.error);
+        .then(() => {
+          dispatch(getMaterials());
+          CommonToast("Material updated successfully", "success");
+          handleReset();
+        })
+        .catch(() => CommonToast("Failed to update material", "error"));
     } else {
-      dispatch(createMaterials(form));
+      dispatch(createMaterials(form))
+        .unwrap()
+        .then(() => {
+          dispatch(getMaterials());
+          CommonToast("Material created successfully", "success");
+          handleReset();
+        })
+        .catch(() => CommonToast("Failed to create material", "error"));
     }
   };
+
   const handleView = (material) => {
     setViewMaterial(material);
     setIsViewing(true);
@@ -132,8 +146,11 @@ const Material = () => {
     if (window.confirm("Are you sure you want to delete this material?")) {
       dispatch(deleteMaterials(id))
         .unwrap()
-        .then(() => dispatch(getMaterials()))
-        .catch(console.error);
+        .then(() => {
+          dispatch(getMaterials());
+          CommonToast("Material deleted successfully", "success");
+        })
+        .catch(() => CommonToast("Failed to delete material", "error"));
     }
   };
 

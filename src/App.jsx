@@ -3,6 +3,9 @@ import { useMemo, useState } from "react";
 import AppRoutes from "./routes/AppRoutes";
 import { getTheme } from "./theme/theme";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   const [mode, setMode] = useState(localStorage.getItem("theme") || "light");
 
@@ -17,6 +20,15 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
       <AppRoutes toggleTheme={toggleTheme} mode={mode} />
     </ThemeProvider>
   );

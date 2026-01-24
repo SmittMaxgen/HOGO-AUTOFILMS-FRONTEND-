@@ -42,6 +42,7 @@ import { useParams } from "react-router-dom";
 import Loader from "../../components/commonComponents/Loader";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
+import CommonToast from "../../components/commonComponents/Toster";
 
 const Banner = () => {
   const dispatch = useDispatch();
@@ -114,18 +115,18 @@ const Banner = () => {
     const data = new FormData();
     data.append("status", !item.status);
 
-    dispatch(
-      updateBanner({
-        id: item.id,
-        data,
-      }),
-    )
+    dispatch(updateBanner({ id: item.id, data }))
       .unwrap()
       .then(() => {
         dispatch(getBanners());
+        CommonToast(
+          `Banner ${!item.status ? "activated" : "deactivated"} successfully`,
+          "success",
+        );
       })
-      .catch(console.error);
+      .catch(() => CommonToast("Failed to update status", "error"));
   };
+
   const handleView = (banner) => {
     setViewBanner(banner);
     setIsViewing(true);
@@ -149,10 +150,21 @@ const Banner = () => {
     dispatch(action)
       .unwrap()
       .then(() => {
-        resetForm();
         dispatch(getBanners());
+        resetForm();
+        CommonToast(
+          editId
+            ? "Banner updated successfully"
+            : "Banner created successfully",
+          "success",
+        );
       })
-      .catch(console.error);
+      .catch(() =>
+        CommonToast(
+          editId ? "Failed to update banner" : "Failed to create banner",
+          "error",
+        ),
+      );
   };
 
   const handleEdit = (banner) => {
@@ -173,9 +185,13 @@ const Banner = () => {
 
     dispatch(deleteBanner(id))
       .unwrap()
-      .then(() => dispatch(getBanners()))
-      .catch(console.error);
+      .then(() => {
+        dispatch(getBanners());
+        CommonToast("Banner deleted successfully", "success");
+      })
+      .catch(() => CommonToast("Failed to delete banner", "error"));
   };
+  
   const handleAddBanner = () => {
     resetForm();
     setIsEditing(true);

@@ -44,6 +44,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import Loader from "../../components/commonComponents/Loader";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
+import CommonToast from "../../components/commonComponents/Toster";
 
 const Color = () => {
   const dispatch = useDispatch();
@@ -97,28 +98,42 @@ const Color = () => {
     const data = new FormData();
     data.append("status", !item.status);
 
-    dispatch(
-      updateColor({
-        id: item.id,
-        data,
-      }),
-    )
+    dispatch(updateColor({ id: item.id, data }))
       .unwrap()
       .then(() => {
         dispatch(getColors());
+        CommonToast(
+          `Color ${!item.status ? "activated" : "deactivated"} successfully`,
+          "success",
+        );
       })
-      .catch(console.error);
+      .catch(() => CommonToast("Failed to update status", "error"));
   };
 
   const handleSubmit = () => {
     if (!validate()) return;
 
     if (isEditing && editId) {
-      dispatch(updateColor({ id: editId, data: form }));
+      dispatch(updateColor({ id: editId, data: form }))
+        .unwrap()
+        .then(() => {
+          dispatch(getColors());
+          CommonToast("Color updated successfully", "success"); // ✅ toast
+          handleReset();
+        })
+        .catch(() => CommonToast("Failed to update color", "error"));
     } else {
-      dispatch(createColor(form));
+      dispatch(createColor(form))
+        .unwrap()
+        .then(() => {
+          dispatch(getColors());
+          CommonToast("Color created successfully", "success"); // ✅ toast
+          handleReset();
+        })
+        .catch(() => CommonToast("Failed to create color", "error"));
     }
   };
+
   const handleView = (color) => {
     setViewColor(color);
     setIsViewing(true);
@@ -134,8 +149,11 @@ const Color = () => {
     if (window.confirm("Are you sure you want to delete this color?")) {
       dispatch(deleteColor(id))
         .unwrap()
-        .then(() => dispatch(getColors()))
-        .catch(console.error);
+        .then(() => {
+          dispatch(getColors());
+          CommonToast("Color deleted successfully", "success");
+        })
+        .catch(() => CommonToast("Failed to delete color", "error"));
     }
   };
 

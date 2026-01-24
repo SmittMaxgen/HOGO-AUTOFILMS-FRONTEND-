@@ -1,62 +1,62 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
-export const getProducts = createAsyncThunk(
-  "product/getProducts",
+export const getShipments = createAsyncThunk(
+  "shipment/getShipment",
   async (payload, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
-        `/products/${payload ? payload : ""}`,
+        `/shipments/${payload ? payload : ""}`,
       );
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch products !",
+        error.response?.data?.message || "Failed to fetch shipment !",
       );
     }
   },
 );
 
-export const createProducts = createAsyncThunk(
-  "product/createProducts",
+export const createShipment = createAsyncThunk(
+  "shipment/createShipment",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/products/`, payload);
+      const response = await axiosInstance.post(`/shipments/`, payload);
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to create product !",
+        error.response?.data?.message || "Failed to create shipment !",
       );
     }
   },
 );
 
-export const updateProducts = createAsyncThunk(
-  "product/updateProducts",
+export const updateShipment = createAsyncThunk(
+  "shipment/updateShipment",
   async (payload, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.patch(
-        `/products/${payload.id}/`,
+        `/shipments/${payload.id}/`,
         payload.data,
       );
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to create product !",
+        error.response?.data?.message || "Failed to update shipment !",
       );
     }
   },
 );
 
-export const deleteProducts = createAsyncThunk(
-  "product/deleteProducts",
+export const deleteShipment = createAsyncThunk(
+  "shipment/deleteShipment",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/products/${payload}/`);
+      const response = await axiosInstance.delete(`/shipments/${payload}/`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to create product !",
+        error.response?.data?.message || "Failed to delete shipment !",
       );
     }
   },

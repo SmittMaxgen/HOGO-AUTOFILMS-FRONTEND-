@@ -34,8 +34,6 @@ export const updateCategory = createAsyncThunk(
   "category/updateCategory",
   async (payload, { rejectWithValue }) => {
     try {
-      console.log("update banner payload====>>", payload);
-
       const { id, data } = payload;
       const response = await axiosInstance.patch(`/category/${id}/`, data, {
         headers: {

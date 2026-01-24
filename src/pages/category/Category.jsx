@@ -45,6 +45,7 @@ import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import Loader from "../../components/commonComponents/Loader";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
+import CommonToast from "../../components/commonComponents/Toster";
 
 const Category = () => {
   const dispatch = useDispatch();
@@ -104,22 +105,23 @@ const Category = () => {
     setEditId(null);
     setIsEditing(false);
   };
+
   const handleStatusToggle = (item) => {
     const data = new FormData();
     data.append("status", !item.status);
 
-    dispatch(
-      updateCategory({
-        id: item.id,
-        data,
-      }),
-    )
+    dispatch(updateCategory({ id: item.id, data }))
       .unwrap()
       .then(() => {
         dispatch(getCategory());
+        CommonToast(
+          `Category ${!item.status ? "activated" : "deactivated"} successfully`,
+          "success",
+        );
       })
-      .catch(console.error);
+      .catch(() => CommonToast("Failed to update status", "error"));
   };
+
   const handleSubmit = () => {
     if (!validate()) return;
 
@@ -136,11 +138,23 @@ const Category = () => {
     dispatch(action)
       .unwrap()
       .then(() => {
-        resetForm();
         dispatch(getCategory());
+        resetForm();
+        CommonToast(
+          editId
+            ? "Category updated successfully"
+            : "Category created successfully",
+          "success",
+        );
       })
-      .catch(console.error);
+      .catch(() =>
+        CommonToast(
+          editId ? "Failed to update category" : "Failed to create category",
+          "error",
+        ),
+      );
   };
+
   const handleView = (item) => {
     setViewItem(item);
     setIsViewing(true);
@@ -163,8 +177,11 @@ const Category = () => {
 
     dispatch(deleteCategory(id))
       .unwrap()
-      .then(() => dispatch(getCategory()))
-      .catch(console.error);
+      .then(() => {
+        dispatch(getCategory());
+        CommonToast("Category deleted successfully", "success");
+      })
+      .catch(() => CommonToast("Failed to delete category", "error"));
   };
 
   const handleAddCategory = () => {
@@ -206,21 +223,6 @@ const Category = () => {
                 }}
               />
 
-              {/* <Button
-                variant="outlined"
-                component="label"
-                startIcon={<ImageIcon />}
-              >
-                {editId ? "Change Image" : "Upload Image"}
-                <input
-                  type="file"
-                  hidden
-                  name="image"
-                  accept="image/*"
-                  onChange={handleChange}
-                />
-              </Button> */}
-
               {errors.image && (
                 <Typography color="error">{errors.image}</Typography>
               )}
@@ -230,18 +232,6 @@ const Category = () => {
                   Selected: {form.image.name}
                 </Typography>
               )}
-
-              {/* <TextField
-                label="Display Order"
-                type="number"
-                name="order"
-                value={form.order}
-                onChange={handleChange}
-                fullWidth
-                InputProps={{
-                  startAdornment: <FormatListNumberedIcon sx={{ mr: 1 }} />,
-                }}
-              /> */}
 
               <FormControlLabel
                 control={
@@ -290,13 +280,13 @@ const Category = () => {
                 value={viewItem.name}
                 InputProps={{ readOnly: true }}
               />
-
+              {/* 
               <TextField
                 label="Display Order"
                 fullWidth
                 value={viewItem.order}
                 InputProps={{ readOnly: true }}
-              />
+              /> */}
 
               <FormControlLabel
                 control={<Checkbox checked={viewItem.status} disabled />}

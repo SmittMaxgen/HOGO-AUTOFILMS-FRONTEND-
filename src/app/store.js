@@ -6,6 +6,9 @@ import materialReducer from "../feature/material/materialSlice";
 import bannerReducer from "../feature/banner/bannerSlice";
 import productReducer from "../feature/products/productSlice";
 import categoryReducer from "../feature/category/categorySlice";
+import costReducer from "../feature/cost/costSlice";
+import shipmentReducer from "../feature/shipments/shipmentSlice";
+import shipmentProductReducer from "../feature/shipmentProducts/shipmentProductSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +19,8 @@ export const store = configureStore({
     material: materialReducer,
     product: productReducer,
     category: categoryReducer,
+    cost: costReducer,
+    shipment: shipmentReducer,
+    shipmentProduct: shipmentProductReducer,
   },
 });
