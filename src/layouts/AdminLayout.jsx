@@ -728,6 +728,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           left: collapsed ? 80 : 270,
           width: `calc(100% - ${collapsed ? 80 : 270}px)`,
           background: "#0d0e36",
+          transition: "left 0.3s ease, width 0.3s ease", // <-- Add this line
         }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
