@@ -31,6 +31,9 @@ import {
   Avatar,
   CircularProgress,
   Autocomplete,
+  Switch,
+  Divider,
+  Grid,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -326,7 +329,7 @@ const Product = () => {
   if (isEditing) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <Box width="100%" maxWidth={800}>
+        <Box width="100%">
           <Stack direction="row" alignItems="center" spacing={1} mb={3}>
             <IconButton onClick={handleReset}>
               <ArrowBackIcon />
@@ -671,8 +674,8 @@ const Product = () => {
   }
   if (isViewing && viewItem) {
     return (
-      <Box display="flex" justifyContent="center" mt={4}>
-        <Box width="100%" maxWidth={800}>
+      <Box mt={4}>
+        <Box width="100%">
           <Stack direction="row" alignItems="center" spacing={1} mb={3}>
             <IconButton
               onClick={() => {
@@ -685,173 +688,91 @@ const Product = () => {
             <CommonLabel>View Product</CommonLabel>
           </Stack>
 
-          <Paper sx={{ p: 3, maxHeight: 500, overflow: "auto" }}>
-            <Stack spacing={2}>
-              <TextField
-                label="Product Name"
-                fullWidth
-                value={viewItem.product_name}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="Product Codes"
-                fullWidth
-                value={viewItem.product_codes}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="SKU"
-                fullWidth
-                value={viewItem.sku}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="Category"
-                fullWidth
-                value={viewItem.category_name}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="Material"
-                fullWidth
-                value={viewItem.material_name} // you may need to map material name
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="Color"
-                fullWidth
-                value={viewItem.colour_name} // map color name
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="MRP"
-                fullWidth
-                value={`₹ ${viewItem.mrp}`}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="Application Area"
-                fullWidth
-                value={viewItem.application_area}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="Film Type"
-                fullWidth
-                value={viewItem.film_type}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="Finish"
-                fullWidth
-                value={viewItem.finish}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="Specification"
-                fullWidth
-                value={viewItem.specification}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="Thickness"
-                fullWidth
-                value={viewItem.thickness}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="Warranty"
-                fullWidth
-                value={viewItem.warranty}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                label="Hydrophobic"
-                name="hydrophobic"
-                fullWidth
-                value={viewItem.hydrophobic}
-                onChange={handleChange}
-              />
-
-              <TextField
-                label="Stain Resistant"
-                name="stain_resistant"
-                fullWidth
-                value={viewItem.stain_resistant}
-                onChange={handleChange}
-              />
-
-              <TextField
-                label="Elongation"
-                name="elongation"
-                fullWidth
-                value={viewItem.elongation}
-                onChange={handleChange}
-              />
-
-              <TextField
-                label="Tear Strength"
-                name="tear_strength"
-                fullWidth
-                value={viewItem.tear_strength}
-                onChange={handleChange}
-              />
-
-              <TextField
-                label="Adhesive"
-                name="adhesive"
-                fullWidth
-                value={viewItem.adhesive}
-              />
-
-              <TextField
-                label="Anti Yellowing"
-                name="anti_yellowing"
-                fullWidth
-                value={viewItem.anti_yellowing}
-                onChange={handleChange}
-              />
-
-              <TextField
-                label="Scratch Resistant"
-                name="scratch_resistant"
-                fullWidth
-                value={viewItem.scratch_resistant}
-                onChange={handleChange}
-              />
-              <Stack direction="row" spacing={2}>
-                <FormControlLabel
-                  control={<Checkbox checked={viewItem.status} disabled />}
-                  label="Active"
-                />
-                {/* <FormControlLabel
-                  control={<Checkbox checked={viewItem.adhesive} disabled />}
-                  label="Adhesive"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox checked={viewItem.anti_yellowing} disabled />
-                  }
-                  label="Anti Yellowing"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox checked={viewItem.scratch_resistant} disabled />
-                  }
-                  label="Scratch Resistant"
-                /> */}
-              </Stack>
-
+          <Paper sx={{ p: 3 }}>
+            <Stack spacing={2} alignItems="center">
+              {/* Image */}
               {viewItem.thumbnail_image && (
-                <Box mt={2}>
-                  <Typography variant="subtitle2">Thumbnail</Typography>
-                  <Avatar
-                    src={`https://hogofilm.pythonanywhere.com/${viewItem.thumbnail_image}`}
-                    variant="rounded"
-                    sx={{ width: 120, height: 120, mt: 1 }}
-                  />
-                </Box>
+                <Avatar
+                  src={`https://hogofilm.pythonanywhere.com/${viewItem.thumbnail_image}`}
+                  variant="rounded"
+                  sx={{ width: 160, height: 160 }}
+                />
               )}
+
+              {/* Name & basic info */}
+              <Typography variant="h6" fontWeight={600}>
+                {viewItem.product_name}
+              </Typography>
+
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                textAlign="center"
+              >
+                SKU: {viewItem.sku} | {viewItem.category_name} |{" "}
+                {viewItem.material_name} | {viewItem.colour_name}
+              </Typography>
+
+              <Divider sx={{ width: "100%", my: 1 }} />
+
+              {/* Details row */}
+              <Grid container spacing={1} textAlign="center">
+                <Grid item xs>
+                  <Typography variant="subtitle2">MRP</Typography>
+                  <Typography>₹ {viewItem.mrp}</Typography>
+                </Grid>
+                <Grid item xs>
+                  <Typography variant="subtitle2">Application Area</Typography>
+                  <Typography>{viewItem.application_area}</Typography>
+                </Grid>
+                <Grid item xs>
+                  <Typography variant="subtitle2">Film Type</Typography>
+                  <Typography>{viewItem.film_type}</Typography>
+                </Grid>
+                <Grid item xs>
+                  <Typography variant="subtitle2">Finish</Typography>
+                  <Typography>{viewItem.finish}</Typography>
+                </Grid>
+                <Grid item xs>
+                  <Typography variant="subtitle2">Specification</Typography>
+                  <Typography>{viewItem.specification}</Typography>
+                </Grid>
+                <Grid item xs>
+                  <Typography variant="subtitle2">Thickness</Typography>
+                  <Typography>{viewItem.thickness}</Typography>
+                </Grid>
+                <Grid item xs>
+                  <Typography variant="subtitle2">Warranty</Typography>
+                  <Typography>{viewItem.warranty}</Typography>
+                </Grid>
+                <Grid item xs>
+                  <Typography variant="subtitle2">Status</Typography>
+                  <Chip
+                    label={viewItem.status ? "Active" : "Inactive"}
+                    color={viewItem.status ? "success" : "default"}
+                    size="small"
+                  />
+                </Grid>
+              </Grid>
+
+              <Divider sx={{ width: "100%", my: 1 }} />
+
+              {/* Properties row */}
+              <Stack direction="row" flexWrap="wrap" spacing={2}>
+                <Typography>Hydrophobic: {viewItem.hydrophobic}</Typography>
+                <Typography>
+                  Stain Resistant: {viewItem.stain_resistant}
+                </Typography>
+                <Typography>Elongation: {viewItem.elongation}</Typography>
+                <Typography>Tear Strength: {viewItem.tear_strength}</Typography>
+                <Typography>Adhesive: {String(viewItem.adhesive)}</Typography>
+                <Typography>
+                  Anti Yellowing: {String(viewItem.anti_yellowing)}
+                </Typography>
+                <Typography>
+                  Scratch Resistant: {String(viewItem.scratch_resistant)}
+                </Typography>
+              </Stack>
             </Stack>
           </Paper>
         </Box>
@@ -952,14 +873,29 @@ const Product = () => {
                 <TableCell>{p?.material_name}</TableCell>
                 <TableCell>₹ {p.mrp}</TableCell>
                 <TableCell>
-                  <Chip
-                    label={p.status ? "Active" : "Inactive"}
-                    size="small"
-                    color={p.status ? "success" : "default"}
-                    clickable
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => handleStatusToggle(p)}
-                  />
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Switch
+                      checked={p.status} // true = On, false = Off
+                      onChange={() => handleStatusToggle(p)}
+                      color="success"
+                      size="small"
+                      sx={{
+                        "& .MuiSwitch-switchBase.Mui-checked": {
+                          color: "success.main",
+                        },
+                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                          {
+                            backgroundColor: "success.light",
+                          },
+                      }}
+                    />
+                    <Typography
+                      variant="body2"
+                      color={p.status ? "success.main" : "text.secondary"}
+                    >
+                      {p.status ? "Active" : "Inactive"}
+                    </Typography>
+                  </Box>
                 </TableCell>
                 <TableCell>
                   <IconButton size="small" onClick={() => handleView(p)}>

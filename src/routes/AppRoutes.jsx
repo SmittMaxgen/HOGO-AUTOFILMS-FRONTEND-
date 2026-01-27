@@ -9,6 +9,8 @@ import Product from "../pages/product/Products";
 import Cost from "../pages/cost/Cost";
 import Shipment from "../pages/shipment/Shipment";
 import ShipmentProducts from "../pages/shipmentProduct/ShipmentProduct";
+import EditProfile from "../pages/auth/EditProfile";
+import AccountSettings from "../pages/auth/AccountSettings";
 
 import ProtectedRoute from "./ProtectedRoutes";
 
@@ -35,6 +37,8 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/costs" element={<Cost />} />
           <Route path="/shipments" element={<Shipment />} />
           <Route path="/shipments_products" element={<ShipmentProducts />} />
+          <Route path="/profile" element={<EditProfile />} />
+          <Route path="/account_settings" element={<AccountSettings />} />
         </Route>
       </Route>
     </Routes>

@@ -33,12 +33,13 @@ const categorySlice = createSlice({
       })
       .addCase(getCategory.fulfilled, (state, action) => {
         state.loading = false;
+        state.list = action.payload;
 
-        if (action.meta.arg) {
-          state.single = action.payload;
-        } else {
-          state.list = action.payload;
-        }
+        // if (action.meta.arg) {
+        //   state.single = action.payload;
+        // } else {
+        //   state.list = action.payload;
+        // }
       })
       .addCase(getCategory.rejected, (state, action) => {
         state.loading = false;

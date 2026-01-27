@@ -215,7 +215,7 @@ const Cost = () => {
   if (isEditing) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <Box width="100%" maxWidth={600}>
+        <Box width="100%">
           <Stack direction="row" alignItems="center" spacing={1} mb={3}>
             <IconButton onClick={handleReset}>
               <ArrowBackIcon />
@@ -363,7 +363,7 @@ const Cost = () => {
   if (isViewing && viewCost) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <Box width="100%" maxWidth={600}>
+        <Box width="100%">
           <Stack direction="row" alignItems="center" spacing={1} mb={3}>
             <IconButton
               onClick={() => {
@@ -459,7 +459,30 @@ const Cost = () => {
                   <Chip
                     label={item.capitalized ? "Yes" : "No"}
                     size="small"
-                    color={item.capitalized ? "success" : "default"}
+                    clickable
+                    sx={{
+                      fontWeight: 600,
+                      borderRadius: "12px",
+                      paddingX: 1.5,
+                      paddingY: 0.5,
+                      color: item.capitalized
+                        ? "success.main"
+                        : "text.secondary",
+                      backgroundColor: item.capitalized
+                        ? "success.lighter"
+                        : "grey.100",
+                      border: item.capitalized ? "1px solid" : "1px solid",
+                      borderColor: item.capitalized
+                        ? "success.main"
+                        : "grey.300",
+                      textTransform: "capitalize",
+                      cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: item.capitalized
+                          ? "success.light"
+                          : "grey.200",
+                      },
+                    }}
                   />
                 </TableCell>
                 <TableCell>

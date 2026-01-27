@@ -187,7 +187,7 @@ const Shipment = () => {
   if (isEditing) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <Box width="100%" maxWidth={700}>
+        <Box width="100%">
           <Stack direction="row" alignItems="center" spacing={1} mb={3}>
             <IconButton onClick={handleReset}>
               <ArrowBackIcon />
@@ -293,7 +293,7 @@ const Shipment = () => {
   if (isViewing && viewShipment) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <Box width="100%" maxWidth={700}>
+        <Box width="100%">
           <Stack direction="row" alignItems="center" spacing={1} mb={3}>
             <IconButton
               onClick={() => {

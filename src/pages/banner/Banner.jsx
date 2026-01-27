@@ -31,6 +31,7 @@ import {
   FormControlLabel,
   Checkbox,
   CircularProgress,
+  Switch,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -191,7 +192,7 @@ const Banner = () => {
       })
       .catch(() => CommonToast("Failed to delete banner", "error"));
   };
-  
+
   const handleAddBanner = () => {
     resetForm();
     setIsEditing(true);
@@ -206,7 +207,7 @@ const Banner = () => {
   if (isEditing) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <Box width="100%" maxWidth={700}>
+        <Box width="100%">
           {/* Header */}
           <Stack direction="row" alignItems="center" spacing={1} mb={3}>
             <IconButton onClick={resetForm}>
@@ -304,7 +305,7 @@ const Banner = () => {
   if (isViewing && viewBanner) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <Box width="100%" maxWidth={700}>
+        <Box width="100%">
           <Stack direction="row" alignItems="center" spacing={1} mb={3}>
             <IconButton
               onClick={() => {
@@ -450,14 +451,29 @@ const Banner = () => {
                 <TableCell>{item.title}</TableCell>
                 <TableCell>{item.CTA_text}</TableCell>
                 <TableCell>
-                  <Chip
-                    label={item.status ? "Active" : "Inactive"}
-                    size="small"
-                    color={item.status ? "success" : "default"}
-                    clickable
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => handleStatusToggle(item)}
-                  />
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Switch
+                      checked={item.status} 
+                      onChange={() => handleStatusToggle(item)}
+                      color="success"
+                      size="small"
+                      sx={{
+                        "& .MuiSwitch-switchBase.Mui-checked": {
+                          color: "success.main",
+                        },
+                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                          {
+                            backgroundColor: "success.light",
+                          },
+                      }}
+                    />
+                    <Typography
+                      variant="body2"
+                      color={item.status ? "success.main" : "text.secondary"}
+                    >
+                      {item.status ? "Active" : "Inactive"}
+                    </Typography>
+                  </Box>
                 </TableCell>
                 <TableCell align="center">
                   {/* <IconButton color="primary">

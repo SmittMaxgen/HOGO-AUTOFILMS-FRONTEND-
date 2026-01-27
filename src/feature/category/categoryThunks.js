@@ -3,19 +3,20 @@ import axiosInstance from "../../api/axiosInstance";
 
 export const getCategory = createAsyncThunk(
   "category/getCategory",
-  async (payload, { rejectWithValue }) => {
+  async (searchQuery, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        `/category/${payload ? payload : ""}`,
-      );
+      const response = await axiosInstance.get(`/category/`, {
+        params: searchQuery ? { search: searchQuery } : {},
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch categories !",
+        error.response?.data?.message || "Failed to fetch categories!",
       );
     }
   },
 );
+
 export const createCategory = createAsyncThunk(
   "category/createCategory",
   async (payload, { rejectWithValue }) => {

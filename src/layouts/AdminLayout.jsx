@@ -275,7 +275,21 @@ import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../feature/auth/authSlice";
-import { Box, Typography, Avatar, Divider, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Avatar,
+  Divider,
+  IconButton,
+  AppBar,
+  Toolbar,
+  InputBase,
+  Badge,
+  Menu,
+  MenuItem,
+  ListItem,
+  ListItemButton,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -288,31 +302,44 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
-
-import DarkModeIcon from "@mui/icons-material/DarkMode";
+import SearchIcon from "@mui/icons-material/Search";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+// import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+// import DarkModeIcon from "@mui/icons-material/DarkMode";
+// import LightModeIcon from "@mui/icons-material/LightMode";
 
 import HogoLogo from "../../public/hogoAFM.png";
 import { AdminUser } from "../feature/Admin/adminThunks";
 import { selectAdminList } from "../feature/Admin/adminSelector";
 
-const SIDEBAR_BG = "#7E7E7E";
+const SIDEBAR_BG = "#050622";
 const ACTIVE_BG = "#D20000";
 const ACTIVE_HOVER = "#ED3434";
 
 const useStyles = makeStyles(() => ({
   root: {
+    // position: "fixed",
     display: "flex",
     minHeight: "100vh",
   },
-
   sidebar: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    height: "100vh",
     backgroundColor: SIDEBAR_BG,
     padding: "1.2rem",
     display: "flex",
     flexDirection: "column",
     transition: "width 0.3s ease",
     boxShadow: "4px 0 15px rgba(0, 0, 0, 0.2)",
+    zIndex: 1200,
   },
 
   sidebarExpanded: {
@@ -378,6 +405,7 @@ const useStyles = makeStyles(() => ({
     gap: 12,
     padding: "10px 14px",
     borderRadius: 10,
+    color: "whitesmoke",
     cursor: "pointer",
     fontSize: "0.95rem",
     fontWeight: 500,
@@ -426,7 +454,54 @@ const useStyles = makeStyles(() => ({
 
   content: {
     flex: 1,
+    marginLeft: 270, // expanded sidebar width
     padding: "2rem",
+    height: "100vh",
+    overflowY: "auto",
+    transition: "margin-left 0.3s ease",
+  },
+  header: {
+    height: 64,
+    backgroundColor: "#ffffff",
+    color: "#111",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+    zIndex: 1100,
+  },
+
+  searchBox: {
+    position: "relative",
+    left: "12px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#f1f3f4",
+    padding: "6px 12px",
+    borderRadius: 10,
+    width: 360,
+    gap: 8,
+  },
+  headerLeft: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  headerRight: {
+    color: "white",
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: "0.9rem",
+  },
+  suggestionBox: {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    right: 0,
+    backgroundColor: "#fff",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    zIndex: 999,
+    maxHeight: 200,
+    overflowY: "auto",
   },
 }));
 
@@ -439,19 +514,45 @@ const AdminLayout = ({ toggleTheme, mode }) => {
   const adminList = useSelector(selectAdminList);
   const [collapsed, setCollapsed] = useState(false);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+
   const [activePath, setActivePath] = useState(
     localStorage.getItem("activeTab") || location.pathname,
   );
+
+  const [query, setQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const pages = [
+    { label: "Dashboard", path: "/dashboard" },
+    { label: "Products", path: "/products" },
+    { label: "Category", path: "/category" },
+    { label: "Banner", path: "/banners" },
+    { label: "Material", path: "/materials" },
+    { label: "Cost", path: "/costs" },
+    { label: "Shipment", path: "/shipments" },
+    { label: "Shipment Products", path: "/shipments_products" },
+  ];
+  // Filter pages by search query
+  const filteredPages = pages.filter((p) =>
+    p.label.toLowerCase().includes(query.toLowerCase()),
+  );
+
+  // const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClose = () => setAnchorEl(null);
+
+  useEffect(() => {
+    dispatch(AdminUser());
+  }, [dispatch]);
 
   useEffect(() => {
     setActivePath(location.pathname);
     localStorage.setItem("activeTab", location.pathname);
   }, [location.pathname]);
 
-  useEffect(() => {
-    dispatch(AdminUser());
-  }, [dispatch]);
-
+  useEffect(() => {}, []);
   const isActive = (path) => {
     return (
       location.pathname === path || location.pathname.startsWith(path + "/")
@@ -463,11 +564,17 @@ const AdminLayout = ({ toggleTheme, mode }) => {
     localStorage.setItem("activeTab", path);
     navigate(path);
   };
+  const handleSelect = (e, path) => {
+    e.stopPropagation();
+    navigate(path);
+    setQuery("");
+    setShowSuggestions(false);
+  };
 
   const handleLogout = () => {
-    navigate("/");
     localStorage.removeItem("activeTab");
     dispatch(logout());
+    handleNavigate("/login");
   };
 
   return (
@@ -478,27 +585,6 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           collapsed ? classes.sidebarCollapsed : classes.sidebarExpanded
         }`}
       >
-        {/* TOGGLE BUTTON (TOP) */}
-        <IconButton
-          onClick={() => setCollapsed(!collapsed)}
-          sx={{
-            position: "absolute",
-            width: 36,
-            height: 36,
-            mb: 2,
-            alignSelf: collapsed ? "center" : "flex-end",
-            color: "#fff",
-            borderRadius: "50%",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-            transition: "all 0.25s ease",
-            "&:hover": {
-              backgroundColor: "#ED3434",
-              transform: "scale(1.05)",
-            },
-          }}
-        >
-          {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-        </IconButton>
         {/* <Divider className={classes.divider} /> */}
 
         {/* PROFILE */}
@@ -615,23 +701,213 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         {/* <Divider className={classes.divider} /> */}
 
         {/* THEME TOGGLE */}
-        <Box display="flex" justifyContent="center">
-          <IconButton onClick={toggleTheme} sx={{ color: "#fff" }}>
+        {/* <Box display="flex" justifyContent="center"> */}
+        {/* <IconButton onClick={toggleTheme} sx={{ color: "#fff" }}>
             {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton>
-        </Box>
+          </IconButton> */}
+        {/* </Box> */}
 
         {/* LOGOUT */}
-        <Box className={classes.logoutBox} onClick={handleLogout}>
+        {/* <Box className={classes.sidebarItem} onClick={handleLogout}>
           <Avatar className={classes.logoAvatar}>
             <img src={HogoLogo} alt="Hogo Logo" />
           </Avatar>
           {!collapsed && <Typography>Logout</Typography>}
-        </Box>
+        </Box> */}
       </Box>
 
       {/* CONTENT */}
-      <Box className={classes.content}>
+      {/* <Box className={classes.content}>
+        <Outlet />
+      </Box> */}
+      {/* HEADER */}
+      <AppBar
+        position="fixed"
+        // className={classes.header}
+        sx={{
+          left: collapsed ? 80 : 270,
+          width: `calc(100% - ${collapsed ? 80 : 270}px)`,
+          background: "#0d0e36",
+        }}
+      >
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          {/* SEARCH */}
+          <Box className={classes.headerLeft}>
+            <IconButton
+              onClick={() => setCollapsed(!collapsed)}
+              sx={{
+                // position: "absolute",
+                width: 36,
+                height: 36,
+                mb: 0.5,
+                alignSelf: collapsed ? "center" : "flex-end",
+                color: "#fff",
+                borderRadius: "50%",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+                transition: "all 0.25s ease",
+                "&:hover": {
+                  backgroundColor: "#ED3434",
+                  transform: "scale(1.05)",
+                },
+              }}
+            >
+              {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            </IconButton>
+            <Box className={classes.searchBox}>
+              <SearchIcon fontSize="small" style={{ color: "grey" }} />
+              <InputBase
+                style={{ color: "grey", height: "2px" }}
+                placeholder="Search or type …"
+                className={classes.searchInput}
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                // onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              />
+              {/* <Typography variant="caption">⌘K</Typography> */}
+
+              {/* Dropdown suggestions */}
+              {showSuggestions && query && (
+                <Box className={classes.suggestionBox}>
+                  {filteredPages.length > 0 ? (
+                    filteredPages.map((p) => (
+                      <ListItem key={p.path} disablePadding>
+                        <ListItemButton
+                          style={{ color: "grey" }}
+                          // onClick={(e) => handleSelect(e, p.path)}
+                          onClick={(e) => handleSelect(e, p.path)}
+                        >
+                          <p style={{ color: "grey" }}>{p.label}</p>
+                        </ListItemButton>
+                      </ListItem>
+                    ))
+                  ) : (
+                    <ListItem>
+                      <Typography
+                        style={{ color: "grey" }}
+                        variant="body2"
+                        sx={{ p: 1 }}
+                      >
+                        No results found
+                      </Typography>
+                    </ListItem>
+                  )}
+                </Box>
+              )}
+            </Box>
+          </Box>
+
+          {/* RIGHT ACTIONS */}
+          {/* <Box display="flex" alignItems="center" gap={1}>
+            <IconButton sx={{ color: "white" }} onClick={toggleTheme}>
+              {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+            </IconButton>
+
+            <IconButton sx={{ color: "white" }}>
+              <Badge badgeContent={3} color="error">
+                <NotificationsNoneIcon />
+              </Badge>
+            </IconButton>
+
+            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+              <Avatar sx={{ width: 32, height: 32 }}>
+                {adminList?.name?.[0] || "A"}
+              </Avatar>
+            </IconButton>
+
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={() => setAnchorEl(null)}
+            >
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+          </Box> */}
+          <Box display="flex" alignItems="center" gap={1}>
+            {/* Theme toggle */}
+            <IconButton style={{ color: "white" }} onClick={toggleTheme}>
+              {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+            </IconButton>
+
+            {/* Notifications */}
+            <IconButton style={{ color: "white" }}>
+              <Badge badgeContent={3} color="error">
+                <NotificationsNoneIcon />
+              </Badge>
+            </IconButton>
+
+            {/* Avatar */}
+            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+              <Avatar src={adminList?.avatar} sx={{ width: 34, height: 34 }}>
+                {adminList?.name?.[0] || "A"}
+              </Avatar>
+            </IconButton>
+
+            {/* Dropdown Menu */}
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              onClick={handleClose}
+              PaperProps={{
+                sx: {
+                  width: 240,
+                  borderRadius: 3,
+                  mt: 1.5,
+                  p: 1,
+                },
+              }}
+              transformOrigin={{ horizontal: "right", vertical: "top" }}
+              anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            >
+              {/* User info */}
+              <Box px={2} py={1}>
+                <Typography fontWeight={600}>
+                  {adminList?.name || "Admin User"}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {adminList?.email || "admin@example.com"}
+                </Typography>
+              </Box>
+
+              <Divider sx={{ my: 1 }} />
+
+              <MenuItem onClick={() => handleNavigate("/profile")}>
+                <EditOutlinedIcon fontSize="small" sx={{ mr: 1 }} />
+                Edit profile
+              </MenuItem>
+
+              <MenuItem onClick={() => handleNavigate("/account_settings")}>
+                <SettingsOutlinedIcon fontSize="small" sx={{ mr: 1 }} />
+                Account settings
+              </MenuItem>
+
+              <MenuItem>
+                <HelpOutlineIcon fontSize="small" sx={{ mr: 1 }} />
+                Support
+              </MenuItem>
+
+              <Divider sx={{ my: 1 }} />
+
+              <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
+                <LogoutOutlinedIcon fontSize="small" sx={{ mr: 1 }} />
+                Sign out
+              </MenuItem>
+            </Menu>
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      <Box
+        className={classes.content}
+        sx={{
+          marginLeft: collapsed ? "80px" : "270px",
+          marginTop: "64px",
+        }}
+      >
         <Outlet />
       </Box>
     </Box>

@@ -2,9 +2,10 @@ import { ThemeProvider, CssBaseline } from "@mui/material";
 import { useMemo, useState } from "react";
 import AppRoutes from "./routes/AppRoutes";
 import { getTheme } from "./theme/theme";
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+import { Inspector } from "react-dev-inspector";
 
 function App() {
   const [mode, setMode] = useState(localStorage.getItem("theme") || "light");
@@ -29,7 +30,9 @@ function App() {
         draggable
         theme="colored"
       />
-      <AppRoutes toggleTheme={toggleTheme} mode={mode} />
+      <Inspector>
+        <AppRoutes toggleTheme={toggleTheme} mode={mode} />
+      </Inspector>
     </ThemeProvider>
   );
 }

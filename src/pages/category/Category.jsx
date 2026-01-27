@@ -32,6 +32,7 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
+  Switch,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -42,12 +43,26 @@ import CategoryIcon from "@mui/icons-material/Category";
 import ImageIcon from "@mui/icons-material/Image";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+
 import Loader from "../../components/commonComponents/Loader";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
 import CommonToast from "../../components/commonComponents/Toster";
+import CommonSearchField from "../../components/commonComponents/CommonSearchField";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles(() => ({
+  catHeadRight: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  CommonSearchBar: {
+    margin: "10px",
+  },
+}));
 
 const Category = () => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const categories = useSelector(selectCategoryList);
   const loading = useSelector(selectCategoryLoading);
@@ -70,9 +85,23 @@ const Category = () => {
 
   const [errors, setErrors] = useState({});
 
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     dispatch(getCategory());
   }, [dispatch]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchQuery !== "") {
+        console.log("searchQuery", searchQuery);
+        dispatch(getCategory(searchQuery));
+      } else {
+        dispatch(getCategory(""));
+      }
+    }, 500); 
+
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -113,7 +142,7 @@ const Category = () => {
     dispatch(updateCategory({ id: item.id, data }))
       .unwrap()
       .then(() => {
-        dispatch(getCategory());
+        dispatch(getCategory(searchQuery));
         CommonToast(
           `Category ${!item.status ? "activated" : "deactivated"} successfully`,
           "success",
@@ -138,7 +167,7 @@ const Category = () => {
     dispatch(action)
       .unwrap()
       .then(() => {
-        dispatch(getCategory());
+        dispatch(getCategory(searchQuery));
         resetForm();
         CommonToast(
           editId
@@ -178,7 +207,7 @@ const Category = () => {
     dispatch(deleteCategory(id))
       .unwrap()
       .then(() => {
-        dispatch(getCategory());
+        dispatch(getCategory(searchQuery));
         CommonToast("Category deleted successfully", "success");
       })
       .catch(() => CommonToast("Failed to delete category", "error"));
@@ -198,7 +227,7 @@ const Category = () => {
   if (isEditing) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <Box width="100%" maxWidth={600}>
+        <Box width="100%">
           <Stack direction="row" alignItems="center" spacing={1} mb={3}>
             <IconButton onClick={resetForm}>
               <ArrowBackIcon />
@@ -259,7 +288,7 @@ const Category = () => {
   if (isViewing && viewItem) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <Box width="100%" maxWidth={600}>
+        <Box width="100%">
           <Stack direction="row" alignItems="center" spacing={1} mb={3}>
             <IconButton
               onClick={() => {
@@ -325,16 +354,26 @@ const Category = () => {
         >
           Categories
         </Typography>
-        <CommonButton
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleAddCategory()}
-        >
-          Add Category
-        </CommonButton>
+        <Box className={classes.catHeadRight}>
+          <CommonButton
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => handleAddCategory()}
+          >
+            Add Category
+          </CommonButton>
+        </Box>
       </Stack>
 
       <TableContainer component={Paper}>
+        <Box sx={{ display: "flex" }}>
+          <CommonSearchField
+            className={classes.CommonSearchBar}
+            value={searchQuery}
+            placeholder="Search by name.."
+            onChange={(value) => setSearchQuery(value)}
+          />
+        </Box>
         <Table>
           <TableHead>
             <TableRow>
@@ -355,7 +394,9 @@ const Category = () => {
           <TableBody>
             {paginatedData?.map((item, index) => (
               <TableRow key={item.id} hover>
-                <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>
+                  {(page - 1) * rowsPerPage + index + 1}
+                </TableCell>
 
                 {/* <TableCell>
                   <Avatar
@@ -370,14 +411,29 @@ const Category = () => {
                 </TableCell>
 
                 <TableCell>
-                  <Chip
-                    label={item.status ? "Active" : "Inactive"}
-                    size="small"
-                    color={item.status ? "success" : "default"}
-                    clickable
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => handleStatusToggle(item)}
-                  />
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Switch
+                      checked={item.status} // true = On, false = Off
+                      onChange={() => handleStatusToggle(item)}
+                      color="success"
+                      size="small"
+                      sx={{
+                        "& .MuiSwitch-switchBase.Mui-checked": {
+                          color: "success.main",
+                        },
+                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                          {
+                            backgroundColor: "success.light",
+                          },
+                      }}
+                    />
+                    <Typography
+                      variant="body2"
+                      color={item.status ? "success.main" : "text.secondary"}
+                    >
+                      {item.status ? "Active" : "Inactive"}
+                    </Typography>
+                  </Box>
                 </TableCell>
 
                 <TableCell>
