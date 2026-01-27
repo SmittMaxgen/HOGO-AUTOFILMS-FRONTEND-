@@ -398,12 +398,14 @@ const Banner = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Sr.No</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>CTA Text</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Sr.No</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Image</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Title</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>CTA Text</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: 700 }} align="center">
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
 
@@ -453,7 +455,7 @@ const Banner = () => {
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={1}>
                     <Switch
-                      checked={item.status} 
+                      checked={item.status}
                       onChange={() => handleStatusToggle(item)}
                       color="success"
                       size="small"

@@ -98,7 +98,7 @@ const Category = () => {
       } else {
         dispatch(getCategory(""));
       }
-    }, 500); 
+    }, 500);
 
     return () => clearTimeout(handler);
   }, [searchQuery]);
@@ -407,7 +407,7 @@ const Category = () => {
                 </TableCell> */}
 
                 <TableCell>
-                  <Typography fontWeight={600}>{item.name}</Typography>
+                  <Typography>{item.name}</Typography>
                 </TableCell>
 
                 <TableCell>

@@ -308,7 +308,7 @@ const Material = () => {
               <TableRow key={item.id} hover>
                 <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                 <TableCell>
-                  <Typography fontWeight={600}>{item.title}</Typography>
+                  <Typography>{item.title}</Typography>
                 </TableCell>
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={1}>

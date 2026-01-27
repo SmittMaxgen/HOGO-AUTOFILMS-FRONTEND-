@@ -311,7 +311,7 @@ const Color = () => {
               <TableRow key={item.id} hover>
                 <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                 <TableCell>
-                  <Typography fontWeight={600}>{item.colour_name}</Typography>
+                  <Typography>{item.colour_name}</Typography>
                 </TableCell>
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={1}>
