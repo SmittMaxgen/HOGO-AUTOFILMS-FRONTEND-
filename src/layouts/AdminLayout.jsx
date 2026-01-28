@@ -880,11 +880,11 @@ const AdminLayout = ({ toggleTheme, mode }) => {
                 <EditOutlinedIcon fontSize="small" sx={{ mr: 1 }} />
                 Edit profile
               </MenuItem>
-
+              {/* 
               <MenuItem onClick={() => handleNavigate("/account_settings")}>
                 <SettingsOutlinedIcon fontSize="small" sx={{ mr: 1 }} />
                 Account settings
-              </MenuItem>
+              </MenuItem> */}
 
               <MenuItem>
                 <HelpOutlineIcon fontSize="small" sx={{ mr: 1 }} />
