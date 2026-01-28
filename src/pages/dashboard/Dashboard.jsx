@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Box, Typography, Grid, Paper } from "@mui/material";
 import { makeStyles } from "@mui/styles";
@@ -25,7 +24,7 @@ const useStyles = makeStyles(() => ({
   statCard: {
     height: 140,
     borderRadius: 18,
-    backgroundColor: "#fff",
+    backgroundColor: "#fff !important",
     border: "1px solid #E6EAF2",
     padding: "18px 20px",
     display: "flex",
