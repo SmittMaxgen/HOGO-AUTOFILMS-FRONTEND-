@@ -337,7 +337,7 @@ const Product = () => {
             <CommonLabel>{editId ? "Edit Product" : "Add Product"}</CommonLabel>
           </Stack>
 
-          <Paper sx={{ p: 3, maxHeight: 500, overflow: "auto" }}>
+          <Paper sx={{ p: 3 }}>
             <Stack spacing={2}>
               <TextField
                 label="Product Name"
