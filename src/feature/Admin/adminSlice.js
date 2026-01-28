@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { AdminUser } from "./adminThunks";
+import { AdminUser, UpdateAdminUser } from "./adminThunks";
 
 const initialState = {
-  list: [],        // admin users data
-  loading: false,  // pending state
-  error: null,     // error message
+  list: [],
+  loading: false,
+  updateLoading: false,
+  updateError: null,
+  error: null,
 };
 
 const adminSlice = createSlice({
@@ -29,6 +31,25 @@ const adminSlice = createSlice({
       .addCase(AdminUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      .addCase(UpdateAdminUser.fulfilled, (state, action) => {
+        state.updateLoading = false;
+
+        const updatedAdmin = action.payload?.data;
+        if (!updatedAdmin) return;
+
+        const index = state.list.findIndex(
+          (item) => item.id === updatedAdmin.id,
+        );
+
+        if (index !== -1) {
+          state.list[index] = updatedAdmin;
+        }
+      })
+      .addCase(UpdateAdminUser.rejected, (state, action) => {
+        state.updateLoading = false;
+        state.updateError = action.payload;
       });
   },
 });

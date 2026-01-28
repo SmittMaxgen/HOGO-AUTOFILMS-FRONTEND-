@@ -14,3 +14,19 @@ export const AdminUser = createAsyncThunk(
     }
   },
 );
+
+export const UpdateAdminUser = createAsyncThunk(
+  "admin/updateAdminUser",
+  async (payload, { rejectWithValue }) => {
+    const { id, data } = payload;
+
+    try {
+      const response = await axiosInstance.patch(`/admin_data/${id}/`, data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "PATCH : Admin data updation failed !",
+      );
+    }
+  },
+);

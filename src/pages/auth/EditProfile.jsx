@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Grid,
@@ -8,46 +8,115 @@ import {
   Button,
   IconButton,
   Divider,
+  TextField,
+  Stack,
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import XIcon from "@mui/icons-material/X";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import InstagramIcon from "@mui/icons-material/Instagram";
-import HogoAFM from "../../../public/hogoAFM.png";
-import { useSelector } from "react-redux";
 
+import { useDispatch, useSelector } from "react-redux";
 import { selectAdminList } from "../../feature/Admin/adminSelector";
+import { UpdateAdminUser, AdminUser } from "../../feature/Admin/adminThunks";
+
+import HogoAFM from "../../../public/hogoAFM.png";
+import CommonToast from "../../components/commonComponents/Toster";
 
 const EditProfile = () => {
-
+  const dispatch = useDispatch();
   const adminList = useSelector(selectAdminList);
 
-  const profile = {
-    name: adminList?.name || "Admin User",
-    role: "Administrator",
-    location: "N/A",
-    email: adminList?.email || "N/A",
-    phone: "N/A",
-    country: "N/A",
-    city: "N/A",
-    postal: "N/A",
-    taxId: "N/A",
-    avatar: HogoAFM,
+  const [isEditing, setIsEditing] = useState(false);
+  const [apiCall, setApiCall] = useState(false);
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    mobile: "",
+  });
+
+  useEffect(() => {
+    if (adminList) {
+      setForm({
+        name: adminList.name || "",
+        email: adminList.email || "",
+        mobile: adminList.mobile || "",
+      });
+    }
+  }, [adminList]);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
+
+  const handleSave = () => {
+    dispatch(
+      UpdateAdminUser({
+        id: adminList.id,
+        data: form,
+      }),
+    )
+      .unwrap()
+      .then(() => {
+        console.log("comes????");
+        setIsEditing(false);
+        CommonToast("Profile updated successfully", "success");
+        dispatch(AdminUser());
+      })
+      .catch((err) => {
+        CommonToast(err || "Failed to update profile", "error");
+      });
+    setApiCall(true);
+  };
+
+  const handleCancel = () => {
+    setForm({
+      name: adminList.name || "",
+      email: adminList.email || "",
+      mobile: adminList.mobile || "",
+    });
+    setIsEditing(false);
+  };
+
+  const getAdminUser = () => {
+    dispatch(AdminUser());
+  };
+  useEffect(() => {
+    if (apiCall === true) {
+      getAdminUser();
+      setIsEditing(false);
+      setApiCall(false);
+    }
+  }, [apiCall]);
 
   return (
     <Box sx={{ p: 3 }}>
       <Paper sx={{ p: 3, borderRadius: 3 }}>
         <Grid container alignItems="center" spacing={2}>
           <Grid item>
-            <Avatar src={profile.avatar} sx={{ width: 64, height: 64 }} />
+            <Avatar src={HogoAFM} sx={{ width: 64, height: 64 }} />
           </Grid>
 
           <Grid item xs>
-            <Typography fontWeight={700}>{profile.name}</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                label="Full Name"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+              />
+            ) : (
+              <Typography fontWeight={700}>
+                {adminList?.name || "Admin User"}
+              </Typography>
+            )}
+
             <Typography variant="body2" color="text.secondary">
-              {profile.role} | {profile.location}
+              Administrator
             </Typography>
           </Grid>
 
@@ -65,107 +134,82 @@ const EditProfile = () => {
               <InstagramIcon />
             </IconButton>
           </Grid>
+        </Grid>
+      </Paper>
 
-          <Grid item>
+      <Paper sx={{ p: 3, borderRadius: 3, mt: 3 }}>
+        <Typography fontWeight={700} mb={2}>
+          Personal Information
+        </Typography>
+
+        <Divider sx={{ mb: 2 }} />
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <Typography variant="caption">Email</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+              />
+            ) : (
+              <Typography fontWeight={600}>
+                {adminList?.email || "N/A"}
+              </Typography>
+            )}
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Typography variant="caption">Phone</Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                name="mobile"
+                value={form.mobile}
+                onChange={handleChange}
+              />
+            ) : (
+              <Typography fontWeight={600}>
+                {adminList?.mobile || "N/A"}
+              </Typography>
+            )}
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Typography variant="caption">Role</Typography>
+            <Typography fontWeight={600}>Administrator</Typography>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      <Stack direction="row" justifyContent="flex-end" spacing={2} mt={3}>
+        {isEditing ? (
+          <>
             <Button
               variant="outlined"
-              startIcon={<EditOutlinedIcon />}
-              sx={{ borderRadius: 5 }}
+              color="inherit"
+              startIcon={<CloseIcon />}
+              onClick={handleCancel}
             >
-              Edit
+              Cancel
             </Button>
-          </Grid>
-        </Grid>
-      </Paper>
 
-      <Paper sx={{ p: 3, borderRadius: 3, mt: 3 }}>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={2}
-        >
-          <Typography fontWeight={700}>Personal Information</Typography>
+            <Button variant="contained" onClick={handleSave}>
+              Save
+            </Button>
+          </>
+        ) : (
           <Button
-            size="small"
             variant="outlined"
             startIcon={<EditOutlinedIcon />}
+            onClick={() => setIsEditing(true)}
           >
             Edit
           </Button>
-        </Box>
-
-        <Divider sx={{ mb: 2 }} />
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption">Full Name</Typography>
-            <Typography fontWeight={600}>{profile.name}</Typography>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption">Role</Typography>
-            <Typography fontWeight={600}>{profile.role}</Typography>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption">Email</Typography>
-            <Typography fontWeight={600}>{profile.email}</Typography>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption">Phone</Typography>
-            <Typography fontWeight={600}>{profile.phone}</Typography>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption">Country</Typography>
-            <Typography fontWeight={600}>{profile.country}</Typography>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption">City</Typography>
-            <Typography fontWeight={600}>{profile.city}</Typography>
-          </Grid>
-        </Grid>
-      </Paper>
-
-      <Paper sx={{ p: 3, borderRadius: 3, mt: 3 }}>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={2}
-        >
-          <Typography fontWeight={700}>Address</Typography>
-          <Button
-            size="small"
-            variant="outlined"
-            startIcon={<EditOutlinedIcon />}
-          >
-            Edit
-          </Button>
-        </Box>
-
-        <Divider sx={{ mb: 2 }} />
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption">Location</Typography>
-            <Typography fontWeight={600}>{profile.location}</Typography>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption">Postal Code</Typography>
-            <Typography fontWeight={600}>{profile.postal}</Typography>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption">TAX ID</Typography>
-            <Typography fontWeight={600}>{profile.taxId}</Typography>
-          </Grid>
-        </Grid>
-      </Paper>
+        )}
+      </Stack>
     </Box>
   );
 };
