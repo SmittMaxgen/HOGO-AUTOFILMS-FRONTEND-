@@ -157,7 +157,7 @@ const Category = () => {
     const data = new FormData();
     data.append("name", form.name);
     if (form.image) data.append("image", form.image);
-    data.append("order", form.order);
+    // data.append("order", form.order);
     data.append("status", form.status);
 
     const action = editId
@@ -272,12 +272,24 @@ const Category = () => {
                 }
                 label="Active"
               />
-
+              {/* 
               <Stack direction="row" justifyContent="flex-end" spacing={2}>
                 <Button onClick={resetForm}>Cancel</Button>
                 <Button variant="contained" onClick={handleSubmit}>
                   Save
                 </Button>
+              </Stack> */}
+              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+                <CommonButton variant="outlined" onClick={resetForm}>
+                  Cancel
+                </CommonButton>
+                <CommonButton
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={loading || loading}
+                >
+                  {loading || loading ? "Saving..." : "Save"}
+                </CommonButton>
               </Stack>
             </Stack>
           </Paper>

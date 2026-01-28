@@ -45,6 +45,7 @@ import Loader from "../../components/commonComponents/Loader";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
 import CommonToast from "../../components/commonComponents/Toster";
+import CommonSearchField from "../../components/commonComponents/CommonSearchField";
 const Material = () => {
   const dispatch = useDispatch();
 
@@ -66,9 +67,20 @@ const Material = () => {
   const [form, setForm] = useState({ title: "", status: true });
   const [errors, setErrors] = useState({});
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // useEffect(() => {
+  //   dispatch(getMaterials());
+  // }, [dispatch]);
   useEffect(() => {
-    dispatch(getMaterials());
-  }, [dispatch]);
+    const payload = {};
+
+    if (searchQuery) {
+      payload.tittle = searchQuery;
+    }
+
+    dispatch(getMaterials(payload));
+  }, [dispatch, searchQuery]);
 
   useEffect(() => {
     if (createSuccess) {
@@ -210,7 +222,7 @@ const Material = () => {
                 label="Active"
               />
 
-              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+              {/* <Stack direction="row" justifyContent="flex-end" spacing={2}>
                 <Button onClick={handleReset}>Cancel</Button>
                 <Button
                   variant="contained"
@@ -223,6 +235,18 @@ const Material = () => {
                       ? "Update"
                       : "Save"}
                 </Button>
+              </Stack> */}
+              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+                <CommonButton variant="outlined" onClick={handleReset}>
+                  Cancel
+                </CommonButton>
+                <CommonButton
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={updateLoading || updateLoading}
+                >
+                  {updateLoading || updateLoading ? "Saving..." : "Save"}
+                </CommonButton>
               </Stack>
             </Stack>
           </Paper>
@@ -293,6 +317,13 @@ const Material = () => {
       </Stack>
 
       <TableContainer component={Paper}>
+        <Box sx={{ display: "flex" }}>
+          <CommonSearchField
+            value={searchQuery}
+            placeholder="Search by material name.."
+            onChange={(value) => setSearchQuery(value)}
+          />
+        </Box>
         <Table>
           <TableHead>
             <TableRow>

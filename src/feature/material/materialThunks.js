@@ -7,17 +7,39 @@ import axiosInstance from "../../api/axiosInstance";
  *  - id → fetch single material
  *  - null → fetch all materials
  */
+// export const getMaterials = createAsyncThunk(
+//   "material/getMaterials",
+//   async (payload, { rejectWithValue }) => {
+//     try {
+//       const response = await axiosInstance.get(
+//         `/material/${payload ? payload : ""}`,
+//       );
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(
+//         error.response?.data?.message || "Failed to fetch materials !",
+//       );
+//     }
+//   },
+// );
+
 export const getMaterials = createAsyncThunk(
   "material/getMaterials",
-  async (payload, { rejectWithValue }) => {
+  async (payload = {}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        `/material/${payload ? payload : ""}`,
-      );
+      const params = {};
+
+      if (payload.tittle) params.tittle = payload.tittle; // material name
+      if (payload.status !== undefined) params.status = payload.status; // true / false
+
+      const response = await axiosInstance.get("/material/", {
+        params,
+      });
+
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch materials !",
+        error.response?.data?.message || "Failed to fetch materials!",
       );
     }
   },

@@ -55,10 +55,10 @@ import CommonToast from "../../components/commonComponents/Toster";
 
 const Product = () => {
   const dispatch = useDispatch();
-  const { list, loading, createLoading, updateLoading } = useSelector(
+  const { list, loading, createLoading } = useSelector(
     (state) => state.product,
   );
-
+  
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
 
@@ -652,7 +652,7 @@ const Product = () => {
                 />
               </Stack>
 
-              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+              {/* <Stack direction="row" justifyContent="flex-end" spacing={2}>
                 <Button onClick={handleReset}>Cancel</Button>
                 <Button
                   variant="contained"
@@ -665,6 +665,18 @@ const Product = () => {
                       ? "Update"
                       : "Save"}
                 </Button>
+              </Stack> */}
+              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+                <CommonButton variant="outlined" onClick={handleReset}>
+                  Cancel
+                </CommonButton>
+                <CommonButton
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={createLoading || loading}
+                >
+                  {createLoading || loading ? "Saving..." : "Save"}
+                </CommonButton>
               </Stack>
             </Stack>
           </Paper>

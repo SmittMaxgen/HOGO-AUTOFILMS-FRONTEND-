@@ -277,11 +277,23 @@ const Shipment = () => {
                 fullWidth
               />
 
-              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+              {/* <Stack direction="row" justifyContent="flex-end" spacing={2}>
                 <Button onClick={handleReset}>Cancel</Button>
                 <Button variant="contained" onClick={handleSubmit}>
                   {editId ? "Update" : "Save"}
                 </Button>
+              </Stack> */}
+              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+                <CommonButton variant="outlined" onClick={handleReset}>
+                  Cancel
+                </CommonButton>
+                <CommonButton
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={loading || loading}
+                >
+                  {loading || loading ? "Saving..." : "Save"}
+                </CommonButton>
               </Stack>
             </Stack>
           </Paper>

@@ -210,7 +210,7 @@ const Color = () => {
                 }
                 label="Active"
               />
-
+              {/* 
               <Stack direction="row" justifyContent="flex-end" spacing={2}>
                 <Button onClick={handleReset}>Cancel</Button>
                 <Button
@@ -224,6 +224,18 @@ const Color = () => {
                       ? "Update"
                       : "Save"}
                 </Button>
+              </Stack> */}
+              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+                <CommonButton variant="outlined" onClick={handleReset}>
+                  Cancel
+                </CommonButton>
+                <CommonButton
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={updateLoading || updateLoading}
+                >
+                  {updateLoading || updateLoading ? "Saving..." : "Save"}
+                </CommonButton>
               </Stack>
             </Stack>
           </Paper>

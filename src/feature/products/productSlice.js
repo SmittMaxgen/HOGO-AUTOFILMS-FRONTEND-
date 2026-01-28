@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getProducts, createProducts } from "./productThunks";
+import { getProducts, createProducts, updateProducts } from "./productThunks";
 
 const initialState = {
   list: [],
@@ -61,6 +61,26 @@ const productSlice = createSlice({
 
       .addCase(createProducts.rejected, (state, action) => {
         state.createLoading = false;
+        state.error = action.payload;
+        state.success = false;
+      })
+      .addCase(updateProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+      })
+      .addCase(updateProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+
+        if (action.payload?.data) {
+          state.list.unshift(action.payload.data);
+          state.count += 1;
+        }
+      })
+
+      .addCase(updateProducts.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
         state.success = false;
       });

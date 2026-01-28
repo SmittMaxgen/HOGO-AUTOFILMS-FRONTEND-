@@ -9,6 +9,7 @@ import {
 import {
   selectBannerList,
   selectBannerLoading,
+  selectBannerUpdateLoading,
 } from "../../feature/banner/bannerSelector";
 
 import {
@@ -49,7 +50,7 @@ const Banner = () => {
   const dispatch = useDispatch();
   const banners = useSelector(selectBannerList);
   const loading = useSelector(selectBannerLoading);
-
+  const updateLoading = useSelector(selectBannerUpdateLoading);
   const { id } = useParams();
 
   const [page, setPage] = useState(1);
@@ -290,11 +291,21 @@ const Banner = () => {
                 label="Active"
               />
 
-              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+              {/* <Stack direction="row" justifyContent="flex-end" spacing={2}>
                 <Button onClick={resetForm}>Cancel</Button>
                 <Button variant="contained" onClick={handleSubmit}>
                   Save
                 </Button>
+              </Stack> */}
+              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+                <CommonButton variant="outlined">Cancel</CommonButton>
+                <CommonButton
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={updateLoading || updateLoading}
+                >
+                  {updateLoading || updateLoading ? "Saving..." : "Save"}
+                </CommonButton>
               </Stack>
             </Stack>
           </Paper>
