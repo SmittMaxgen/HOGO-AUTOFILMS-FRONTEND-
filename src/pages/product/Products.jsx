@@ -968,7 +968,7 @@ const Product = () => {
             )}
             {list.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={9} align="center">
                   No products found
                 </TableCell>
               </TableRow>
