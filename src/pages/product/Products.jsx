@@ -339,7 +339,7 @@ const Product = () => {
     page * rowsPerPage,
   );
 
-  if (loading) return <Loader text="Loading products..." fullScreen={true} />;
+  // if (loading) return <Loader text="Loading products..." fullScreen={true} />;
 
   if (isEditing) {
     return (
@@ -578,7 +578,7 @@ const Product = () => {
                   />
                 )}
               />
-           
+
               <TextField
                 label="MRP"
                 name="mrp"
@@ -865,96 +865,107 @@ const Product = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData.map((p, i) => (
-              <TableRow key={p.id} hover>
-                <TableCell>{(page - 1) * rowsPerPage + i + 1}</TableCell>
-                {/* <TableCell>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={9} align="center" sx={{ py: 4 }}>
+                  <CircularProgress size={28} />
+                  <Typography variant="body2" mt={1}>
+                    Loading products...
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedData.map((p, i) => (
+                <TableRow key={p.id} hover>
+                  <TableCell>{(page - 1) * rowsPerPage + i + 1}</TableCell>
+                  {/* <TableCell>
                   <Avatar
                     src={`https://hogofilm.pythonanywhere.com/${p.thumbnail_image}`}
                     variant="rounded"
                     sx={{ width: 48, height: 48 }}
                   />
                 </TableCell> */}
-                <TableCell>
-                  <Box sx={{ position: "relative", width: 48, height: 48 }}>
-                    {!imageLoaded && (
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          inset: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          zIndex: 1,
+                  <TableCell>
+                    <Box sx={{ position: "relative", width: 48, height: 48 }}>
+                      {!imageLoaded && (
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            inset: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            zIndex: 1,
+                          }}
+                        >
+                          <CircularProgress size={20} />
+                        </Box>
+                      )}
+
+                      <Avatar
+                        src={`https://hogofilm.pythonanywhere.com/${p.thumbnail_image}`}
+                        variant="rounded"
+                        sx={{ width: 48, height: 48 }}
+                        imgProps={{
+                          onLoad: () => setImageLoaded(true),
+                          onError: () => setImageLoaded(true),
                         }}
-                      >
-                        <CircularProgress size={20} />
-                      </Box>
-                    )}
-
-                    <Avatar
-                      src={`https://hogofilm.pythonanywhere.com/${p.thumbnail_image}`}
-                      variant="rounded"
-                      sx={{ width: 48, height: 48 }}
-                      imgProps={{
-                        onLoad: () => setImageLoaded(true),
-                        onError: () => setImageLoaded(true),
-                      }}
-                    />
-                  </Box>
-                </TableCell>
-                <TableCell>{p?.product_name}</TableCell>
-                <TableCell>{p?.product_codes}</TableCell>
-                <TableCell>{p?.category_name}</TableCell>
-                <TableCell>{p?.material_name}</TableCell>
-                <TableCell>₹ {p.mrp}</TableCell>
-                <TableCell>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Switch
-                      checked={p.status} // true = On, false = Off
-                      onChange={() => handleStatusToggle(p)}
-                      color="success"
-                      size="small"
-                      sx={{
-                        "& .MuiSwitch-switchBase.Mui-checked": {
-                          color: "success.main",
-                        },
-                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                          {
-                            backgroundColor: "success.light",
+                      />
+                    </Box>
+                  </TableCell>
+                  <TableCell>{p?.product_name}</TableCell>
+                  <TableCell>{p?.product_codes}</TableCell>
+                  <TableCell>{p?.category_name}</TableCell>
+                  <TableCell>{p?.material_name}</TableCell>
+                  <TableCell>₹ {p.mrp}</TableCell>
+                  <TableCell>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Switch
+                        checked={p.status} // true = On, false = Off
+                        onChange={() => handleStatusToggle(p)}
+                        color="success"
+                        size="small"
+                        sx={{
+                          "& .MuiSwitch-switchBase.Mui-checked": {
+                            color: "success.main",
                           },
-                      }}
-                    />
-                    <Typography
-                      variant="body2"
-                      color={p.status ? "success.main" : "text.secondary"}
-                    >
-                      {p.status ? "Active" : "Inactive"}
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <IconButton size="small" onClick={() => handleView(p)}>
-                    <VisibilityIcon />
-                  </IconButton>
+                          "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                            {
+                              backgroundColor: "success.light",
+                            },
+                        }}
+                      />
+                      <Typography
+                        variant="body2"
+                        color={p.status ? "success.main" : "text.secondary"}
+                      >
+                        {p.status ? "Active" : "Inactive"}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton size="small" onClick={() => handleView(p)}>
+                      <VisibilityIcon />
+                    </IconButton>
 
-                  <IconButton
-                    size="small"
-                    color="warning"
-                    onClick={() => handleEdit(p)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => handleDelete(p.id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+                    <IconButton
+                      size="small"
+                      color="warning"
+                      onClick={() => handleEdit(p)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => handleDelete(p.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
             {list.length === 0 && (
               <TableRow>
                 <TableCell colSpan={7} align="center">

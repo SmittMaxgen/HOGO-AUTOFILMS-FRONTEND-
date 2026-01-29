@@ -39,6 +39,7 @@ import {
   TableRow,
   Pagination,
   Autocomplete,
+  CircularProgress,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -350,7 +351,7 @@ const ShipmentProducts = () => {
     );
   }
 
-  if (loading) return <Loader text="Loading shipment products..." fullScreen />;
+  // if (loading) return <Loader text="Loading shipment products..." fullScreen />;
 
   return (
     <Box>
@@ -385,30 +386,51 @@ const ShipmentProducts = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData?.map((item, index) => (
-              <TableRow key={item.id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{item.shipment_id}</TableCell>
-                <TableCell>{item.product_id}</TableCell>
-                <TableCell>{item.quantity}</TableCell>
-                <TableCell>{item.per_unit_cost_inr}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleView(item)}>
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleEdit(item)} color="warning">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDelete(item.id)}
-                    color="error"
-                    disabled={deleteLoading}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+            {loading && (
+              <TableRow>
+                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                  <CircularProgress size={28} />
+                  <Typography variant="body2" mt={1}>
+                    Loading shipments products...
+                  </Typography>
                 </TableCell>
               </TableRow>
-            ))}
+            )}
+            {!loading &&
+              paginatedData?.map((item, index) => (
+                <TableRow key={item.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{item.shipment_id}</TableCell>
+                  <TableCell>{item.product_id}</TableCell>
+                  <TableCell>{item.quantity}</TableCell>
+                  <TableCell>{item.per_unit_cost_inr}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleView(item)}>
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleEdit(item)}
+                      color="warning"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDelete(item.id)}
+                      color="error"
+                      disabled={deleteLoading}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            {shipmentProducts?.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  No shipments products found
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

@@ -28,6 +28,7 @@ import {
   TableHead,
   TableRow,
   Pagination,
+  CircularProgress,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -345,7 +346,7 @@ const Shipment = () => {
     );
   }
 
-  if (loading) return <Loader text="Loading shipments..." fullScreen />;
+  // if (loading) return <Loader text="Loading shipments..." fullScreen />;
 
   return (
     <Box>
@@ -389,30 +390,47 @@ const Shipment = () => {
           </TableHead>
 
           <TableBody>
-            {paginatedData?.map((item, index) => (
-              <TableRow key={item.id} hover>
-                <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                <TableCell>{item.supplier_name}</TableCell>
-                <TableCell>{item.supplier_invoice_no}</TableCell>
-                <TableCell>{item.invoice_currency}</TableCell>
-                <TableCell>{item.invoice_value_inr}</TableCell>
-                <TableCell>{item.arrival_date?.split("T")[0]}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleView(item)} color="primary">
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleEdit(item)} color="warning">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDelete(item.id)}
-                    color="error"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+            {loading && (
+              <TableRow>
+                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                  <CircularProgress size={28} />
+                  <Typography variant="body2" mt={1}>
+                    Loading shipments...
+                  </Typography>
                 </TableCell>
               </TableRow>
-            ))}
+            )}
+            {!loading &&
+              paginatedData?.map((item, index) => (
+                <TableRow key={item.id} hover>
+                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                  <TableCell>{item.supplier_name}</TableCell>
+                  <TableCell>{item.supplier_invoice_no}</TableCell>
+                  <TableCell>{item.invoice_currency}</TableCell>
+                  <TableCell>{item.invoice_value_inr}</TableCell>
+                  <TableCell>{item.arrival_date?.split("T")[0]}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      onClick={() => handleView(item)}
+                      color="primary"
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleEdit(item)}
+                      color="warning"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDelete(item.id)}
+                      color="error"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
 
             {shipments?.length === 0 && (
               <TableRow>

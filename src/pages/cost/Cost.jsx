@@ -33,6 +33,7 @@ import {
   Chip,
   Pagination,
   Autocomplete,
+  CircularProgress,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -422,7 +423,7 @@ const Cost = () => {
     );
   }
 
-  if (loading) return <Loader text="Loading costs..." fullScreen />;
+  // if (loading) return <Loader text="Loading costs..." fullScreen />;
 
   return (
     <Box>
@@ -462,57 +463,74 @@ const Cost = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData?.map((item, index) => (
-              <TableRow key={item.id} hover>
-                <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                <TableCell>{item.shipment_id}</TableCell>
-                <TableCell>{item.cost_amount_inr}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={item.capitalized ? "Yes" : "No"}
-                    size="small"
-                    clickable
-                    sx={{
-                      fontWeight: 600,
-                      borderRadius: "12px",
-                      paddingX: 1.5,
-                      paddingY: 0.5,
-                      color: item.capitalized
-                        ? "success.main"
-                        : "text.secondary",
-                      backgroundColor: item.capitalized
-                        ? "success.lighter"
-                        : "grey.100",
-                      border: item.capitalized ? "1px solid" : "1px solid",
-                      borderColor: item.capitalized
-                        ? "success.main"
-                        : "grey.300",
-                      textTransform: "capitalize",
-                      cursor: "pointer",
-                      "&:hover": {
-                        backgroundColor: item.capitalized
-                          ? "success.light"
-                          : "grey.200",
-                      },
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleView(item)} color="primary">
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleEdit(item)} color="warning">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDelete(item.id)}
-                    color="error"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+            {loading && (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                  <CircularProgress size={28} />
+                  <Typography variant="body2" mt={1}>
+                    Loading costs...
+                  </Typography>
                 </TableCell>
               </TableRow>
-            ))}
+            )}
+            {!loading &&
+              paginatedData?.map((item, index) => (
+                <TableRow key={item.id} hover>
+                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                  <TableCell>{item.shipment_id}</TableCell>
+                  <TableCell>{item.cost_amount_inr}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={item.capitalized ? "Yes" : "No"}
+                      size="small"
+                      clickable
+                      sx={{
+                        fontWeight: 600,
+                        borderRadius: "12px",
+                        paddingX: 1.5,
+                        paddingY: 0.5,
+                        color: item.capitalized
+                          ? "success.main"
+                          : "text.secondary",
+                        backgroundColor: item.capitalized
+                          ? "success.lighter"
+                          : "grey.100",
+                        border: item.capitalized ? "1px solid" : "1px solid",
+                        borderColor: item.capitalized
+                          ? "success.main"
+                          : "grey.300",
+                        textTransform: "capitalize",
+                        cursor: "pointer",
+                        "&:hover": {
+                          backgroundColor: item.capitalized
+                            ? "success.light"
+                            : "grey.200",
+                        },
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      onClick={() => handleView(item)}
+                      color="primary"
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleEdit(item)}
+                      color="warning"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDelete(item.id)}
+                      color="error"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
 
             {costs?.length === 0 && (
               <TableRow>

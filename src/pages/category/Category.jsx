@@ -33,6 +33,7 @@ import {
   FormControlLabel,
   Checkbox,
   Switch,
+  CircularProgress,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -222,7 +223,7 @@ const Category = () => {
     page * rowsPerPage,
   );
 
-  if (loading) return <Loader text="Loading categories..." fullScreen={true} />;
+  // if (loading) return <Loader text="Loading categories..." fullScreen={true} />;
 
   if (isEditing) {
     return (
@@ -404,13 +405,21 @@ const Category = () => {
           </TableHead>
 
           <TableBody>
-            {paginatedData?.map((item, index) => (
-              <TableRow key={item.id} hover>
-                <TableCell sx={{ fontWeight: 700 }}>
-                  {(page - 1) * rowsPerPage + index + 1}
+            {loading && (
+              <TableRow>
+                <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                  <CircularProgress size={30} /> Loading categories...
                 </TableCell>
+              </TableRow>
+            )}
+            {!loading &&
+              paginatedData?.map((item, index) => (
+                <TableRow key={item.id} hover>
+                  <TableCell sx={{ fontWeight: 700 }}>
+                    {(page - 1) * rowsPerPage + index + 1}
+                  </TableCell>
 
-                {/* <TableCell>
+                  {/* <TableCell>
                   <Avatar
                     src={`https://hogofilm.pythonanywhere.com/${item?.image}`}
                     variant="rounded"
@@ -418,58 +427,58 @@ const Category = () => {
                   />
                 </TableCell> */}
 
-                <TableCell>
-                  <Typography>{item.name}</Typography>
-                </TableCell>
+                  <TableCell>
+                    <Typography>{item.name}</Typography>
+                  </TableCell>
 
-                <TableCell>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Switch
-                      checked={item.status} // true = On, false = Off
-                      onChange={() => handleStatusToggle(item)}
-                      color="success"
-                      size="small"
-                      sx={{
-                        "& .MuiSwitch-switchBase.Mui-checked": {
-                          color: "success.main",
-                        },
-                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                          {
-                            backgroundColor: "success.light",
+                  <TableCell>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Switch
+                        checked={item.status} // true = On, false = Off
+                        onChange={() => handleStatusToggle(item)}
+                        color="success"
+                        size="small"
+                        sx={{
+                          "& .MuiSwitch-switchBase.Mui-checked": {
+                            color: "success.main",
                           },
-                      }}
-                    />
-                    <Typography
-                      variant="body2"
-                      color={item.status ? "success.main" : "text.secondary"}
+                          "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                            {
+                              backgroundColor: "success.light",
+                            },
+                        }}
+                      />
+                      <Typography
+                        variant="body2"
+                        color={item.status ? "success.main" : "text.secondary"}
+                      >
+                        {item.status ? "Active" : "Inactive"}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+
+                  <TableCell>
+                    <IconButton size="small" onClick={() => handleView(item)}>
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      color="warning"
+                      onClick={() => handleEdit(item)}
                     >
-                      {item.status ? "Active" : "Inactive"}
-                    </Typography>
-                  </Box>
-                </TableCell>
+                      <EditIcon />
+                    </IconButton>
 
-                <TableCell>
-                  <IconButton size="small" onClick={() => handleView(item)}>
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="warning"
-                    onClick={() => handleEdit(item)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => handleDelete(item.id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
 
             {categories?.data?.length === 0 && (
               <TableRow>

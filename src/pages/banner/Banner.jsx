@@ -210,7 +210,7 @@ const Banner = () => {
     page * rowsPerPage,
   );
 
-  if (loading) return <Loader text="Loading banners..." fullScreen={true} />;
+  // if (loading) return <Loader text="Loading banners..." fullScreen={true} />;
 
   if (isEditing) {
     return (
@@ -435,10 +435,21 @@ const Banner = () => {
           </TableHead>
 
           <TableBody>
-            {paginatedData.map((item, index) => (
-              <TableRow key={item.id}>
-                <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                {/* <TableCell>
+            {loading && (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                  <CircularProgress size={28} />
+                  <Typography variant="body2" mt={1}>
+                    Loading banners...
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+            {!loading &&
+              paginatedData.map((item, index) => (
+                <TableRow key={item.id}>
+                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                  {/* <TableCell>
                   <Avatar
                     // src={item.image}
 
@@ -447,63 +458,63 @@ const Banner = () => {
                     sx={{ width: 80, height: 45 }}
                   />
                 </TableCell> */}
-                <TableCell>
-                  <Box sx={{ position: "relative", width: 48, height: 48 }}>
-                    {!imageLoaded && (
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          inset: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          zIndex: 1,
-                        }}
-                      >
-                        <CircularProgress size={20} />
-                      </Box>
-                    )}
+                  <TableCell>
+                    <Box sx={{ position: "relative", width: 48, height: 48 }}>
+                      {!imageLoaded && (
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            inset: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            zIndex: 1,
+                          }}
+                        >
+                          <CircularProgress size={20} />
+                        </Box>
+                      )}
 
-                    <Avatar
-                      src={`https://hogofilm.pythonanywhere.com/${item?.image}`}
-                      variant="rounded"
-                      sx={{ width: 48, height: 48 }}
-                      imgProps={{
-                        onLoad: () => setImageLoaded(true),
-                        onError: () => setImageLoaded(true),
-                      }}
-                    />
-                  </Box>
-                </TableCell>
-                <TableCell>{item.title}</TableCell>
-                <TableCell>{item.CTA_text}</TableCell>
-                <TableCell>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Switch
-                      checked={item.status}
-                      onChange={() => handleStatusToggle(item)}
-                      color="success"
-                      size="small"
-                      sx={{
-                        "& .MuiSwitch-switchBase.Mui-checked": {
-                          color: "success.main",
-                        },
-                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                          {
-                            backgroundColor: "success.light",
+                      <Avatar
+                        src={`https://hogofilm.pythonanywhere.com/${item?.image}`}
+                        variant="rounded"
+                        sx={{ width: 48, height: 48 }}
+                        imgProps={{
+                          onLoad: () => setImageLoaded(true),
+                          onError: () => setImageLoaded(true),
+                        }}
+                      />
+                    </Box>
+                  </TableCell>
+                  <TableCell>{item.title}</TableCell>
+                  <TableCell>{item.CTA_text}</TableCell>
+                  <TableCell>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Switch
+                        checked={item.status}
+                        onChange={() => handleStatusToggle(item)}
+                        color="success"
+                        size="small"
+                        sx={{
+                          "& .MuiSwitch-switchBase.Mui-checked": {
+                            color: "success.main",
                           },
-                      }}
-                    />
-                    <Typography
-                      variant="body2"
-                      color={item.status ? "success.main" : "text.secondary"}
-                    >
-                      {item.status ? "Active" : "Inactive"}
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell align="center">
-                  {/* <IconButton color="primary">
+                          "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                            {
+                              backgroundColor: "success.light",
+                            },
+                        }}
+                      />
+                      <Typography
+                        variant="body2"
+                        color={item.status ? "success.main" : "text.secondary"}
+                      >
+                        {item.status ? "Active" : "Inactive"}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell align="center">
+                    {/* <IconButton color="primary">
                     <VisibilityIcon />
                   </IconButton>
                   <IconButton color="warning" onClick={() => handleEdit(item)}>
@@ -515,21 +526,27 @@ const Banner = () => {
                   >
                     <DeleteIcon />
                   </IconButton> */}
-                  <IconButton color="primary" onClick={() => handleView(item)}>
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton color="warning" onClick={() => handleEdit(item)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleDelete(item.id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleView(item)}
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton
+                      color="warning"
+                      onClick={() => handleEdit(item)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
 
             {banners.length === 0 && (
               <TableRow>

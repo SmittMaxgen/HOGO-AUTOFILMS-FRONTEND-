@@ -35,6 +35,7 @@ import {
   Chip,
   Pagination,
   Switch,
+  CircularProgress,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -293,7 +294,7 @@ const Color = () => {
     );
   }
 
-  if (loading) return <Loader text="Loading colors..." fullScreen={true} />;
+  // if (loading) return <Loader text="Loading colors..." fullScreen={false} />;
 
   return (
     <Box>
@@ -338,54 +339,71 @@ const Color = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData?.map((item, index) => (
-              <TableRow key={item.id} hover>
-                <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-                <TableCell>
-                  <Typography>{item.colour_name}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Switch
-                      checked={item.status}
-                      onChange={() => handleStatusToggle(item)}
-                      color="success"
-                      size="small"
-                      sx={{
-                        "& .MuiSwitch-switchBase.Mui-checked": {
-                          color: "success.main",
-                        },
-                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                          {
-                            backgroundColor: "success.light",
-                          },
-                      }}
-                    />
-                    <Typography
-                      variant="body2"
-                      color={item.status ? "success.main" : "text.secondary"}
-                    >
-                      {item.status ? "Active" : "Inactive"}
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <IconButton color="primary" onClick={() => handleView(item)}>
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton color="warning" onClick={() => handleEdit(item)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    disabled={deleteLoading}
-                    onClick={() => handleDelete(item.id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+            {loading && (
+              <TableRow>
+                <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                  <CircularProgress size={28} />
+                  <Typography variant="body2" mt={1}>
+                    Loading colors...
+                  </Typography>
                 </TableCell>
               </TableRow>
-            ))}
+            )}
+            {!loading &&
+              paginatedData?.map((item, index) => (
+                <TableRow key={item.id} hover>
+                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                  <TableCell>
+                    <Typography>{item.colour_name}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Switch
+                        checked={item.status}
+                        onChange={() => handleStatusToggle(item)}
+                        color="success"
+                        size="small"
+                        sx={{
+                          "& .MuiSwitch-switchBase.Mui-checked": {
+                            color: "success.main",
+                          },
+                          "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                            {
+                              backgroundColor: "success.light",
+                            },
+                        }}
+                      />
+                      <Typography
+                        variant="body2"
+                        color={item.status ? "success.main" : "text.secondary"}
+                      >
+                        {item.status ? "Active" : "Inactive"}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleView(item)}
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton
+                      color="warning"
+                      onClick={() => handleEdit(item)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      disabled={deleteLoading}
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
             {colors?.length === 0 && (
               <TableRow>
                 <TableCell colSpan={4} align="center">
