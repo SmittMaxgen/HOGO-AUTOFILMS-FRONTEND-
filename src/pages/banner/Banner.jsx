@@ -45,6 +45,7 @@ import Loader from "../../components/commonComponents/Loader";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
 import CommonToast from "../../components/commonComponents/Toster";
+import CommonSearchField from "../../components/commonComponents/CommonSearchField";
 
 const Banner = () => {
   const dispatch = useDispatch();
@@ -64,6 +65,8 @@ const Banner = () => {
   const [isViewing, setIsViewing] = useState(false);
   const [viewBanner, setViewBanner] = useState(null);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [form, setForm] = useState({
     title: "",
     image: null,
@@ -76,8 +79,12 @@ const Banner = () => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    dispatch(getBanners());
-  }, [dispatch]);
+    const delay = setTimeout(() => {
+      dispatch(getBanners({ title: searchQuery }));
+    }, 400);
+
+    return () => clearTimeout(delay);
+  }, [dispatch, searchQuery]);
 
   /* ================= HANDLERS ================= */
 
@@ -406,6 +413,13 @@ const Banner = () => {
       </Stack>
 
       <TableContainer component={Paper}>
+        <Box sx={{ display: "flex" }}>
+          <CommonSearchField
+            value={searchQuery}
+            placeholder="Search by banner name.."
+            onChange={(value) => setSearchQuery(value)}
+          />
+        </Box>
         <Table>
           <TableHead>
             <TableRow>

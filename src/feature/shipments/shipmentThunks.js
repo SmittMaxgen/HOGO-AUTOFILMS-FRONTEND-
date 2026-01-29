@@ -3,15 +3,20 @@ import axiosInstance from "../../api/axiosInstance";
 
 export const getShipments = createAsyncThunk(
   "shipment/getShipment",
-  async (payload, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        `/shipments/${payload ? payload : ""}`,
-      );
+      const response = await axiosInstance.get("/shipments/", {
+        params: {
+          supplier_name: params.supplier_name || "",
+          supplier_invoice_no: params.supplier_invoice_no || "",
+          invoice_currency: params.invoice_currency || "",
+          arrival_date: params.arrival_date || "",
+        },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch shipment !",
+        error.response?.data?.message || "Failed to fetch shipment!",
       );
     }
   },

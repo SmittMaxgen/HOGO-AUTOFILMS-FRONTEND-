@@ -5,40 +5,35 @@ import ClearIcon from "@mui/icons-material/Clear";
 
 const CommonSearchField = ({
   placeholder = "Search...",
+  type = "text",
   value = "",
   onChange,
-  debounceTime = 300,
 }) => {
   const [inputValue, setInputValue] = useState(value);
 
-  // Debounce to avoid firing on every keystroke
   useEffect(() => {
-    const handler = setTimeout(() => {
-      if (onChange) onChange(inputValue);
-    }, debounceTime);
-
-    return () => clearTimeout(handler);
-  }, [inputValue, onChange, debounceTime]);
+    if (onChange) onChange(inputValue);
+  }, [inputValue, onChange]);
 
   const handleClear = () => {
     setInputValue("");
-    if (onChange) onChange("");
   };
 
   return (
     <TextField
-      // fullWidth
       size="small"
       variant="outlined"
       placeholder={placeholder}
       value={inputValue}
+      type={type}
       onChange={(e) => setInputValue(e.target.value)}
       InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon />
-          </InputAdornment>
-        ),
+        startAdornment:
+          type === "text" ? (
+            <InputAdornment position="start">
+              <SearchIcon style={{ color: "grey" }} />
+            </InputAdornment>
+          ) : null,
         endAdornment: inputValue && (
           <InputAdornment position="end">
             <IconButton size="small" onClick={handleClear}>
@@ -49,9 +44,11 @@ const CommonSearchField = ({
         sx: {
           margin: "10px",
           borderRadius: "12px",
+          color: "grey",
           backgroundColor: "#f5f5f5",
         },
       }}
+      InputLabelProps={type === "date" ? { shrink: true } : undefined}
     />
   );
 };

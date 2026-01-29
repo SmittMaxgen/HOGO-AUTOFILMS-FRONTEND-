@@ -1,13 +1,30 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
+// export const getBanners = createAsyncThunk(
+//   "banner/getBanners",
+//   async (payload, { rejectWithValue }) => {
+//     try {
+//       const response = await axiosInstance.get(
+//         `/banner/${payload ? payload : ""}`,
+//       );
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(
+//         error.response?.data?.message || "Failed to fetch banners",
+//       );
+//     }
+//   },
+// );
 export const getBanners = createAsyncThunk(
   "banner/getBanners",
-  async (payload, { rejectWithValue }) => {
+  async ({ title = "" } = {}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        `/banner/${payload ? payload : ""}`,
-      );
+      const response = await axiosInstance.get("/banner/", {
+        params: {
+          title,
+        },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -16,6 +33,7 @@ export const getBanners = createAsyncThunk(
     }
   },
 );
+
 export const createBanner = createAsyncThunk(
   "banner/createBanner",
   async (payload, { rejectWithValue }) => {
@@ -54,7 +72,7 @@ export const deleteBanner = createAsyncThunk(
   "banner/deleteBanner",
   async (payload, { rejectWithValue }) => {
     try {
-
+      
       const response = await axiosInstance.delete(`/banner/${payload}/`);
 
       return response.data;

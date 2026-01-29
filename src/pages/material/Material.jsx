@@ -76,7 +76,7 @@ const Material = () => {
     const payload = {};
 
     if (searchQuery) {
-      payload.tittle = searchQuery;
+      payload.title = searchQuery;
     }
 
     dispatch(getMaterials(payload));

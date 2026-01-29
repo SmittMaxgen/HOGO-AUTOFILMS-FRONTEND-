@@ -3,15 +3,17 @@ import axiosInstance from "../../api/axiosInstance";
 
 export const getProducts = createAsyncThunk(
   "product/getProducts",
-  async (payload, { rejectWithValue }) => {
+  async ({ search = "" } = {}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        `/products/${payload ? payload : ""}`,
-      );
+      const response = await axiosInstance.get("/products/", {
+        params: {
+          search, // backend should read ?search=
+        },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch products !",
+        error.response?.data?.message || "Failed to fetch products!",
       );
     }
   },

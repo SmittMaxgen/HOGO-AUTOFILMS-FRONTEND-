@@ -53,12 +53,14 @@ import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
 import CommonToast from "../../components/commonComponents/Toster";
 
+import CommonSearchField from "../../components/commonComponents/CommonSearchField";
+
 const Product = () => {
   const dispatch = useDispatch();
   const { list, loading, createLoading } = useSelector(
     (state) => state.product,
   );
-  
+
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
 
@@ -69,6 +71,7 @@ const Product = () => {
   const [editId, setEditId] = useState(null);
 
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [form, setForm] = useState({
     product_name: "",
@@ -137,8 +140,12 @@ const Product = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(getProducts());
-  }, [dispatch]);
+    const delay = setTimeout(() => {
+      dispatch(getProducts({ search: searchQuery }));
+    }, 400); // debounce
+
+    return () => clearTimeout(delay);
+  }, [dispatch, searchQuery]);
 
   useEffect(() => {
     dispatch(getCategory());
@@ -166,7 +173,15 @@ const Product = () => {
     if (!form.stain_resistant) temp.stain_resistant = "Required";
     if (!form.elongation) temp.elongation = "Required";
     if (!form.tear_strength) temp.tear_strength = "Required";
-    if (!form.mrp) temp.mrp = "Required";
+    // if (!form.mrp) temp.mrp = "Required";
+    if (!form.mrp) {
+      temp.mrp = "Required";
+    } else if (isNaN(form.mrp)) {
+      temp.mrp = "MRP must be a number";
+    } else if (Number(form.mrp) <= 0) {
+      temp.mrp = "MRP must be greater than 0";
+    }
+
     if (!form.thumbnail_image) temp.thumbnail_image = "Required";
     setErrors(temp);
     return Object.keys(temp).length === 0;
@@ -563,13 +578,15 @@ const Product = () => {
                   />
                 )}
               />
-
+           
               <TextField
                 label="MRP"
                 name="mrp"
                 fullWidth
                 value={form.mrp}
                 onChange={handleChange}
+                error={!!errors.mrp}
+                helperText={errors.mrp}
                 InputProps={{
                   startAdornment: <CurrencyRupeeIcon sx={{ mr: 1 }} />,
                 }}
@@ -820,6 +837,13 @@ const Product = () => {
         component={Paper}
         sx={{ borderRadius: 3, boxShadow: "0 6px 20px rgba(0,0,0,0.08)" }}
       >
+        <Box sx={{ display: "flex" }}>
+          <CommonSearchField
+            value={searchQuery}
+            placeholder="Search by product name.."
+            onChange={(value) => setSearchQuery(value)}
+          />
+        </Box>
         <Table>
           <TableHead>
             <TableRow>

@@ -29,7 +29,7 @@ export const getMaterials = createAsyncThunk(
     try {
       const params = {};
 
-      if (payload.tittle) params.tittle = payload.tittle; // material name
+      if (payload.title) params.title = payload.title; // material name
       if (payload.status !== undefined) params.status = payload.status; // true / false
 
       const response = await axiosInstance.get("/material/", {

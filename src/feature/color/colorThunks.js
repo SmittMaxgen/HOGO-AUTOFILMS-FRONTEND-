@@ -7,17 +7,35 @@ import axiosInstance from "../../api/axiosInstance";
  *  - id → fetch single color
  *  - null → fetch all colors
  */
+// export const getColors = createAsyncThunk(
+//   "color/getColors",
+//   async (payload, { rejectWithValue }) => {
+//     try {
+//       const response = await axiosInstance.get(
+//         `/colour/${payload ? payload : ""}`,
+//       );
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(
+//         error.response?.data?.message || "Failed to fetch colors !",
+//       );
+//     }
+//   },
+// );
+
 export const getColors = createAsyncThunk(
   "color/getColors",
-  async (payload, { rejectWithValue }) => {
+  async ({ colour_name = "" } = {}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        `/colour/${payload ? payload : ""}`,
-      );
+      const response = await axiosInstance.get("/colour/", {
+        params: {
+          colour_name, // ?colour_name=black
+        },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch colors !",
+        error.response?.data?.message || "Failed to fetch colors!",
       );
     }
   },
