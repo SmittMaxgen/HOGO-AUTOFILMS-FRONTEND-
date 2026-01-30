@@ -11,6 +11,7 @@ import Shipment from "../pages/shipment/Shipment";
 import ShipmentProducts from "../pages/shipmentProduct/ShipmentProduct";
 import EditProfile from "../pages/auth/EditProfile";
 import AccountSettings from "../pages/auth/AccountSettings";
+import Distributors from "../pages/distributor/Distributor";
 
 import ProtectedRoute from "./ProtectedRoutes";
 
@@ -39,6 +40,7 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/shipments_products" element={<ShipmentProducts />} />
           <Route path="/profile" element={<EditProfile />} />
           <Route path="/account_settings" element={<AccountSettings />} />
+          <Route path="/distributor-information" element={<Distributors />} />
         </Route>
       </Route>
     </Routes>

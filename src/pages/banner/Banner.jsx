@@ -423,7 +423,7 @@ const Banner = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 700 }}>Sr.No</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Sr</TableCell>
               <TableCell sx={{ fontWeight: 700 }}>Image</TableCell>
               <TableCell sx={{ fontWeight: 700 }}>Title</TableCell>
               <TableCell sx={{ fontWeight: 700 }}>CTA Text</TableCell>

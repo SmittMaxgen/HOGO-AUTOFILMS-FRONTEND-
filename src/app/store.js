@@ -10,6 +10,7 @@ import costReducer from "../feature/cost/costSlice";
 import shipmentReducer from "../feature/shipments/shipmentSlice";
 import shipmentProductReducer from "../feature/shipmentProducts/shipmentProductSlice";
 import forgotPasswordReducer from "../feature/profileSettings/profileSettingsSlice";
+import distributorReducer from "../feature/distributors/distributorSlice";
 
 export const store = configureStore({
   reducer: {
@@ -24,5 +25,6 @@ export const store = configureStore({
     shipment: shipmentReducer,
     shipmentProduct: shipmentProductReducer,
     forgotPassword: forgotPasswordReducer,
+    distributor: distributorReducer,
   },
 });

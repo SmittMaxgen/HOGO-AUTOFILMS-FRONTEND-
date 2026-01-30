@@ -311,6 +311,9 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import BusinessIcon from "@mui/icons-material/Business";
+import ImageIcon from "@mui/icons-material/Image";
+
 // import DarkModeIcon from "@mui/icons-material/DarkMode";
 // import LightModeIcon from "@mui/icons-material/LightMode";
 
@@ -532,6 +535,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
     { label: "Cost", path: "/costs" },
     { label: "Shipment", path: "/shipments" },
     { label: "Shipment Products", path: "/shipments_products" },
+    { label: "Distributors", path: "/distributor-information" },
   ];
   // Filter pages by search query
   const filteredPages = pages.filter((p) =>
@@ -644,7 +648,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/banners")}
         >
-          <CategoryIcon />
+          <ImageIcon />
           {!collapsed && "Banners"}
         </Box>
 
@@ -694,6 +698,16 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <Inventory2Icon />
           {!collapsed && "Shipment Products"}
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/distributor-information") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/distributor-information")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Distributor"}
         </Box>
 
         <Box className={classes.spacer} />
