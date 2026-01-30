@@ -93,11 +93,22 @@ const Product = () => {
     tear_strength: "",
     mrp: "",
     thumbnail_image: null,
+    image1: null,
+    image2: null,
+    image3: null,
+    image4: null,
+    installation_video_url: "",
     status: true,
     adhesive: "",
     anti_yellowing: "",
     scratch_resistant: "",
     uv_resistance: false,
+    // New fields added
+    tempeerature_resistance: "",
+    peel_adhesion: "",
+    anti_rockclip: "",
+    elongation_rate_tpu: "",
+    elongation_rate_hard: "",
   });
   const [errors, setErrors] = useState({});
   const { list: categoryList, loading: categoryLoading } = useSelector(
@@ -120,6 +131,7 @@ const Product = () => {
   };
 
   const handleFileChange = (e) => {
+    const { name } = e.target;
     const file = e.target.files[0];
 
     if (!file) return;
@@ -131,7 +143,7 @@ const Product = () => {
 
     setForm((prev) => ({
       ...prev,
-      thumbnail_image: file,
+      [name]: file,
     }));
   };
 
@@ -173,7 +185,7 @@ const Product = () => {
     if (!form.stain_resistant) temp.stain_resistant = "Required";
     if (!form.elongation) temp.elongation = "Required";
     if (!form.tear_strength) temp.tear_strength = "Required";
-    // if (!form.mrp) temp.mrp = "Required";
+    
     if (!form.mrp) {
       temp.mrp = "Required";
     } else if (isNaN(form.mrp)) {
@@ -182,7 +194,8 @@ const Product = () => {
       temp.mrp = "MRP must be greater than 0";
     }
 
-    if (!form.thumbnail_image) temp.thumbnail_image = "Required";
+    if (!isEditing && !form.thumbnail_image) temp.thumbnail_image = "Required";
+    
     setErrors(temp);
     return Object.keys(temp).length === 0;
   };
@@ -231,9 +244,30 @@ const Product = () => {
     formData.append("anti_yellowing", form.anti_yellowing);
     formData.append("scratch_resistant", form.scratch_resistant);
     formData.append("uv_resistance", form.uv_resistance);
+    formData.append("installation_video_url", form.installation_video_url);
+    
+    // New fields
+    formData.append("tempeerature_resistance", form.tempeerature_resistance);
+    formData.append("peel_adhesion", form.peel_adhesion);
+    formData.append("anti_rockclip", form.anti_rockclip);
+    formData.append("elongation_rate_tpu", form.elongation_rate_tpu);
+    formData.append("elongation_rate_hard", form.elongation_rate_hard);
 
+    // Handle images
     if (form.thumbnail_image instanceof File) {
       formData.append("thumbnail_image", form.thumbnail_image);
+    }
+    if (form.image1 instanceof File) {
+      formData.append("image1", form.image1);
+    }
+    if (form.image2 instanceof File) {
+      formData.append("image2", form.image2);
+    }
+    if (form.image3 instanceof File) {
+      formData.append("image3", form.image3);
+    }
+    if (form.image4 instanceof File) {
+      formData.append("image4", form.image4);
     }
 
     if (isEditing && editId) {
@@ -252,6 +286,7 @@ const Product = () => {
 
     handleReset();
   };
+
   const handleView = (item) => {
     setViewItem(item);
     setIsViewing(true);
@@ -288,7 +323,13 @@ const Product = () => {
       adhesive: item.adhesive || "",
       anti_yellowing: item.anti_yellowing || "",
       scratch_resistant: item.scratch_resistant || "",
-      uv_resistance: item.uv_resistance || "",
+      uv_resistance: item.uv_resistance || false,
+      // New fields
+      tempeerature_resistance: item.tempeerature_resistance || "",
+      peel_adhesion: item.peel_adhesion || "",
+      anti_rockclip: item.anti_rockclip || "",
+      elongation_rate_tpu: item.elongation_rate_tpu || "",
+      elongation_rate_hard: item.elongation_rate_hard || "",
     });
   };
 
@@ -298,7 +339,7 @@ const Product = () => {
         .unwrap()
         .then(() => CommonToast("Product deleted successfully", "success"))
         .then(() => dispatch(getProducts()))
-        .catch(() => CommonToast("Failed to create Product ", "error"));
+        .catch(() => CommonToast("Failed to delete Product", "error"));
     }
   };
 
@@ -323,11 +364,21 @@ const Product = () => {
       tear_strength: "",
       mrp: "",
       thumbnail_image: null,
+      image1: null,
+      image2: null,
+      image3: null,
+      image4: null,
+      installation_video_url: "",
       status: true,
       adhesive: "",
       anti_yellowing: "",
       scratch_resistant: "",
       uv_resistance: false,
+      tempeerature_resistance: "",
+      peel_adhesion: "",
+      anti_rockclip: "",
+      elongation_rate_tpu: "",
+      elongation_rate_hard: "",
     });
     setErrors({});
     setEditId(null);
@@ -338,8 +389,6 @@ const Product = () => {
     (page - 1) * rowsPerPage,
     page * rowsPerPage,
   );
-
-  // if (loading) return <Loader text="Loading products..." fullScreen={true} />;
 
   if (isEditing) {
     return (
@@ -354,6 +403,11 @@ const Product = () => {
 
           <Paper sx={{ p: 3 }}>
             <Stack spacing={2}>
+              {/* Basic Information */}
+              <Typography variant="h6" color="primary" gutterBottom>
+                Basic Information
+              </Typography>
+              
               <TextField
                 label="Product Name"
                 name="product_name"
@@ -374,6 +428,7 @@ const Product = () => {
                 error={!!errors.product_codes}
                 helperText={errors.product_codes}
               />
+
               <TextField
                 label="SKU"
                 name="sku"
@@ -383,6 +438,119 @@ const Product = () => {
                 error={!!errors.sku}
                 helperText={errors.sku}
               />
+
+              <Autocomplete
+                options={categoryList?.data || []}
+                loading={categoryLoading}
+                getOptionLabel={(option) => option?.name || ""}
+                value={
+                  categoryList?.data?.find((c) => c.id === form.category_id) ||
+                  null
+                }
+                onChange={(_, newValue) => {
+                  setForm((prev) => ({
+                    ...prev,
+                    category_id: newValue ? newValue.id : null,
+                  }));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Category"
+                    placeholder="Select a category"
+                    error={!!errors.category_id}
+                    helperText={errors.category_id}
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: <CategoryIcon sx={{ mr: 1 }} />,
+                      endAdornment: (
+                        <>
+                          {categoryLoading ? (
+                            <CircularProgress size={20} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
+
+              <Autocomplete
+                options={materialList || []}
+                loading={materialLoading}
+                getOptionLabel={(option) => option.title || ""}
+                value={
+                  materialList?.find((m) => m.id === form.material_id) || null
+                }
+                onChange={(_, newValue) => {
+                  setForm((prev) => ({
+                    ...prev,
+                    material_id: newValue ? newValue.id : null,
+                  }));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Material"
+                    placeholder="Select a material"
+                    error={!!errors.material_id}
+                    helperText={errors.material_id}
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: <CategoryIcon sx={{ mr: 1 }} />,
+                      endAdornment: (
+                        <>
+                          {materialLoading ? (
+                            <CircularProgress size={20} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
+
+              <Autocomplete
+                options={colorList || []}
+                loading={colorLoading}
+                getOptionLabel={(option) => option.colour_name || ""}
+                value={colorList?.find((c) => c.id === form.colour_id) || null}
+                onChange={(_, newValue) => {
+                  setForm((prev) => ({
+                    ...prev,
+                    colour_id: newValue ? newValue.id : null,
+                  }));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Color"
+                    placeholder="Select a color"
+                    error={!!errors.colour_id}
+                    helperText={errors.colour_id}
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: <CategoryIcon sx={{ mr: 1 }} />,
+                      endAdornment: (
+                        <>
+                          {colorLoading ? <CircularProgress size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
+
+              <Divider sx={{ my: 2 }} />
+
+              {/* Product Specifications */}
+              <Typography variant="h6" color="primary" gutterBottom>
+                Product Specifications
+              </Typography>
+
               <TextField
                 label="Application Area"
                 name="application_area"
@@ -392,6 +560,7 @@ const Product = () => {
                 error={!!errors.application_area}
                 helperText={errors.application_area}
               />
+
               <TextField
                 label="Film Type"
                 name="film_type"
@@ -401,6 +570,7 @@ const Product = () => {
                 error={!!errors.film_type}
                 helperText={errors.film_type}
               />
+
               <TextField
                 label="Finish"
                 name="finish"
@@ -410,6 +580,7 @@ const Product = () => {
                 error={!!errors.finish}
                 helperText={errors.finish}
               />
+
               <TextField
                 label="Specification"
                 name="specification"
@@ -419,6 +590,7 @@ const Product = () => {
                 error={!!errors.specification}
                 helperText={errors.specification}
               />
+
               <TextField
                 label="Thickness"
                 name="thickness"
@@ -428,6 +600,7 @@ const Product = () => {
                 error={!!errors.thickness}
                 helperText={errors.thickness}
               />
+
               <TextField
                 label="Warranty"
                 name="warranty"
@@ -437,6 +610,27 @@ const Product = () => {
                 error={!!errors.warranty}
                 helperText={errors.warranty}
               />
+
+              <TextField
+                label="MRP"
+                name="mrp"
+                fullWidth
+                value={form.mrp}
+                onChange={handleChange}
+                error={!!errors.mrp}
+                helperText={errors.mrp}
+                InputProps={{
+                  startAdornment: <CurrencyRupeeIcon sx={{ mr: 1 }} />,
+                }}
+              />
+
+              <Divider sx={{ my: 2 }} />
+
+              {/* Product Properties */}
+              <Typography variant="h6" color="primary" gutterBottom>
+                Product Properties
+              </Typography>
+
               <TextField
                 label="Hydrophobic"
                 name="hydrophobic"
@@ -476,121 +670,6 @@ const Product = () => {
                 error={!!errors.tear_strength}
                 helperText={errors.tear_strength}
               />
-              <Autocomplete
-                options={categoryList?.data || []}
-                loading={categoryLoading}
-                getOptionLabel={(option) => option?.name || ""}
-                value={
-                  categoryList?.data?.find((c) => c.id === form.category_id) ||
-                  null
-                }
-                onChange={(_, newValue) => {
-                  setForm((prev) => ({
-                    ...prev,
-                    category_id: newValue ? newValue.id : null,
-                  }));
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Category"
-                    placeholder="Select a category"
-                    error={!!errors.category_id}
-                    helperText={errors.category_id}
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: <CategoryIcon sx={{ mr: 1 }} />,
-                      endAdornment: (
-                        <>
-                          {categoryLoading ? (
-                            <CircularProgress size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-              />
-              <Autocomplete
-                options={materialList || []}
-                loading={materialLoading}
-                getOptionLabel={(option) => option.title || ""} // ✅ use title
-                value={
-                  materialList?.find((m) => m.id === form.material_id) || null
-                }
-                onChange={(_, newValue) => {
-                  setForm((prev) => ({
-                    ...prev,
-                    material_id: newValue ? newValue.id : null,
-                  }));
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Material"
-                    placeholder="Select a material"
-                    error={!!errors.material_id}
-                    helperText={errors.material_id}
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: <CategoryIcon sx={{ mr: 1 }} />,
-                      endAdornment: (
-                        <>
-                          {materialLoading ? (
-                            <CircularProgress size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-              />
-              <Autocomplete
-                options={colorList || []}
-                loading={colorLoading}
-                getOptionLabel={(option) => option.colour_name || ""} // use "name" for colors
-                value={colorList?.find((c) => c.id === form.colour_id) || null}
-                onChange={(_, newValue) => {
-                  setForm((prev) => ({
-                    ...prev,
-                    colour_id: newValue ? newValue.id : null,
-                  }));
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Color"
-                    placeholder="Select a color"
-                    error={!!errors.color_id}
-                    helperText={errors.color_id}
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: <CategoryIcon sx={{ mr: 1 }} />, // you can change icon
-                      endAdornment: (
-                        <>
-                          {colorLoading ? <CircularProgress size={20} /> : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-              />
-
-              <TextField
-                label="MRP"
-                name="mrp"
-                fullWidth
-                value={form.mrp}
-                onChange={handleChange}
-                error={!!errors.mrp}
-                helperText={errors.mrp}
-                InputProps={{
-                  startAdornment: <CurrencyRupeeIcon sx={{ mr: 1 }} />,
-                }}
-              />
 
               <TextField
                 label="Adhesive"
@@ -624,10 +703,86 @@ const Product = () => {
                   startAdornment: <SecurityIcon sx={{ mr: 1 }} />,
                 }}
               />
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={form.uv_resistance}
+                    name="uv_resistance"
+                    onChange={handleChange}
+                  />
+                }
+                label="UV Resistance"
+              />
+
+              <Divider sx={{ my: 2 }} />
+
+              {/* New Fields Section */}
+              <Typography variant="h6" color="primary" gutterBottom>
+                Additional Technical Properties
+              </Typography>
+
+              <TextField
+                label="Temperature Resistance"
+                name="tempeerature_resistance"
+                fullWidth
+                value={form.tempeerature_resistance}
+                onChange={handleChange}
+              />
+
+              <TextField
+                label="Peel Adhesion"
+                name="peel_adhesion"
+                fullWidth
+                value={form.peel_adhesion}
+                onChange={handleChange}
+                placeholder="e.g., <30.0"
+              />
+
+              <TextField
+                label="Anti Rockclip"
+                name="anti_rockclip"
+                fullWidth
+                value={form.anti_rockclip}
+                onChange={handleChange}
+                placeholder="e.g., pass"
+              />
+
+              <TextField
+                label="Elongation Rate TPU"
+                name="elongation_rate_tpu"
+                fullWidth
+                value={form.elongation_rate_tpu}
+                onChange={handleChange}
+                placeholder="e.g., 200%"
+              />
+
+              <TextField
+                label="Elongation Rate Hard"
+                name="elongation_rate_hard"
+                fullWidth
+                value={form.elongation_rate_hard}
+                onChange={handleChange}
+                placeholder="e.g., 250%"
+              />
+
+              <Divider sx={{ my: 2 }} />
+
+              {/* Images Section */}
+              <Typography variant="h6" color="primary" gutterBottom>
+                Product Images
+              </Typography>
+
               <TextField
                 label="Thumbnail Image"
                 fullWidth
-                value={form.thumbnail_image?.name || ""}
+                value={
+                  form.thumbnail_image instanceof File
+                    ? form.thumbnail_image.name
+                    : form.thumbnail_image
+                    ? "Current image uploaded"
+                    : ""
+                }
                 InputProps={{
                   readOnly: true,
                   startAdornment: (
@@ -646,6 +801,7 @@ const Product = () => {
                       Browse
                       <input
                         type="file"
+                        name="thumbnail_image"
                         hidden
                         accept="image/*"
                         onChange={handleFileChange}
@@ -654,35 +810,188 @@ const Product = () => {
                   ),
                 }}
                 placeholder="Select thumbnail image"
+                error={!!errors.thumbnail_image}
+                helperText={errors.thumbnail_image}
               />
 
-              <Stack direction="row" spacing={2}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={form.status}
-                      name="status"
-                      onChange={handleChange}
-                    />
-                  }
-                  label="Active"
-                />
-              </Stack>
+              <TextField
+                label="Gallery Image 1"
+                fullWidth
+                value={
+                  form.image1 instanceof File
+                    ? form.image1.name
+                    : form.image1
+                    ? "Current image uploaded"
+                    : ""
+                }
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <ImageIcon sx={{ mr: 1, color: "#7E7E7E" }} />
+                  ),
+                  endAdornment: (
+                    <Button
+                      component="label"
+                      sx={{
+                        bgcolor: "#D20000",
+                        color: "#FAFAFA",
+                        textTransform: "none",
+                        "&:hover": { bgcolor: "#ED3434" },
+                      }}
+                    >
+                      Browse
+                      <input
+                        type="file"
+                        name="image1"
+                        hidden
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                    </Button>
+                  ),
+                }}
+                placeholder="Select gallery image 1"
+              />
 
-              {/* <Stack direction="row" justifyContent="flex-end" spacing={2}>
-                <Button onClick={handleReset}>Cancel</Button>
-                <Button
-                  variant="contained"
-                  onClick={handleSubmit}
-                  disabled={createLoading || updateLoading}
-                >
-                  {createLoading || updateLoading
-                    ? "Saving..."
-                    : editId
-                      ? "Update"
-                      : "Save"}
-                </Button>
-              </Stack> */}
+              <TextField
+                label="Gallery Image 2"
+                fullWidth
+                value={
+                  form.image2 instanceof File
+                    ? form.image2.name
+                    : form.image2
+                    ? "Current image uploaded"
+                    : ""
+                }
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <ImageIcon sx={{ mr: 1, color: "#7E7E7E" }} />
+                  ),
+                  endAdornment: (
+                    <Button
+                      component="label"
+                      sx={{
+                        bgcolor: "#D20000",
+                        color: "#FAFAFA",
+                        textTransform: "none",
+                        "&:hover": { bgcolor: "#ED3434" },
+                      }}
+                    >
+                      Browse
+                      <input
+                        type="file"
+                        name="image2"
+                        hidden
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                    </Button>
+                  ),
+                }}
+                placeholder="Select gallery image 2"
+              />
+
+              <TextField
+                label="Gallery Image 3"
+                fullWidth
+                value={
+                  form.image3 instanceof File
+                    ? form.image3.name
+                    : form.image3
+                    ? "Current image uploaded"
+                    : ""
+                }
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <ImageIcon sx={{ mr: 1, color: "#7E7E7E" }} />
+                  ),
+                  endAdornment: (
+                    <Button
+                      component="label"
+                      sx={{
+                        bgcolor: "#D20000",
+                        color: "#FAFAFA",
+                        textTransform: "none",
+                        "&:hover": { bgcolor: "#ED3434" },
+                      }}
+                    >
+                      Browse
+                      <input
+                        type="file"
+                        name="image3"
+                        hidden
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                    </Button>
+                  ),
+                }}
+                placeholder="Select gallery image 3"
+              />
+
+              <TextField
+                label="Gallery Image 4"
+                fullWidth
+                value={
+                  form.image4 instanceof File
+                    ? form.image4.name
+                    : form.image4
+                    ? "Current image uploaded"
+                    : ""
+                }
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <ImageIcon sx={{ mr: 1, color: "#7E7E7E" }} />
+                  ),
+                  endAdornment: (
+                    <Button
+                      component="label"
+                      sx={{
+                        bgcolor: "#D20000",
+                        color: "#FAFAFA",
+                        textTransform: "none",
+                        "&:hover": { bgcolor: "#ED3434" },
+                      }}
+                    >
+                      Browse
+                      <input
+                        type="file"
+                        name="image4"
+                        hidden
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                    </Button>
+                  ),
+                }}
+                placeholder="Select gallery image 4"
+              />
+
+              <TextField
+                label="Installation Video URL"
+                name="installation_video_url"
+                fullWidth
+                value={form.installation_video_url}
+                onChange={handleChange}
+                placeholder="https://youtu.be/..."
+              />
+
+              <Divider sx={{ my: 2 }} />
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={form.status}
+                    name="status"
+                    onChange={handleChange}
+                  />
+                }
+                label="Active Status"
+              />
+
               <Stack direction="row" justifyContent="flex-end" spacing={2}>
                 <CommonButton variant="outlined" onClick={handleReset}>
                   Cancel
@@ -692,7 +1001,7 @@ const Product = () => {
                   onClick={handleSubmit}
                   disabled={createLoading || loading}
                 >
-                  {createLoading || loading ? "Saving..." : "Save"}
+                  {createLoading || loading ? "Saving..." : editId ? "Update" : "Save"}
                 </CommonButton>
               </Stack>
             </Stack>
@@ -701,6 +1010,7 @@ const Product = () => {
       </Box>
     );
   }
+
   if (isViewing && viewItem) {
     return (
       <Box mt={4}>
@@ -744,38 +1054,38 @@ const Product = () => {
 
               <Divider sx={{ width: "100%", my: 1 }} />
 
-              {/* Details row */}
-              <Grid container spacing={1} textAlign="center">
-                <Grid item xs>
-                  <Typography variant="subtitle2">MRP</Typography>
+              {/* Basic Details */}
+              <Grid container spacing={2} textAlign="center">
+                <Grid item xs={6} sm={4} md={3}>
+                  <Typography variant="subtitle2" fontWeight={600}>MRP</Typography>
                   <Typography>₹ {viewItem.mrp}</Typography>
                 </Grid>
-                <Grid item xs>
-                  <Typography variant="subtitle2">Application Area</Typography>
+                <Grid item xs={6} sm={4} md={3}>
+                  <Typography variant="subtitle2" fontWeight={600}>Application Area</Typography>
                   <Typography>{viewItem.application_area}</Typography>
                 </Grid>
-                <Grid item xs>
-                  <Typography variant="subtitle2">Film Type</Typography>
+                <Grid item xs={6} sm={4} md={3}>
+                  <Typography variant="subtitle2" fontWeight={600}>Film Type</Typography>
                   <Typography>{viewItem.film_type}</Typography>
                 </Grid>
-                <Grid item xs>
-                  <Typography variant="subtitle2">Finish</Typography>
+                <Grid item xs={6} sm={4} md={3}>
+                  <Typography variant="subtitle2" fontWeight={600}>Finish</Typography>
                   <Typography>{viewItem.finish}</Typography>
                 </Grid>
-                <Grid item xs>
-                  <Typography variant="subtitle2">Specification</Typography>
+                <Grid item xs={6} sm={4} md={3}>
+                  <Typography variant="subtitle2" fontWeight={600}>Specification</Typography>
                   <Typography>{viewItem.specification}</Typography>
                 </Grid>
-                <Grid item xs>
-                  <Typography variant="subtitle2">Thickness</Typography>
+                <Grid item xs={6} sm={4} md={3}>
+                  <Typography variant="subtitle2" fontWeight={600}>Thickness</Typography>
                   <Typography>{viewItem.thickness}</Typography>
                 </Grid>
-                <Grid item xs>
-                  <Typography variant="subtitle2">Warranty</Typography>
+                <Grid item xs={6} sm={4} md={3}>
+                  <Typography variant="subtitle2" fontWeight={600}>Warranty</Typography>
                   <Typography>{viewItem.warranty}</Typography>
                 </Grid>
-                <Grid item xs>
-                  <Typography variant="subtitle2">Status</Typography>
+                <Grid item xs={6} sm={4} md={3}>
+                  <Typography variant="subtitle2" fontWeight={600}>Status</Typography>
                   <Chip
                     label={viewItem.status ? "Active" : "Inactive"}
                     color={viewItem.status ? "success" : "default"}
@@ -784,24 +1094,116 @@ const Product = () => {
                 </Grid>
               </Grid>
 
-              <Divider sx={{ width: "100%", my: 1 }} />
+              <Divider sx={{ width: "100%", my: 2 }} />
 
-              {/* Properties row */}
-              <Stack direction="row" flexWrap="wrap" spacing={2}>
-                <Typography>Hydrophobic: {viewItem.hydrophobic}</Typography>
-                <Typography>
-                  Stain Resistant: {viewItem.stain_resistant}
-                </Typography>
-                <Typography>Elongation: {viewItem.elongation}</Typography>
-                <Typography>Tear Strength: {viewItem.tear_strength}</Typography>
-                <Typography>Adhesive: {String(viewItem.adhesive)}</Typography>
-                <Typography>
-                  Anti Yellowing: {String(viewItem.anti_yellowing)}
-                </Typography>
-                <Typography>
-                  Scratch Resistant: {String(viewItem.scratch_resistant)}
-                </Typography>
-              </Stack>
+              {/* Properties */}
+              <Typography variant="h6" fontWeight={600} alignSelf="flex-start">
+                Properties
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Hydrophobic</Typography>
+                  <Typography>{viewItem.hydrophobic}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Stain Resistant</Typography>
+                  <Typography>{viewItem.stain_resistant}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Elongation</Typography>
+                  <Typography>{viewItem.elongation}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Tear Strength</Typography>
+                  <Typography>{viewItem.tear_strength}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Adhesive</Typography>
+                  <Typography>{viewItem.adhesive || "N/A"}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Anti Yellowing</Typography>
+                  <Typography>{viewItem.anti_yellowing || "N/A"}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Scratch Resistant</Typography>
+                  <Typography>{viewItem.scratch_resistant || "N/A"}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>UV Resistance</Typography>
+                  <Typography>{viewItem.uv_resistance ? "Yes" : "No"}</Typography>
+                </Grid>
+              </Grid>
+
+              <Divider sx={{ width: "100%", my: 2 }} />
+
+              {/* New Technical Properties */}
+              <Typography variant="h6" fontWeight={600} alignSelf="flex-start">
+                Technical Properties
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Temperature Resistance</Typography>
+                  <Typography>{viewItem.tempeerature_resistance || "N/A"}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Peel Adhesion</Typography>
+                  <Typography>{viewItem.peel_adhesion || "N/A"}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Anti Rockclip</Typography>
+                  <Typography>{viewItem.anti_rockclip || "N/A"}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Elongation Rate TPU</Typography>
+                  <Typography>{viewItem.elongation_rate_tpu || "N/A"}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography variant="subtitle2" fontWeight={600}>Elongation Rate Hard</Typography>
+                  <Typography>{viewItem.elongation_rate_hard || "N/A"}</Typography>
+                </Grid>
+              </Grid>
+
+              {/* Gallery Images */}
+              {viewItem.product_images && viewItem.product_images.length > 0 && (
+                <>
+                  <Divider sx={{ width: "100%", my: 2 }} />
+                  <Typography variant="h6" fontWeight={600} alignSelf="flex-start">
+                    Gallery Images
+                  </Typography>
+                  <Grid container spacing={2}>
+                    {viewItem.product_images.map((img, idx) => (
+                      <Grid item xs={6} sm={4} md={3} key={idx}>
+                        <Avatar
+                          src={`https://hogofilm.pythonanywhere.com${img}`}
+                          variant="rounded"
+                          sx={{ width: "100%", height: 120 }}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+                </>
+              )}
+
+              {/* Installation Video */}
+              {viewItem.installation_video_url && (
+                <>
+                  <Divider sx={{ width: "100%", my: 2 }} />
+                  <Typography variant="h6" fontWeight={600} alignSelf="flex-start">
+                    Installation Video
+                  </Typography>
+                  <Typography>
+                    <a 
+                      href={viewItem.installation_video_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{ color: "#D20000" }}
+                    >
+                      {viewItem.installation_video_url}
+                    </a>
+                  </Typography>
+                </>
+              )}
             </Stack>
           </Paper>
         </Box>
@@ -878,13 +1280,6 @@ const Product = () => {
               paginatedData.map((p, i) => (
                 <TableRow key={p.id} hover>
                   <TableCell>{(page - 1) * rowsPerPage + i + 1}</TableCell>
-                  {/* <TableCell>
-                  <Avatar
-                    src={`https://hogofilm.pythonanywhere.com/${p.thumbnail_image}`}
-                    variant="rounded"
-                    sx={{ width: 48, height: 48 }}
-                  />
-                </TableCell> */}
                   <TableCell>
                     <Box sx={{ position: "relative", width: 48, height: 48 }}>
                       {!imageLoaded && (
@@ -921,7 +1316,7 @@ const Product = () => {
                   <TableCell>
                     <Box display="flex" alignItems="center" gap={1}>
                       <Switch
-                        checked={p.status} // true = On, false = Off
+                        checked={p.status}
                         onChange={() => handleStatusToggle(p)}
                         color="success"
                         size="small"
@@ -966,7 +1361,7 @@ const Product = () => {
                 </TableRow>
               ))
             )}
-            {list.length === 0 && (
+            {list.length === 0 && !loading && (
               <TableRow>
                 <TableCell colSpan={9} align="center">
                   No products found
