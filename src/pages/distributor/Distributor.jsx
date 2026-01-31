@@ -210,7 +210,7 @@ const Distributors = () => {
     aadhaar_front: null,
     aadhaar_back: null,
     owner_photo: null,
-    address_proof: null,
+    // address_proof: null,
     address_proof_copy: null,
     signatory_pan_copy: null,
     cancelled_cheque: null,
@@ -464,7 +464,7 @@ const Distributors = () => {
           aadhaar_front: null,
           aadhaar_back: null,
           owner_photo: null,
-          address_proof: null,
+          // address_proof: null,
           address_proof_copy: null,
           signatory_pan_copy: null,
           cancelled_cheque: null,
@@ -514,7 +514,7 @@ const Distributors = () => {
       owner_name: "",
       owner_dob: "",
       aadhaar_number: "",
-      address_proof: null,
+      address_proof: "Aadhaar",
       authorized_signatory_name: "",
       signatory_pan: "",
       firm_type: "company",
@@ -1365,7 +1365,18 @@ const Distributors = () => {
                 {renderFileUpload("Aadhaar Front", "aadhaar_front")}
                 {renderFileUpload("Aadhaar Back", "aadhaar_back")}
                 {renderFileUpload("Owner Photo", "owner_photo")}
-                {renderFileUpload("Address Proof", "address_proof")}
+                {/* {renderFileUpload("Address Proof", "address_proof")} */}
+                {/* <Grid item xs={12} sm={6}> */}
+  {renderTextField("Address Proof Type", "address_proof", "text", {
+    select: true,
+    children: [
+      <MenuItem key="Aadhaar" value="Aadhaar">Aadhaar</MenuItem>,
+      <MenuItem key="Passport" value="Passport">Passport</MenuItem>,
+      <MenuItem key="Voter ID" value="Voter ID">Voter ID</MenuItem>
+    ]
+  })}
+{/* </Grid> */}
+
                 {renderFileUpload("Address Proof Copy", "address_proof_copy")}
               </Grid>
             </CardContent>
