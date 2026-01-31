@@ -12,9 +12,15 @@ import { getCategory } from "../../feature/category/categoryThunks";
 import { getBanners } from "../../feature/banner/bannerThunks";
 import { getMaterials } from "../../feature/material/materialThunks";
 import { getColors } from "../../feature/color/colorThunks";
+import { getCost } from "../../feature/cost/costThunks";
+import { getShipments } from "../../feature/shipments/shipmentThunks";
+import { getShipmentProducts } from "../../feature/shipmentProducts/shipmentProductThunks";
+
 import { selectColors } from "../../feature/color/colorSelector";
 import { selectCostList } from "../../feature/cost/costSelector";
-import { getCost } from "../../feature/cost/costThunks";
+import { selectBannerList } from "../../feature/banner/bannerSelector";
+import { selectShipmentOptions } from "../../feature/shipments/shipmentSelector";
+import { selectShipmentProductOptions } from "../../feature/shipmentProducts/shipmentProductSelector";
 
 const useStyles = makeStyles(() => ({
   main: {
@@ -97,15 +103,20 @@ const Dashboard = () => {
     dispatch(getMaterials());
     dispatch(getColors());
     dispatch(getCost());
+    dispatch(getShipments());
+    dispatch(getShipmentProducts());
   }, [dispatch]);
 
   const products = useSelector((state) => state.product?.list || []);
   const categories = useSelector((state) => state.category?.list || []);
-  const banners = useSelector((state) => state.banner?.list || []);
+  const banners = useSelector(selectBannerList);
   const materials = useSelector((state) => state.material?.list || []);
   const colors = useSelector(selectColors);
   const costs = useSelector(selectCostList);
-
+  const shipments = useSelector(selectShipmentOptions);
+  const shipmentProducts = useSelector(selectShipmentProductOptions);
+  console.log("shipments:::", shipments);
+  console.log("shipmentProducts:::", shipmentProducts);
   const cards = [
     {
       title: "Materials",
@@ -129,17 +140,17 @@ const Dashboard = () => {
     },
     {
       title: "Banners",
-      value: banners.length,
+      value: banners?.length,
       icon: <PeopleIcon />,
     },
     {
       title: "Shipments",
-      value: 0,
+      value: shipments?.length,
       icon: <BarChartIcon />,
     },
     {
       title: "Shipment Products",
-      value: 0,
+      value: shipmentProducts?.length,
       icon: <PeopleIcon />,
     },
   ];
