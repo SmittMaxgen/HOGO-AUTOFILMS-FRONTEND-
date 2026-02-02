@@ -94,7 +94,6 @@ const Category = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       if (searchQuery !== "") {
-        console.log("searchQuery", searchQuery);
         dispatch(getCategory(searchQuery));
       } else {
         dispatch(getCategory(""));

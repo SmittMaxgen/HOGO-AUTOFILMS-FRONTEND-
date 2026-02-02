@@ -15,12 +15,14 @@ import { getColors } from "../../feature/color/colorThunks";
 import { getCost } from "../../feature/cost/costThunks";
 import { getShipments } from "../../feature/shipments/shipmentThunks";
 import { getShipmentProducts } from "../../feature/shipmentProducts/shipmentProductThunks";
+import { getInventorySerials } from "../../feature/inventorySerials/inventorySerialsThunks";
 
 import { selectColors } from "../../feature/color/colorSelector";
 import { selectCostList } from "../../feature/cost/costSelector";
 import { selectBannerList } from "../../feature/banner/bannerSelector";
 import { selectShipmentOptions } from "../../feature/shipments/shipmentSelector";
 import { selectShipmentProductOptions } from "../../feature/shipmentProducts/shipmentProductSelector";
+import { selectInventorySerials } from "../../feature/inventorySerials/inventorySerialsSelector";
 
 const useStyles = makeStyles(() => ({
   main: {
@@ -105,6 +107,7 @@ const Dashboard = () => {
     dispatch(getCost());
     dispatch(getShipments());
     dispatch(getShipmentProducts());
+    dispatch(getInventorySerials());
   }, [dispatch]);
 
   const products = useSelector((state) => state.product?.list || []);
@@ -115,8 +118,7 @@ const Dashboard = () => {
   const costs = useSelector(selectCostList);
   const shipments = useSelector(selectShipmentOptions);
   const shipmentProducts = useSelector(selectShipmentProductOptions);
-  console.log("shipments:::", shipments);
-  console.log("shipmentProducts:::", shipmentProducts);
+  const inventorySerials = useSelector(selectInventorySerials);
   const cards = [
     {
       title: "Materials",
@@ -151,6 +153,11 @@ const Dashboard = () => {
     {
       title: "Shipment Products",
       value: shipmentProducts?.length,
+      icon: <PeopleIcon />,
+    },
+    {
+      title: "Inventory Serials",
+      value: inventorySerials?.length,
       icon: <PeopleIcon />,
     },
   ];

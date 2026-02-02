@@ -80,7 +80,6 @@ const AccountSettings = () => {
   };
 
   const handleSave = () => {
-    console.log("Saved Profile", profile);
   };
 
   return (

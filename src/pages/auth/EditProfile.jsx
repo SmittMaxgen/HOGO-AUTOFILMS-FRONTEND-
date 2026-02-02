@@ -61,7 +61,6 @@ const EditProfile = () => {
     )
       .unwrap()
       .then(() => {
-        console.log("comes????");
         setIsEditing(false);
         CommonToast("Profile updated successfully", "success");
         dispatch(AdminUser());

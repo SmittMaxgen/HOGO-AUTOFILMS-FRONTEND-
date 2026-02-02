@@ -8,7 +8,6 @@ export const AdminUser = createAsyncThunk(
       const response = await axiosInstance.get(`/admin_profile/`);
       return response.data;
     } catch (error) {
-      console.log("error::::", error);
       if (error.code === "ERR_BAD_REQUEST") {
         localStorage.clear();
       }
