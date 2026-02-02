@@ -12,8 +12,18 @@ const CommonSearchField = ({
   const [inputValue, setInputValue] = useState(value);
 
   useEffect(() => {
-    if (onChange) onChange(inputValue);
-  }, [inputValue, onChange]);
+    setInputValue(value);
+  }, [value]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (onChange) {
+        onChange(inputValue);
+      }
+    }, 500); 
+
+    return () => clearTimeout(timeoutId);
+  }, [inputValue]);
 
   const handleClear = () => {
     setInputValue("");

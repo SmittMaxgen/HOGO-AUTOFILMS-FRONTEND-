@@ -709,6 +709,16 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           <BusinessIcon />
           {!collapsed && "Distributor"}
         </Box>
+      
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/inventory_serials") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/inventory_serials")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Inventory Serials"}
+        </Box>
 
         <Box className={classes.spacer} />
 

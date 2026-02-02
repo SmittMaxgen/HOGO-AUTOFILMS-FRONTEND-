@@ -9,6 +9,7 @@ import Product from "../pages/product/Products";
 import Cost from "../pages/cost/Cost";
 import Shipment from "../pages/shipment/Shipment";
 import ShipmentProducts from "../pages/shipmentProduct/ShipmentProduct";
+import InventorySerial from "../pages/shipmentProduct/InventorySerial";
 import EditProfile from "../pages/auth/EditProfile";
 import AccountSettings from "../pages/auth/AccountSettings";
 import Distributors from "../pages/distributor/Distributor";
@@ -41,6 +42,7 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/profile" element={<EditProfile />} />
           <Route path="/account_settings" element={<AccountSettings />} />
           <Route path="/distributor-information" element={<Distributors />} />
+          <Route path="/inventory_serials" element={<InventorySerial />} />
         </Route>
       </Route>
     </Routes>

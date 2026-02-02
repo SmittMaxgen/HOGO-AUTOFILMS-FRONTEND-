@@ -9,6 +9,7 @@ import categoryReducer from "../feature/category/categorySlice";
 import costReducer from "../feature/cost/costSlice";
 import shipmentReducer from "../feature/shipments/shipmentSlice";
 import shipmentProductReducer from "../feature/shipmentProducts/shipmentProductSlice";
+import inventorySerialReducer from "../feature/inventorySerials/inventorySerialsSlice";
 import forgotPasswordReducer from "../feature/profileSettings/profileSettingsSlice";
 import distributorReducer from "../feature/distributors/distributorSlice";
 
@@ -24,6 +25,7 @@ export const store = configureStore({
     cost: costReducer,
     shipment: shipmentReducer,
     shipmentProduct: shipmentProductReducer,
+    inventorySerial: inventorySerialReducer,
     forgotPassword: forgotPasswordReducer,
     distributor: distributorReducer,
   },
