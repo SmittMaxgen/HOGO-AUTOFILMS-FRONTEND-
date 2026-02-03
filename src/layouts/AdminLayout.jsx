@@ -336,6 +336,7 @@ const useStyles = makeStyles(() => ({
     top: 0,
     left: 0,
     height: "100vh",
+    overflowY: "scroll",
     backgroundColor: SIDEBAR_BG,
     padding: "1.2rem",
     display: "flex",
@@ -536,6 +537,8 @@ const AdminLayout = ({ toggleTheme, mode }) => {
     { label: "Shipment", path: "/shipments" },
     { label: "Shipment Products", path: "/shipments_products" },
     { label: "Distributors", path: "/distributor-information" },
+    { label: "Inventory Serials", path: "/inventory_serials" },
+    { label: "Warranty", path: "/warranty" },
   ];
   // Filter pages by search query
   const filteredPages = pages.filter((p) =>
@@ -709,7 +712,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           <BusinessIcon />
           {!collapsed && "Distributor"}
         </Box>
-      
+
         <Box
           className={`${classes.sidebarItem} ${
             isActive("/inventory_serials") ? classes.activeItem : ""
@@ -718,6 +721,16 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <BusinessIcon />
           {!collapsed && "Inventory Serials"}
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/warranty") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/warranty")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Warranty"}
         </Box>
 
         <Box className={classes.spacer} />

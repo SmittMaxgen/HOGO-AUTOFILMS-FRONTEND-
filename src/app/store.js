@@ -12,6 +12,7 @@ import shipmentProductReducer from "../feature/shipmentProducts/shipmentProductS
 import inventorySerialReducer from "../feature/inventorySerials/inventorySerialsSlice";
 import forgotPasswordReducer from "../feature/profileSettings/profileSettingsSlice";
 import distributorReducer from "../feature/distributors/distributorSlice";
+import warrantyReducer from "../feature/Warranty/warrantySlice";
 
 export const store = configureStore({
   reducer: {
@@ -28,5 +29,6 @@ export const store = configureStore({
     inventorySerial: inventorySerialReducer,
     forgotPassword: forgotPasswordReducer,
     distributor: distributorReducer,
+    warranty: warrantyReducer,
   },
 });

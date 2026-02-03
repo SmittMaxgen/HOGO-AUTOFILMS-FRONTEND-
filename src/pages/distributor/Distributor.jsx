@@ -142,7 +142,6 @@ const Distributors = () => {
   const distributors = useSelector(selectDistributors);
   const loading = useSelector(selectDistributorLoading);
   const error = useSelector(selectDistributorError);
-  console.log("error:::",error)
   const createLoading = useSelector(createDistributorLoading);
 
   // ==================== STATE MANAGEMENT ====================
@@ -694,7 +693,6 @@ const Distributors = () => {
       
       const result = await dispatch(createDistributor(formDataToSend));
       // CommonToast("Distributor created successfully", "success");
-    console.log("result:::",result)
       if (result.type.includes("fulfilled")) {
         dispatch(getDistributors());
         handleBackToList();

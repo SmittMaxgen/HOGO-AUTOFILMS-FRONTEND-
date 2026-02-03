@@ -373,7 +373,11 @@ const ShipmentProducts = () => {
             <TableRow>
               {[
                 "Sr",
-                "Shipment",
+                "batch_data",
+                "Landed cost",
+                "INR/UNIT",
+                "USD/UNIT",
+                "Allocation Basis",
                 "Product",
                 "Qty",
                 "Cost (INR)",
@@ -400,14 +404,19 @@ const ShipmentProducts = () => {
               paginatedData?.map((item, index) => (
                 <TableRow key={item.id}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{item.shipment_id}</TableCell>
+                  <TableCell>{item.batch_data}</TableCell>
+                  <TableCell>{item.landed_cost_allocated}</TableCell>
+                  <TableCell>{item.per_unit_cost_inr}</TableCell>
+                  <TableCell>{item.per_unit_cost_usd}</TableCell>
+                  <TableCell>{item.allocation_basis}</TableCell>
+                  {/* <TableCell>{item.shipment_id}</TableCell> */}
                   <TableCell>{item.product_id}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell>{item.per_unit_cost_inr}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => handleView(item)}>
+                    {/* <IconButton onClick={() => handleView(item)}>
                       <VisibilityIcon />
-                    </IconButton>
+                    </IconButton> */}
                     <IconButton
                       onClick={() => handleEdit(item)}
                       color="warning"
