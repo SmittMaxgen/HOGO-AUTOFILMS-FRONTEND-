@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -57,9 +56,12 @@ import {
 import {
   selectDistributors,
   selectDistributorLoading,
+  createDistributorLoading,
+  selectDistributorError
 } from "../../feature/distributors/distributorSelector";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
+import CommonToast from "../../components/commonComponents/Toster";
 
 const BASE_URL = "https://hogofilm.pythonanywhere.com";
 
@@ -139,9 +141,12 @@ const Distributors = () => {
   const dispatch = useDispatch();
   const distributors = useSelector(selectDistributors);
   const loading = useSelector(selectDistributorLoading);
+  const error = useSelector(selectDistributorError);
+  console.log("error:::",error)
+  const createLoading = useSelector(createDistributorLoading);
 
   // ==================== STATE MANAGEMENT ====================
-  
+
   const [selectedDistributor, setSelectedDistributor] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const [editMode, setEditMode] = useState(false);
@@ -149,6 +154,7 @@ const Distributors = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [backendError, setBackendError] = useState(null);
+  const [validationAlert, setValidationAlert] = useState(null);
 
   // Form states
   const [formData, setFormData] = useState({});
@@ -156,6 +162,7 @@ const Distributors = () => {
   // New distributor form with proper defaults
   const [newDistributorForm, setNewDistributorForm] = useState({
     distributor_name: "",
+    password: "",
     distributor_type: "Pvt Ltd",
     brand_name: "",
     email_id: "",
@@ -201,6 +208,7 @@ const Distributors = () => {
     kyc_verified_by: "Admin",
     remarks: "",
     credit_limit: "",
+    address_proof: "Aadhaar",
   });
 
   // File states for new distributor
@@ -210,7 +218,6 @@ const Distributors = () => {
     aadhaar_front: null,
     aadhaar_back: null,
     owner_photo: null,
-    // address_proof: null,
     address_proof_copy: null,
     signatory_pan_copy: null,
     cancelled_cheque: null,
@@ -232,19 +239,48 @@ const Distributors = () => {
   const validateForm = () => {
     const errors = {};
 
-    // Required text fields
+    // TAB 0: Basic Information - Required Fields
     if (!newDistributorForm.distributor_name.trim()) {
       errors.distributor_name = "Distributor name is required";
+    }
+    if (!newDistributorForm.password.trim()) {
+      errors.password = "Password is required";
+    }
+    if (!newDistributorForm.distributor_type.trim()) {
+      errors.distributor_type = "Distributor type is required";
+    }
+    if (!newDistributorForm.owner_name.trim()) {
+      errors.owner_name = "Owner name is required";
+    }
+    if (!newDistributorForm.date_of_registration) {
+      errors.date_of_registration = "Date of registration is required";
+    }
+    if (!newDistributorForm.sales_region) {
+      errors.sales_region = "Sales region is required";
+    }
+    if (!newDistributorForm.authorized_products) {
+      errors.authorized_products = "Authorized Products is required";
+    }
+
+    // TAB 1: Contact & Address - Required Fields
+    if (!newDistributorForm.contact_person_name.trim()) {
+      errors.contact_person_name = "Contact person name is required";
+    }
+    if (!newDistributorForm.designation.trim()) {
+      errors.designation = "Designation is required";
+    }
+    if (!newDistributorForm.mobile_number.trim()) {
+      errors.mobile_number = "Mobile number is required";
+    } else if (!/^\d{10}$/.test(newDistributorForm.mobile_number)) {
+      errors.mobile_number = "Mobile number must be 10 digits";
     }
     if (!newDistributorForm.email_id.trim()) {
       errors.email_id = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(newDistributorForm.email_id)) {
       errors.email_id = "Email is invalid";
     }
-    if (!newDistributorForm.mobile_number.trim()) {
-      errors.mobile_number = "Mobile number is required";
-    } else if (!/^\d{10}$/.test(newDistributorForm.mobile_number)) {
-      errors.mobile_number = "Mobile number must be 10 digits";
+    if (!newDistributorForm.address_line_1.trim()) {
+      errors.address_line_1 = "Address line 1 is required";
     }
     if (!newDistributorForm.city.trim()) {
       errors.city = "City is required";
@@ -252,23 +288,270 @@ const Distributors = () => {
     if (!newDistributorForm.state.trim()) {
       errors.state = "State is required";
     }
-    if (!newDistributorForm.owner_name.trim()) {
-      errors.owner_name = "Owner name is required";
+    if (!newDistributorForm.pincode.trim()) {
+      errors.pincode = "Pin code is required";
+    } else if (!/^\d{6}$/.test(newDistributorForm.pincode)) {
+      errors.pincode = "Pin code must be 6 digits";
+    }
+
+    // TAB 2: Bank & Financial - Required Fields
+    if (!newDistributorForm.bank_account_name.trim()) {
+      errors.bank_account_name = "Bank account name is required";
+    }
+    if (!newDistributorForm.bank_name.trim()) {
+      errors.bank_name = "Bank name is required";
+    }
+    if (!newDistributorForm.branch_name.trim()) {
+      errors.branch_name = "Branch name is required";
+    }
+    if (!newDistributorForm.account_number.trim()) {
+      errors.account_number = "Account number is required";
+    }
+    if (!newDistributorForm.ifsc_code.trim()) {
+      errors.ifsc_code = "IFSC code is required";
+    }
+    if (!newDistributorForm.payment_terms_days) {
+      errors.payment_terms_days = "Payment terms is required";
+    }
+    if (!newDistFiles.cancelled_cheque) {
+      errors.cancelled_cheque = "Cancelled cheque is required";
+    }
+
+    // TAB 3: Distribution Capability - Optional but validate if warehouse is available
+    if (
+      newDistributorForm.warehouse_available &&
+      !newDistributorForm.warehouse_address.trim() && typeof newDistributorForm.warehouse_available !== "boolean"
+    ) {
+      errors.warehouse_address =
+        "Warehouse address is required when warehouse is available";
+    }
+
+
+    // TAB 4: Business & Legal - Required Fields
+    if (!newDistributorForm.gst_number.trim()) {
+      errors.gst_number = "GST number is required";
+    }
+    if (!newDistributorForm.years_in_business.trim()) {
+      errors.years_in_business = "Years in business is required";
+    }
+    if (!newDistributorForm.pan_number.trim()) {
+      errors.pan_number = "PAN number is required";
+    }
+    if (!newDistFiles.gst_certificate) {
+      errors.gst_certificate = "GST certificate is required";
+    }
+    if (!newDistFiles.pan_card_copy) {
+      errors.pan_card_copy = "PAN card copy is required";
+    }
+
+    // TAB 5: KYC – Individual - Required Fields
+    if (!newDistributorForm.owner_dob) {
+      errors.owner_dob = "Owner date of birth is required";
     }
     if (!newDistributorForm.aadhaar_number.trim()) {
       errors.aadhaar_number = "Aadhaar number is required";
     } else if (!/^\d{12}$/.test(newDistributorForm.aadhaar_number)) {
       errors.aadhaar_number = "Aadhaar number must be 12 digits";
     }
-    if (!newDistributorForm.payment_terms_days) {
-      errors.payment_terms_days = "Payment terms is required";
+    if (!newDistFiles.aadhaar_front) {
+      errors.aadhaar_front = "Aadhaar front copy is required";
     }
+    if (!newDistributorForm.monthly_distribution_capacity) {
+      errors.monthly_distribution_capacity =
+        "Monthly distribution capacity is required";
+    }
+    if (!newDistributorForm.service_cities) {
+      errors.service_cities = "Service cities capacity is required";
+    }
+    if (!newDistFiles.aadhaar_back) {
+      errors.aadhaar_back = "Aadhaar back copy is required";
+    }
+    if (!newDistFiles.owner_photo) {
+      errors.owner_photo = "Owner photo is required";
+    }
+    if (!newDistributorForm.address_proof.trim()) {
+      errors.address_proof = "Address proof type is required";
+    }
+    if (!newDistFiles.address_proof_copy) {
+      errors.address_proof_copy = "Address proof copy is required";
+    }
+
+    // TAB 6: KYC – Company - Required for company types
+    if (newDistributorForm.firm_type === "company") {
+      if (!newDistributorForm.authorized_signatory_name.trim()) {
+        errors.authorized_signatory_name =
+          "Authorized signatory name is required for companies";
+      }
+      if (!newDistributorForm.signatory_pan?.trim()) {
+        errors.signatory_pan = "Signatory PAN is required for companies";
+      } else if (newDistributorForm.signatory_pan.trim().length !== 10) {
+        errors.signatory_pan = "PAN must be exactly 10 characters";
+      }
+
+      if (!newDistFiles.signatory_pan_copy) {
+        errors.signatory_pan_copy =
+          "Signatory PAN copy is required for companies";
+      }
+      if (!newDistFiles.agreement_copy) {
+        errors.agreement_copy = "Agreement copy is required for companies";
+      }
+    }
+
+    // TAB 7: Compliance - Required Fields
     if (!newDistributorForm.kyc_verified_by.trim()) {
       errors.kyc_verified_by = "KYC verified by is required";
     }
 
+    //     //  Extra
+    // if (!newDistributorForm.agreement_copy.trim()) {
+    //       errors.agreement_copy = "Agreement copy is required";
+    //     }
+
+    // if (!newDistributorForm.branch_name.trim()) {
+    //       errors.branch_name = "Branch name is required";
+    //     }
+    // if (!newDistributorForm.branch_name.trim()) {
+    //       errors.branch_name = "Branch name is required";
+    //     }
+    // if (!newDistributorForm.monthly_distribution_capacity.trim()) {
+    //       errors.monthly_distribution_capacity = "Monthly distribution capacity is required";
+    //     }
+    // if (!newDistributorForm.sales_region.trim()) {
+    //       errors.sales_region = "Sales region is required";
+    //     }
+    // if (!newDistributorForm.service_cities.trim()) {
+    //       errors.service_cities = "Service cities is required";
+    //     }
+    // if (!newDistributorForm.years_in_business.trim()) {
+    //       errors.years_in_business = "years in_business is required";
+    //     }
+
     setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+
+    // If there are errors, find the first tab with errors and switch to it
+    if (Object.keys(errors).length > 0) {
+      const errorFields = Object.keys(errors);
+
+      // Define which fields belong to which tab
+      const tab0Fields = [
+        "distributor_name",
+        "password",
+        "distributor_type",
+        "owner_name",
+        "date_of_registration",
+        "sales_region",
+        "authorized_products",
+      ];
+      const tab1Fields = [
+        "contact_person_name",
+        "mobile_number",
+        "alternate_mobile",
+        "email_id",
+        "address_line_1",
+        "address_line_2",
+        "city",
+        "state",
+        "pincode",
+        "country",
+        "designation",
+      ];
+      const tab2Fields = [
+        "bank_account_name",
+        "bank_name",
+        "account_number",
+        "ifsc_code",
+        "branch_name",
+        "payment_terms_days",
+        "credit_limit",
+        "cancelled_cheque",
+      ];
+      const tab3Fields = [
+        "warehouse_available",
+        "warehouse_address",
+        "storage_area_sqft",
+        "logistics_partner",
+        "monthly_distribution_capacity",
+        "service_cities",
+      ];
+      const tab4Fields = [
+        "business_type",
+        "years_in_business",
+        "gst_number",
+        "pan_number",
+        "cin_llpin",
+        "gst_certificate",
+        "pan_card_copy",
+        "incorporation_certificate",
+      ];
+      const tab5Fields = [
+        "owner_dob",
+        "aadhaar_number",
+        "aadhaar_front",
+        "aadhaar_back",
+        "owner_photo",
+        "address_proof",
+        "address_proof_copy",
+      ];
+      const tab6Fields = [
+        "authorized_signatory_name",
+        "signatory_pan",
+        "signatory_pan_copy",
+        "board_resolution",
+        "partnership_deed",
+        "llp_agreement",
+      ];
+      const tab7Fields = [
+        "agreement_signed",
+        "agreement_copy",
+        "kyc_verified",
+        "kyc_verified_by",
+        "remarks",
+      ];
+
+      // Find first tab with errors
+      if (errorFields.some((field) => tab0Fields.includes(field))) {
+        setActiveTab(0);
+        setValidationAlert(
+          "Please fill all required fields in Basic Information",
+        );
+      } else if (errorFields.some((field) => tab1Fields.includes(field))) {
+        setActiveTab(1);
+        setValidationAlert(
+          "Please fill all required fields in Contact & Address",
+        );
+      } else if (errorFields.some((field) => tab2Fields.includes(field))) {
+        setActiveTab(2);
+        setValidationAlert(
+          "Please fill all required fields in Bank & Financial",
+        );
+      } else if (errorFields.some((field) => tab3Fields.includes(field))) {
+        setActiveTab(3);
+        setValidationAlert(
+          "Please fill all required fields in Distribution Capability",
+        );
+      } else if (errorFields.some((field) => tab4Fields.includes(field))) {
+        setActiveTab(4);
+        setValidationAlert(
+          "Please fill all required fields in Business & Legal",
+        );
+      } else if (errorFields.some((field) => tab5Fields.includes(field))) {
+        setActiveTab(5);
+        setValidationAlert(
+          "Please fill all required fields in KYC – Individual",
+        );
+      } else if (errorFields.some((field) => tab6Fields.includes(field))) {
+        setActiveTab(6);
+        setValidationAlert("Please fill all required fields in KYC – Company");
+      } else if (errorFields.some((field) => tab7Fields.includes(field))) {
+        setActiveTab(7);
+        setValidationAlert("Please fill all required fields in Compliance");
+      }
+
+      return false;
+    }
+
+    setValidationAlert(null);
+    return true;
   };
 
   // ==================== DATA LOADING ====================
@@ -276,6 +559,7 @@ const Distributors = () => {
   const loadFormData = (dist) => {
     setFormData({
       distributor_name: dist.distributor_name || "",
+      password: dist.password || "",
       distributor_type: dist.distributor_type || "",
       brand_name: dist.brand_name || "",
       business_type: dist.business_type || "",
@@ -328,6 +612,7 @@ const Distributors = () => {
     setSelectedDistributor(distributor);
     setActiveTab(0);
     setEditMode(false);
+    setValidationAlert(null);
     loadFormData(distributor);
   };
 
@@ -335,6 +620,8 @@ const Distributors = () => {
     setSelectedDistributor(null);
     setEditMode(false);
     setCreateDistributor(false);
+    setValidationAlert(null);
+    setFormErrors({});
   };
 
   const handleSave = async () => {
@@ -350,8 +637,9 @@ const Distributors = () => {
     });
 
     const result = await dispatch(
-      updateDistributor({ id: selectedDistributor.id, data: formDataToSend })
+      updateDistributor({ id: selectedDistributor.id, data: formDataToSend }),
     );
+    CommonToast("Distributor updated successfully", "success");
 
     if (result.type.includes("fulfilled")) {
       // Update selectedDistributor immediately with the form data
@@ -359,15 +647,15 @@ const Distributors = () => {
         ...selectedDistributor,
         ...formData,
       };
-      
+
       setSelectedDistributor(updatedDistributor);
-      
+
       // Reload the form data with updated values
       loadFormData(updatedDistributor);
-      
+
       // Refresh the list in background
       dispatch(getDistributors());
-      
+
       // Exit edit mode
       setEditMode(false);
     }
@@ -375,6 +663,7 @@ const Distributors = () => {
 
   const handleDelete = async () => {
     await dispatch(deleteDistributor(selectedDistributor.id));
+    CommonToast("Distributor deleted successfully", "success");
     dispatch(getDistributors());
     setDeleteDialogOpen(false);
     setSelectedDistributor(null);
@@ -402,8 +691,10 @@ const Distributors = () => {
     });
 
     try {
+      
       const result = await dispatch(createDistributor(formDataToSend));
-
+      // CommonToast("Distributor created successfully", "success");
+    console.log("result:::",result)
       if (result.type.includes("fulfilled")) {
         dispatch(getDistributors());
         handleBackToList();
@@ -411,6 +702,7 @@ const Distributors = () => {
         // Reset forms
         setNewDistributorForm({
           distributor_name: "",
+          password: "",
           distributor_type: "Pvt Ltd",
           brand_name: "",
           email_id: "",
@@ -456,6 +748,7 @@ const Distributors = () => {
           kyc_verified_by: "Admin",
           remarks: "",
           credit_limit: "",
+          address_proof: "Aadhaar",
         });
 
         setNewDistFiles({
@@ -464,7 +757,6 @@ const Distributors = () => {
           aadhaar_front: null,
           aadhaar_back: null,
           owner_photo: null,
-          // address_proof: null,
           address_proof_copy: null,
           signatory_pan_copy: null,
           cancelled_cheque: null,
@@ -478,7 +770,7 @@ const Distributors = () => {
         setFormErrors({});
       } else {
         setBackendError(
-          result.payload?.errors || { general: "Creation failed" }
+          result.payload?.errors || { general: "Creation failed" },
         );
       }
     } catch (err) {
@@ -545,17 +837,46 @@ const Distributors = () => {
   const renderTextField = (label, field, type = "text", options = {}) => {
     // Determine if field is editable
     const isEditable = createDistributorFlag || editMode;
-    
+
     // Get the appropriate value based on mode
     const value = createDistributorFlag
       ? newDistributorForm[field]
       : editMode
-      ? formData[field]
-      : selectedDistributor[field];
+        ? formData[field]
+        : selectedDistributor[field];
+
+    // Check if this is a required field
+    const requiredFields = [
+      "distributor_name",
+      "password",
+      "distributor_type",
+      "owner_name",
+      "date_of_registration",
+      "contact_person_name",
+      "mobile_number",
+      "email_id",
+      "address_line_1",
+      "city",
+      "state",
+      "pincode",
+      "bank_account_name",
+      "bank_name",
+      "account_number",
+      "ifsc_code",
+      "payment_terms_days",
+      "gst_number",
+      "pan_number",
+      "owner_dob",
+      "aadhaar_number",
+      "address_proof",
+      "kyc_verified_by",
+    ];
+
+    const isRequired = requiredFields.includes(field);
 
     const commonProps = {
       fullWidth: true,
-      label,
+      label: isRequired && createDistributorFlag ? `${label} *` : label,
       type,
       value: value || "",
       InputProps: { readOnly: !isEditable },
@@ -567,7 +888,7 @@ const Distributors = () => {
     if (isEditable) {
       commonProps.onChange = (e) => {
         let newValue = e.target.value;
-        
+
         // Handle numeric-only fields
         if (type === "tel" || options.inputMode === "numeric") {
           newValue = newValue.replace(/\D/g, "");
@@ -578,6 +899,13 @@ const Distributors = () => {
             ...newDistributorForm,
             [field]: newValue,
           });
+          // Clear error when user starts typing
+          if (formErrors[field]) {
+            setFormErrors({
+              ...formErrors,
+              [field]: undefined,
+            });
+          }
         } else {
           setFormData({
             ...formData,
@@ -586,21 +914,71 @@ const Distributors = () => {
         }
       };
     }
+    // Handle boolean type separately
+if (type === "boolean") {
+  return (
+    <div style={{ marginTop: 16, marginBottom: 8 }}>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={!!value}
+            onChange={(e) => {
+              const newValue = e.target.checked;
+              if (createDistributorFlag) {
+                setNewDistributorForm({
+                  ...newDistributorForm,
+                  [field]: newValue,
+                });
+                if (formErrors[field]) {
+                  setFormErrors({
+                    ...formErrors,
+                    [field]: undefined,
+                  });
+                }
+              } else {
+                setFormData({
+                  ...formData,
+                  [field]: newValue,
+                });
+              }
+            }}
+            disabled={!isEditable}
+          />
+        }
+        label={isRequired && createDistributorFlag ? `${label} *` : label}
+      />
+      {createDistributorFlag && formErrors[field] && (
+        <FormHelperText error>{formErrors[field]}</FormHelperText>
+      )}
+    </div>
+  );
+}
+
 
     return <TextField {...commonProps} />;
   };
 
-  const renderFileUpload = (label, fileKey) => {
+  const renderFileUpload = (label, fileKey, isRequired = false) => {
     const isEditable = createDistributorFlag || editMode;
-    
+
     return (
       <Grid item xs={12}>
         <Stack spacing={1}>
-          <Typography fontWeight={500}>{label}</Typography>
+          <Typography fontWeight={500}>
+            {label}{" "}
+            {isRequired && createDistributorFlag && (
+              <span style={{ color: "red" }}>*</span>
+            )}
+          </Typography>
 
           {isEditable ? (
             <>
-              <Button variant="outlined" component="label" fullWidth>
+              <Button
+                variant="outlined"
+                component="label"
+                fullWidth
+                color={formErrors[fileKey] ? "error" : "primary"}
+              >
                 Upload {label}
                 <input
                   type="file"
@@ -615,6 +993,13 @@ const Distributors = () => {
                         ...newDistFiles,
                         [fileKey]: file,
                       });
+                      // Clear error when file is selected
+                      if (formErrors[fileKey]) {
+                        setFormErrors({
+                          ...formErrors,
+                          [fileKey]: undefined,
+                        });
+                      }
                     } else {
                       // For edit mode, update formData
                       setFormData({
@@ -627,14 +1012,17 @@ const Distributors = () => {
               </Button>
 
               {createDistributorFlag && newDistFiles[fileKey] && (
-                <Typography variant="body2" mt={1}>
+                <Typography variant="body2" mt={1} color="success.main">
                   Selected File: {newDistFiles[fileKey].name}
                 </Typography>
               )}
-              
+
               {editMode && formData[fileKey] && (
                 <Typography variant="body2" mt={1}>
-                  Selected File: {typeof formData[fileKey] === 'string' ? formData[fileKey] : formData[fileKey].name}
+                  Selected File:{" "}
+                  {typeof formData[fileKey] === "string"
+                    ? formData[fileKey]
+                    : formData[fileKey].name}
                 </Typography>
               )}
             </>
@@ -784,7 +1172,9 @@ const Distributors = () => {
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h5" fontWeight={700} sx={{ flex: 1 }}>
-            {createDistributorFlag ? "Add New Distributor" : "Distributor Details"}
+            {createDistributorFlag
+              ? "Add New Distributor"
+              : "Distributor Details"}
           </Typography>
           {!createDistributorFlag && (
             <Button
@@ -833,6 +1223,15 @@ const Distributors = () => {
           </Box>
         )}
       </Paper>
+
+      {/* Validation Alert */}
+      {validationAlert && createDistributorFlag && (
+        <Box sx={{ p: 3, pb: 0 }}>
+          <Alert severity="error" onClose={() => setValidationAlert(null)}>
+            {validationAlert}
+          </Alert>
+        </Box>
+      )}
 
       {/* Tabs Section */}
       <Box sx={{ bgcolor: "white", borderBottom: 1, borderColor: "divider" }}>
@@ -948,9 +1347,14 @@ const Distributors = () => {
                   {renderTextField("Brand Name", "brand_name")}
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Date of Registration", "date_of_registration", "date", {
-                    InputLabelProps: { shrink: true },
-                  })}
+                  {renderTextField(
+                    "Date of Registration",
+                    "date_of_registration",
+                    "date",
+                    {
+                      InputLabelProps: { shrink: true },
+                    },
+                  )}
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Owner Name", "owner_name")}
@@ -959,7 +1363,13 @@ const Distributors = () => {
                   {renderTextField("Sales Region", "sales_region")}
                 </Grid>
                 <Grid item xs={12}>
-                  {renderTextField("Authorized Products", "authorized_products")}
+                  {renderTextField(
+                    "Authorized Products",
+                    "authorized_products",
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  {renderTextField("Password", "password")}
                 </Grid>
               </Grid>
             </CardContent>
@@ -1032,13 +1442,18 @@ const Distributors = () => {
                   })}
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Alternate Mobile", "alternate_mobile", "tel", {
-                    inputProps: {
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
-                      maxLength: 10,
+                  {renderTextField(
+                    "Alternate Mobile",
+                    "alternate_mobile",
+                    "tel",
+                    {
+                      inputProps: {
+                        inputMode: "numeric",
+                        pattern: "[0-9]*",
+                        maxLength: 10,
+                      },
                     },
-                  })}
+                  )}
                 </Grid>
                 <Grid item xs={12}>
                   {renderTextField("Email", "email_id", "email")}
@@ -1135,9 +1550,12 @@ const Distributors = () => {
                   {renderTextField("Credit Limit", "credit_limit")}
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Payment Terms (Days)", "payment_terms_days")}
+                  {renderTextField(
+                    "Payment Terms (Days)",
+                    "payment_terms_days",
+                  )}
                 </Grid>
-                {renderFileUpload("Cancelled Cheque", "cancelled_cheque")}
+                {renderFileUpload("Cancelled Cheque", "cancelled_cheque", true)}
               </Grid>
             </CardContent>
           </Card>
@@ -1194,29 +1612,44 @@ const Distributors = () => {
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Warehouse Available", "warehouse_available")}
+                  {/* {renderTextField(
+                    "Warehouse Available",
+                    "warehouse_available",
+                  )} */}
+                  {renderTextField("Warehouse Available", "warehouse_available", "boolean")}
+
                 </Grid>
                 <Grid item xs={12}>
                   {renderTextField("Warehouse Address", "warehouse_address")}
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Storage Area (Sq Ft)", "storage_area_sqft", "tel", {
-                    inputProps: {
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
+                  {renderTextField(
+                    "Storage Area (Sq Ft)",
+                    "storage_area_sqft",
+                    "tel",
+                    {
+                      inputProps: {
+                        inputMode: "numeric",
+                        pattern: "[0-9]*",
+                      },
                     },
-                  })}
+                  )}
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Logistics Partner", "logistics_partner")}
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Monthly Distribution Capacity", "monthly_distribution_capacity", "tel", {
-                    inputProps: {
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
+                  {renderTextField(
+                    "Monthly Distribution Capacity",
+                    "monthly_distribution_capacity",
+                    "tel",
+                    {
+                      inputProps: {
+                        inputMode: "numeric",
+                        pattern: "[0-9]*",
+                      },
                     },
-                  })}
+                  )}
                 </Grid>
                 <Grid item xs={12}>
                   {renderTextField("Service Cities", "service_cities")}
@@ -1280,12 +1713,17 @@ const Distributors = () => {
                   {renderTextField("Business Type", "business_type")}
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Years in Business", "years_in_business", "tel", {
-                    inputProps: {
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
+                  {renderTextField(
+                    "Years in Business",
+                    "years_in_business",
+                    "tel",
+                    {
+                      inputProps: {
+                        inputMode: "numeric",
+                        pattern: "[0-9]*",
+                      },
                     },
-                  })}
+                  )}
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("GST Number", "gst_number")}
@@ -1296,9 +1734,12 @@ const Distributors = () => {
                 <Grid item xs={12} sm={6}>
                   {renderTextField("CIN / LLPIN", "cin_llpin")}
                 </Grid>
-                {renderFileUpload("GST Certificate", "gst_certificate")}
-                {renderFileUpload("PAN Card Copy", "pan_card_copy")}
-                {renderFileUpload("Incorporation Certificate", "incorporation_certificate")}
+                {renderFileUpload("GST Certificate", "gst_certificate", true)}
+                {renderFileUpload("PAN Card Copy", "pan_card_copy", true)}
+                {renderFileUpload(
+                  "Incorporation Certificate",
+                  "incorporation_certificate",
+                )}
               </Grid>
             </CardContent>
           </Card>
@@ -1362,22 +1803,35 @@ const Distributors = () => {
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Aadhaar Number", "aadhaar_number")}
                 </Grid>
-                {renderFileUpload("Aadhaar Front", "aadhaar_front")}
-                {renderFileUpload("Aadhaar Back", "aadhaar_back")}
-                {renderFileUpload("Owner Photo", "owner_photo")}
-                {/* {renderFileUpload("Address Proof", "address_proof")} */}
-                {/* <Grid item xs={12} sm={6}> */}
-  {renderTextField("Address Proof Type", "address_proof", "text", {
-    select: true,
-    children: [
-      <MenuItem key="Aadhaar" value="Aadhaar">Aadhaar</MenuItem>,
-      <MenuItem key="Passport" value="Passport">Passport</MenuItem>,
-      <MenuItem key="Voter ID" value="Voter ID">Voter ID</MenuItem>
-    ]
-  })}
-{/* </Grid> */}
-
-                {renderFileUpload("Address Proof Copy", "address_proof_copy")}
+                {renderFileUpload("Aadhaar Front", "aadhaar_front", true)}
+                {renderFileUpload("Aadhaar Back", "aadhaar_back", true)}
+                {renderFileUpload("Owner Photo", "owner_photo", true)}
+                <Grid item xs={12} sm={6}>
+                  {renderTextField(
+                    "Address Proof Type",
+                    "address_proof",
+                    "text",
+                    {
+                      select: true,
+                      children: [
+                        <MenuItem key="Aadhaar" value="Aadhaar">
+                          Aadhaar
+                        </MenuItem>,
+                        <MenuItem key="Passport" value="Passport">
+                          Passport
+                        </MenuItem>,
+                        <MenuItem key="Voter ID" value="Voter ID">
+                          Voter ID
+                        </MenuItem>,
+                      ],
+                    },
+                  )}
+                </Grid>
+                {renderFileUpload(
+                  "Address Proof Copy",
+                  "address_proof_copy",
+                  true,
+                )}
               </Grid>
             </CardContent>
           </Card>
@@ -1434,12 +1888,19 @@ const Distributors = () => {
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Authorized Signatory Name", "authorized_signatory_name")}
+                  {renderTextField(
+                    "Authorized Signatory Name",
+                    "authorized_signatory_name",
+                  )}
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Signatory PAN", "signatory_pan")}
                 </Grid>
-                {renderFileUpload("Signatory PAN Copy", "signatory_pan_copy")}
+                {renderFileUpload(
+                  "Signatory PAN Copy",
+                  "signatory_pan_copy",
+                  newDistributorForm.firm_type === "company",
+                )}
                 {renderFileUpload("Board Resolution", "board_resolution")}
                 {renderFileUpload("Partnership Deed", "partnership_deed")}
                 {renderFileUpload("LLP Agreement", "llp_agreement")}
@@ -1514,7 +1975,9 @@ const Distributors = () => {
                   ) : (
                     <InfoRow
                       label="Agreement Signed"
-                      value={selectedDistributor.agreement_signed ? "Yes" : "No"}
+                      value={
+                        selectedDistributor.agreement_signed ? "Yes" : "No"
+                      }
                     />
                   )}
                 </Grid>
@@ -1523,7 +1986,11 @@ const Distributors = () => {
                   {!createDistributorFlag && (
                     <InfoRow
                       label="KYC Status"
-                      value={selectedDistributor.kyc_verified ? "Verified" : "Pending"}
+                      value={
+                        selectedDistributor.kyc_verified
+                          ? "Verified"
+                          : "Pending"
+                      }
                     />
                   )}
                 </Grid>
@@ -1548,11 +2015,10 @@ const Distributors = () => {
           <CommonButton
             variant="contained"
             size="large"
-            // fullWidth
             onClick={handleCreateDistributor}
             disabled={loading}
           >
-            {loading ? "Creating..." : "Create Distributor"}
+            {loading || createLoading ? "Creating..." : "Create Distributor"}
           </CommonButton>
         </Box>
       )}
