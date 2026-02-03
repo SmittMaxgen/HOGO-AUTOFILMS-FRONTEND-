@@ -49,6 +49,8 @@ import {
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CommonButton from "../../components/commonComponents/CommonButton";
+import CommonToast from "../../components/commonComponents/Toster";
 
 const WarrantyManagement = () => {
   const dispatch = useDispatch();
@@ -84,7 +86,7 @@ const WarrantyManagement = () => {
   // Handle update success
   useEffect(() => {
     if (updateSuccess) {
-      showAlert("Warranty updated successfully", "success");
+      CommonToast("Warranty updated successfully", "success");
       setShowViewDialog(false);
       setShowRejectDialog(false);
       setRejectionReason("");
@@ -101,7 +103,7 @@ const WarrantyManagement = () => {
   // Handle errors
   useEffect(() => {
     if (error) {
-      showAlert(error, "error");
+      CommonToast(error, "error");
       //   setTimeout(() => {
       //     dispatch(clearWarrantyState());
       //   }, 3000);
@@ -118,7 +120,7 @@ const WarrantyManagement = () => {
       dispatch(
         updateWarranty({
           id: selectedWarranty.id,
-          data: { product_status: "ACCEPT" },
+          data: { warranty_status: "ACCEPT" },
         }),
       );
     }
@@ -131,7 +133,7 @@ const WarrantyManagement = () => {
 
   const confirmReject = () => {
     if (!rejectionReason.trim()) {
-      showAlert("Please provide a rejection reason", "error");
+      CommonToast("Please provide a rejection reason", "error");
       return;
     }
 
@@ -139,7 +141,7 @@ const WarrantyManagement = () => {
       updateWarranty({
         id: selectedWarranty.id,
         data: {
-          product_status: "REJECT",
+          warranty_status: "REJECT",
           rejection_reason: rejectionReason,
         },
       }),
@@ -161,7 +163,7 @@ const WarrantyManagement = () => {
         icon: <HourglassEmpty fontSize="small" />,
         label: "Pending",
       },
-      ACCEPT: {
+      ACTIVE: {
         color: "success",
         icon: <CheckCircle fontSize="small" />,
         label: "Accepted",
@@ -236,9 +238,15 @@ const WarrantyManagement = () => {
         spacing={1}
         mb={3}
       >
-        <Typography variant="h4" fontWeight={700} sx={{ color: "#7E7E7E" }}>
+        <Typography
+          variant="h4"
+          fontWeight={700}
+          sx={{ display: "flex", alignItems: "center", color: "#7E7E7E" }}
+        >
           <IconButton onClick={() => setShowViewDialog(false)}>
-            {showViewDialog && <ArrowBackIcon sx={{ marginRight: "5px" }} />}
+            {showViewDialog && (
+              <ArrowBackIcon sx={{ color: "grey", marginRight: "5px" }} />
+            )}
           </IconButton>
           Warranty
         </Typography>
@@ -327,7 +335,7 @@ const WarrantyManagement = () => {
                     </TableCell>
                     <TableCell>{warranty.warranty_period} months</TableCell>
                     <TableCell>
-                      {getStatusChip(warranty.product_status)}
+                      {getStatusChip(warranty.warranty_status)}
                     </TableCell>
                     <TableCell align="center">
                       {/* <Button
@@ -357,18 +365,59 @@ const WarrantyManagement = () => {
       {/* View Dialog */}
       {showViewDialog && (
         <Box fullWidth>
-          <DialogTitle>
-            <Box
+          <DialogTitle
+            style={{ display: "flex", justifyContent: "space-between" }}
+          >
+            {/* <Box
               sx={{
+                gap: "5px",
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "",
                 alignItems: "center",
               }}
             >
-              <Typography variant="h6">Warranty Details</Typography>
+              <Typography sx={{ color: "grey" }} variant="h4">
+                Warranty Details
+              </Typography>
               {selectedWarranty &&
-                getStatusChip(selectedWarranty.product_status)}
-            </Box>
+                getStatusChip(selectedWarranty.warranty_status)}
+            </Box> */}
+            <DialogActions sx={{ display: "flex", width: "100%" }}>
+              {selectedWarranty &&
+                (selectedWarranty.warranty_status === "PENDING" ||
+                  selectedWarranty.warranty_status === "REJECT") && (
+                  <>
+                    {/* <Box>Dummy</Box> */}
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                      <Chip
+                        icon={<CheckCircle />}
+                        label="Accept"
+                        color="success"
+                        clickable
+                        onClick={handleAccept}
+                        disabled={updateLoading}
+                        sx={{ px: 1.5, fontWeight: 600 }}
+                      />
+
+                      <Chip
+                        icon={<Cancel />}
+                        label="Reject"
+                        color="error"
+                        clickable
+                        onClick={handleRejectClick}
+                        disabled={updateLoading}
+                        sx={{ px: 1.5, fontWeight: 600 }}
+                      />
+                    </Box>
+                  </>
+                )}
+              {/* <Button
+              onClick={() => setShowViewDialog(false)}
+              disabled={updateLoading}
+            >
+              Close
+            </Button> */}
+            </DialogActions>
           </DialogTitle>
           <DialogContent dividers>
             {selectedWarranty && (
@@ -468,16 +517,7 @@ const WarrantyManagement = () => {
                   >
                     Warranty Status
                   </Typography>
-                  <Typography
-                    variant="body1"
-                    color={
-                      selectedWarranty.warranty_status === "ACTIVE"
-                        ? "success.main"
-                        : "error.main"
-                    }
-                  >
-                    {selectedWarranty.warranty_status}
-                  </Typography>
+                  {getStatusChip(selectedWarranty.warranty_status)}
 
                   {selectedWarranty.registered_by && (
                     <>
@@ -496,7 +536,7 @@ const WarrantyManagement = () => {
                 </Grid>
 
                 {/* ================= REJECTION ================= */}
-                {selectedWarranty.product_status === "REJECT" &&
+                {selectedWarranty.warranty_status === "REJECT" &&
                   selectedWarranty.rejection_reason && (
                     <Grid item xs={12}>
                       <Alert severity="error">
@@ -606,38 +646,6 @@ const WarrantyManagement = () => {
               </Grid>
             )}
           </DialogContent>
-
-          <DialogActions>
-            {selectedWarranty &&
-              selectedWarranty.product_status === "PENDING" && (
-                <>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    startIcon={<CheckCircle />}
-                    onClick={handleAccept}
-                    disabled={updateLoading}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    startIcon={<Cancel />}
-                    onClick={handleRejectClick}
-                    disabled={updateLoading}
-                  >
-                    Reject
-                  </Button>
-                </>
-              )}
-            {/* <Button
-              onClick={() => setShowViewDialog(false)}
-              disabled={updateLoading}
-            >
-              Close
-            </Button> */}
-          </DialogActions>
         </Box>
       )}
 
@@ -675,14 +683,14 @@ const WarrantyManagement = () => {
           >
             Cancel
           </Button>
-          <Button
+          <CommonButton
             onClick={confirmReject}
             variant="contained"
             color="error"
             disabled={updateLoading || !rejectionReason.trim()}
           >
             {updateLoading ? "Rejecting..." : "Confirm Reject"}
-          </Button>
+          </CommonButton>
         </DialogActions>
       </Dialog>
     </Box>
