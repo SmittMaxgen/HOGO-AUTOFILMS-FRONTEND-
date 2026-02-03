@@ -13,6 +13,11 @@ import inventorySerialReducer from "../feature/inventorySerials/inventorySerials
 import forgotPasswordReducer from "../feature/profileSettings/profileSettingsSlice";
 import distributorReducer from "../feature/distributors/distributorSlice";
 import warrantyReducer from "../feature/Warranty/warrantySlice";
+import userReducer from "../feature/users/userSlice";
+import employeeSalaryReducer from "../feature/employeeSalary/employeeSalarySlice";
+import employeeReducer from "../feature/employee/employeeSlice";
+import employeeDocumentsReducer from "../feature/employeeDocuments/employeeDocumentsSlice";
+import employeePersonalDetailsReducer from "../feature/employeePersonalDetails/employeePersonalDetailsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -30,5 +35,11 @@ export const store = configureStore({
     forgotPassword: forgotPasswordReducer,
     distributor: distributorReducer,
     warranty: warrantyReducer,
+    user: userReducer,
+    employee: employeeReducer,
+    employeeSalary: employeeSalaryReducer,
+    employeeDocuments: employeeDocumentsReducer,
+    employeePersonalDetails: employeePersonalDetailsReducer,
   },
+  employeeSalary: employeeSalaryReducer,
 });

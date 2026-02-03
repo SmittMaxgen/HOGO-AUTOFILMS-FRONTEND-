@@ -539,6 +539,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
     { label: "Distributors", path: "/distributor-information" },
     { label: "Inventory Serials", path: "/inventory_serials" },
     { label: "Warranty", path: "/warranty" },
+    { label: "Employee Management", path: "/employee_management" },
   ];
   // Filter pages by search query
   const filteredPages = pages.filter((p) =>
@@ -731,6 +732,16 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <BusinessIcon />
           {!collapsed && "Warranty"}
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/employee_management") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/employee_management")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Employee Management"}
         </Box>
 
         <Box className={classes.spacer} />

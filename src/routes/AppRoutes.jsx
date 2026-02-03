@@ -11,6 +11,7 @@ import Shipment from "../pages/shipment/Shipment";
 import ShipmentProducts from "../pages/shipmentProduct/ShipmentProduct";
 import InventorySerial from "../pages/shipmentProduct/InventorySerial";
 import Warranty from "../pages/warranty/Warranty";
+import EmployeeManagement from "../pages/EmployeeManagement/EmployeeManagement";
 import EditProfile from "../pages/auth/EditProfile";
 import AccountSettings from "../pages/auth/AccountSettings";
 import Distributors from "../pages/distributor/Distributor";
@@ -45,6 +46,7 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/distributor-information" element={<Distributors />} />
           <Route path="/inventory_serials" element={<InventorySerial />} />
           <Route path="/warranty" element={<Warranty />} />
+          <Route path="/employee_management" element={<EmployeeManagement />} />
         </Route>
       </Route>
     </Routes>
