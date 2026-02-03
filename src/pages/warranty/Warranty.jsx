@@ -535,7 +535,6 @@ const WarrantyManagement = () => {
                               // height: 200,
                               height: "auto",
                               maxHeight: 300,
-                              objectFit: "contain",
                               backgroundColor: "#f5f5f5",
 
                               objectFit: "cover",
@@ -573,7 +572,6 @@ const WarrantyManagement = () => {
                               // height: 200,
                               height: "auto",
                               maxHeight: 300,
-                              objectFit: "contain",
                               backgroundColor: "#f5f5f5",
 
                               objectFit: "cover",
