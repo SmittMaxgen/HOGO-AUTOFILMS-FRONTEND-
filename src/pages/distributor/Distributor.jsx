@@ -1149,96 +1149,100 @@ const Distributors = () => {
                       <TableCell>{dist.city}</TableCell>
                       <TableCell>{dist.state}</TableCell>
                       <TableCell>{dist.mobile_number}</TableCell>
-                    <TableCell>
-  <Select
-    size="small"
-    value={dist.status}
-    onChange={async (e) => {
-      const fd = new FormData();
-      fd.append("status", e.target.value);
+                      <TableCell>
+                        <Select
+                          size="small"
+                          value={dist.status}
+                          onChange={async (e) => {
+                            const fd = new FormData();
+                            fd.append("status", e.target.value);
 
-      const result = await dispatch(
-        updateDistributor({ id: dist.id, data: fd })
-      );
+                            const result = await dispatch(
+                              updateDistributor({ id: dist.id, data: fd }),
+                            );
 
-      if (result.type.includes("fulfilled")) {
-        CommonToast("Status updated", "success");
-        dispatch(getDistributors());
-      }
-    }}
-    // IconComponent={ArrowDropDownIcon}
-    sx={{
-      minWidth: 130,
-      height: 34,
-      borderRadius: "999px",
-      fontWeight: 500,
-      color: "white",
-      bgcolor:
-        dist.status === "Approved"
-          ? "success.main"
-          : dist.status === "Pending"
-          ? "warning.main"
-          : "error.main",
-      "& .MuiSelect-select": {
-        py: 0.5,
-        pl: 2,
-        display: "flex",
-        alignItems: "center",
-      },
-      "& fieldset": {
-        border: "none",
-      },
-      "& svg": {
-        color: "white",
-      },
-    }}
-  >
-    <MenuItem value="Pending">Pending</MenuItem>
-    <MenuItem value="Approved">Approved</MenuItem>
-    <MenuItem value="Rejected">Rejected</MenuItem>
-  </Select>
-</TableCell>
+                            if (result.type.includes("fulfilled")) {
+                              CommonToast("Status updated", "success");
+                              dispatch(getDistributors());
+                            }
+                          }}
+                          // IconComponent={ArrowDropDownIcon}
+                          sx={{
+                            minWidth: 70,
+                            height: 25,
+                            borderRadius: "999px",
+                            fontWeight: 500,
+                            color: "white",
+                            bgcolor:
+                              dist.status === "Approved"
+                                ? "success.main"
+                                : dist.status === "Pending"
+                                  ? "warning.main"
+                                  : "error.main",
+                            "& .MuiSelect-select": {
+                              py: 0.5,
+                              pl: 2,
+                              display: "flex",
+                              alignItems: "center",
+                            },
+                            "& fieldset": {
+                              border: "none",
+                            },
+                            "& svg": {
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <MenuItem value="Pending">Pending</MenuItem>
+                          <MenuItem value="Approved">Approved</MenuItem>
+                          <MenuItem value="Rejected">Rejected</MenuItem>
+                        </Select>
+                      </TableCell>
 
-                     <TableCell>
-  <Select
-    size="small"
-    value={dist.kyc_verified ? "Verified" : "Pending"}
-    onChange={async (e) => {
-      const fd = new FormData();
-      fd.append("kyc_verified", e.target.value === "Verified");
+                      <TableCell>
+                        <Select
+                          size="small"
+                          value={dist.kyc_verified ? "Verified" : "Pending"}
+                          onChange={async (e) => {
+                            const fd = new FormData();
+                            fd.append(
+                              "kyc_verified",
+                              e.target.value === "Verified",
+                            );
 
-      const result = await dispatch(
-        updateDistributor({ id: dist.id, data: fd })
-      );
+                            const result = await dispatch(
+                              updateDistributor({ id: dist.id, data: fd }),
+                            );
 
-      if (result.type.includes("fulfilled")) {
-        CommonToast("KYC updated", "success");
-        dispatch(getDistributors());
-      }
-    }}
-    // IconComponent={ArrowDropDownIcon}
-    sx={{
-      minWidth: 120,
-      height: 34,
-      borderRadius: "999px",
-      fontWeight: 500,
-      color: "white",
-      bgcolor: dist.kyc_verified ? "success.main" : "warning.main",
-      "& fieldset": { border: "none" },
-      "& svg": { color: "white" },
-      "& .MuiSelect-select": {
-        py: 0.5,
-        pl: 2,
-        display: "flex",
-        alignItems: "center",
-      },
-    }}
-  >
-    <MenuItem value="Pending">Pending</MenuItem>
-    <MenuItem value="Verified">Verified</MenuItem>
-  </Select>
-</TableCell>
-
+                            if (result.type.includes("fulfilled")) {
+                              CommonToast("KYC updated", "success");
+                              dispatch(getDistributors());
+                            }
+                          }}
+                          // IconComponent={ArrowDropDownIcon}
+                          sx={{
+                            minWidth: 70,
+                            height: 25,
+                            borderRadius: "999px",
+                            fontWeight: 500,
+                            color: "white",
+                            bgcolor: dist.kyc_verified
+                              ? "success.main"
+                              : "warning.main",
+                            "& fieldset": { border: "none" },
+                            "& svg": { color: "white" },
+                            "& .MuiSelect-select": {
+                              py: 0.5,
+                              pl: 2,
+                              display: "flex",
+                              alignItems: "center",
+                            },
+                          }}
+                        >
+                          <MenuItem value="Pending">Pending</MenuItem>
+                          <MenuItem value="Verified">Verified</MenuItem>
+                        </Select>
+                      </TableCell>
 
                       <TableCell>
                         <IconButton
