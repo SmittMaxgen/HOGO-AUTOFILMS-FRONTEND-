@@ -14,6 +14,8 @@ import forgotPasswordReducer from "../feature/profileSettings/profileSettingsSli
 import distributorReducer from "../feature/distributors/distributorSlice";
 import warrantyReducer from "../feature/Warranty/warrantySlice";
 import userReducer from "../feature/users/userSlice";
+import roleReducer from "../feature/role/roleSlice";
+import departmentReducer from "../feature/department/departmentSlice";
 import employeeSalaryReducer from "../feature/employeeSalary/employeeSalarySlice";
 import employeeReducer from "../feature/employee/employeeSlice";
 import employeeDocumentsReducer from "../feature/employeeDocuments/employeeDocumentsSlice";
@@ -40,6 +42,8 @@ export const store = configureStore({
     employeeSalary: employeeSalaryReducer,
     employeeDocuments: employeeDocumentsReducer,
     employeePersonalDetails: employeePersonalDetailsReducer,
+    department: departmentReducer,
+    role: roleReducer,
   },
   employeeSalary: employeeSalaryReducer,
 });

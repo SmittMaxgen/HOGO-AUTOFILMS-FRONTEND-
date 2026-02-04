@@ -31,7 +31,7 @@ import {
   FormControlLabel,
   Switch,
   Alert,
-  FormHelperText,
+  Autocomplete,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -40,7 +40,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
@@ -104,6 +103,16 @@ import {
   selectUserLoading,
   selectCreateUserLoading,
 } from "../../feature/users/userSelector";
+import { getDepartments } from "../../feature/department/departmentThunks";
+import { getRoles } from "../../feature/role/roleThunks";
+import {
+  selectDepartmentList,
+  selectDepartmentLoading,
+} from "../../feature/department/departmentSelector";
+import {
+  selectRoleList,
+  selectRoleLoading,
+} from "../../feature/role/roleSelector";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 
@@ -153,12 +162,24 @@ const EmployeeManagement = () => {
   const createLoading = useSelector(selectCreateEmployeeLoading);
 
   const employeeDocuments = useSelector(selectEmployeeDocuments);
+  const docsArray = Array.isArray(employeeDocuments)
+    ? employeeDocuments
+    : employeeDocuments
+      ? [employeeDocuments]
+      : [];
+
   const documentsLoading = useSelector(selectEmployeeDocumentsLoading);
   const createDocumentLoading = useSelector(
     selectCreateEmployeeDocumentLoading,
   );
 
   const employeePersonalDetails = useSelector(selectEmployeePersonalDetails);
+  const personalDetailsArray = Array.isArray(employeePersonalDetails)
+    ? employeePersonalDetails
+    : employeePersonalDetails
+      ? [employeePersonalDetails]
+      : [];
+
   const personalDetailsLoading = useSelector(
     selectEmployeePersonalDetailsLoading,
   );
@@ -167,6 +188,12 @@ const EmployeeManagement = () => {
   );
 
   const employeeSalaries = useSelector(selectEmployeeSalaries);
+  const employeeSalary = Array.isArray(employeeSalaries)
+    ? employeeSalaries
+    : employeeSalaries
+      ? [employeeSalaries]
+      : [];
+
   const salariesLoading = useSelector(selectEmployeeSalaryLoading);
   const createSalaryLoading = useSelector(selectCreateEmployeeSalaryLoading);
 
@@ -174,11 +201,18 @@ const EmployeeManagement = () => {
   const usersLoading = useSelector(selectUserLoading);
   const createUserLoading = useSelector(selectCreateUserLoading);
 
+  // Department selector
+  const departments = useSelector(selectDepartmentList);
+  const roles = useSelector(selectRoleList);
+  const departmentsLoading = useSelector(selectDepartmentLoading);
+  const rolesLoading = useSelector(selectRoleLoading);
+
   // ==================== STATE MANAGEMENT ====================
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const [editMode, setEditMode] = useState(false);
+  console.log("editMode::::", editMode);
   const [createEmployeeFlag, setCreateEmployee] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [formErrors, setFormErrors] = useState({});
@@ -187,14 +221,21 @@ const EmployeeManagement = () => {
   // Form states
   const [formData, setFormData] = useState({});
 
-  // New employee form with proper defaults
+  // New employee form with proper defaults including new required fields
   const [newEmployeeForm, setNewEmployeeForm] = useState({
+    first_name: "",
+    last_name: "",
     name: "",
     email: "",
     phone: "",
+    password: "",
     employee_code: "",
     department: "",
+    role: "",
+    department_id: null,
     designation: "",
+    employment_type: "",
+    role_id: null,
     joining_date: "",
     date_of_birth: "",
     gender: "",
@@ -277,7 +318,17 @@ const EmployeeManagement = () => {
 
   useEffect(() => {
     dispatch(getEmployees());
+    dispatch(getDepartments());
+    dispatch(getRoles());
   }, [dispatch]);
+
+  // useEffect(() => {
+  //   if (editMode == false) {
+  //     dispatch(getEmployees());
+  //   }
+  //   // dispatch(getDepartments());
+  //   // dispatch(getRoles());
+  // }, [editMode]);
 
   useEffect(() => {
     if (selectedEmployee && !createEmployeeFlag) {
@@ -296,9 +347,12 @@ const EmployeeManagement = () => {
   const validateForm = () => {
     const errors = {};
 
-    // TAB 0: Employee Profile - Required Fields
-    if (!newEmployeeForm.name.trim()) {
-      errors.name = "Employee name is required";
+    // Required Fields for API
+    if (!newEmployeeForm.first_name.trim()) {
+      errors.first_name = "First name is required";
+    }
+    if (!newEmployeeForm.last_name.trim()) {
+      errors.last_name = "Last name is required";
     }
     if (!newEmployeeForm.email.trim()) {
       errors.email = "Email is required";
@@ -310,14 +364,25 @@ const EmployeeManagement = () => {
     } else if (!/^\d{10}$/.test(newEmployeeForm.phone)) {
       errors.phone = "Phone number must be 10 digits";
     }
+    if (!newEmployeeForm.password.trim()) {
+      errors.password = "Password is required";
+    } else if (newEmployeeForm.password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
+    }
     if (!newEmployeeForm.employee_code.trim()) {
       errors.employee_code = "Employee code is required";
     }
-    if (!newEmployeeForm.department.trim()) {
-      errors.department = "Department is required";
+    if (!newEmployeeForm.department_id) {
+      errors.department_id = "Department is required";
     }
     if (!newEmployeeForm.designation.trim()) {
       errors.designation = "Designation is required";
+    }
+    if (!newEmployeeForm.employment_type) {
+      errors.employment_type = "Employment type is required";
+    }
+    if (!newEmployeeForm.role_id) {
+      errors.role_id = "Role is required";
     }
     if (!newEmployeeForm.joining_date) {
       errors.joining_date = "Date of joining is required";
@@ -359,12 +424,18 @@ const EmployeeManagement = () => {
 
   const loadFormData = (emp) => {
     setFormData({
+      first_name: emp.first_name || "",
+      last_name: emp.last_name || "",
       name: emp.name || "",
       email: emp.email || "",
       phone: emp.phone || "",
       employee_code: emp.employee_code || "",
       department: emp.department || "",
+      role: emp.role || "",
+      department_id: emp.department_id || null,
+      role_id: emp.role_id || null,
       designation: emp.designation || "",
+      employment_type: emp.employment_type || "",
       joining_date: emp.joining_date || "",
       date_of_birth: emp.date_of_birth || "",
       gender: emp.gender || "",
@@ -394,6 +465,8 @@ const EmployeeManagement = () => {
   };
 
   const handleBackToList = () => {
+    dispatch(getEmployees());
+
     setSelectedEmployee(null);
     setEditMode(false);
     setCreateEmployee(false);
@@ -444,12 +517,14 @@ const EmployeeManagement = () => {
 
     const formDataToSend = new FormData();
 
+    // Append all form fields
     Object.entries(newEmployeeForm).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== "") {
         formDataToSend.append(key, value);
       }
     });
 
+    // Append files
     Object.entries(newEmployeeFiles).forEach(([key, file]) => {
       if (file instanceof File) {
         formDataToSend.append(key, file);
@@ -460,16 +535,25 @@ const EmployeeManagement = () => {
       const result = await dispatch(createEmployee(formDataToSend));
 
       if (result.type.includes("fulfilled")) {
+        CommonToast("Employee created successfully", "success");
         dispatch(getEmployees());
         handleBackToList();
 
+        // Reset form
         setNewEmployeeForm({
+          first_name: "",
+          last_name: "",
           name: "",
           email: "",
           phone: "",
+          password: "",
           employee_code: "",
           department: "",
+          role: "",
+          department_id: null,
+          role_id: null,
           designation: "",
+          employment_type: "",
           joining_date: "",
           date_of_birth: "",
           gender: "",
@@ -500,12 +584,19 @@ const EmployeeManagement = () => {
 
   const handleAddEmployee = () => {
     const emptyEmployee = {
+      first_name: "",
+      last_name: "",
       name: "",
       email: "",
       phone: "",
+      password: "",
       employee_code: "",
       department: "",
+      role: "",
+      department_id: null,
+      role_id: null,
       designation: "",
+      employment_type: "",
       joining_date: "",
       date_of_birth: "",
       gender: "",
@@ -832,12 +923,20 @@ const EmployeeManagement = () => {
         : selectedEmployee[field];
 
     const requiredFields = [
+      "first_name",
+      "last_name",
       "name",
       "email",
       "phone",
+      "password",
       "employee_code",
       "department",
+      "role",
+      "department_id",
+      "role_id",
       "designation",
+      "employment_type",
+      "role_id",
       "joining_date",
       "date_of_birth",
       "gender",
@@ -1022,6 +1121,7 @@ const EmployeeManagement = () => {
                     </TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Department</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>role</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Designation</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Phone</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
@@ -1041,6 +1141,7 @@ const EmployeeManagement = () => {
                         </TableCell>
                         <TableCell>{emp.name}</TableCell>
                         <TableCell>{emp.department}</TableCell>
+                        <TableCell>{emp.role}</TableCell>
                         <TableCell>{emp.designation}</TableCell>
                         <TableCell>{emp.phone}</TableCell>
                         <TableCell>{emp.email}</TableCell>
@@ -1154,7 +1255,7 @@ const EmployeeManagement = () => {
       )}
 
       {/* Tabs Section */}
-      {/* <Box sx={{ bgcolor: "white", borderBottom: 1, borderColor: "divider" }}>
+      <Box sx={{ bgcolor: "white", borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={activeTab}
           onChange={(e, v) => setActiveTab(v)}
@@ -1167,70 +1268,36 @@ const EmployeeManagement = () => {
             iconPosition="start"
             label="Employee Profile"
           />
+
           {!createEmployeeFlag && (
-            <>
-              <Tab
-                icon={<FolderIcon />}
-                iconPosition="start"
-                label="Employee Documents"
-              />
-              <Tab
-                icon={<DescriptionIcon />}
-                iconPosition="start"
-                label="Personal Details"
-              />
-              <Tab
-                icon={<AccountBalanceIcon />}
-                iconPosition="start"
-                label="Salary"
-              />
-              <Tab icon={<PersonIcon />} iconPosition="start" label="Users" />
-            </>
-          )}
-        </Tabs>
-      </Box> */}
-      <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)}>
-        {[
-          <Tab
-            key="profile"
-            icon={<PersonIcon />}
-            iconPosition="start"
-            label="Employee Profile"
-          />,
-          !createEmployeeFlag && (
             <Tab
-              key="docs"
               icon={<FolderIcon />}
               iconPosition="start"
               label="Employee Documents"
             />
-          ),
-          !createEmployeeFlag && (
+          )}
+
+          {!createEmployeeFlag && (
             <Tab
-              key="personal"
               icon={<DescriptionIcon />}
               iconPosition="start"
               label="Personal Details"
             />
-          ),
-          !createEmployeeFlag && (
+          )}
+
+          {!createEmployeeFlag && (
             <Tab
-              key="salary"
               icon={<AccountBalanceIcon />}
               iconPosition="start"
               label="Salary"
             />
-          ),
-          !createEmployeeFlag && (
-            <Tab
-              key="users"
-              icon={<PersonIcon />}
-              iconPosition="start"
-              label="Users"
-            />
-          ),
-        ].filter(Boolean)}
-      </Tabs>
+          )}
+
+          {!createEmployeeFlag && (
+            <Tab icon={<PersonIcon />} iconPosition="start" label="Users" />
+          )}
+        </Tabs>
+      </Box>
 
       {/* Content Section */}
       <Box sx={{ p: 3 }}>
@@ -1285,18 +1352,14 @@ const EmployeeManagement = () => {
 
               <Grid container spacing={2}>
                 {/* Basic Information */}
-                <Grid item xs={12}>
-                  {/* <Typography
-                    variant="subtitle1"
-                    fontWeight={600}
-                    color="primary"
-                    mb={2}
-                  >
-                    Basic Information
-                  </Typography> */}
+                <Grid item xs={12} sm={6}>
+                  {renderTextField("First Name", "first_name")}
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Employee Name", "name")}
+                  {renderTextField("Last Name", "last_name")}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  {renderTextField("Full Name", "name")}
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Employee Code", "employee_code")}
@@ -1313,21 +1376,193 @@ const EmployeeManagement = () => {
                     },
                   })}
                 </Grid>
+
+                {/* Password - Only for Create Mode */}
+                {createEmployeeFlag && (
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Password", "password", "password")}
+                  </Grid>
+                )}
+
+                {/* Department - Autocomplete */}
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Department", "department")}
+                  {createEmployeeFlag || editMode ? (
+                    <Autocomplete
+                      options={departments}
+                      getOptionLabel={(option) => option.name || ""}
+                      value={
+                        departments.find(
+                          (d) =>
+                            d.id ===
+                            (createEmployeeFlag
+                              ? newEmployeeForm.department_id
+                              : formData.department_id),
+                        ) || null
+                      }
+                      onChange={(event, newValue) => {
+                        if (createEmployeeFlag) {
+                          setNewEmployeeForm({
+                            ...newEmployeeForm,
+                            department_id: newValue ? newValue.id : null,
+                            department: newValue ? newValue.name : "",
+                          });
+                          if (formErrors.department_id) {
+                            setFormErrors({
+                              ...formErrors,
+                              department_id: undefined,
+                            });
+                          }
+                        } else {
+                          setFormData({
+                            ...formData,
+                            department_id: newValue ? newValue.id : null,
+                            department: newValue ? newValue.name : "",
+                          });
+                        }
+                      }}
+                      loading={departmentsLoading}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label={
+                            createEmployeeFlag ? "Department *" : "Department"
+                          }
+                          error={
+                            createEmployeeFlag && !!formErrors.department_id
+                          }
+                          helperText={
+                            createEmployeeFlag && formErrors.department_id
+                          }
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {departmentsLoading ? (
+                                  <CircularProgress color="inherit" size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  ) : (
+                    <TextField
+                      fullWidth
+                      label="Department"
+                      value={selectedEmployee.department || ""}
+                      InputProps={{ readOnly: true }}
+                    />
+                  )}
                 </Grid>
+
+                {/* Department - Autocomplete */}
+                <Grid item xs={12} sm={6}>
+                  {createEmployeeFlag || editMode ? (
+                    <Autocomplete
+                      options={roles}
+                      getOptionLabel={(option) => option.name || ""}
+                      value={
+                        departments.find(
+                          (d) =>
+                            d.id ===
+                            (createEmployeeFlag
+                              ? newEmployeeForm.role_id
+                              : formData.role_id),
+                        ) || null
+                      }
+                      onChange={(event, newValue) => {
+                        if (createEmployeeFlag) {
+                          setNewEmployeeForm({
+                            ...newEmployeeForm,
+                            role_id: newValue ? newValue.id : null,
+                            role: newValue ? newValue.name : "",
+                          });
+                          if (formErrors.role_id) {
+                            setFormErrors({
+                              ...formErrors,
+                              role_id: undefined,
+                            });
+                          }
+                        } else {
+                          setFormData({
+                            ...formData,
+                            role_id: newValue ? newValue.id : null,
+                            role: newValue ? newValue.name : "",
+                          });
+                        }
+                      }}
+                      loading={departmentsLoading}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label={createEmployeeFlag ? "Role *" : "Role"}
+                          error={createEmployeeFlag && !!formErrors.role_id}
+                          helperText={createEmployeeFlag && formErrors.role_id}
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {rolesLoading ? (
+                                  <CircularProgress color="inherit" size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  ) : (
+                    <TextField
+                      fullWidth
+                      label="Role"
+                      value={selectedEmployee.role || ""}
+                      InputProps={{ readOnly: true }}
+                    />
+                  )}
+                </Grid>
+
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Designation", "designation")}
                 </Grid>
+
+                {/* Employment Type */}
                 <Grid item xs={12} sm={6}>
                   {renderTextField(
-                    "Date of Joining",
-                    "joining_date",
-                    "date",
+                    "Employment Type",
+                    "employment_type",
+                    "text",
                     {
-                      InputLabelProps: { shrink: true },
+                      select: true,
+                      children: [
+                        <MenuItem key="Intern" value="Intern">
+                          Full-time
+                        </MenuItem>,
+                        // <MenuItem key="Part-time" value="Part-time">
+                        //   Part-time
+                        // </MenuItem>,
+                        <MenuItem key="Contract" value="Contract">
+                          Contract
+                        </MenuItem>,
+                        <MenuItem key="Internship" value="Internship">
+                          Internship
+                        </MenuItem>,
+                      ],
                     },
                   )}
+                </Grid>
+
+                {/* Role ID - This might need to be an autocomplete too if you have a roles table */}
+                <Grid item xs={12} sm={6}>
+                  {renderTextField("Role ID", "role_id", "number")}
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  {renderTextField("Date of Joining", "joining_date", "date", {
+                    InputLabelProps: { shrink: true },
+                  })}
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Date of Birth", "date_of_birth", "date", {
@@ -1369,14 +1604,13 @@ const EmployeeManagement = () => {
 
                 {/* Address Information */}
                 <Grid item xs={12} sx={{ mt: 2 }}>
-                  {/* <Typography
+                  <Typography
                     variant="subtitle1"
                     fontWeight={600}
                     color="primary"
-                    mb={2}
                   >
                     Address Information
-                  </Typography> */}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   {renderTextField("Address", "address")}
@@ -1399,14 +1633,13 @@ const EmployeeManagement = () => {
 
                 {/* Emergency Contact */}
                 <Grid item xs={12} sx={{ mt: 2 }}>
-                  {/* <Typography
+                  <Typography
                     variant="subtitle1"
                     fontWeight={600}
                     color="primary"
-                    mb={2}
                   >
                     Emergency Contact
-                  </Typography> */}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField(
@@ -1431,14 +1664,13 @@ const EmployeeManagement = () => {
 
                 {/* Financial Information */}
                 <Grid item xs={12} sx={{ mt: 2 }}>
-                  {/* <Typography
+                  <Typography
                     variant="subtitle1"
                     fontWeight={600}
                     color="primary"
-                    mb={2}
                   >
                     Financial Information
-                  </Typography> */}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Salary", "salary", "tel", {
@@ -1476,7 +1708,6 @@ const EmployeeManagement = () => {
                     variant="subtitle1"
                     fontWeight={600}
                     color="primary"
-                    mb={2}
                   >
                     Profile Photo
                   </Typography>
@@ -1518,7 +1749,7 @@ const EmployeeManagement = () => {
                   <Box display="flex" justifyContent="center" py={5}>
                     <CircularProgress />
                   </Box>
-                ) : employeeDocuments.length === 0 ? (
+                ) : docsArray.length === 0 ? (
                   <Box textAlign="center" py={5}>
                     <FolderIcon
                       sx={{ fontSize: 60, color: "grey.400", mb: 2 }}
@@ -1548,8 +1779,8 @@ const EmployeeManagement = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {employeeDocuments.length > 0 &&
-                          employeeDocuments.map((doc, index) => (
+                        {docsArray?.length > 0 &&
+                          docsArray?.map((doc, index) => (
                             <TableRow key={doc.id} hover>
                               <TableCell>{index + 1}</TableCell>
                               <TableCell>
@@ -1639,7 +1870,7 @@ const EmployeeManagement = () => {
                   <Box display="flex" justifyContent="center" py={5}>
                     <CircularProgress />
                   </Box>
-                ) : employeePersonalDetails.length === 0 ? (
+                ) : personalDetailsArray?.length === 0 ? (
                   <Box textAlign="center" py={5}>
                     <DescriptionIcon
                       sx={{ fontSize: 60, color: "grey.400", mb: 2 }}
@@ -1675,38 +1906,39 @@ const EmployeeManagement = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {employeePersonalDetails.map((detail, index) => (
-                          <TableRow key={detail.id} hover>
-                            <TableCell>{index + 1}</TableCell>
-                            <TableCell>{detail.father_name || "—"}</TableCell>
-                            <TableCell>{detail.mother_name || "—"}</TableCell>
-                            <TableCell>
-                              {detail.marital_status || "—"}
-                            </TableCell>
-                            <TableCell>{detail.blood_group || "—"}</TableCell>
-                            <TableCell>{detail.nationality || "—"}</TableCell>
-                            <TableCell>
-                              <IconButton
-                                size="small"
-                                color="warning"
-                                onClick={() =>
-                                  handleEditPersonalDetails(detail)
-                                }
-                              >
-                                <EditIcon />
-                              </IconButton>
-                              <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() =>
-                                  handleDeletePersonalDetails(detail.id)
-                                }
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {personalDetailsArray?.length > 0 &&
+                          personalDetailsArray?.map((detail, index) => (
+                            <TableRow key={detail.id} hover>
+                              <TableCell>{index + 1}</TableCell>
+                              <TableCell>{detail.father_name || "—"}</TableCell>
+                              <TableCell>{detail.mother_name || "—"}</TableCell>
+                              <TableCell>
+                                {detail.marital_status || "—"}
+                              </TableCell>
+                              <TableCell>{detail.blood_group || "—"}</TableCell>
+                              <TableCell>{detail.nationality || "—"}</TableCell>
+                              <TableCell>
+                                <IconButton
+                                  size="small"
+                                  color="warning"
+                                  onClick={() =>
+                                    handleEditPersonalDetails(detail)
+                                  }
+                                >
+                                  <EditIcon />
+                                </IconButton>
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  onClick={() =>
+                                    handleDeletePersonalDetails(detail.id)
+                                  }
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </TableContainer>
@@ -1764,7 +1996,7 @@ const EmployeeManagement = () => {
                   <Box display="flex" justifyContent="center" py={5}>
                     <CircularProgress />
                   </Box>
-                ) : employeeSalaries.length === 0 ? (
+                ) : employeeSalary?.length === 0 ? (
                   <Box textAlign="center" py={5}>
                     <AccountBalanceIcon
                       sx={{ fontSize: 60, color: "grey.400", mb: 2 }}
@@ -1800,8 +2032,8 @@ const EmployeeManagement = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {employeeSalaries.length > 0 &&
-                          employeeSalaries?.map((salary, index) => {
+                        {employeeSalary.length > 0 &&
+                          employeeSalary?.map((salary, index) => {
                             const totalAllowances =
                               (parseFloat(salary.hra) || 0) +
                               (parseFloat(salary.da) || 0) +
