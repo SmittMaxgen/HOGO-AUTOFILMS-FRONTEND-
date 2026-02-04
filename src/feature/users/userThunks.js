@@ -10,9 +10,12 @@ export const getUsers = createAsyncThunk(
       if (payload.name) params.name = payload.name;
       if (payload.status !== undefined) params.status = payload.status;
 
-      const response = await axiosInstance.get("/employee/", {
-        params,
-      });
+      const response = await axiosInstance.get(
+        `/users/${payload.employee_id}`,
+        {
+          params,
+        },
+      );
 
       return response.data;
     } catch (error) {
@@ -27,7 +30,7 @@ export const createUser = createAsyncThunk(
   "user/createUser",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/employee/", payload);
+      const response = await axiosInstance.post("/users/", payload);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -41,7 +44,7 @@ export const updateUser = createAsyncThunk(
   "user/updateUser",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.patch(`/employee/${id}/`, data);
+      const response = await axiosInstance.patch(`/users/${id}/`, data);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -55,7 +58,7 @@ export const deleteUser = createAsyncThunk(
   "user/deleteUser",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/employee/${id}/`);
+      const response = await axiosInstance.delete(`/users/${id}/`);
       return response.data;
     } catch (error) {
       return rejectWithValue(

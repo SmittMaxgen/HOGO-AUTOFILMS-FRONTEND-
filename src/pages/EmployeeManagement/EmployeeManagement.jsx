@@ -261,11 +261,26 @@ const EmployeeManagement = () => {
 
   // Document upload state
   const [documentUploadDialog, setDocumentUploadDialog] = useState(false);
-  const [documentFormData, setDocumentFormData] = useState({
-    document_type: "",
-    document_file: null,
-    remarks: "",
-  });
+const [documentFormData, setDocumentFormData] = useState({
+  id: null,
+  employee_id: selectedEmployee?.id || null,
+
+  document_type: "",
+
+  pancard_number: "",
+  aadhar_number: "",
+  driving_license_number: "",
+
+  aadhar_front: null,
+  aadhar_back: null,
+  pan_card: null,
+  photo: null,
+  driving_license_front: null,
+  driving_license_back: null,
+
+  remarks: "",
+});
+
 
   // Personal details state
   const [personalDetailsDialog, setPersonalDetailsDialog] = useState(false);
@@ -305,16 +320,23 @@ const EmployeeManagement = () => {
 
   // User state
   const [userDialog, setUserDialog] = useState(false);
-  const [userFormData, setUserFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    first_name: "",
-    last_name: "",
-    is_active: true,
-    is_staff: false,
-    is_superuser: false,
-  });
+ const [userFormData, setUserFormData] = useState({
+  username: "",
+  email: "",
+  password: "",
+  first_name: "",
+  last_name: "",
+  is_active: true,
+  is_staff: false,
+  is_superuser: false,
+phone:"",
+  department_id: null,
+  department: "",
+
+  role_id: null,
+  role: "",
+});
+
   const [editingUser, setEditingUser] = useState(null);
 
   // ==================== LIFECYCLE ====================
@@ -624,36 +646,81 @@ const EmployeeManagement = () => {
   };
 
   const handleUploadDocument = async () => {
-    if (!documentFormData.document_type || !documentFormData.document_file) {
-      CommonToast("Please select document type and file", "error");
-      return;
-    }
+  if (!documentFormData.document_type) {
+    CommonToast("Please select document type", "error");
+    return;
+  }
 
-    const formDataToSend = new FormData();
-    formDataToSend.append("employee_id", selectedEmployee.id);
-    formDataToSend.append("document_type", documentFormData.document_type);
-    formDataToSend.append("document_file", documentFormData.document_file);
-    if (documentFormData.remarks) {
-      formDataToSend.append("remarks", documentFormData.remarks);
-    }
+  const formDataToSend = new FormData();
 
-    try {
-      const result = await dispatch(createEmployeeDocument(formDataToSend));
+  formDataToSend.append("employee_id", selectedEmployee.id);
+  formDataToSend.append("document_type", documentFormData.document_type);
 
-      if (result.type.includes("fulfilled")) {
-        CommonToast("Document uploaded successfully", "success");
-        dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
-        setDocumentUploadDialog(false);
-        setDocumentFormData({
-          document_type: "",
-          document_file: null,
-          remarks: "",
-        });
-      }
-    } catch (err) {
-      CommonToast("Failed to upload document", "error");
+  if (documentFormData.pancard_number)
+    formDataToSend.append("pancard_number", documentFormData.pancard_number);
+
+  if (documentFormData.aadhar_number)
+    formDataToSend.append("aadhar_number", documentFormData.aadhar_number);
+
+  if (documentFormData.driving_license_number)
+    formDataToSend.append(
+      "driving_license_number",
+      documentFormData.driving_license_number
+    );
+
+  if (documentFormData.aadhar_front)
+    formDataToSend.append("aadhar_front", documentFormData.aadhar_front);
+
+  if (documentFormData.aadhar_back)
+    formDataToSend.append("aadhar_back", documentFormData.aadhar_back);
+
+  if (documentFormData.pan_card)
+    formDataToSend.append("pan_card", documentFormData.pan_card);
+
+  if (documentFormData.photo)
+    formDataToSend.append("photo", documentFormData.photo);
+
+  if (documentFormData.driving_license_front)
+    formDataToSend.append(
+      "driving_license_front",
+      documentFormData.driving_license_front
+    );
+
+  if (documentFormData.driving_license_back)
+    formDataToSend.append(
+      "driving_license_back",
+      documentFormData.driving_license_back
+    );
+
+  if (documentFormData.remarks)
+    formDataToSend.append("remarks", documentFormData.remarks);
+
+  try {
+    const result = await dispatch(createEmployeeDocument(formDataToSend));
+
+    if (result.type.includes("fulfilled")) {
+      CommonToast("Document uploaded successfully", "success");
+      dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+      setDocumentUploadDialog(false);
+
+      setDocumentFormData({
+        document_type: "",
+        pancard_number: "",
+        aadhar_number: "",
+        driving_license_number: "",
+        aadhar_front: null,
+        aadhar_back: null,
+        pan_card: null,
+        photo: null,
+        driving_license_front: null,
+        driving_license_back: null,
+        remarks: "",
+      });
     }
-  };
+  } catch {
+    CommonToast("Failed to upload document", "error");
+  }
+};
 
   const handleDeleteDocument = async (docId) => {
     try {
@@ -668,8 +735,10 @@ const EmployeeManagement = () => {
   // Personal Details Handlers
   const handleSavePersonalDetails = async () => {
     if (
-      !personalDetailsFormData.father_name ||
-      !personalDetailsFormData.mother_name
+      // !personalDetailsFormData.father_name ||
+      // !personalDetailsFormData.mother_name ||
+      !personalDetailsFormData.marital_status 
+
     ) {
       CommonToast("Please fill required fields", "error");
       return;
@@ -854,6 +923,10 @@ const EmployeeManagement = () => {
       CommonToast("Password is required for new user", "error");
       return;
     }
+      if (!userFormData.password || userFormData.password.length < 6) {
+    CommonToast("Password must be at least 6 characters", "error");
+    return;
+  }
 
     const dataToSend = {
       ...userFormData,
@@ -1136,7 +1209,7 @@ const EmployeeManagement = () => {
                     <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Department</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>role</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Designation</TableCell>
+                    {/* <TableCell sx={{ fontWeight: 700 }}>Designation</TableCell> */}
                     <TableCell sx={{ fontWeight: 700 }}>Phone</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
@@ -1149,14 +1222,12 @@ const EmployeeManagement = () => {
                       <TableRow key={emp.id} hover>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>
-                          <Typography fontWeight={600}>
-                            {emp.employee_code}
-                          </Typography>
+                          <Typography>{emp.employee_code}</Typography>
                         </TableCell>
-                        <TableCell>{emp.name}</TableCell>
-                        <TableCell>{emp.department}</TableCell>
-                        <TableCell>{emp.role}</TableCell>
-                        <TableCell>{emp.designation}</TableCell>
+                        <TableCell>{`${emp.first_name} ${emp.last_name}`}</TableCell>
+                        <TableCell>{emp.department_name}</TableCell>
+                        <TableCell>{emp.role_name}</TableCell>
+                        {/* <TableCell>{emp.designation}</TableCell> */}
                         <TableCell>{emp.phone}</TableCell>
                         <TableCell>{emp.email}</TableCell>
                         <TableCell>
@@ -1398,8 +1469,167 @@ const EmployeeManagement = () => {
                   </Grid>
                 )}
 
-                {/* Department - Autocomplete */}
                 <Grid item xs={12} sm={6}>
+                  {renderTextField("Designation", "designation")}
+                </Grid>
+
+                {/* Role ID - This might need to be an autocomplete too if you have a roles table */}
+                <Grid item xs={12} sm={6}>
+                  {renderTextField("Role ID", "role_id", "number")}
+                </Grid>
+
+                {/* Address Information */}
+
+                {/* <Grid item xs={12}>
+                  {renderTextField("Address", "address")}
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  {renderTextField("City", "city")}
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  {renderTextField("State", "state")}
+                </Grid> */}
+                {/* <Grid item xs={12} sm={4}>
+                  {renderTextField("Pincode", "pincode", "tel", {
+                    inputProps: {
+                      inputMode: "numeric",
+                      pattern: "[0-9]*",
+                      maxLength: 6,
+                    },
+                  })}
+                </Grid> */}
+
+                {/* Emergency Contact */}
+
+                <Grid item xs={12} sm={6}>
+                  {renderTextField(
+                    "Emergency Contact Name",
+                    "emergency_contact_name",
+                  )}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  {renderTextField(
+                    "Emergency Contact Phone",
+                    "emergency_contact_phone",
+                    "tel",
+                    {
+                      inputProps: {
+                        inputMode: "numeric",
+                        pattern: "[0-9]*",
+                        maxLength: 10,
+                      },
+                    },
+                  )}
+                </Grid>
+
+                {/* Financial Information */}
+{/* 
+                <Grid item xs={12} sm={6}>
+                  {renderTextField("Salary", "gross_salary", "tel", {
+                    inputProps: {
+                      inputMode: "numeric",
+                      pattern: "[0-9]*",
+                    },
+                  })}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  {renderTextField("Basic Salary", "basic_salary", "tel", {
+                    inputProps: {
+                      inputMode: "numeric",
+                      pattern: "[0-9]*",
+                    },
+                  })}
+                </Grid> */}
+                {/* <Grid item xs={12} sm={6}>
+                  {renderTextField(
+                    "Bank Account Number",
+                    "bank_account_number",
+                  )}
+                </Grid> */}
+                {/* <Grid item xs={12} sm={6}>
+                  {renderTextField("IFSC Code", "ifsc_code")}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  {renderTextField("PAN Number", "pan_number")}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  {renderTextField("Aadhaar Number", "aadhaar_number", "tel", {
+                    inputProps: {
+                      inputMode: "numeric",
+                      pattern: "[0-9]*",
+                      maxLength: 12,
+                    },
+                  })}
+                </Grid> */}
+                <Grid item xs={12} sm={6} sx={{ width: 200 }}>
+                  {renderTextField("Date of Joining", "joining_date", "date", {
+                    InputLabelProps: { shrink: true },
+                  })}
+                </Grid>
+                <Grid item xs={12} sm={6} sx={{ width: 200 }}>
+                  {renderTextField("Date of Birth", "date_of_birth", "date", {
+                    InputLabelProps: { shrink: true },
+                  })}
+                </Grid>
+                <Grid item xs={12} sm={6} sx={{ width: 200 }}>
+                  {renderTextField("Gender", "gender", "text", {
+                    select: true,
+                    children: [
+                      <MenuItem key="Male" value="Male">
+                        Male
+                      </MenuItem>,
+                      <MenuItem key="Female" value="Female">
+                        Female
+                      </MenuItem>,
+                      <MenuItem key="Other" value="Other">
+                        Other
+                      </MenuItem>,
+                    ],
+                  })}
+                </Grid>
+                <Grid item xs={12} sm={6} sx={{ width: 200 }}>
+                  {renderTextField("Status", "status", "text", {
+                    select: true,
+                    children: [
+                      <MenuItem key="Active" value="Active">
+                        Active
+                      </MenuItem>,
+                      <MenuItem key="Inactive" value="Inactive">
+                        Inactive
+                      </MenuItem>,
+                      // <MenuItem key="On Leave" value="On Leave">
+                      //   On Leave
+                      // </MenuItem>,
+                    ],
+                  })}
+                </Grid>
+                {/* Employment Type */}
+                <Grid item xs={12} sm={6} sx={{ width: 200 }}>
+                  {renderTextField(
+                    "Employment Type",
+                    "employment_type",
+                    "text",
+                    {
+                      select: true,
+                      children: [
+                        <MenuItem key="Intern" value="Intern">
+                          Full-time
+                        </MenuItem>,
+                        // <MenuItem key="Part-time" value="Part-time">
+                        //   Part-time
+                        // </MenuItem>,
+                        <MenuItem key="Contract" value="Contract">
+                          Contract
+                        </MenuItem>,
+                        <MenuItem key="Internship" value="Internship">
+                          Internship
+                        </MenuItem>,
+                      ],
+                    },
+                  )}
+                </Grid>
+                {/* Department - Autocomplete */}
+                <Grid item xs={12} sm={6} sx={{ width: 200 }}>
                   {createEmployeeFlag || editMode ? (
                     <Autocomplete
                       options={departments}
@@ -1472,7 +1702,7 @@ const EmployeeManagement = () => {
                 </Grid>
 
                 {/* Department - Autocomplete */}
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6} sx={{ width: 200 }}>
                   {createEmployeeFlag || editMode ? (
                     <Autocomplete
                       options={roles}
@@ -1537,204 +1767,9 @@ const EmployeeManagement = () => {
                     />
                   )}
                 </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Designation", "designation")}
-                </Grid>
-
-                {/* Employment Type */}
-                <Grid item xs={12} sm={6}>
-                  {renderTextField(
-                    "Employment Type",
-                    "employment_type",
-                    "text",
-                    {
-                      select: true,
-                      children: [
-                        <MenuItem key="Intern" value="Intern">
-                          Full-time
-                        </MenuItem>,
-                        // <MenuItem key="Part-time" value="Part-time">
-                        //   Part-time
-                        // </MenuItem>,
-                        <MenuItem key="Contract" value="Contract">
-                          Contract
-                        </MenuItem>,
-                        <MenuItem key="Internship" value="Internship">
-                          Internship
-                        </MenuItem>,
-                      ],
-                    },
-                  )}
-                </Grid>
-
-                {/* Role ID - This might need to be an autocomplete too if you have a roles table */}
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Role ID", "role_id", "number")}
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Date of Joining", "joining_date", "date", {
-                    InputLabelProps: { shrink: true },
-                  })}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Date of Birth", "date_of_birth", "date", {
-                    InputLabelProps: { shrink: true },
-                  })}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Gender", "gender", "text", {
-                    select: true,
-                    children: [
-                      <MenuItem key="Male" value="Male">
-                        Male
-                      </MenuItem>,
-                      <MenuItem key="Female" value="Female">
-                        Female
-                      </MenuItem>,
-                      <MenuItem key="Other" value="Other">
-                        Other
-                      </MenuItem>,
-                    ],
-                  })}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Status", "status", "text", {
-                    select: true,
-                    children: [
-                      <MenuItem key="Active" value="Active">
-                        Active
-                      </MenuItem>,
-                      <MenuItem key="Inactive" value="Inactive">
-                        Inactive
-                      </MenuItem>,
-                      <MenuItem key="On Leave" value="On Leave">
-                        On Leave
-                      </MenuItem>,
-                    ],
-                  })}
-                </Grid>
-
-                {/* Address Information */}
-                <Grid item xs={12} sx={{ mt: 2 }}>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight={600}
-                    color="primary"
-                  >
-                    Address Information
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  {renderTextField("Address", "address")}
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  {renderTextField("City", "city")}
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  {renderTextField("State", "state")}
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  {renderTextField("Pincode", "pincode", "tel", {
-                    inputProps: {
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
-                      maxLength: 6,
-                    },
-                  })}
-                </Grid>
-
-                {/* Emergency Contact */}
-                <Grid item xs={12} sx={{ mt: 2 }}>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight={600}
-                    color="primary"
-                  >
-                    Emergency Contact
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField(
-                    "Emergency Contact Name",
-                    "emergency_contact_name",
-                  )}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField(
-                    "Emergency Contact Phone",
-                    "emergency_contact_phone",
-                    "tel",
-                    {
-                      inputProps: {
-                        inputMode: "numeric",
-                        pattern: "[0-9]*",
-                        maxLength: 10,
-                      },
-                    },
-                  )}
-                </Grid>
-
-                {/* Financial Information */}
-                <Grid item xs={12} sx={{ mt: 2 }}>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight={600}
-                    color="primary"
-                  >
-                    Financial Information
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Salary", "gross_salary", "tel", {
-                    inputProps: {
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
-                    },
-                  })}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Basic Salary", "basic_salary", "tel", {
-                    inputProps: {
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
-                    },
-                  })}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField(
-                    "Bank Account Number",
-                    "bank_account_number",
-                  )}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("IFSC Code", "ifsc_code")}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("PAN Number", "pan_number")}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Aadhaar Number", "aadhaar_number", "tel", {
-                    inputProps: {
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
-                      maxLength: 12,
-                    },
-                  })}
-                </Grid>
-
                 {/* Profile Photo */}
-                <Grid item xs={12} sx={{ mt: 2 }}>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight={600}
-                    color="primary"
-                  >
-                    Profile Photo
-                  </Typography>
-                </Grid>
-                {renderFileUpload("Profile Photo", "profile_photo")}
+
+                {/* {renderFileUpload("Profile Photo", "profile_photo")} */}
               </Grid>
             </CardContent>
           </Card>
@@ -2194,9 +2229,9 @@ const EmployeeManagement = () => {
                       <TableHead>
                         <TableRow>
                           <TableCell sx={{ fontWeight: 700 }}>Sr</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>
+                          {/* <TableCell sx={{ fontWeight: 700 }}>
                             Username
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
                           <TableCell sx={{ fontWeight: 700 }}>
                             First Name
@@ -2215,11 +2250,11 @@ const EmployeeManagement = () => {
                         {users.map((user, index) => (
                           <TableRow key={user.id} hover>
                             <TableCell>{index + 1}</TableCell>
-                            <TableCell>
+                            {/* <TableCell>
                               <Typography fontWeight={600}>
                                 {user.username}
                               </Typography>
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell>{user.email}</TableCell>
                             <TableCell>{user.first_name || "—"}</TableCell>
                             <TableCell>{user.last_name || "—"}</TableCell>
@@ -2323,90 +2358,128 @@ const EmployeeManagement = () => {
           fullWidth
         >
           <DialogTitle>Upload Employee Document</DialogTitle>
-          <DialogContent>
-            <Box sx={{ pt: 2 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Document Type *"
-                    select
-                    value={documentFormData.document_type}
-                    onChange={(e) =>
-                      setDocumentFormData({
-                        ...documentFormData,
-                        document_type: e.target.value,
-                      })
-                    }
-                  >
-                    <MenuItem value="Aadhaar Card">Aadhaar Card</MenuItem>
-                    <MenuItem value="PAN Card">PAN Card</MenuItem>
-                    <MenuItem value="Passport">Passport</MenuItem>
-                    <MenuItem value="Driving License">Driving License</MenuItem>
-                    <MenuItem value="Educational Certificate">
-                      Educational Certificate
-                    </MenuItem>
-                    <MenuItem value="Experience Letter">
-                      Experience Letter
-                    </MenuItem>
-                    <MenuItem value="Offer Letter">Offer Letter</MenuItem>
-                    <MenuItem value="Appointment Letter">
-                      Appointment Letter
-                    </MenuItem>
-                    <MenuItem value="Other">Other</MenuItem>
-                  </TextField>
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    variant="outlined"
-                    component="label"
-                    fullWidth
-                    startIcon={<CloudUploadIcon />}
-                  >
-                    Choose File *
-                    <input
-                      type="file"
-                      hidden
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          setDocumentFormData({
-                            ...documentFormData,
-                            document_file: file,
-                          });
-                        }
-                      }}
-                    />
-                  </Button>
-                  {documentFormData.document_file && (
-                    <Typography
-                      variant="caption"
-                      display="block"
-                      sx={{ mt: 1 }}
-                    >
-                      Selected: {documentFormData.document_file.name}
-                    </Typography>
-                  )}
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Remarks"
-                    multiline
-                    rows={3}
-                    value={documentFormData.remarks}
-                    onChange={(e) =>
-                      setDocumentFormData({
-                        ...documentFormData,
-                        remarks: e.target.value,
-                      })
-                    }
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-          </DialogContent>
+       <DialogContent>
+  <Box sx={{ pt: 2 }}>
+    <Grid container spacing={2}>
+
+      {/* Document Type */}
+      <Grid item xs={12}>
+        <TextField
+          fullWidth
+          label="Document Type *"
+          select
+          value={documentFormData.document_type}
+          onChange={(e) =>
+            setDocumentFormData({
+              ...documentFormData,
+              document_type: e.target.value,
+            })
+          }
+        >
+          <MenuItem value="Aadhaar Card">Aadhaar Card</MenuItem>
+          <MenuItem value="PAN Card">PAN Card</MenuItem>
+          <MenuItem value="Driving License">Driving License</MenuItem>
+          <MenuItem value="Photo">Photo</MenuItem>
+          <MenuItem value="Other">Other</MenuItem>
+        </TextField>
+      </Grid>
+
+      {/* Numbers */}
+      <Grid item xs={12}>
+        <TextField
+          fullWidth
+          label="Aadhaar Number"
+          value={documentFormData.aadhar_number}
+          onChange={(e) =>
+            setDocumentFormData({
+              ...documentFormData,
+              aadhar_number: e.target.value,
+            })
+          }
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <TextField
+          fullWidth
+          label="PAN Number"
+          value={documentFormData.pancard_number}
+          onChange={(e) =>
+            setDocumentFormData({
+              ...documentFormData,
+              pancard_number: e.target.value,
+            })
+          }
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <TextField
+          fullWidth
+          label="Driving License Number"
+          value={documentFormData.driving_license_number}
+          onChange={(e) =>
+            setDocumentFormData({
+              ...documentFormData,
+              driving_license_number: e.target.value,
+            })
+          }
+        />
+      </Grid>
+
+      {/* Files */}
+      {[
+        { label: "Aadhaar Front", key: "aadhar_front" },
+        { label: "Aadhaar Back", key: "aadhar_back" },
+        { label: "PAN Card", key: "pan_card" },
+        { label: "Photo", key: "photo" },
+        { label: "Driving License Front", key: "driving_license_front" },
+        { label: "Driving License Back", key: "driving_license_back" },
+      ].map((item) => (
+        <Grid item xs={12} key={item.key}>
+          <CommonButton component="label" variant="outlined" fullWidth>
+            Upload {item.label}
+            <input
+              hidden
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              onChange={(e) =>
+                setDocumentFormData({
+                  ...documentFormData,
+                  [item.key]: e.target.files[0],
+                })
+              }
+            />
+          </CommonButton>
+          {documentFormData[item.key] && (
+            <Typography variant="caption">
+              Selected: {documentFormData[item.key].name}
+            </Typography>
+          )}
+        </Grid>
+      ))}
+
+      {/* Remarks */}
+      <Grid item xs={12}>
+        <TextField
+          fullWidth
+          label="Remarks"
+          multiline
+          rows={3}
+          value={documentFormData.remarks}
+          onChange={(e) =>
+            setDocumentFormData({
+              ...documentFormData,
+              remarks: e.target.value,
+            })
+          }
+        />
+      </Grid>
+
+    </Grid>
+  </Box>
+</DialogContent>
+
           <DialogActions>
             <Button onClick={() => setDocumentUploadDialog(false)}>
               Cancel
@@ -2612,221 +2685,7 @@ const EmployeeManagement = () => {
         <DialogTitle>
           {editingSalary ? "Edit Salary" : "Add Salary"}
         </DialogTitle>
-        <DialogContent>
-          <Box sx={{ pt: 2 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography
-                  variant="subtitle2"
-                  color="primary"
-                  fontWeight={600}
-                >
-                  Earnings
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Basic Salary *"
-                  type="number"
-                  value={salaryFormData.basic_salary}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      basic_salary: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Gross Salary *"
-                  type="number"
-                  value={salaryFormData.gross_salary}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      gross_salary: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="HRA"
-                  type="number"
-                  value={salaryFormData.hra}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      hra: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="DA"
-                  type="number"
-                  value={salaryFormData.da}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      da: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="TA"
-                  type="number"
-                  value={salaryFormData.ta}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      ta: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Medical Allowance"
-                  type="number"
-                  value={salaryFormData.medical_allowance}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      medical_allowance: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Other Allowances"
-                  type="number"
-                  value={salaryFormData.alloances}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      alloances: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <Typography variant="subtitle2" color="error" fontWeight={600}>
-                  Deductions
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Provident Fund"
-                  type="number"
-                  value={salaryFormData.deductions}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      deductions: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Professional Tax"
-                  type="number"
-                  value={salaryFormData.professional_tax}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      professional_tax: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Income Tax"
-                  type="number"
-                  value={salaryFormData.income_tax}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      income_tax: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Deductions"
-                  type="number"
-                  value={salaryFormData.other_deductions}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      other_deductions: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <Typography
-                  variant="subtitle2"
-                  color="primary"
-                  fontWeight={600}
-                >
-                  Other Details
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Effective From *"
-                  type="date"
-                  value={salaryFormData.effective_from}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      effective_from: e.target.value,
-                    })
-                  }
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Remarks"
-                  multiline
-                  rows={2}
-                  value={salaryFormData.remarks}
-                  onChange={(e) =>
-                    setSalaryFormData({
-                      ...salaryFormData,
-                      remarks: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        </DialogContent>
+       
         <DialogActions>
           <Button onClick={() => setSalaryDialog(false)}>Cancel</Button>
           <CommonButton
@@ -2921,6 +2780,19 @@ const EmployeeManagement = () => {
                   }
                 />
               </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Phone"
+                  value={userFormData.phone}
+                  onChange={(e) =>
+                    setUserFormData({
+                      ...userFormData,
+                      phone: e.target.value,
+                    })
+                  }
+                />
+              </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
                   control={
@@ -2937,6 +2809,79 @@ const EmployeeManagement = () => {
                   label="Active"
                 />
               </Grid>
+             <Grid item xs={12} sm={6} sx={{ width: 200 }}>
+  <Autocomplete
+    options={departments}
+    getOptionLabel={(option) => option.name || ""}
+    value={
+      departments.find(
+        (d) => d.id === userFormData.department_id
+      ) || null
+    }
+    onChange={(event, newValue) => {
+      setUserFormData({
+        ...userFormData,
+        department_id: newValue ? newValue.id : null,
+        department: newValue ? newValue.name : "",
+      });
+    }}
+    loading={departmentsLoading}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Department *"
+        InputProps={{
+          ...params.InputProps,
+          endAdornment: (
+            <>
+              {departmentsLoading ? (
+                <CircularProgress color="inherit" size={20} />
+              ) : null}
+              {params.InputProps.endAdornment}
+            </>
+          ),
+        }}
+      />
+    )}
+  />
+</Grid>
+<Grid item xs={12} sm={6} sx={{ width: 200 }}>
+  <Autocomplete
+    options={roles}
+    getOptionLabel={(option) => option.name || ""}
+    value={
+      roles.find(
+        (r) => r.id === userFormData.role_id
+      ) || null
+    }
+    onChange={(event, newValue) => {
+      setUserFormData({
+        ...userFormData,
+        role_id: newValue ? newValue.id : null,
+        role: newValue ? newValue.name : "",
+      });
+    }}
+    loading={rolesLoading}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Role *"
+        InputProps={{
+          ...params.InputProps,
+          endAdornment: (
+            <>
+              {rolesLoading ? (
+                <CircularProgress color="inherit" size={20} />
+              ) : null}
+              {params.InputProps.endAdornment}
+            </>
+          ),
+        }}
+      />
+    )}
+  />
+</Grid>
+
               <Grid item xs={12}>
                 <FormControlLabel
                   control={
