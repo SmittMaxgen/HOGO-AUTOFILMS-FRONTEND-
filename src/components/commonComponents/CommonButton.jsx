@@ -21,7 +21,7 @@ const CommonButton = ({
       disableElevation
       sx={{
         backgroundColor: variant === "contained" ? "#D20000" : "transparent",
-        color: variant === "contained" ? "#FAFAFA" : "#D20000",
+        color: variant === "contained" ? "#FAFAFA" : "grey",
         textTransform: "none",
         fontWeight: 600,
         fontSize: "14px",

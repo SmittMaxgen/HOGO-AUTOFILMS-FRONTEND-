@@ -32,6 +32,7 @@ import {
   Switch,
   Alert,
   FormHelperText,
+  Select,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -57,7 +58,7 @@ import {
   selectDistributors,
   selectDistributorLoading,
   createDistributorLoading,
-  selectDistributorError
+  selectDistributorError,
 } from "../../feature/distributors/distributorSelector";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
@@ -83,19 +84,25 @@ const InfoRow = ({ label, value }) => (
   </Box>
 );
 
-const DocumentLink = ({ url, label }) => {
+const DocumentLink = ({ url, label, sx }) => {
   if (!url) return null;
+
   return (
-    <Button
-      variant="outlined"
-      size="small"
-      href={`${BASE_URL}${url}`}
-      target="_blank"
-      startIcon={<VisibilityIcon />}
-      sx={{ mr: 1, mb: 1 }}
+    <Box
+      onClick={(e) => {
+        e.stopPropagation();
+        window.open(url, "_blank");
+      }}
+      sx={{
+        cursor: "pointer",
+        fontWeight: 500,
+        width: "100%",
+        textAlign: "center",
+        ...sx,
+      }}
     >
       {label}
-    </Button>
+    </Box>
   );
 };
 
@@ -109,7 +116,7 @@ const FileInput = ({
 }) => (
   <Box sx={{ mb: 2 }}>
     <Typography variant="body2" fontWeight={600} mb={1}>
-      {label} {required && <span style={{ color: "red" }}>*</span>}
+      {/* {label} {required && <span style={{ color: "red" }}>*</span>} */}
     </Typography>
     <Button
       variant="outlined"
@@ -319,12 +326,12 @@ const Distributors = () => {
     // TAB 3: Distribution Capability - Optional but validate if warehouse is available
     if (
       newDistributorForm.warehouse_available &&
-      !newDistributorForm.warehouse_address.trim() && typeof newDistributorForm.warehouse_available !== "boolean"
+      !newDistributorForm.warehouse_address.trim() &&
+      typeof newDistributorForm.warehouse_available !== "boolean"
     ) {
       errors.warehouse_address =
         "Warehouse address is required when warehouse is available";
     }
-
 
     // TAB 4: Business & Legal - Required Fields
     if (!newDistributorForm.gst_number.trim()) {
@@ -623,7 +630,27 @@ const Distributors = () => {
     setFormErrors({});
   };
 
+  const handleStatusUpdate = async (dist) => {
+    const nextStatus =
+      dist.status === "Pending"
+        ? "Approved"
+        : dist.status === "Approved"
+          ? "Rejected"
+          : "Pending";
+
+    const fd = new FormData();
+    fd.append("status", nextStatus);
+
+    const result = await dispatch(updateDistributor({ id: dist.id, data: fd }));
+
+    if (result.type.includes("fulfilled")) {
+      CommonToast(`Status changed to ${nextStatus}`, "success");
+      dispatch(getDistributors());
+    }
+  };
+
   const handleSave = async () => {
+    console.log("comes???");
     const formDataToSend = new FormData();
     Object.keys(formData).forEach((key) => {
       if (
@@ -634,7 +661,11 @@ const Distributors = () => {
         formDataToSend.append(key, formData[key]);
       }
     });
-
+    console.log(
+      "selectedDistributor,formDataToSend::",
+      selectedDistributor,
+      formDataToSend,
+    );
     const result = await dispatch(
       updateDistributor({ id: selectedDistributor.id, data: formDataToSend }),
     );
@@ -690,7 +721,6 @@ const Distributors = () => {
     });
 
     try {
-      
       const result = await dispatch(createDistributor(formDataToSend));
       // CommonToast("Distributor created successfully", "success");
       if (result.type.includes("fulfilled")) {
@@ -913,45 +943,44 @@ const Distributors = () => {
       };
     }
     // Handle boolean type separately
-if (type === "boolean") {
-  return (
-    <div style={{ marginTop: 16, marginBottom: 8 }}>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={!!value}
-            onChange={(e) => {
-              const newValue = e.target.checked;
-              if (createDistributorFlag) {
-                setNewDistributorForm({
-                  ...newDistributorForm,
-                  [field]: newValue,
-                });
-                if (formErrors[field]) {
-                  setFormErrors({
-                    ...formErrors,
-                    [field]: undefined,
-                  });
-                }
-              } else {
-                setFormData({
-                  ...formData,
-                  [field]: newValue,
-                });
-              }
-            }}
-            disabled={!isEditable}
+    if (type === "boolean") {
+      return (
+        <div style={{ marginTop: 16, marginBottom: 8 }}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={!!value}
+                onChange={(e) => {
+                  const newValue = e.target.checked;
+                  if (createDistributorFlag) {
+                    setNewDistributorForm({
+                      ...newDistributorForm,
+                      [field]: newValue,
+                    });
+                    if (formErrors[field]) {
+                      setFormErrors({
+                        ...formErrors,
+                        [field]: undefined,
+                      });
+                    }
+                  } else {
+                    setFormData({
+                      ...formData,
+                      [field]: newValue,
+                    });
+                  }
+                }}
+                disabled={!isEditable}
+              />
+            }
+            label={isRequired && createDistributorFlag ? `${label} *` : label}
           />
-        }
-        label={isRequired && createDistributorFlag ? `${label} *` : label}
-      />
-      {createDistributorFlag && formErrors[field] && (
-        <FormHelperText error>{formErrors[field]}</FormHelperText>
-      )}
-    </div>
-  );
-}
-
+          {createDistributorFlag && formErrors[field] && (
+            <FormHelperText error>{formErrors[field]}</FormHelperText>
+          )}
+        </div>
+      );
+    }
 
     return <TextField {...commonProps} />;
   };
@@ -963,24 +992,25 @@ if (type === "boolean") {
       <Grid item xs={12}>
         <Stack spacing={1}>
           <Typography fontWeight={500}>
-            {label}{" "}
-            {isRequired && createDistributorFlag && (
+            {/* <Typography sx={{ fontSize: "15px" }}>{label} </Typography> */}
+            {/* {isRequired && createDistributorFlag && (
               <span style={{ color: "red" }}>*</span>
-            )}
+            )} */}
           </Typography>
 
           {isEditable ? (
             <>
-              <Button
+              <CommonButton
                 variant="outlined"
                 component="label"
                 fullWidth
                 color={formErrors[fileKey] ? "error" : "primary"}
               >
-                Upload {label}
+                {isEditable ? `Upload ${label}` : `View ${label}`}
                 <input
                   type="file"
                   hidden
+                  height={3}
                   accept="image/*,.pdf"
                   onChange={(e) => {
                     const file = e.target.files[0];
@@ -1007,7 +1037,7 @@ if (type === "boolean") {
                     }
                   }}
                 />
-              </Button>
+              </CommonButton>
 
               {createDistributorFlag && newDistFiles[fileKey] && (
                 <Typography variant="body2" mt={1} color="success.main">
@@ -1025,7 +1055,17 @@ if (type === "boolean") {
               )}
             </>
           ) : (
-            <DocumentLink url={selectedDistributor[fileKey]} label={label} />
+            <CommonButton
+              CommonButton
+              variant="outlined"
+              component="label"
+              fullWidth
+            >
+              <DocumentLink
+                url={selectedDistributor[fileKey]}
+                label={`View ${label}`}
+              />
+            </CommonButton>
           )}
 
           {formErrors[fileKey] && (
@@ -1109,29 +1149,97 @@ if (type === "boolean") {
                       <TableCell>{dist.city}</TableCell>
                       <TableCell>{dist.state}</TableCell>
                       <TableCell>{dist.mobile_number}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={dist.status}
-                          color={
-                            dist.status === "Approved"
-                              ? "success"
-                              : dist.status === "Pending"
-                                ? "warning"
-                                : "default"
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={dist.kyc_verified ? "Verified" : "Pending"}
-                          color={dist.kyc_verified ? "success" : "warning"}
-                          size="small"
-                          icon={
-                            dist.kyc_verified ? <CheckCircleIcon /> : undefined
-                          }
-                        />
-                      </TableCell>
+                    <TableCell>
+  <Select
+    size="small"
+    value={dist.status}
+    onChange={async (e) => {
+      const fd = new FormData();
+      fd.append("status", e.target.value);
+
+      const result = await dispatch(
+        updateDistributor({ id: dist.id, data: fd })
+      );
+
+      if (result.type.includes("fulfilled")) {
+        CommonToast("Status updated", "success");
+        dispatch(getDistributors());
+      }
+    }}
+    // IconComponent={ArrowDropDownIcon}
+    sx={{
+      minWidth: 130,
+      height: 34,
+      borderRadius: "999px",
+      fontWeight: 500,
+      color: "white",
+      bgcolor:
+        dist.status === "Approved"
+          ? "success.main"
+          : dist.status === "Pending"
+          ? "warning.main"
+          : "error.main",
+      "& .MuiSelect-select": {
+        py: 0.5,
+        pl: 2,
+        display: "flex",
+        alignItems: "center",
+      },
+      "& fieldset": {
+        border: "none",
+      },
+      "& svg": {
+        color: "white",
+      },
+    }}
+  >
+    <MenuItem value="Pending">Pending</MenuItem>
+    <MenuItem value="Approved">Approved</MenuItem>
+    <MenuItem value="Rejected">Rejected</MenuItem>
+  </Select>
+</TableCell>
+
+                     <TableCell>
+  <Select
+    size="small"
+    value={dist.kyc_verified ? "Verified" : "Pending"}
+    onChange={async (e) => {
+      const fd = new FormData();
+      fd.append("kyc_verified", e.target.value === "Verified");
+
+      const result = await dispatch(
+        updateDistributor({ id: dist.id, data: fd })
+      );
+
+      if (result.type.includes("fulfilled")) {
+        CommonToast("KYC updated", "success");
+        dispatch(getDistributors());
+      }
+    }}
+    // IconComponent={ArrowDropDownIcon}
+    sx={{
+      minWidth: 120,
+      height: 34,
+      borderRadius: "999px",
+      fontWeight: 500,
+      color: "white",
+      bgcolor: dist.kyc_verified ? "success.main" : "warning.main",
+      "& fieldset": { border: "none" },
+      "& svg": { color: "white" },
+      "& .MuiSelect-select": {
+        py: 0.5,
+        pl: 2,
+        display: "flex",
+        alignItems: "center",
+      },
+    }}
+  >
+    <MenuItem value="Pending">Pending</MenuItem>
+    <MenuItem value="Verified">Verified</MenuItem>
+  </Select>
+</TableCell>
+
+
                       <TableCell>
                         <IconButton
                           color="primary"
@@ -1553,7 +1661,13 @@ if (type === "boolean") {
                     "payment_terms_days",
                   )}
                 </Grid>
-                {renderFileUpload("Cancelled Cheque", "cancelled_cheque", true)}
+                <Grid item xs={6} sm={6}>
+                  {renderFileUpload(
+                    "Cancelled Cheque",
+                    "cancelled_cheque",
+                    true,
+                  )}
+                </Grid>
               </Grid>
             </CardContent>
           </Card>
@@ -1609,14 +1723,6 @@ if (type === "boolean") {
               <Divider sx={{ mb: 3 }} />
 
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  {/* {renderTextField(
-                    "Warehouse Available",
-                    "warehouse_available",
-                  )} */}
-                  {renderTextField("Warehouse Available", "warehouse_available", "boolean")}
-
-                </Grid>
                 <Grid item xs={12}>
                   {renderTextField("Warehouse Address", "warehouse_address")}
                 </Grid>
@@ -1651,6 +1757,17 @@ if (type === "boolean") {
                 </Grid>
                 <Grid item xs={12}>
                   {renderTextField("Service Cities", "service_cities")}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  {/* {renderTextField(
+                    "Warehouse Available",
+                    "warehouse_available",
+                  )} */}
+                  {renderTextField(
+                    "Warehouse Available",
+                    "warehouse_available",
+                    "boolean",
+                  )}
                 </Grid>
               </Grid>
             </CardContent>
@@ -1801,9 +1918,7 @@ if (type === "boolean") {
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Aadhaar Number", "aadhaar_number")}
                 </Grid>
-                {renderFileUpload("Aadhaar Front", "aadhaar_front", true)}
-                {renderFileUpload("Aadhaar Back", "aadhaar_back", true)}
-                {renderFileUpload("Owner Photo", "owner_photo", true)}
+
                 <Grid item xs={12} sm={6}>
                   {renderTextField(
                     "Address Proof Type",
@@ -1830,6 +1945,9 @@ if (type === "boolean") {
                   "address_proof_copy",
                   true,
                 )}
+                {renderFileUpload("Aadhaar Front", "aadhaar_front", true)}
+                {renderFileUpload("Aadhaar Back", "aadhaar_back", true)}
+                {renderFileUpload("Owner Photo", "owner_photo", true)}
               </Grid>
             </CardContent>
           </Card>
@@ -1957,8 +2075,8 @@ if (type === "boolean") {
               <Divider sx={{ mb: 3 }} />
 
               <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  {createDistributorFlag ? (
+                {/* <Grid item xs={12}>
+                  {!createDistributorFlag ? (
                     <TextField
                       fullWidth
                       label="Agreement Signed"
@@ -1978,9 +2096,8 @@ if (type === "boolean") {
                       }
                     />
                   )}
-                </Grid>
-                {renderFileUpload("Agreement Copy", "agreement_copy")}
-                <Grid item xs={12} sm={6}>
+                </Grid> */}
+                {/* <Grid item xs={12} sm={6}>
                   {!createDistributorFlag && (
                     <InfoRow
                       label="KYC Status"
@@ -1991,16 +2108,48 @@ if (type === "boolean") {
                       }
                     />
                   )}
-                </Grid>
+                </Grid> */}
+                {/* <Grid item xs={12} sm={6}>
+                  {!createDistributorFlag ? (
+                    <TextField
+                      fullWidth
+                      select
+                      label="KYC Status"
+                      value={
+                        newDistributorForm.kyc_verified ? "Verified" : "Pending"
+                      }
+                      onChange={(e) =>
+                        setNewDistributorForm({
+                          ...newDistributorForm,
+                          kyc_verified: e.target.value === "Verified",
+                        })
+                      }
+                    >
+                      <MenuItem value="Verified">Verified</MenuItem>
+                      <MenuItem value="Pending">Pending</MenuItem>
+                    </TextField>
+                  ) : (
+                    <InfoRow
+                      label="KYC Status"
+                      value={
+                        selectedDistributor.kyc_verified
+                          ? "Verified"
+                          : "Pending"
+                      }
+                    />
+                  )}
+                </Grid> */}
+
                 <Grid item xs={12}>
                   {renderTextField("KYC Verified By", "kyc_verified_by")}
                 </Grid>
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   {renderTextField("Remarks", "remarks", "text", {
                     multiline: true,
                     minRows: 2,
                   })}
-                </Grid>
+                </Grid> */}
+                {renderFileUpload("Agreement Copy", "agreement_copy")}
               </Grid>
             </CardContent>
           </Card>
