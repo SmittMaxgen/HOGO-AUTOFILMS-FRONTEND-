@@ -947,6 +947,12 @@ const Distributors = () => {
       return (
         <div style={{ marginTop: 16, marginBottom: 8 }}>
           <FormControlLabel
+            sx={{
+              "& .MuiFormControlLabel-label": {
+                color: "grey.600",
+                fontSize: 14,
+              },
+            }}
             control={
               <Switch
                 checked={!!value}
