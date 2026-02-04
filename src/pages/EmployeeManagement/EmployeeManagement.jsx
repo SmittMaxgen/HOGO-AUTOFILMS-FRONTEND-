@@ -246,7 +246,8 @@ const EmployeeManagement = () => {
     emergency_contact_name: "",
     emergency_contact_phone: "",
     status: "Active",
-    salary: "",
+    gross_salary: "",
+    basic_salary: "",
     bank_account_number: "",
     ifsc_code: "",
     pan_number: "",
@@ -285,16 +286,18 @@ const EmployeeManagement = () => {
   // Salary state
   const [salaryDialog, setSalaryDialog] = useState(false);
   const [salaryFormData, setSalaryFormData] = useState({
+    gross_salary: "",
     basic_salary: "",
     hra: "",
     da: "",
     ta: "",
     medical_allowance: "",
-    other_allowances: "",
+    alloances: "",
+    deductions: "",
     provident_fund: "",
     professional_tax: "",
     income_tax: "",
-    other_deductions: "",
+    // other_deductions: "",
     effective_from: "",
     remarks: "",
   });
@@ -446,7 +449,8 @@ const EmployeeManagement = () => {
       emergency_contact_name: emp.emergency_contact_name || "",
       emergency_contact_phone: emp.emergency_contact_phone || "",
       status: emp.status || "Active",
-      salary: emp.salary || "",
+      gross_salary: emp.gross_salary || "",
+      basic_salary: emp.basic_salary || "",
       bank_account_number: emp.bank_account_number || "",
       ifsc_code: emp.ifsc_code || "",
       pan_number: emp.pan_number || "",
@@ -564,7 +568,8 @@ const EmployeeManagement = () => {
           emergency_contact_name: "",
           emergency_contact_phone: "",
           status: "Active",
-          salary: "",
+          gross_salary: "",
+          basic_salary: "",
           bank_account_number: "",
           ifsc_code: "",
           pan_number: "",
@@ -607,7 +612,8 @@ const EmployeeManagement = () => {
       emergency_contact_name: "",
       emergency_contact_phone: "",
       status: "Active",
-      salary: "",
+      gross_salary: "",
+      basic_salary: "",
       bank_account_number: "",
       ifsc_code: "",
       pan_number: "",
@@ -751,7 +757,11 @@ const EmployeeManagement = () => {
 
   // Salary Handlers
   const handleSaveSalary = async () => {
-    if (!salaryFormData.basic_salary || !salaryFormData.effective_from) {
+    if (
+      !salaryFormData.basic_salary ||
+      !salaryFormData.gross_salary ||
+      !salaryFormData.effective_from
+    ) {
       CommonToast("Please fill required fields", "error");
       return;
     }
@@ -782,12 +792,14 @@ const EmployeeManagement = () => {
       }
 
       setSalaryFormData({
+        gross_salary: "",
         basic_salary: "",
         hra: "",
         da: "",
         ta: "",
+        deductions: "",
         medical_allowance: "",
-        other_allowances: "",
+        alloances: "",
         provident_fund: "",
         professional_tax: "",
         income_tax: "",
@@ -803,12 +815,14 @@ const EmployeeManagement = () => {
   const handleEditSalary = (salary) => {
     setEditingSalary(salary);
     setSalaryFormData({
+      gross_salary: salary.gross_salary || "",
       basic_salary: salary.basic_salary || "",
       hra: salary.hra || "",
       da: salary.da || "",
       ta: salary.ta || "",
+      deductions: salary.deductions || "",
       medical_allowance: salary.medical_allowance || "",
-      other_allowances: salary.other_allowances || "",
+      alloances: salary.alloances || "",
       provident_fund: salary.provident_fund || "",
       professional_tax: salary.professional_tax || "",
       income_tax: salary.income_tax || "",
@@ -1673,7 +1687,15 @@ const EmployeeManagement = () => {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Salary", "salary", "tel", {
+                  {renderTextField("Salary", "gross_salary", "tel", {
+                    inputProps: {
+                      inputMode: "numeric",
+                      pattern: "[0-9]*",
+                    },
+                  })}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  {renderTextField("Basic Salary", "basic_salary", "tel", {
                     inputProps: {
                       inputMode: "numeric",
                       pattern: "[0-9]*",
@@ -1970,12 +1992,13 @@ const EmployeeManagement = () => {
                     onClick={() => {
                       setEditingSalary(null);
                       setSalaryFormData({
+                        gross_salary: "",
                         basic_salary: "",
                         hra: "",
                         da: "",
                         ta: "",
                         medical_allowance: "",
-                        other_allowances: "",
+                        alloances: "",
                         provident_fund: "",
                         professional_tax: "",
                         income_tax: "",
@@ -2039,7 +2062,7 @@ const EmployeeManagement = () => {
                               (parseFloat(salary.da) || 0) +
                               (parseFloat(salary.ta) || 0) +
                               (parseFloat(salary.medical_allowance) || 0) +
-                              (parseFloat(salary.other_allowances) || 0);
+                              (parseFloat(salary.alloances) || 0);
 
                             const totalDeductions =
                               (parseFloat(salary.provident_fund) || 0) +
@@ -2048,7 +2071,7 @@ const EmployeeManagement = () => {
                               (parseFloat(salary.other_deductions) || 0);
 
                             const netSalary =
-                              (parseFloat(salary.basic_salary) || 0) +
+                              (parseFloat(salary.gross_salary) || 0) +
                               totalAllowances -
                               totalDeductions;
 
@@ -2058,7 +2081,7 @@ const EmployeeManagement = () => {
                                 <TableCell>
                                   ₹
                                   {parseFloat(
-                                    salary.basic_salary || 0,
+                                    salary.gross_salary || 0,
                                   ).toLocaleString()}
                                 </TableCell>
                                 <TableCell>
@@ -2292,104 +2315,112 @@ const EmployeeManagement = () => {
       </Dialog>
 
       {/* Document Upload Dialog */}
-      <Dialog
-        open={documentUploadDialog}
-        onClose={() => setDocumentUploadDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Upload Employee Document</DialogTitle>
-        <DialogContent>
-          <Box sx={{ pt: 2 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Document Type *"
-                  select
-                  value={documentFormData.document_type}
-                  onChange={(e) =>
-                    setDocumentFormData({
-                      ...documentFormData,
-                      document_type: e.target.value,
-                    })
-                  }
-                >
-                  <MenuItem value="Aadhaar Card">Aadhaar Card</MenuItem>
-                  <MenuItem value="PAN Card">PAN Card</MenuItem>
-                  <MenuItem value="Passport">Passport</MenuItem>
-                  <MenuItem value="Driving License">Driving License</MenuItem>
-                  <MenuItem value="Educational Certificate">
-                    Educational Certificate
-                  </MenuItem>
-                  <MenuItem value="Experience Letter">
-                    Experience Letter
-                  </MenuItem>
-                  <MenuItem value="Offer Letter">Offer Letter</MenuItem>
-                  <MenuItem value="Appointment Letter">
-                    Appointment Letter
-                  </MenuItem>
-                  <MenuItem value="Other">Other</MenuItem>
-                </TextField>
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  variant="outlined"
-                  component="label"
-                  fullWidth
-                  startIcon={<CloudUploadIcon />}
-                >
-                  Choose File *
-                  <input
-                    type="file"
-                    hidden
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        setDocumentFormData({
-                          ...documentFormData,
-                          document_file: file,
-                        });
-                      }
-                    }}
+      {documentUploadDialog && (
+        <Box
+          // open={}
+          onClose={() => setDocumentUploadDialog(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Upload Employee Document</DialogTitle>
+          <DialogContent>
+            <Box sx={{ pt: 2 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Document Type *"
+                    select
+                    value={documentFormData.document_type}
+                    onChange={(e) =>
+                      setDocumentFormData({
+                        ...documentFormData,
+                        document_type: e.target.value,
+                      })
+                    }
+                  >
+                    <MenuItem value="Aadhaar Card">Aadhaar Card</MenuItem>
+                    <MenuItem value="PAN Card">PAN Card</MenuItem>
+                    <MenuItem value="Passport">Passport</MenuItem>
+                    <MenuItem value="Driving License">Driving License</MenuItem>
+                    <MenuItem value="Educational Certificate">
+                      Educational Certificate
+                    </MenuItem>
+                    <MenuItem value="Experience Letter">
+                      Experience Letter
+                    </MenuItem>
+                    <MenuItem value="Offer Letter">Offer Letter</MenuItem>
+                    <MenuItem value="Appointment Letter">
+                      Appointment Letter
+                    </MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    fullWidth
+                    startIcon={<CloudUploadIcon />}
+                  >
+                    Choose File *
+                    <input
+                      type="file"
+                      hidden
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setDocumentFormData({
+                            ...documentFormData,
+                            document_file: file,
+                          });
+                        }
+                      }}
+                    />
+                  </Button>
+                  {documentFormData.document_file && (
+                    <Typography
+                      variant="caption"
+                      display="block"
+                      sx={{ mt: 1 }}
+                    >
+                      Selected: {documentFormData.document_file.name}
+                    </Typography>
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Remarks"
+                    multiline
+                    rows={3}
+                    value={documentFormData.remarks}
+                    onChange={(e) =>
+                      setDocumentFormData({
+                        ...documentFormData,
+                        remarks: e.target.value,
+                      })
+                    }
                   />
-                </Button>
-                {documentFormData.document_file && (
-                  <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                    Selected: {documentFormData.document_file.name}
-                  </Typography>
-                )}
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Remarks"
-                  multiline
-                  rows={3}
-                  value={documentFormData.remarks}
-                  onChange={(e) =>
-                    setDocumentFormData({
-                      ...documentFormData,
-                      remarks: e.target.value,
-                    })
-                  }
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDocumentUploadDialog(false)}>Cancel</Button>
-          <CommonButton
-            variant="contained"
-            onClick={handleUploadDocument}
-            disabled={createDocumentLoading}
-          >
-            {createDocumentLoading ? "Uploading..." : "Upload"}
-          </CommonButton>
-        </DialogActions>
-      </Dialog>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDocumentUploadDialog(false)}>
+              Cancel
+            </Button>
+            <CommonButton
+              variant="contained"
+              onClick={handleUploadDocument}
+              disabled={createDocumentLoading}
+            >
+              {createDocumentLoading ? "Uploading..." : "Upload"}
+            </CommonButton>
+          </DialogActions>
+        </Box>
+      )}
 
       {/* Personal Details Dialog */}
       <Dialog
@@ -2445,10 +2476,10 @@ const EmployeeManagement = () => {
                     })
                   }
                 >
-                  <MenuItem value="Single">Single</MenuItem>
-                  <MenuItem value="Married">Married</MenuItem>
-                  <MenuItem value="Divorced">Divorced</MenuItem>
-                  <MenuItem value="Widowed">Widowed</MenuItem>
+                  <MenuItem value="single">Single</MenuItem>
+                  <MenuItem value="married">Married</MenuItem>
+                  {/* <MenuItem value="Divorced">Divorced</MenuItem> */}
+                  {/* <MenuItem value="Widowed">Widowed</MenuItem> */}
                 </TextField>
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -2610,6 +2641,20 @@ const EmployeeManagement = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
+                  label="Gross Salary *"
+                  type="number"
+                  value={salaryFormData.gross_salary}
+                  onChange={(e) =>
+                    setSalaryFormData({
+                      ...salaryFormData,
+                      gross_salary: e.target.value,
+                    })
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
                   label="HRA"
                   type="number"
                   value={salaryFormData.hra}
@@ -2668,11 +2713,11 @@ const EmployeeManagement = () => {
                   fullWidth
                   label="Other Allowances"
                   type="number"
-                  value={salaryFormData.other_allowances}
+                  value={salaryFormData.alloances}
                   onChange={(e) =>
                     setSalaryFormData({
                       ...salaryFormData,
-                      other_allowances: e.target.value,
+                      alloances: e.target.value,
                     })
                   }
                 />
@@ -2688,11 +2733,11 @@ const EmployeeManagement = () => {
                   fullWidth
                   label="Provident Fund"
                   type="number"
-                  value={salaryFormData.provident_fund}
+                  value={salaryFormData.deductions}
                   onChange={(e) =>
                     setSalaryFormData({
                       ...salaryFormData,
-                      provident_fund: e.target.value,
+                      deductions: e.target.value,
                     })
                   }
                 />
@@ -2728,7 +2773,7 @@ const EmployeeManagement = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Other Deductions"
+                  label="Deductions"
                   type="number"
                   value={salaryFormData.other_deductions}
                   onChange={(e) =>
