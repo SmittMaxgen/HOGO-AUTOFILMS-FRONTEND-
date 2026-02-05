@@ -752,10 +752,10 @@ const EmployeeManagement = () => {
 
   // Document handlers
   const handleUploadDocument = async () => {
-    if (!documentFormData.document_type) {
-      CommonToast("Please select document type", "error");
-      return;
-    }
+    // if (!documentFormData.document_type) {
+    //   CommonToast("Please select document type", "error");
+    //   return;
+    // }
 
     const formDataToSend = new FormData();
     formDataToSend.append("employee_id", selectedEmployee.id);
@@ -1758,7 +1758,7 @@ const EmployeeManagement = () => {
                       startIcon={<AddIcon />}
                       onClick={handleUploadDocument}
                       size="small"
-                      disabled={!documentFormData.document_type}
+                      // disabled={!documentFormData.document_type}
                     >
                       {docsArray.length > 0
                         ? "Upload More Documents"
@@ -1782,7 +1782,7 @@ const EmployeeManagement = () => {
                         : "Upload Documents"}
                     </Typography>
                     <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
+                      {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="Document Type *"
@@ -1803,7 +1803,7 @@ const EmployeeManagement = () => {
                           <MenuItem value="Photo">Photo</MenuItem>
                           <MenuItem value="Other">Other</MenuItem>
                         </TextField>
-                      </Grid>
+                      </Grid> */}
 
                       <Grid item xs={12} sm={6}>
                         <TextField
