@@ -198,7 +198,6 @@ const EmployeeManagement = () => {
   const createSalaryLoading = useSelector(selectCreateEmployeeSalaryLoading);
 
   const users = useSelector(selectUsers);
-  console.log("users",users)
   const usersLoading = useSelector(selectUserLoading);
   const createUserLoading = useSelector(selectCreateUserLoading);
 
@@ -212,7 +211,6 @@ const EmployeeManagement = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const [viewMode, setViewMode] = useState("list"); // 'list', 'view', 'edit', 'create'
-  console.log("viewMode::::", viewMode);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [validationAlert, setValidationAlert] = useState(null);
@@ -276,7 +274,6 @@ const EmployeeManagement = () => {
     driving_license_back: null,
     remarks: "",
   });
-
   // Personal details state
   const [personalDetailsFormData, setPersonalDetailsFormData] = useState({
     father_name: "",
@@ -324,7 +321,6 @@ const EmployeeManagement = () => {
     role_id: null,
     role: "",
   });
-console.log("userFormData",userFormData)
   // ==================== LIFECYCLE ====================
 
   useEffect(() => {
@@ -387,7 +383,6 @@ console.log("userFormData",userFormData)
 
       // Load user if exists
       if (users.length > 0) {
-        console.log("users:::",users)
         setUserFormData({
           username: users[0].username || "",
           // email: users[0].email || "",
@@ -407,8 +402,32 @@ console.log("userFormData",userFormData)
         });
         setEditingUser(users[0]);
       }
+      if (docsArray.length > 0) {
+        const doc = docsArray?.[0] || {};
+
+        setDocumentFormData({
+          document_type: doc.document_type || "",
+          pancard_number: doc.pancard_number || "",
+          aadhar_number: doc.aadhar_number || "",
+          driving_license_number: doc.driving_license_number || "",
+          aadhar_front: doc.aadhar_front || null,
+          aadhar_back: doc.aadhar_back || null,
+          pan_card: doc.pan_card || null,
+          photo: doc.photo || null,
+          driving_license_front: doc.driving_license_front || null,
+          driving_license_back: doc.driving_license_back || null,
+          remarks: doc.remarks || "",
+        });
+      }
     }
-  }, [viewMode, personalDetailsArray, employeeSalary, users, selectedEmployee]);
+  }, [
+    viewMode,
+    personalDetailsArray,
+    docsArray,
+    employeeSalary,
+    users,
+    selectedEmployee,
+  ]);
 
   // ==================== VALIDATION ====================
 
@@ -677,7 +696,7 @@ console.log("userFormData",userFormData)
 
       // Only save User if user modified the form
       // if (hasModifiedUser) {
-        await handleSaveUser();
+      await handleSaveUser();
       // }
 
       // Reset modification flags
@@ -776,7 +795,6 @@ console.log("userFormData",userFormData)
       const result = await dispatch(createEmployeeDocument(formDataToSend));
       if (result.type.includes("fulfilled")) {
         CommonToast("Document uploaded successfully", "success");
-        console.log("selectedEmployee::", selectedEmployee);
         dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
         setDocumentFormData({
           document_type: "",
@@ -2662,7 +2680,11 @@ console.log("userFormData",userFormData)
                       <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
-                          label={editingUser ? "Password (leave blank to keep current)" : "Password *"}
+                          label={
+                            editingUser
+                              ? "Password (leave blank to keep current)"
+                              : "Password *"
+                          }
                           type="password"
                           value={userFormData.password}
                           onChange={(e) => {

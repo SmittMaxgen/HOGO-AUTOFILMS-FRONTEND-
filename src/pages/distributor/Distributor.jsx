@@ -650,7 +650,6 @@ const Distributors = () => {
   };
 
   const handleSave = async () => {
-    console.log("comes???");
     const formDataToSend = new FormData();
     Object.keys(formData).forEach((key) => {
       if (
@@ -661,11 +660,7 @@ const Distributors = () => {
         formDataToSend.append(key, formData[key]);
       }
     });
-    console.log(
-      "selectedDistributor,formDataToSend::",
-      selectedDistributor,
-      formDataToSend,
-    );
+ 
     const result = await dispatch(
       updateDistributor({ id: selectedDistributor.id, data: formDataToSend }),
     );
