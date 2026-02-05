@@ -2028,7 +2028,7 @@ const EmployeeManagement = () => {
         </Box>
 
         {/* TAB 1: EMPLOYEE DOCUMENTS */}
-        {viewMode !== "create" && (
+        {/* {viewMode !== "create" && ( */}
           <TabPanel value={activeTab} index={1}>
             <Card elevation={2}>
               <CardContent>
@@ -2152,10 +2152,10 @@ const EmployeeManagement = () => {
               </CardContent>
             </Card>
           </TabPanel>
-        )}
+        {/* )} */}
 
         {/* TAB 2: PERSONAL DETAILS */}
-        {viewMode !== "create" && (
+        {/* {viewMode !== "create" && ( */}
           <TabPanel value={activeTab} index={2}>
             <Card elevation={2}>
               <CardContent>
@@ -2368,10 +2368,10 @@ const EmployeeManagement = () => {
               </CardContent>
             </Card>
           </TabPanel>
-        )}
+        {/* )} */}
 
         {/* TAB 3: SALARY */}
-        {viewMode !== "create" && (
+        {/* {viewMode !== "create" && ( */}
           <TabPanel value={activeTab} index={3}>
             <Card elevation={2}>
               <CardContent>
@@ -2609,10 +2609,10 @@ const EmployeeManagement = () => {
               </CardContent>
             </Card>
           </TabPanel>
-        )}
+        {/* )} */}
 
         {/* TAB 4: USERS */}
-        {viewMode !== "create" && (
+        {/* {viewMode !== "create" && ( */}
           <TabPanel value={activeTab} index={4}>
             <Card elevation={2}>
               <CardContent>
@@ -2862,7 +2862,7 @@ const EmployeeManagement = () => {
                             </CardContent>
             </Card>
           </TabPanel>
-        )}
+        {/* )} */}
       </Box>
 
       {/* Delete Confirmation Dialog */}
