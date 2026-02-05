@@ -6,29 +6,53 @@ import axiosInstance from "../../api/axiosInstance";
  * payload (optional):
  *  - employee_id
  */
+// export const getEmployeeSalaries = createAsyncThunk(
+//   "employeeSalary/getEmployeeSalaries",
+//   async (payload = {}, { rejectWithValue }) => {
+//     try {
+//       const params = {};
+
+//       // if (payload.employee_id)
+//       //   params.employee_id = payload.employee_id;
+
+//       const response = await axiosInstance.get(
+//         `/employee-salary/${payload.employee_id ? payload.employee_id : ""}`,
+//         {
+//           params,
+//         },
+//       );
+
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(
+//         error.response?.data?.message || "Failed to fetch employee salaries!",
+//       );
+//     }
+//   },
+// );
+
 export const getEmployeeSalaries = createAsyncThunk(
   "employeeSalary/getEmployeeSalaries",
   async (payload = {}, { rejectWithValue }) => {
     try {
       const params = {};
 
-      // if (payload.employee_id)
-      //   params.employee_id = payload.employee_id;
+      if (payload.employee_id) {
+        params.employee_id = payload.employee_id;
+      }
 
       const response = await axiosInstance.get(
-        `/employee-salary/${payload.employee_id ? payload.employee_id : ""}`,
-        {
-          params,
-        },
+        "/employee-salary/",
+        { params }
       );
 
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch employee salaries!",
+        error.response?.data?.message || "Failed to fetch employee salaries!"
       );
     }
-  },
+  }
 );
 
 /**

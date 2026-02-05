@@ -6,27 +6,50 @@ import axiosInstance from "../../api/axiosInstance";
  * payload (optional):
  *  - employee_id
  */
+// export const getEmployeeDocuments = createAsyncThunk(
+//   "employeeDocuments/getEmployeeDocuments",
+//   async (payload = {}, { rejectWithValue }) => {
+//     try {
+//       const params = {};
+
+//       // if (payload.employee_id)
+//       //   params.employee_id = payload.employee_id;
+
+//       const response = await axiosInstance.get(
+//         `/employee-documents/${payload.employee_id ? payload.employee_id : ""}`,
+//         { params },
+//       );
+
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(
+//         error.response?.data?.message || "Failed to fetch employee documents!",
+//       );
+//     }
+//   },
+// );
 export const getEmployeeDocuments = createAsyncThunk(
   "employeeDocuments/getEmployeeDocuments",
   async (payload = {}, { rejectWithValue }) => {
     try {
       const params = {};
 
-      // if (payload.employee_id)
-      //   params.employee_id = payload.employee_id;
+      if (payload.employee_id) {
+        params.employee_id = payload.employee_id;
+      }
 
       const response = await axiosInstance.get(
-        `/employee-documents/${payload.employee_id ? payload.employee_id : ""}`,
-        { params },
+        "/employee-documents/",
+        { params }
       );
 
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch employee documents!",
+        error.response?.data?.message || "Failed to fetch employee documents!"
       );
     }
-  },
+  }
 );
 
 /**

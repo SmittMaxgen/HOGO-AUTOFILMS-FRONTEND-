@@ -1,29 +1,52 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
+// export const getUsers = createAsyncThunk(
+//   "user/getUsers",
+//   async (payload = {}, { rejectWithValue }) => {
+//     try {
+//       const params = {};
+
+//       if (payload.name) params.name = payload.name;
+//       if (payload.status !== undefined) params.status = payload.status;
+
+//       const response = await axiosInstance.get(
+//         `/users/${payload.employee_id}`,
+//         {
+//           params,
+//         },
+//       );
+
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(
+//         error.response?.data?.message || "Failed to fetch users!",
+//       );
+//     }
+//   },
+// );
 export const getUsers = createAsyncThunk(
   "user/getUsers",
   async (payload = {}, { rejectWithValue }) => {
     try {
       const params = {};
 
+      if (payload.employee_id) params.employee_id = payload.employee_id;
       if (payload.name) params.name = payload.name;
       if (payload.status !== undefined) params.status = payload.status;
 
       const response = await axiosInstance.get(
-        `/users/${payload.employee_id}`,
-        {
-          params,
-        },
+        "/users/",
+        { params }
       );
 
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch users!",
+        error.response?.data?.message || "Failed to fetch users!"
       );
     }
-  },
+  }
 );
 
 export const createUser = createAsyncThunk(

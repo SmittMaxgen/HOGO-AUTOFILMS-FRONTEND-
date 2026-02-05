@@ -169,7 +169,9 @@ const EmployeeManagement = () => {
       : [];
 
   const documentsLoading = useSelector(selectEmployeeDocumentsLoading);
-  const createDocumentLoading = useSelector(selectCreateEmployeeDocumentLoading);
+  const createDocumentLoading = useSelector(
+    selectCreateEmployeeDocumentLoading,
+  );
 
   const employeePersonalDetails = useSelector(selectEmployeePersonalDetails);
   const personalDetailsArray = Array.isArray(employeePersonalDetails)
@@ -178,8 +180,12 @@ const EmployeeManagement = () => {
       ? [employeePersonalDetails]
       : [];
 
-  const personalDetailsLoading = useSelector(selectEmployeePersonalDetailsLoading);
-  const createPersonalDetailsLoading = useSelector(selectCreateEmployeePersonalDetailsLoading);
+  const personalDetailsLoading = useSelector(
+    selectEmployeePersonalDetailsLoading,
+  );
+  const createPersonalDetailsLoading = useSelector(
+    selectCreateEmployeePersonalDetailsLoading,
+  );
 
   const employeeSalaries = useSelector(selectEmployeeSalaries);
   const employeeSalary = Array.isArray(employeeSalaries)
@@ -192,6 +198,7 @@ const EmployeeManagement = () => {
   const createSalaryLoading = useSelector(selectCreateEmployeeSalaryLoading);
 
   const users = useSelector(selectUsers);
+  console.log("users",users)
   const usersLoading = useSelector(selectUserLoading);
   const createUserLoading = useSelector(selectCreateUserLoading);
 
@@ -205,6 +212,7 @@ const EmployeeManagement = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const [viewMode, setViewMode] = useState("list"); // 'list', 'view', 'edit', 'create'
+  console.log("viewMode::::", viewMode);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [validationAlert, setValidationAlert] = useState(null);
@@ -216,7 +224,8 @@ const EmployeeManagement = () => {
   const [editingUser, setEditingUser] = useState(null);
 
   // Track which forms have been modified
-  const [hasModifiedPersonalDetails, setHasModifiedPersonalDetails] = useState(false);
+  const [hasModifiedPersonalDetails, setHasModifiedPersonalDetails] =
+    useState(false);
   const [hasModifiedSalary, setHasModifiedSalary] = useState(false);
   const [hasModifiedUser, setHasModifiedUser] = useState(false);
 
@@ -315,7 +324,7 @@ const EmployeeManagement = () => {
     role_id: null,
     role: "",
   });
-
+console.log("userFormData",userFormData)
   // ==================== LIFECYCLE ====================
 
   useEffect(() => {
@@ -327,7 +336,9 @@ const EmployeeManagement = () => {
   useEffect(() => {
     if (selectedEmployee && viewMode === "view") {
       dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
-      dispatch(getEmployeePersonalDetails({ employee_id: selectedEmployee.id }));
+      dispatch(
+        getEmployeePersonalDetails({ employee_id: selectedEmployee.id }),
+      );
       dispatch(getEmployeeSalaries({ employee_id: selectedEmployee.id }));
       dispatch(getUsers({ employee_id: selectedEmployee.id }));
     }
@@ -347,7 +358,8 @@ const EmployeeManagement = () => {
           nationality: personalDetailsArray[0].nationality || "",
           religion: personalDetailsArray[0].religion || "",
           caste: personalDetailsArray[0].caste || "",
-          identification_marks: personalDetailsArray[0].identification_marks || "",
+          identification_marks:
+            personalDetailsArray[0].identification_marks || "",
           hobbies: personalDetailsArray[0].hobbies || "",
         });
         setEditingPersonalDetails(personalDetailsArray[0]);
@@ -375,19 +387,22 @@ const EmployeeManagement = () => {
 
       // Load user if exists
       if (users.length > 0) {
+        console.log("users:::",users)
         setUserFormData({
           username: users[0].username || "",
-          email: users[0].email || "",
-          password: "",
-          first_name: users[0].first_name || "",
-          last_name: users[0].last_name || "",
-          is_active: users[0].is_active !== undefined ? users[0].is_active : true,
-          is_staff: users[0].is_staff !== undefined ? users[0].is_staff : false,
-          is_superuser: users[0].is_superuser !== undefined ? users[0].is_superuser : false,
-          phone: users[0].phone || "",
-          department_id: users[0].department_id || null,
-          department: users[0].department || "",
-          role_id: users[0].role_id || null,
+          // email: users[0].email || "",
+          password: users[0].username || "",
+          // first_name: users[0].first_name || "",
+          // last_name: users[0].last_name || "",
+          is_active:
+            users[0].is_active !== undefined ? users[0].is_active : true,
+          // is_staff: users[0].is_staff !== undefined ? users[0].is_staff : false,
+          is_superuser:
+            users[0].is_superuser !== undefined ? users[0].is_superuser : false,
+          // phone: users[0].phone || "",
+          // department_id: users[0].department_id || null,
+          // department: users[0].department || "",
+          role_id: users[0].role || null,
           role: users[0].role || "",
         });
         setEditingUser(users[0]);
@@ -400,39 +415,39 @@ const EmployeeManagement = () => {
   const validateForm = () => {
     const errors = {};
 
-    if (!formData.first_name?.trim()) errors.first_name = "First name is required";
-    if (!formData.last_name?.trim()) errors.last_name = "Last name is required";
-    if (!formData.email?.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Email is invalid";
-    }
-    if (!formData.phone?.trim()) {
-      errors.phone = "Phone number is required";
-    } else if (!/^\d{10}$/.test(formData.phone)) {
-      errors.phone = "Phone number must be 10 digits";
-    }
-    if (viewMode === "create" && !formData.password?.trim()) {
-      errors.password = "Password is required";
-    } else if (viewMode === "create" && formData.password?.length < 6) {
-      errors.password = "Password must be at least 6 characters";
-    }
-    if (!formData.employee_code?.trim()) errors.employee_code = "Employee code is required";
-    if (!formData.department_id) errors.department_id = "Department is required";
-    if (!formData.designation?.trim()) errors.designation = "Designation is required";
-    if (!formData.employment_type) errors.employment_type = "Employment type is required";
-    if (!formData.role_id) errors.role_id = "Role is required";
-    if (!formData.joining_date) errors.joining_date = "Date of joining is required";
-    if (!formData.date_of_birth) errors.date_of_birth = "Date of birth is required";
-    if (!formData.gender) errors.gender = "Gender is required";
-    if (!formData.address?.trim()) errors.address = "Address is required";
-    if (!formData.city?.trim()) errors.city = "City is required";
-    if (!formData.state?.trim()) errors.state = "State is required";
-    if (!formData.pincode?.trim()) {
-      errors.pincode = "Pincode is required";
-    } else if (!/^\d{6}$/.test(formData.pincode)) {
-      errors.pincode = "Pincode must be 6 digits";
-    }
+    // if (!formData.first_name?.trim()) errors.first_name = "First name is required";
+    // if (!formData.last_name?.trim()) errors.last_name = "Last name is required";
+    // if (!formData.email?.trim()) {
+    //   errors.email = "Email is required";
+    // } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    //   errors.email = "Email is invalid";
+    // }
+    // if (!formData.phone?.trim()) {
+    //   errors.phone = "Phone number is required";
+    // } else if (!/^\d{10}$/.test(formData.phone)) {
+    //   errors.phone = "Phone number must be 10 digits";
+    // }
+    // if (viewMode === "create" && !formData.password?.trim()) {
+    //   errors.password = "Password is required";
+    // } else if (viewMode === "create" && formData.password?.length < 6) {
+    //   errors.password = "Password must be at least 6 characters";
+    // }
+    // if (!formData.employee_code?.trim()) errors.employee_code = "Employee code is required";
+    // if (!formData.department_id) errors.department_id = "Department is required";
+    // if (!formData.designation?.trim()) errors.designation = "Designation is required";
+    // if (!formData.employment_type) errors.employment_type = "Employment type is required";
+    // if (!formData.role_id) errors.role_id = "Role is required";
+    // if (!formData.joining_date) errors.joining_date = "Date of joining is required";
+    // if (!formData.date_of_birth) errors.date_of_birth = "Date of birth is required";
+    // if (!formData.gender) errors.gender = "Gender is required";
+    // if (!formData.address?.trim()) errors.address = "Address is required";
+    // if (!formData.city?.trim()) errors.city = "City is required";
+    // if (!formData.state?.trim()) errors.state = "State is required";
+    // if (!formData.pincode?.trim()) {
+    //   errors.pincode = "Pincode is required";
+    // } else if (!/^\d{6}$/.test(formData.pincode)) {
+    //   errors.pincode = "Pincode must be 6 digits";
+    // }
 
     setFormErrors(errors);
 
@@ -632,7 +647,7 @@ const EmployeeManagement = () => {
     });
 
     const result = await dispatch(
-      updateEmployee({ id: selectedEmployee.id, data: formDataToSend })
+      updateEmployee({ id: selectedEmployee.id, data: formDataToSend }),
     );
 
     if (result.type.includes("fulfilled")) {
@@ -641,27 +656,35 @@ const EmployeeManagement = () => {
       setSelectedEmployee(updatedEmployee);
       loadFormData(updatedEmployee);
       dispatch(getEmployees());
-      
+
       // Only save Personal Details if user modified the form
-      if (hasModifiedPersonalDetails && personalDetailsFormData.marital_status) {
+      if (
+        hasModifiedPersonalDetails &&
+        personalDetailsFormData.marital_status
+      ) {
         await handleSavePersonalDetails();
       }
-      
+
       // Only save Salary if user modified the form
-      if (hasModifiedSalary && salaryFormData.basic_salary && salaryFormData.gross_salary && salaryFormData.effective_from) {
+      if (
+        hasModifiedSalary &&
+        salaryFormData.basic_salary &&
+        salaryFormData.gross_salary &&
+        salaryFormData.effective_from
+      ) {
         await handleSaveSalary();
       }
-      
+
       // Only save User if user modified the form
-      if (hasModifiedUser && userFormData.username && userFormData.email) {
+      // if (hasModifiedUser) {
         await handleSaveUser();
-      }
-      
+      // }
+
       // Reset modification flags
       setHasModifiedPersonalDetails(false);
       setHasModifiedSalary(false);
       setHasModifiedUser(false);
-      
+
       setViewMode("view");
     } else {
       CommonToast("Failed to update employee", "error");
@@ -724,7 +747,10 @@ const EmployeeManagement = () => {
     if (documentFormData.aadhar_number)
       formDataToSend.append("aadhar_number", documentFormData.aadhar_number);
     if (documentFormData.driving_license_number)
-      formDataToSend.append("driving_license_number", documentFormData.driving_license_number);
+      formDataToSend.append(
+        "driving_license_number",
+        documentFormData.driving_license_number,
+      );
     if (documentFormData.aadhar_front)
       formDataToSend.append("aadhar_front", documentFormData.aadhar_front);
     if (documentFormData.aadhar_back)
@@ -734,9 +760,15 @@ const EmployeeManagement = () => {
     if (documentFormData.photo)
       formDataToSend.append("photo", documentFormData.photo);
     if (documentFormData.driving_license_front)
-      formDataToSend.append("driving_license_front", documentFormData.driving_license_front);
+      formDataToSend.append(
+        "driving_license_front",
+        documentFormData.driving_license_front,
+      );
     if (documentFormData.driving_license_back)
-      formDataToSend.append("driving_license_back", documentFormData.driving_license_back);
+      formDataToSend.append(
+        "driving_license_back",
+        documentFormData.driving_license_back,
+      );
     if (documentFormData.remarks)
       formDataToSend.append("remarks", documentFormData.remarks);
 
@@ -744,6 +776,7 @@ const EmployeeManagement = () => {
       const result = await dispatch(createEmployeeDocument(formDataToSend));
       if (result.type.includes("fulfilled")) {
         CommonToast("Document uploaded successfully", "success");
+        console.log("selectedEmployee::", selectedEmployee);
         dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
         setDocumentFormData({
           document_type: "",
@@ -792,17 +825,23 @@ const EmployeeManagement = () => {
           updateEmployeePersonalDetails({
             id: editingPersonalDetails.id,
             data: dataToSend,
-          })
+          }),
         );
         if (result.type.includes("fulfilled")) {
           CommonToast("Personal details updated successfully", "success");
-          dispatch(getEmployeePersonalDetails({ employee_id: selectedEmployee.id }));
+          dispatch(
+            getEmployeePersonalDetails({ employee_id: selectedEmployee.id }),
+          );
         }
       } else {
-        const result = await dispatch(createEmployeePersonalDetails(dataToSend));
+        const result = await dispatch(
+          createEmployeePersonalDetails(dataToSend),
+        );
         if (result.type.includes("fulfilled")) {
           CommonToast("Personal details created successfully", "success");
-          dispatch(getEmployeePersonalDetails({ employee_id: selectedEmployee.id }));
+          dispatch(
+            getEmployeePersonalDetails({ employee_id: selectedEmployee.id }),
+          );
         }
       }
     } catch (err) {
@@ -814,7 +853,9 @@ const EmployeeManagement = () => {
     try {
       await dispatch(deleteEmployeePersonalDetails(detailsId));
       CommonToast("Personal details deleted successfully", "success");
-      dispatch(getEmployeePersonalDetails({ employee_id: selectedEmployee.id }));
+      dispatch(
+        getEmployeePersonalDetails({ employee_id: selectedEmployee.id }),
+      );
       setEditingPersonalDetails(null);
       setPersonalDetailsFormData({
         father_name: "",
@@ -835,8 +876,15 @@ const EmployeeManagement = () => {
 
   // Salary Handlers
   const handleSaveSalary = async () => {
-    if (!salaryFormData.basic_salary || !salaryFormData.gross_salary || !salaryFormData.effective_from) {
-      CommonToast("Please fill required fields (Gross Salary, Basic Salary, Effective From)", "error");
+    if (
+      !salaryFormData.basic_salary ||
+      !salaryFormData.gross_salary ||
+      !salaryFormData.effective_from
+    ) {
+      CommonToast(
+        "Please fill required fields (Gross Salary, Basic Salary, Effective From)",
+        "error",
+      );
       return;
     }
 
@@ -848,7 +896,7 @@ const EmployeeManagement = () => {
     try {
       if (editingSalary) {
         const result = await dispatch(
-          updateEmployeeSalary({ id: editingSalary.id, data: dataToSend })
+          updateEmployeeSalary({ id: editingSalary.id, data: dataToSend }),
         );
         if (result.type.includes("fulfilled")) {
           CommonToast("Salary updated successfully", "success");
@@ -894,20 +942,20 @@ const EmployeeManagement = () => {
 
   // User Handlers
   const handleSaveUser = async () => {
-    if (!userFormData.username || !userFormData.email) {
-      CommonToast("Username and Email are required", "error");
-      return;
-    }
+    // if (!userFormData.username || !userFormData.email) {
+    //   CommonToast("Username and Email are required", "error");
+    //   return;
+    // }
 
-    if (!editingUser && !userFormData.password) {
-      CommonToast("Password is required for new user", "error");
-      return;
-    }
+    // if (!editingUser && !userFormData.password) {
+    //   CommonToast("Password is required for new user", "error");
+    //   return;
+    // }
 
-    if (userFormData.password && userFormData.password.length < 6) {
-      CommonToast("Password must be at least 6 characters", "error");
-      return;
-    }
+    // if (userFormData.password && userFormData.password.length < 6) {
+    //   CommonToast("Password must be at least 6 characters", "error");
+    //   return;
+    // }
 
     const dataToSend = {
       ...userFormData,
@@ -920,7 +968,9 @@ const EmployeeManagement = () => {
 
     try {
       if (editingUser) {
-        const result = await dispatch(updateUser({ id: editingUser.id, data: dataToSend }));
+        const result = await dispatch(
+          updateUser({ id: editingUser.id, data: dataToSend }),
+        );
         if (result.type.includes("fulfilled")) {
           CommonToast("User updated successfully", "success");
           dispatch(getUsers({ employee_id: selectedEmployee.id }));
@@ -992,7 +1042,10 @@ const EmployeeManagement = () => {
     const isRequired = requiredFields.includes(field);
 
     const commonProps = {
-      label: isRequired && (viewMode === "create" || viewMode === "edit") ? `${label} *` : label,
+      label:
+        isRequired && (viewMode === "create" || viewMode === "edit")
+          ? `${label} *`
+          : label,
       type,
       value: value,
       InputProps: { readOnly: !isEditable },
@@ -1040,7 +1093,11 @@ const EmployeeManagement = () => {
           }}
         >
           <Box>
-            <Typography variant="h4" fontWeight={700} sx={{ color: "#7E7E7E", mb: 1 }}>
+            <Typography
+              variant="h4"
+              fontWeight={700}
+              sx={{ color: "#7E7E7E", mb: 1 }}
+            >
               Employee Management
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -1068,7 +1125,9 @@ const EmployeeManagement = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ fontWeight: 700 }}>Sr</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Employee Code</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>
+                      Employee Code
+                    </TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Department</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
@@ -1245,12 +1304,36 @@ const EmployeeManagement = () => {
           scrollButtons="auto"
           sx={{ px: 3 }}
         >
-          <Tab icon={<PersonIcon />} iconPosition="start" label="Employee Profile" />
+          <Tab
+            icon={<PersonIcon />}
+            iconPosition="start"
+            label="Employee Profile"
+          />
           {viewMode !== "create" && [
-            <Tab key="documents" icon={<FolderIcon />} iconPosition="start" label="Employee Documents" />,
-            <Tab key="personal" icon={<DescriptionIcon />} iconPosition="start" label="Personal Details" />,
-            <Tab key="salary" icon={<AccountBalanceIcon />} iconPosition="start" label="Salary" />,
-            <Tab key="users" icon={<PersonIcon />} iconPosition="start" label="Users" />
+            <Tab
+              key="documents"
+              icon={<FolderIcon />}
+              iconPosition="start"
+              label="Employee Documents"
+            />,
+            <Tab
+              key="personal"
+              icon={<DescriptionIcon />}
+              iconPosition="start"
+              label="Personal Details"
+            />,
+            <Tab
+              key="salary"
+              icon={<AccountBalanceIcon />}
+              iconPosition="start"
+              label="Salary"
+            />,
+            <Tab
+              key="users"
+              icon={<PersonIcon />}
+              iconPosition="start"
+              label="Users"
+            />,
           ]}
         </Tabs>
       </Box>
@@ -1293,7 +1376,11 @@ const EmployeeManagement = () => {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Phone", "phone", "tel", {
-                    inputProps: { inputMode: "numeric", pattern: "[0-9]*", maxLength: 10 },
+                    inputProps: {
+                      inputMode: "numeric",
+                      pattern: "[0-9]*",
+                      maxLength: 10,
+                    },
                   })}
                 </Grid>
 
@@ -1303,17 +1390,26 @@ const EmployeeManagement = () => {
                   </Grid>
                 )}
 
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   {renderTextField("Designation", "designation")}
-                </Grid>
+                </Grid> */}
 
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   {renderTextField("Emergency Contact Name", "emergency_contact_name")}
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Emergency Contact Phone", "emergency_contact_phone", "tel", {
-                    inputProps: { inputMode: "numeric", pattern: "[0-9]*", maxLength: 10 },
-                  })}
+                  {renderTextField(
+                    "Emergency Contact Phone",
+                    "emergency_contact_phone",
+                    "tel",
+                    {
+                      inputProps: {
+                        inputMode: "numeric",
+                        pattern: "[0-9]*",
+                        maxLength: 10,
+                      },
+                    },
+                  )}
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
@@ -1331,35 +1427,176 @@ const EmployeeManagement = () => {
                   {renderTextField("Gender", "gender", "text", {
                     select: true,
                     children: [
-                      <MenuItem key="Male" value="Male">Male</MenuItem>,
-                      <MenuItem key="Female" value="Female">Female</MenuItem>,
-                      <MenuItem key="Other" value="Other">Other</MenuItem>,
+                      <MenuItem key="Male" value="Male">
+                        Male
+                      </MenuItem>,
+                      <MenuItem key="Female" value="Female">
+                        Female
+                      </MenuItem>,
+                      <MenuItem key="Other" value="Other">
+                        Other
+                      </MenuItem>,
                     ],
                   })}
                 </Grid>
-
+                <Grid item xs={12} sm={6}>
+                  {viewMode === "edit" || viewMode === "create" ? (
+                    <Autocomplete
+                      options={departments}
+                      getOptionLabel={(option) => option.name || ""}
+                      value={
+                        departments.find(
+                          (d) => d.id === formData.department_id,
+                        ) || null
+                      }
+                      onChange={(event, newValue) => {
+                        setFormData({
+                          ...formData,
+                          department_id: newValue ? newValue.id : null,
+                          department: newValue ? newValue.name : "",
+                        });
+                        if (formErrors.department_id) {
+                          setFormErrors({
+                            ...formErrors,
+                            department_id: undefined,
+                          });
+                        }
+                      }}
+                      loading={departmentsLoading}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label={
+                            viewMode === "create" || viewMode === "edit"
+                              ? "Department *"
+                              : "Department"
+                          }
+                          error={
+                            !!(viewMode === "create" || viewMode === "edit") &&
+                            !!formErrors.department_id
+                          }
+                          helperText={
+                            (viewMode === "create" || viewMode === "edit") &&
+                            formErrors.department_id
+                          }
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {departmentsLoading ? (
+                                  <CircularProgress color="inherit" size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  ) : (
+                    <TextField
+                      fullWidth
+                      label="Department"
+                      value={selectedEmployee?.department || ""}
+                      InputProps={{ readOnly: true }}
+                    />
+                  )}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  {viewMode === "edit" || viewMode === "create" ? (
+                    <Autocomplete
+                      options={roles}
+                      getOptionLabel={(option) => option.name || ""}
+                      value={
+                        roles.find((r) => r.id === formData.role_id) || null
+                      }
+                      onChange={(event, newValue) => {
+                        setFormData({
+                          ...formData,
+                          role_id: newValue ? newValue.id : null,
+                          role: newValue ? newValue.name : "",
+                        });
+                        if (formErrors.role_id) {
+                          setFormErrors({ ...formErrors, role_id: undefined });
+                        }
+                      }}
+                      loading={rolesLoading}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label={
+                            viewMode === "create" || viewMode === "edit"
+                              ? "Role *"
+                              : "Role"
+                          }
+                          error={
+                            !!(viewMode === "create" || viewMode === "edit") &&
+                            !!formErrors.role_id
+                          }
+                          helperText={
+                            (viewMode === "create" || viewMode === "edit") &&
+                            formErrors.role_id
+                          }
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {rolesLoading ? (
+                                  <CircularProgress color="inherit" size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  ) : (
+                    <TextField
+                      fullWidth
+                      label="Role"
+                      value={selectedEmployee?.role || ""}
+                      InputProps={{ readOnly: true }}
+                    />
+                  )}
+                </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Status", "status", "text", {
                     select: true,
                     children: [
-                      <MenuItem key="Active" value="Active">Active</MenuItem>,
-                      <MenuItem key="Inactive" value="Inactive">Inactive</MenuItem>,
+                      <MenuItem key="Active" value="Active">
+                        Active
+                      </MenuItem>,
+                      <MenuItem key="Inactive" value="Inactive">
+                        Inactive
+                      </MenuItem>,
                     ],
                   })}
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Employment Type", "employment_type", "text", {
-                    select: true,
-                    children: [
-                      <MenuItem key="Full-time" value="Full-time">Full-time</MenuItem>,
-                      <MenuItem key="Contract" value="Contract">Contract</MenuItem>,
-                      <MenuItem key="Internship" value="Internship">Internship</MenuItem>,
-                    ],
-                  })}
+                  {renderTextField(
+                    "Employment Type",
+                    "employment_type",
+                    "text",
+                    {
+                      select: true,
+                      children: [
+                        <MenuItem key="Permanent" value="Permanent">
+                          Permanent
+                        </MenuItem>,
+                        <MenuItem key="Contract" value="Contract">
+                          Contract
+                        </MenuItem>,
+                        <MenuItem key="Intern" value="Intern">
+                          Intern
+                        </MenuItem>,
+                      ],
+                    },
+                  )}
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   {viewMode === "edit" || viewMode === "create" ? (
                     <Autocomplete
                       options={departments}
@@ -1402,9 +1639,9 @@ const EmployeeManagement = () => {
                       InputProps={{ readOnly: true }}
                     />
                   )}
-                </Grid>
+                </Grid> */}
 
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   {viewMode === "edit" || viewMode === "create" ? (
                     <Autocomplete
                       options={roles}
@@ -1447,9 +1684,9 @@ const EmployeeManagement = () => {
                       InputProps={{ readOnly: true }}
                     />
                   )}
-                </Grid>
+                </Grid> */}
 
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   {renderTextField("Address", "address")}
                 </Grid>
                 <Grid item xs={12} sm={4}>
@@ -1462,7 +1699,7 @@ const EmployeeManagement = () => {
                   {renderTextField("Pincode", "pincode", "tel", {
                     inputProps: { inputMode: "numeric", pattern: "[0-9]*", maxLength: 6 },
                   })}
-                </Grid>
+                </Grid> */}
               </Grid>
             </CardContent>
           </Card>
@@ -1505,16 +1742,26 @@ const EmployeeManagement = () => {
                       size="small"
                       disabled={!documentFormData.document_type}
                     >
-                      {docsArray.length > 0 ? "Upload More Documents" : "Add Document"}
+                      {docsArray.length > 0
+                        ? "Upload More Documents"
+                        : "Add Document"}
                     </CommonButton>
                   )}
                 </Box>
                 <Divider sx={{ mb: 3 }} />
 
                 {viewMode === "edit" && (
-                  <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-                    <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
-                      {docsArray.length > 0 ? "Upload Additional Documents" : "Upload Documents"}
+                  <Box
+                    sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      fontWeight={600}
+                      sx={{ mb: 2 }}
+                    >
+                      {docsArray.length > 0
+                        ? "Upload Additional Documents"
+                        : "Upload Documents"}
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={6}>
@@ -1532,7 +1779,9 @@ const EmployeeManagement = () => {
                         >
                           <MenuItem value="Aadhaar Card">Aadhaar Card</MenuItem>
                           <MenuItem value="PAN Card">PAN Card</MenuItem>
-                          <MenuItem value="Driving License">Driving License</MenuItem>
+                          <MenuItem value="Driving License">
+                            Driving License
+                          </MenuItem>
                           <MenuItem value="Photo">Photo</MenuItem>
                           <MenuItem value="Other">Other</MenuItem>
                         </TextField>
@@ -1585,11 +1834,21 @@ const EmployeeManagement = () => {
                         { label: "Aadhaar Back", key: "aadhar_back" },
                         { label: "PAN Card", key: "pan_card" },
                         { label: "Photo", key: "photo" },
-                        { label: "Driving License Front", key: "driving_license_front" },
-                        { label: "Driving License Back", key: "driving_license_back" },
+                        {
+                          label: "Driving License Front",
+                          key: "driving_license_front",
+                        },
+                        {
+                          label: "Driving License Back",
+                          key: "driving_license_back",
+                        },
                       ].map((item) => (
                         <Grid item xs={12} sm={6} key={item.key}>
-                          <Button component="label" variant="outlined" fullWidth>
+                          <Button
+                            component="label"
+                            variant="outlined"
+                            fullWidth
+                          >
                             Upload {item.label}
                             <input
                               hidden
@@ -1604,14 +1863,18 @@ const EmployeeManagement = () => {
                             />
                           </Button>
                           {documentFormData[item.key] && (
-                            <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
+                            <Typography
+                              variant="caption"
+                              display="block"
+                              sx={{ mt: 0.5 }}
+                            >
                               Selected: {documentFormData[item.key].name}
                             </Typography>
                           )}
                         </Grid>
                       ))}
 
-                      <Grid item xs={12}>
+                      {/* <Grid item xs={12}>
                         <TextField
                           fullWidth
                           label="Remarks"
@@ -1625,7 +1888,7 @@ const EmployeeManagement = () => {
                             })
                           }
                         />
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   </Box>
                 )}
@@ -1646,10 +1909,18 @@ const EmployeeManagement = () => {
                       <TableHead>
                         <TableRow>
                           <TableCell sx={{ fontWeight: 700 }}>Sr</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Document Type</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Uploaded On</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Remarks</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Actions</TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Document Type
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Uploaded On
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Remarks
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Actions
+                          </TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -1657,7 +1928,9 @@ const EmployeeManagement = () => {
                           <TableRow key={doc.id} hover>
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>
-                              <Typography fontWeight={600}>{doc.document_type}</Typography>
+                              <Typography fontWeight={600}>
+                                {doc.document_type}
+                              </Typography>
                             </TableCell>
                             <TableCell>
                               {doc.uploaded_at
@@ -1715,9 +1988,17 @@ const EmployeeManagement = () => {
                 <Divider sx={{ mb: 3 }} />
 
                 {viewMode === "edit" && (
-                  <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-                    <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
-                      {editingPersonalDetails ? "Edit Personal Details" : "Add Personal Details"}
+                  <Box
+                    sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      fontWeight={600}
+                      sx={{ mb: 2 }}
+                    >
+                      {editingPersonalDetails
+                        ? "Edit Personal Details"
+                        : "Add Personal Details"}
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={6}>
@@ -1780,7 +2061,24 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid>
+                      {/* <Grid item xs={12} sm={6}>
+                  {renderTextField("Emergency Contact Name", "emergency_contact_name")}
+                </Grid> */}
                       <Grid item xs={12} sm={6}>
+                        {renderTextField(
+                          "Emergency Contact Phone",
+                          "emergency_contact_phone",
+                          "tel",
+                          {
+                            inputProps: {
+                              inputMode: "numeric",
+                              pattern: "[0-9]*",
+                              maxLength: 10,
+                            },
+                          },
+                        )}
+                      </Grid>
+                      {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="Blood Group"
@@ -1803,8 +2101,8 @@ const EmployeeManagement = () => {
                           <MenuItem value="O+">O+</MenuItem>
                           <MenuItem value="O-">O-</MenuItem>
                         </TextField>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
+                      </Grid> */}
+                      {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="Nationality"
@@ -1875,7 +2173,7 @@ const EmployeeManagement = () => {
                             setHasModifiedPersonalDetails(true);
                           }}
                         />
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   </Box>
                 )}
@@ -1896,13 +2194,25 @@ const EmployeeManagement = () => {
                       <TableHead>
                         <TableRow>
                           <TableCell sx={{ fontWeight: 700 }}>Sr</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Father Name</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Mother Name</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Marital Status</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Blood Group</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Nationality</TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Father Name
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Mother Name
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Marital Status
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Blood Group
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Nationality
+                          </TableCell>
                           {viewMode === "edit" && (
-                            <TableCell sx={{ fontWeight: 700 }}>Actions</TableCell>
+                            <TableCell sx={{ fontWeight: 700 }}>
+                              Actions
+                            </TableCell>
                           )}
                         </TableRow>
                       </TableHead>
@@ -1912,7 +2222,9 @@ const EmployeeManagement = () => {
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{detail.father_name || "—"}</TableCell>
                             <TableCell>{detail.mother_name || "—"}</TableCell>
-                            <TableCell>{detail.marital_status || "—"}</TableCell>
+                            <TableCell>
+                              {detail.marital_status || "—"}
+                            </TableCell>
                             <TableCell>{detail.blood_group || "—"}</TableCell>
                             <TableCell>{detail.nationality || "—"}</TableCell>
                             {viewMode === "edit" && (
@@ -1920,7 +2232,9 @@ const EmployeeManagement = () => {
                                 <IconButton
                                   size="small"
                                   color="error"
-                                  onClick={() => handleDeletePersonalDetails(detail.id)}
+                                  onClick={() =>
+                                    handleDeletePersonalDetails(detail.id)
+                                  }
                                 >
                                   <DeleteIcon />
                                 </IconButton>
@@ -1957,9 +2271,17 @@ const EmployeeManagement = () => {
                 <Divider sx={{ mb: 3 }} />
 
                 {viewMode === "edit" && (
-                  <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-                    <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
-                      {editingSalary ? "Edit Salary Information" : "Add Salary Information"}
+                  <Box
+                    sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      fontWeight={600}
+                      sx={{ mb: 2 }}
+                    >
+                      {editingSalary
+                        ? "Edit Salary Information"
+                        : "Add Salary Information"}
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={6}>
@@ -1992,7 +2314,7 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid>
-                      <Grid item xs={12} sm={6}>
+                      {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="HRA"
@@ -2006,8 +2328,8 @@ const EmployeeManagement = () => {
                             setHasModifiedSalary(true);
                           }}
                         />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
+                      </Grid> */}
+                      {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="DA"
@@ -2036,8 +2358,8 @@ const EmployeeManagement = () => {
                             setHasModifiedSalary(true);
                           }}
                         />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
+                      </Grid> */}
+                      {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="Medical Allowance"
@@ -2051,11 +2373,11 @@ const EmployeeManagement = () => {
                             setHasModifiedSalary(true);
                           }}
                         />
-                      </Grid>
+                      </Grid> */}
                       <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
-                          label="Other Allowances"
+                          label="Allowances"
                           type="number"
                           value={salaryFormData.alloances}
                           onChange={(e) => {
@@ -2082,6 +2404,7 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid>
+                      {/* 
                       <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
@@ -2126,7 +2449,7 @@ const EmployeeManagement = () => {
                             setHasModifiedSalary(true);
                           }}
                         />
-                      </Grid>
+                      </Grid> */}
                       <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
@@ -2143,7 +2466,7 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid>
-                      <Grid item xs={12}>
+                      {/* <Grid item xs={12}>
                         <TextField
                           fullWidth
                           label="Remarks"
@@ -2158,7 +2481,7 @@ const EmployeeManagement = () => {
                             setHasModifiedSalary(true);
                           }}
                         />
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   </Box>
                 )}
@@ -2179,13 +2502,25 @@ const EmployeeManagement = () => {
                       <TableHead>
                         <TableRow>
                           <TableCell sx={{ fontWeight: 700 }}>Sr</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Basic Salary</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Total Allowances</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Total Deductions</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Net Salary</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Effective From</TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Basic Salary
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Total Allowances
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Total Deductions
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Net Salary
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Effective From
+                          </TableCell>
                           {viewMode === "edit" && (
-                            <TableCell sx={{ fontWeight: 700 }}>Actions</TableCell>
+                            <TableCell sx={{ fontWeight: 700 }}>
+                              Actions
+                            </TableCell>
                           )}
                         </TableRow>
                       </TableHead>
@@ -2213,18 +2548,30 @@ const EmployeeManagement = () => {
                             <TableRow key={salary.id} hover>
                               <TableCell>{index + 1}</TableCell>
                               <TableCell>
-                                ₹{parseFloat(salary.gross_salary || 0).toLocaleString()}
+                                ₹
+                                {parseFloat(
+                                  salary.gross_salary || 0,
+                                ).toLocaleString()}
                               </TableCell>
-                              <TableCell>₹{totalAllowances.toLocaleString()}</TableCell>
-                              <TableCell>₹{totalDeductions.toLocaleString()}</TableCell>
                               <TableCell>
-                                <Typography fontWeight={600} color="success.main">
+                                ₹{totalAllowances.toLocaleString()}
+                              </TableCell>
+                              <TableCell>
+                                ₹{totalDeductions.toLocaleString()}
+                              </TableCell>
+                              <TableCell>
+                                <Typography
+                                  fontWeight={600}
+                                  color="success.main"
+                                >
                                   ₹{netSalary.toLocaleString()}
                                 </Typography>
                               </TableCell>
                               <TableCell>
                                 {salary.effective_from
-                                  ? new Date(salary.effective_from).toLocaleDateString()
+                                  ? new Date(
+                                      salary.effective_from,
+                                    ).toLocaleDateString()
                                   : "—"}
                               </TableCell>
                               {viewMode === "edit" && (
@@ -2232,7 +2579,9 @@ const EmployeeManagement = () => {
                                   <IconButton
                                     size="small"
                                     color="error"
-                                    onClick={() => handleDeleteSalary(salary.id)}
+                                    onClick={() =>
+                                      handleDeleteSalary(salary.id)
+                                    }
                                   >
                                     <DeleteIcon />
                                   </IconButton>
@@ -2270,8 +2619,14 @@ const EmployeeManagement = () => {
                 <Divider sx={{ mb: 3 }} />
 
                 {viewMode === "edit" && (
-                  <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-                    <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
+                  <Box
+                    sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      fontWeight={600}
+                      sx={{ mb: 2 }}
+                    >
                       {editingUser ? "Edit User Account" : "Add User Account"}
                     </Typography>
                     <Grid container spacing={2}>
@@ -2289,7 +2644,7 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid>
-                      <Grid item xs={12} sm={6}>
+                      {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="Email *"
@@ -2303,7 +2658,7 @@ const EmployeeManagement = () => {
                             setHasModifiedUser(true);
                           }}
                         />
-                      </Grid>
+                      </Grid> */}
                       <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
@@ -2319,7 +2674,7 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid>
-                      <Grid item xs={12} sm={6}>
+                      {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="First Name"
@@ -2346,8 +2701,8 @@ const EmployeeManagement = () => {
                             setHasModifiedUser(true);
                           }}
                         />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
+                      </Grid> */}
+                      {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="Phone"
@@ -2360,8 +2715,8 @@ const EmployeeManagement = () => {
                             setHasModifiedUser(true);
                           }}
                         />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
+                      </Grid> */}
+                      {/* <Grid item xs={12} sm={6}>
                         <Autocomplete
                           options={departments}
                           getOptionLabel={(option) => option.name || ""}
@@ -2393,12 +2748,15 @@ const EmployeeManagement = () => {
                             />
                           )}
                         />
-                      </Grid>
+                      </Grid> */}
                       <Grid item xs={12} sm={6}>
                         <Autocomplete
                           options={roles}
                           getOptionLabel={(option) => option.name || ""}
-                          value={roles.find((r) => r.id === userFormData.role_id) || null}
+                          value={
+                            roles.find((r) => r.id === userFormData.role_id) ||
+                            null
+                          }
                           onChange={(event, newValue) => {
                             setUserFormData({
                               ...userFormData,
@@ -2416,7 +2774,12 @@ const EmployeeManagement = () => {
                                 ...params.InputProps,
                                 endAdornment: (
                                   <>
-                                    {rolesLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {rolesLoading ? (
+                                      <CircularProgress
+                                        color="inherit"
+                                        size={20}
+                                      />
+                                    ) : null}
                                     {params.InputProps.endAdornment}
                                   </>
                                 ),
@@ -2442,24 +2805,24 @@ const EmployeeManagement = () => {
                           label="Active"
                         />
                       </Grid>
-                      <Grid item xs={12}>
+                      {/* <Grid item xs={12}>
                         <FormControlLabel
                           control={
                             <Switch
-                              checked={userFormData.is_staff}
+                              checked={userFormData.is_active}
                               onChange={(e) => {
                                 setUserFormData({
                                   ...userFormData,
-                                  is_staff: e.target.checked,
+                                  is_active: e.target.checked,
                                 });
                                 setHasModifiedUser(true);
                               }}
                             />
                           }
-                          label="Staff Status"
+                          label="Is Active"
                         />
-                      </Grid>
-                      <Grid item xs={12}>
+                      </Grid> */}
+                      {/* <Grid item xs={12}>
                         <FormControlLabel
                           control={
                             <Switch
@@ -2475,7 +2838,7 @@ const EmployeeManagement = () => {
                           }
                           label="Superuser Status"
                         />
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   </Box>
                 )}
@@ -2496,54 +2859,75 @@ const EmployeeManagement = () => {
                       <TableHead>
                         <TableRow>
                           <TableCell sx={{ fontWeight: 700 }}>Sr</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Username</TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Username
+                          </TableCell>
                           <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>First Name</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>Last Name</TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            First Name
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            Last Name
+                          </TableCell>
                           <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
                           <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
                           {viewMode === "edit" && (
-                            <TableCell sx={{ fontWeight: 700 }}>Actions</TableCell>
+                            <TableCell sx={{ fontWeight: 700 }}>
+                              Actions
+                            </TableCell>
                           )}
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {users?.length > 0 && users?.map((user, index) => (
-                          <TableRow key={user.id} hover>
-                            <TableCell>{index + 1}</TableCell>
-                            <TableCell>{user.username}</TableCell>
-                            <TableCell>{user.email}</TableCell>
-                            <TableCell>{user.first_name || "—"}</TableCell>
-                            <TableCell>{user.last_name || "—"}</TableCell>
-                            <TableCell>
-                              <Chip
-                                label={user.is_active ? "Active" : "Inactive"}
-                                color={user.is_active ? "success" : "default"}
-                                size="small"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              {user.is_superuser ? (
-                                <Chip label="Superuser" color="error" size="small" />
-                              ) : user.is_staff ? (
-                                <Chip label="Staff" color="primary" size="small" />
-                              ) : (
-                                <Chip label="User" color="default" size="small" />
-                              )}
-                            </TableCell>
-                            {viewMode === "edit" && (
+                        {users?.length > 0 &&
+                          users?.map((user, index) => (
+                            <TableRow key={user.id} hover>
+                              <TableCell>{index + 1}</TableCell>
+                              <TableCell>{user.username}</TableCell>
+                              <TableCell>{user.email}</TableCell>
+                              <TableCell>{user.first_name || "—"}</TableCell>
+                              <TableCell>{user.last_name || "—"}</TableCell>
                               <TableCell>
-                                <IconButton
+                                <Chip
+                                  label={user.is_active ? "Active" : "Inactive"}
+                                  color={user.is_active ? "success" : "default"}
                                   size="small"
-                                  color="error"
-                                  onClick={() => handleDeleteUser(user.id)}
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
+                                />
                               </TableCell>
-                            )}
-                          </TableRow>
-                        ))}
+                              <TableCell>
+                                {user.is_superuser ? (
+                                  <Chip
+                                    label="Superuser"
+                                    color="error"
+                                    size="small"
+                                  />
+                                ) : user.is_staff ? (
+                                  <Chip
+                                    label="Staff"
+                                    color="primary"
+                                    size="small"
+                                  />
+                                ) : (
+                                  <Chip
+                                    label="User"
+                                    color="default"
+                                    size="small"
+                                  />
+                                )}
+                              </TableCell>
+                              {viewMode === "edit" && (
+                                <TableCell>
+                                  <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => handleDeleteUser(user.id)}
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                </TableCell>
+                              )}
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </TableContainer>
@@ -2555,12 +2939,16 @@ const EmployeeManagement = () => {
       </Box>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to delete <strong>{selectedEmployee?.name}</strong>? This action
-            cannot be undone.
+            Are you sure you want to delete{" "}
+            <strong>{selectedEmployee?.name}</strong>? This action cannot be
+            undone.
           </Typography>
         </DialogContent>
         <DialogActions>
