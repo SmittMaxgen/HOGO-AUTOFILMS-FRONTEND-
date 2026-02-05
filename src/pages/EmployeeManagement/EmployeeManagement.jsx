@@ -339,6 +339,39 @@ const EmployeeManagement = () => {
       dispatch(getUsers({ employee_id: selectedEmployee.id }));
     }
   }, [selectedEmployee, viewMode, dispatch]);
+  useEffect(() => {
+    if (selectedEmployee && viewMode !== "create") {
+      setDocumentFormData({
+        aadhar_number: selectedEmployee.aadhar_number || "",
+        pancard_number: selectedEmployee.pancard_number || "",
+        driving_license_number: selectedEmployee.driving_license_number || "",
+
+        aadhar_front: selectedEmployee.aadhar_front || "",
+        aadhar_back: selectedEmployee.aadhar_back || "",
+        pan_card: selectedEmployee.pan_card || "",
+        photo: selectedEmployee.photo || "",
+        driving_license_front: selectedEmployee.driving_license_front || "",
+        driving_license_back: selectedEmployee.driving_license_back || "",
+      });
+    }
+  }, [selectedEmployee, viewMode]);
+  
+  useEffect(() => {
+    if (selectedEmployee && viewMode !== "create") {
+      setDocumentFormData({
+        aadhar_number: selectedEmployee.aadhar_number || "",
+        pancard_number: selectedEmployee.pancard_number || "",
+        driving_license_number: selectedEmployee.driving_license_number || "",
+
+        aadhar_front: selectedEmployee.aadhar_front || "",
+        aadhar_back: selectedEmployee.aadhar_back || "",
+        pan_card: selectedEmployee.pan_card || "",
+        photo: selectedEmployee.photo || "",
+        driving_license_front: selectedEmployee.driving_license_front || "",
+        driving_license_back: selectedEmployee.driving_license_back || "",
+      });
+    }
+  }, [selectedEmployee, viewMode]);
 
   // Load data when switching to edit mode
   useEffect(() => {
@@ -958,6 +991,149 @@ const EmployeeManagement = () => {
     }
   };
 
+  const BASE_URL = "https://hogofilm.pythonanywhere.com";
+  const renderFileUpload = (label, fileKey, isRequired = false) => {
+    const isEditable = createDistributorFlag || editMode;
+
+    // 🔹 get correct value based on mode
+    const getValue = () => {
+      if (createDistributorFlag) return newDistFiles[fileKey];
+      if (editMode) return formData[fileKey];
+      return selectedDistributor?.[fileKey];
+    };
+
+    const value = getValue();
+
+    // 🔹 resolve preview source safely
+    const getPreviewSrc = () => {
+      // File object (new upload)
+      if (value instanceof File) {
+        return URL.createObjectURL(value);
+      }
+
+      // String URL from backend
+      if (typeof value === "string" && value.trim() !== "") {
+        return value.startsWith("http") ? value : `${BASE_URL}${value}`;
+      }
+
+      return null;
+    };
+
+    const previewSrc = getPreviewSrc();
+
+    const isImage =
+      typeof previewSrc === "string" &&
+      !previewSrc.toLowerCase().endsWith(".pdf");
+
+    return (
+      <Grid item xs={12} md={6}>
+        <Stack spacing={1.5}>
+          {/* 🔹 IMAGE PREVIEW */}
+          {previewSrc && isImage && (
+            <Box
+              sx={{
+                width: "100%",
+                height: 160,
+                borderRadius: 2,
+                border: "1px dashed #ccc",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+                bgcolor: "#fafafa",
+              }}
+            >
+              <img
+                src={previewSrc}
+                alt={label}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  objectFit: "contain",
+                }}
+              />
+            </Box>
+          )}
+
+          {/* 🔹 PDF VIEW */}
+          {previewSrc && !isImage && (
+            <CommonButton
+              variant="outlined"
+              fullWidth
+              onClick={() => window.open(previewSrc, "_blank")}
+            >
+              View {label}
+            </CommonButton>
+          )}
+
+          {/* 🔹 UPLOAD BUTTON (CREATE / EDIT) */}
+          {isEditable && (
+            <>
+              <CommonButton
+                variant="outlined"
+                component="label"
+                fullWidth
+                color={formErrors[fileKey] ? "error" : "primary"}
+              >
+                {previewSrc ? "Replace" : "Upload"} {label}
+                {isRequired && createDistributorFlag ? " *" : ""}
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*,.pdf"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    if (createDistributorFlag) {
+                      setNewDistFiles({
+                        ...newDistFiles,
+                        [fileKey]: file,
+                      });
+                    } else {
+                      setFormData({
+                        ...formData,
+                        [fileKey]: file,
+                      });
+                    }
+
+                    if (formErrors[fileKey]) {
+                      setFormErrors({
+                        ...formErrors,
+                        [fileKey]: undefined,
+                      });
+                    }
+                  }}
+                />
+              </CommonButton>
+
+              {/* 🔹 FILE NAME */}
+              {value && (
+                <Typography variant="body2" color="success.main">
+                  Selected: {value?.name || value}
+                </Typography>
+              )}
+            </>
+          )}
+
+          {/* 🔹 VIEW MODE (NO EDIT) */}
+          {!isEditable && !previewSrc && (
+            <Typography variant="body2" color="text.secondary">
+              Not Uploaded
+            </Typography>
+          )}
+
+          {/* 🔹 ERROR */}
+          {formErrors[fileKey] && (
+            <Typography color="error" variant="caption">
+              {formErrors[fileKey]}
+            </Typography>
+          )}
+        </Stack>
+      </Grid>
+    );
+  };
+
   // User Handlers
   const handleSaveUser = async () => {
     // if (!userFormData.username || !userFormData.email) {
@@ -1095,6 +1271,121 @@ const EmployeeManagement = () => {
     }
 
     return <TextField {...commonProps} />;
+  };
+  // const BASE_URL = "https://hogofilm.pythonanywhere.com";
+
+  const getDocumentSrc = (key) => {
+    const value = documentFormData?.[key];
+
+    if (!value) return null;
+
+    // File object (edit mode upload)
+    if (value instanceof File) {
+      return URL.createObjectURL(value);
+    }
+
+    // String URL from API (view mode)
+    if (typeof value === "string") {
+      return `${BASE_URL}${value}`;
+    }
+
+    return null;
+  };
+
+  const renderDocumentField = (label, key, isEditable) => {
+    const src = getDocumentSrc(key);
+    const isImage = src && !src.toLowerCase().endsWith(".pdf");
+
+    return (
+      <Box
+        sx={{
+          border: "1px dashed #ccc",
+          borderRadius: 2,
+          p: 1.5,
+          height: "100%",
+        }}
+      >
+        {/* LABEL */}
+        <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
+          {label}
+        </Typography>
+
+        {/* IMAGE / PREVIEW */}
+        {src && isImage ? (
+          <Box
+            sx={{
+              width: "100%",
+              height: 150,
+              borderRadius: 1,
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              bgcolor: "#fafafa",
+              mb: 1,
+            }}
+          >
+            <img
+              src={src}
+              alt={label}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+              }}
+            />
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              height: 150,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "text.secondary",
+              bgcolor: "#fafafa",
+              borderRadius: 1,
+              mb: 1,
+            }}
+          >
+            Not Uploaded
+          </Box>
+        )}
+
+        {/* ACTION */}
+        {true ? (
+          <Button component="label" variant="outlined" fullWidth size="small">
+            {src ? "Replace" : "Upload"} {label}
+            <input
+              hidden
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                setDocumentFormData({
+                  ...documentFormData,
+                  [key]: file,
+                });
+              }}
+            />
+          </Button>
+        ) : (
+          src && (
+            <Button
+              variant="outlined"
+              fullWidth
+              size="small"
+              href={src}
+              target="_blank"
+            >
+              View
+            </Button>
+          )
+        )}
+      </Box>
+    );
   };
 
   // ==================== TABLE VIEW ====================
@@ -1741,6 +2032,7 @@ const EmployeeManagement = () => {
           <TabPanel value={activeTab} index={1}>
             <Card elevation={2}>
               <CardContent>
+                {/* ================= HEADER ================= */}
                 <Box
                   sx={{
                     display: "flex",
@@ -1752,13 +2044,13 @@ const EmployeeManagement = () => {
                   <Typography variant="h6" fontWeight={700}>
                     Employee Documents
                   </Typography>
+
                   {viewMode === "edit" && (
                     <CommonButton
                       variant="contained"
                       startIcon={<AddIcon />}
                       onClick={handleUploadDocument}
                       size="small"
-                      // disabled={!documentFormData.document_type}
                     >
                       {docsArray.length > 0
                         ? "Upload More Documents"
@@ -1766,50 +2058,28 @@ const EmployeeManagement = () => {
                     </CommonButton>
                   )}
                 </Box>
+
                 <Divider sx={{ mb: 3 }} />
 
-                {viewMode === "edit" && (
-                  <Box
-                    sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}
-                  >
-                    <Typography
-                      variant="subtitle2"
-                      fontWeight={600}
-                      sx={{ mb: 2 }}
-                    >
-                      {docsArray.length > 0
-                        ? "Upload Additional Documents"
-                        : "Upload Documents"}
-                    </Typography>
+                {/* ================= GRID LAYOUT ================= */}
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 3,
+                    width: "100%",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  {/* ========== LEFT : TEXT FIELDS ========== */}
+                  <Box>
                     <Grid container spacing={2}>
-                      {/* <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Document Type *"
-                          select
-                          value={documentFormData.document_type}
-                          onChange={(e) =>
-                            setDocumentFormData({
-                              ...documentFormData,
-                              document_type: e.target.value,
-                            })
-                          }
-                        >
-                          <MenuItem value="Aadhaar Card">Aadhaar Card</MenuItem>
-                          <MenuItem value="PAN Card">PAN Card</MenuItem>
-                          <MenuItem value="Driving License">
-                            Driving License
-                          </MenuItem>
-                          <MenuItem value="Photo">Photo</MenuItem>
-                          <MenuItem value="Other">Other</MenuItem>
-                        </TextField>
-                      </Grid> */}
-
-                      <Grid item xs={12} sm={6}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
                           label="Aadhaar Number"
-                          value={documentFormData.aadhar_number}
+                          value={documentFormData.aadhar_number || ""}
+                          InputProps={{ readOnly: viewMode === "view" }}
                           onChange={(e) =>
                             setDocumentFormData({
                               ...documentFormData,
@@ -1819,11 +2089,12 @@ const EmployeeManagement = () => {
                         />
                       </Grid>
 
-                      <Grid item xs={12} sm={6}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
                           label="PAN Number"
-                          value={documentFormData.pancard_number}
+                          value={documentFormData.pancard_number || ""}
+                          InputProps={{ readOnly: viewMode === "view" }}
                           onChange={(e) =>
                             setDocumentFormData({
                               ...documentFormData,
@@ -1833,11 +2104,12 @@ const EmployeeManagement = () => {
                         />
                       </Grid>
 
-                      <Grid item xs={12} sm={6}>
+                      <Grid item xs={12}>
                         <TextField
                           fullWidth
                           label="Driving License Number"
-                          value={documentFormData.driving_license_number}
+                          value={documentFormData.driving_license_number || ""}
+                          InputProps={{ readOnly: viewMode === "view" }}
                           onChange={(e) =>
                             setDocumentFormData({
                               ...documentFormData,
@@ -1846,7 +2118,12 @@ const EmployeeManagement = () => {
                           }
                         />
                       </Grid>
+                    </Grid>
+                  </Box>
 
+                  {/* ========== RIGHT : DOCUMENT FILES ========== */}
+                  <Box>
+                    <Grid container spacing={2}>
                       {[
                         { label: "Aadhaar Front", key: "aadhar_front" },
                         { label: "Aadhaar Back", key: "aadhar_back" },
@@ -1860,127 +2137,18 @@ const EmployeeManagement = () => {
                           label: "Driving License Back",
                           key: "driving_license_back",
                         },
-                      ].map((item) => (
-                        <Grid item xs={12} sm={6} key={item.key}>
-                          <Button
-                            component="label"
-                            variant="outlined"
-                            fullWidth
-                          >
-                            Upload {item.label}
-                            <input
-                              hidden
-                              type="file"
-                              accept=".pdf,.jpg,.jpeg,.png"
-                              onChange={(e) =>
-                                setDocumentFormData({
-                                  ...documentFormData,
-                                  [item.key]: e.target.files[0],
-                                })
-                              }
-                            />
-                          </Button>
-                          {documentFormData[item.key] && (
-                            <Typography
-                              variant="caption"
-                              display="block"
-                              sx={{ mt: 0.5 }}
-                            >
-                              Selected: {documentFormData[item.key].name}
-                            </Typography>
+                      ].map((doc) => (
+                        <Grid item xs={12} sm={6} key={doc.key}>
+                          {renderDocumentField(
+                            doc.label,
+                            doc.key,
+                            // viewMode === "edit",
                           )}
                         </Grid>
                       ))}
-
-                      {/* <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Remarks"
-                          multiline
-                          rows={2}
-                          value={documentFormData.remarks}
-                          onChange={(e) =>
-                            setDocumentFormData({
-                              ...documentFormData,
-                              remarks: e.target.value,
-                            })
-                          }
-                        />
-                      </Grid> */}
                     </Grid>
                   </Box>
-                )}
-
-                {documentsLoading ? (
-                  <Box display="flex" justifyContent="center" py={5}>
-                    <CircularProgress />
-                  </Box>
-                ) : docsArray.length === 0 && viewMode === "view" ? (
-                  <Box sx={{ textAlign: "center", py: 5 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      No documents uploaded yet
-                    </Typography>
-                  </Box>
-                ) : (
-                  <TableContainer>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell sx={{ fontWeight: 700 }}>Sr</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>
-                            Document Type
-                          </TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>
-                            Uploaded On
-                          </TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>
-                            Remarks
-                          </TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>
-                            Actions
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {docsArray?.map((doc, index) => (
-                          <TableRow key={doc.id} hover>
-                            <TableCell>{index + 1}</TableCell>
-                            <TableCell>
-                              <Typography fontWeight={600}>
-                                {doc.document_type}
-                              </Typography>
-                            </TableCell>
-                            <TableCell>
-                              {doc.uploaded_at
-                                ? new Date(doc.uploaded_at).toLocaleDateString()
-                                : "—"}
-                            </TableCell>
-                            <TableCell>{doc.remarks || "—"}</TableCell>
-                            <TableCell>
-                              <IconButton
-                                size="small"
-                                color="primary"
-                                href={`${BASE_URL}${doc.document_file}`}
-                                target="_blank"
-                              >
-                                <DownloadIcon />
-                              </IconButton>
-                              {viewMode === "edit" && (
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDeleteDocument(doc.id)}
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                )}
+                </Box>
               </CardContent>
             </Card>
           </TabPanel>
