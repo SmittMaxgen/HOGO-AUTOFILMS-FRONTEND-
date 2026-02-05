@@ -991,19 +991,159 @@ const Distributors = () => {
     return <TextField {...commonProps} />;
   };
 
+  // const renderFileUpload = (label, fileKey, isRequired = false) => {
+  //   const isEditable = createDistributorFlag || editMode;
+
+  //   return (
+  //     <Grid item xs={12}>
+  //       <Stack spacing={1}>
+  //         <Typography fontWeight={500}>
+  //           {/* <Typography sx={{ fontSize: "15px" }}>{label} </Typography> */}
+  //           {/* {isRequired && createDistributorFlag && (
+  //             <span style={{ color: "red" }}>*</span>
+  //           )} */}
+  //         </Typography>
+
+  //         {isEditable ? (
+  //           <>
+  //             <CommonButton
+  //               variant="outlined"
+  //               component="label"
+  //               fullWidth
+  //               color={formErrors[fileKey] ? "error" : "primary"}
+  //             >
+  //               {isEditable ? `Upload ${label}` : `View ${label}`}
+  //               <input
+  //                 type="file"
+  //                 hidden
+  //                 height={3}
+  //                 accept="image/*,.pdf"
+  //                 onChange={(e) => {
+  //                   const file = e.target.files[0];
+  //                   if (!file) return;
+
+  //                   if (createDistributorFlag) {
+  //                     setNewDistFiles({
+  //                       ...newDistFiles,
+  //                       [fileKey]: file,
+  //                     });
+  //                     // Clear error when file is selected
+  //                     if (formErrors[fileKey]) {
+  //                       setFormErrors({
+  //                         ...formErrors,
+  //                         [fileKey]: undefined,
+  //                       });
+  //                     }
+  //                   } else {
+  //                     // For edit mode, update formData
+  //                     setFormData({
+  //                       ...formData,
+  //                       [fileKey]: file,
+  //                     });
+  //                   }
+  //                 }}
+  //               />
+  //             </CommonButton>
+
+  //             {createDistributorFlag && newDistFiles[fileKey] && (
+  //               <Typography variant="body2" mt={1} color="success.main">
+  //                 Selected File: {newDistFiles[fileKey].name}
+  //               </Typography>
+  //             )}
+
+  //             {editMode && formData[fileKey] && (
+  //               <Typography variant="body2" mt={1}>
+  //                 Selected File:{" "}
+  //                 {typeof formData[fileKey] === "string"
+  //                   ? formData[fileKey]
+  //                   : formData[fileKey].name}
+  //               </Typography>
+  //             )}
+  //           </>
+  //         ) : (
+  //           <CommonButton
+  //             CommonButton
+  //             variant="outlined"
+  //             component="label"
+  //             fullWidth
+  //           >
+  //             <DocumentLink
+  //               url={selectedDistributor[fileKey]}
+  //               label={`View ${label}`}
+  //             />
+  //           </CommonButton>
+  //         )}
+
+  //         {formErrors[fileKey] && (
+  //           <Typography color="error" variant="caption">
+  //             {formErrors[fileKey]}
+  //           </Typography>
+  //         )}
+  //       </Stack>
+  //     </Grid>
+  //   );
+  // };
+
   const renderFileUpload = (label, fileKey, isRequired = false) => {
     const isEditable = createDistributorFlag || editMode;
 
+    // Get preview source
+    const getPreviewSrc = () => {
+      if (createDistributorFlag && newDistFiles[fileKey]) {
+        return URL.createObjectURL(newDistFiles[fileKey]);
+      }
+
+      if (editMode && formData[fileKey]) {
+        if (typeof formData[fileKey] === "string") {
+          return formData[fileKey];
+        }
+        return URL.createObjectURL(formData[fileKey]);
+      }
+
+      if (!isEditable && selectedDistributor?.[fileKey]) {
+        return selectedDistributor[fileKey];
+      }
+
+      return null;
+    };
+
+    const previewSrc = getPreviewSrc();
+    // const isImage = previewSrc && !previewSrc?.toLowerCase().endsWith(".pdf");
+const isImage =
+  typeof previewSrc === "string" &&
+  !previewSrc.toLowerCase().endsWith(".pdf");
+
     return (
       <Grid item xs={12}>
-        <Stack spacing={1}>
-          <Typography fontWeight={500}>
-            {/* <Typography sx={{ fontSize: "15px" }}>{label} </Typography> */}
-            {/* {isRequired && createDistributorFlag && (
-              <span style={{ color: "red" }}>*</span>
-            )} */}
-          </Typography>
+        <Stack spacing={1.5}>
+          {/* 🔹 IMAGE PREVIEW AT TOP */}
+          {isImage && (
+            <Box
+              sx={{
+                width: "100%",
+                height: 160,
+                borderRadius: 2,
+                border: "1px dashed #ccc",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+                bgcolor: "#fafafa",
+              }}
+            >
+              <img
+                src={`https://hogofilm.pythonanywhere.com${previewSrc}`}
+                alt={label}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  objectFit: "contain",
+                }}
+              />
+            </Box>
+          )}
 
+          {/* 🔹 UPLOAD / VIEW BUTTON */}
           {isEditable ? (
             <>
               <CommonButton
@@ -1012,11 +1152,10 @@ const Distributors = () => {
                 fullWidth
                 color={formErrors[fileKey] ? "error" : "primary"}
               >
-                {isEditable ? `Upload ${label}` : `View ${label}`}
+                Upload {label}
                 <input
                   type="file"
                   hidden
-                  height={3}
                   accept="image/*,.pdf"
                   onChange={(e) => {
                     const file = e.target.files[0];
@@ -1027,7 +1166,7 @@ const Distributors = () => {
                         ...newDistFiles,
                         [fileKey]: file,
                       });
-                      // Clear error when file is selected
+
                       if (formErrors[fileKey]) {
                         setFormErrors({
                           ...formErrors,
@@ -1035,7 +1174,6 @@ const Distributors = () => {
                         });
                       }
                     } else {
-                      // For edit mode, update formData
                       setFormData({
                         ...formData,
                         [fileKey]: file,
@@ -1045,28 +1183,17 @@ const Distributors = () => {
                 />
               </CommonButton>
 
-              {createDistributorFlag && newDistFiles[fileKey] && (
-                <Typography variant="body2" mt={1} color="success.main">
-                  Selected File: {newDistFiles[fileKey].name}
-                </Typography>
-              )}
-
-              {editMode && formData[fileKey] && (
-                <Typography variant="body2" mt={1}>
+              {/* File name */}
+              {(newDistFiles[fileKey] || formData[fileKey]) && (
+                <Typography variant="body2" color="success.main">
                   Selected File:{" "}
-                  {typeof formData[fileKey] === "string"
-                    ? formData[fileKey]
-                    : formData[fileKey].name}
+                  {(newDistFiles[fileKey] || formData[fileKey])?.name ||
+                    formData[fileKey]}
                 </Typography>
               )}
             </>
           ) : (
-            <CommonButton
-              CommonButton
-              variant="outlined"
-              component="label"
-              fullWidth
-            >
+            <CommonButton variant="outlined" fullWidth>
               <DocumentLink
                 url={selectedDistributor[fileKey]}
                 label={`View ${label}`}
@@ -1074,6 +1201,7 @@ const Distributors = () => {
             </CommonButton>
           )}
 
+          {/* 🔹 ERROR */}
           {formErrors[fileKey] && (
             <Typography color="error" variant="caption">
               {formErrors[fileKey]}
@@ -1645,8 +1773,15 @@ const Distributors = () => {
                 )}
               </Box>
               <Divider sx={{ mb: 3 }} />
-
-              <Grid container spacing={2}>
+              {/* <Box 
+  sx={{
+    display: "grid",
+    gridTemplateColumns: "50% 50%",
+    gap: 2,
+    width: "100%",
+  }}
+>
+        <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Bank Account Name", "bank_account_name")}
                 </Grid>
@@ -1672,9 +1807,63 @@ const Distributors = () => {
                   )}
                 </Grid>
               </Grid>
+              <hr/>
               <Grid width="max-content" item xs={12} sm={6}>
                 {renderFileUpload("Cancelled Cheque", "cancelled_cheque", true)}
               </Grid>
+</Box> */}
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 3,
+                  width: "100%",
+                  alignItems: "flex-start",
+                }}
+              >
+                {/* LEFT SIDE – FORM */}
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Bank Account Name", "bank_account_name")}
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Bank Name", "bank_name")}
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Branch Name", "branch_name")}
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Account Number", "account_number")}
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("IFSC Code", "ifsc_code")}
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Credit Limit", "credit_limit")}
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField(
+                      "Payment Terms (Days)",
+                      "payment_terms_days",
+                    )}
+                  </Grid>
+                </Grid>
+
+                {/* RIGHT SIDE – FILE UPLOAD */}
+                <Box sx={{ width: "100%" }}>
+                  {renderFileUpload(
+                    "Cancelled Cheque",
+                    "cancelled_cheque",
+                    true,
+                  )}
+                </Box>
+              </Box>
             </CardContent>
           </Card>
         </TabPanel>
@@ -1828,7 +2017,15 @@ const Distributors = () => {
                 )}
               </Box>
               <Divider sx={{ mb: 3 }} />
-
+<Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 3,
+                  width: "100%",
+                  alignItems: "flex-start",
+                }}
+>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Business Type", "business_type")}
@@ -1870,6 +2067,9 @@ const Distributors = () => {
                   )}
                 </Grid>
               </Box>
+
+</Box>
+
             </CardContent>
           </Card>
         </TabPanel>
@@ -1922,8 +2122,16 @@ const Distributors = () => {
                 )}
               </Box>
               <Divider sx={{ mb: 3 }} />
-
-              <Grid  container spacing={2}>
+<Box
+ sx={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 3,
+                  width: "100%",
+                  alignItems: "flex-start",
+                }}
+>
+              <Grid container spacing={2}>
                 <Grid width={200} item xs={12} sm={6}>
                   {renderTextField("Owner DOB", "owner_dob", "date", {
                     InputLabelProps: { shrink: true },
@@ -1954,30 +2162,27 @@ const Distributors = () => {
                     },
                   )}
                 </Grid>
-                
               </Grid>
-              <Box sx={{display:"flex",gap:"15px"}}>
-               
+              <Box sx={{ display: "flex", gap: "15px" }}>
                 <Grid width="max-content" item xs={12} sm={6}>
-                   {renderFileUpload(
-                  "Address Proof Copy",
-                  "address_proof_copy",
-                  true,
-                )}
+                  {renderFileUpload(
+                    "Address Proof Copy",
+                    "address_proof_copy",
+                    true,
+                  )}
                 </Grid>
                 <Grid width="max-content" item xs={12} sm={6}>
-                {renderFileUpload("Aadhaar Front", "aadhaar_front", true)}
-
+                  {renderFileUpload("Aadhaar Front", "aadhaar_front", true)}
                 </Grid>
                 <Grid width="max-content" item xs={12} sm={6}>
-                {renderFileUpload("Aadhaar Back", "aadhaar_back", true)}
-
+                  {renderFileUpload("Aadhaar Back", "aadhaar_back", true)}
                 </Grid>
                 <Grid width="max-content" item xs={12} sm={6}>
-                {renderFileUpload("Owner Photo", "owner_photo", true)}
-
+                  {renderFileUpload("Owner Photo", "owner_photo", true)}
                 </Grid>
               </Box>
+
+</Box>
             </CardContent>
           </Card>
         </TabPanel>
@@ -2030,6 +2235,17 @@ const Distributors = () => {
                 )}
               </Box>
               <Divider sx={{ mb: 3 }} />
+<Box
+sx={
+  {
+     display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 3,
+                  width: "100%",
+                  alignItems: "flex-start",
+  }
+}
+>
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -2038,34 +2254,31 @@ const Distributors = () => {
                     "authorized_signatory_name",
                   )}
                 </Grid>
-       
-         <Grid item xs={12} sm={6}>
+
+                <Grid item xs={12} sm={6}>
                   {renderTextField("Signatory PAN", "signatory_pan")}
                 </Grid>
               </Grid>
-              <Box sx={{display:"flex" , gap:"15px"}}>
+              <Box sx={{ display: "flex", gap: "15px" }}>
                 <Grid width="max-content" item xs={12} sm={6}>
                   {renderFileUpload(
-                  "Signatory PAN Copy",
-                  "signatory_pan_copy",
-                  newDistributorForm.firm_type === "company",
-                )}
+                    "Signatory PAN Copy",
+                    "signatory_pan_copy",
+                    newDistributorForm.firm_type === "company",
+                  )}
                 </Grid>
                 <Grid width="max-content" item xs={12} sm={6}>
-                {renderFileUpload("Board Resolution", "board_resolution")}
-
+                  {renderFileUpload("Board Resolution", "board_resolution")}
                 </Grid>
                 <Grid width="max-content" item xs={12} sm={6}>
-                {renderFileUpload("Partnership Deed", "partnership_deed")}
-
+                  {renderFileUpload("Partnership Deed", "partnership_deed")}
                 </Grid>
                 <Grid width="max-content" item xs={12} sm={6}>
-                {renderFileUpload("LLP Agreement", "llp_agreement")}
-
+                  {renderFileUpload("LLP Agreement", "llp_agreement")}
                 </Grid>
-                
-                
               </Box>
+</Box>
+
             </CardContent>
           </Card>
         </TabPanel>
@@ -2118,7 +2331,16 @@ const Distributors = () => {
                 )}
               </Box>
               <Divider sx={{ mb: 3 }} />
-
+<Box
+sx={
+  {
+     display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 3,
+                  width: "100%",
+                  alignItems: "flex-start",
+  }}
+>
               <Grid container spacing={2}>
                 {/* <Grid item xs={12}>
                   {!createDistributorFlag ? (
@@ -2195,11 +2417,13 @@ const Distributors = () => {
                   })}
                 </Grid> */}
               </Grid>
-              <Box sx={{display:"flex"}}>
-                <Grid width="max-content"  item xs={12} sm={6}>
-                {renderFileUpload("Agreement Copy", "agreement_copy")}
+              <Box sx={{ display: "flex" }}>
+                <Grid width="max-content" item xs={12} sm={6}>
+                  {renderFileUpload("Agreement Copy", "agreement_copy")}
                 </Grid>
               </Box>
+
+</Box>
             </CardContent>
           </Card>
         </TabPanel>
@@ -2214,7 +2438,9 @@ const Distributors = () => {
             onClick={handleCreateDistributor}
             disabled={loading}
           >
-            {loading || createLoading ? "Create Distributor" : "Create Distributor"}
+            {loading || createLoading
+              ? "Create Distributor"
+              : "Create Distributor"}
           </CommonButton>
         </Box>
       )}
