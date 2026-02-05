@@ -1671,13 +1671,9 @@ const Distributors = () => {
                     "payment_terms_days",
                   )}
                 </Grid>
-                <Grid item xs={6} sm={6}>
-                  {renderFileUpload(
-                    "Cancelled Cheque",
-                    "cancelled_cheque",
-                    true,
-                  )}
-                </Grid>
+              </Grid>
+              <Grid width="max-content" item xs={12} sm={6}>
+                {renderFileUpload("Cancelled Cheque", "cancelled_cheque", true)}
               </Grid>
             </CardContent>
           </Card>
@@ -1859,13 +1855,21 @@ const Distributors = () => {
                 <Grid item xs={12} sm={6}>
                   {renderTextField("CIN / LLPIN", "cin_llpin")}
                 </Grid>
-                {renderFileUpload("GST Certificate", "gst_certificate", true)}
-                {renderFileUpload("PAN Card Copy", "pan_card_copy", true)}
-                {renderFileUpload(
-                  "Incorporation Certificate",
-                  "incorporation_certificate",
-                )}
               </Grid>
+              <Box sx={{ display: "flex", gap: "15px" }}>
+                <Grid width="max-content" item xs={12} sm={6}>
+                  {renderFileUpload("GST Certificate", "gst_certificate", true)}
+                </Grid>
+                <Grid width="max-content" item xs={12} sm={6}>
+                  {renderFileUpload("PAN Card Copy", "pan_card_copy", true)}
+                </Grid>
+                <Grid width="max-content" item xs={12} sm={6}>
+                  {renderFileUpload(
+                    "Incorporation Certificate",
+                    "incorporation_certificate",
+                  )}
+                </Grid>
+              </Box>
             </CardContent>
           </Card>
         </TabPanel>
@@ -1919,17 +1923,17 @@ const Distributors = () => {
               </Box>
               <Divider sx={{ mb: 3 }} />
 
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+              <Grid  container spacing={2}>
+                <Grid width={200} item xs={12} sm={6}>
                   {renderTextField("Owner DOB", "owner_dob", "date", {
                     InputLabelProps: { shrink: true },
                   })}
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid width={200} item xs={12} sm={6}>
                   {renderTextField("Aadhaar Number", "aadhaar_number")}
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid width={200} item xs={12} sm={6}>
                   {renderTextField(
                     "Address Proof Type",
                     "address_proof",
@@ -1950,15 +1954,30 @@ const Distributors = () => {
                     },
                   )}
                 </Grid>
-                {renderFileUpload(
+                
+              </Grid>
+              <Box sx={{display:"flex",gap:"15px"}}>
+               
+                <Grid width="max-content" item xs={12} sm={6}>
+                   {renderFileUpload(
                   "Address Proof Copy",
                   "address_proof_copy",
                   true,
                 )}
+                </Grid>
+                <Grid width="max-content" item xs={12} sm={6}>
                 {renderFileUpload("Aadhaar Front", "aadhaar_front", true)}
+
+                </Grid>
+                <Grid width="max-content" item xs={12} sm={6}>
                 {renderFileUpload("Aadhaar Back", "aadhaar_back", true)}
+
+                </Grid>
+                <Grid width="max-content" item xs={12} sm={6}>
                 {renderFileUpload("Owner Photo", "owner_photo", true)}
-              </Grid>
+
+                </Grid>
+              </Box>
             </CardContent>
           </Card>
         </TabPanel>
@@ -2019,18 +2038,34 @@ const Distributors = () => {
                     "authorized_signatory_name",
                   )}
                 </Grid>
-                <Grid item xs={12} sm={6}>
+       
+         <Grid item xs={12} sm={6}>
                   {renderTextField("Signatory PAN", "signatory_pan")}
                 </Grid>
-                {renderFileUpload(
+              </Grid>
+              <Box sx={{display:"flex" , gap:"15px"}}>
+                <Grid width="max-content" item xs={12} sm={6}>
+                  {renderFileUpload(
                   "Signatory PAN Copy",
                   "signatory_pan_copy",
                   newDistributorForm.firm_type === "company",
                 )}
+                </Grid>
+                <Grid width="max-content" item xs={12} sm={6}>
                 {renderFileUpload("Board Resolution", "board_resolution")}
+
+                </Grid>
+                <Grid width="max-content" item xs={12} sm={6}>
                 {renderFileUpload("Partnership Deed", "partnership_deed")}
+
+                </Grid>
+                <Grid width="max-content" item xs={12} sm={6}>
                 {renderFileUpload("LLP Agreement", "llp_agreement")}
-              </Grid>
+
+                </Grid>
+                
+                
+              </Box>
             </CardContent>
           </Card>
         </TabPanel>
@@ -2159,8 +2194,12 @@ const Distributors = () => {
                     minRows: 2,
                   })}
                 </Grid> */}
-                {renderFileUpload("Agreement Copy", "agreement_copy")}
               </Grid>
+              <Box sx={{display:"flex"}}>
+                <Grid width="max-content"  item xs={12} sm={6}>
+                {renderFileUpload("Agreement Copy", "agreement_copy")}
+                </Grid>
+              </Box>
             </CardContent>
           </Card>
         </TabPanel>
@@ -2175,7 +2214,7 @@ const Distributors = () => {
             onClick={handleCreateDistributor}
             disabled={loading}
           >
-            {loading || createLoading ? "Creating..." : "Create Distributor"}
+            {loading || createLoading ? "Create Distributor" : "Create Distributor"}
           </CommonButton>
         </Box>
       )}
