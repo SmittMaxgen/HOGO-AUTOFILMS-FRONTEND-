@@ -351,13 +351,13 @@ const PurchaseOrder = () => {
         <Typography variant="h4" fontWeight={700}>
           Purchase Orders
         </Typography>
-        <CommonButton
+        {/* <CommonButton
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setIsEditing(true)}
         >
           Add PO
-        </CommonButton>
+        </CommonButton> */}
       </Stack>
 
       <TableContainer component={Paper}>
