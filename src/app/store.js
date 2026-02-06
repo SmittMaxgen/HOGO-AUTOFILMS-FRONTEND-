@@ -7,6 +7,7 @@ import bannerReducer from "../feature/banner/bannerSlice";
 import productReducer from "../feature/products/productSlice";
 import categoryReducer from "../feature/category/categorySlice";
 import costReducer from "../feature/cost/costSlice";
+import purchaseOrderReducer from "../feature/purchaseOrder/purchaseOrderSlice";
 import shipmentReducer from "../feature/shipments/shipmentSlice";
 import shipmentProductReducer from "../feature/shipmentProducts/shipmentProductSlice";
 import inventorySerialReducer from "../feature/inventorySerials/inventorySerialsSlice";
@@ -14,6 +15,7 @@ import forgotPasswordReducer from "../feature/profileSettings/profileSettingsSli
 import distributorReducer from "../feature/distributors/distributorSlice";
 import warrantyReducer from "../feature/Warranty/warrantySlice";
 import userReducer from "../feature/users/userSlice";
+import leadsReducer from "../feature/leads/leadSlice";
 import roleReducer from "../feature/role/roleSlice";
 import departmentReducer from "../feature/department/departmentSlice";
 import employeeSalaryReducer from "../feature/employeeSalary/employeeSalarySlice";
@@ -44,6 +46,8 @@ export const store = configureStore({
     employeePersonalDetails: employeePersonalDetailsReducer,
     department: departmentReducer,
     role: roleReducer,
+    purchaseOrder: purchaseOrderReducer,
+    leads: leadsReducer,
+    employeeSalary: employeeSalaryReducer,
   },
-  employeeSalary: employeeSalaryReducer,
 });

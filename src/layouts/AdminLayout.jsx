@@ -744,6 +744,26 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           {!collapsed && "Employee Management"}
         </Box>
 
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/purchase_order") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/purchase_order")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Purchase Order"}
+        </Box>
+        
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/leads") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/leads")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Leads"}
+        </Box>
+
         <Box className={classes.spacer} />
 
         {/* <Divider className={classes.divider} /> */}

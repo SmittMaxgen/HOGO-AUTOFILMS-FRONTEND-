@@ -419,18 +419,12 @@ const EmployeeManagement = () => {
       if (users.length > 0) {
         setUserFormData({
           username: users[0].username || "",
-          // email: users[0].email || "",
           password: users[0].username || "",
-          // first_name: users[0].first_name || "",
-          // last_name: users[0].last_name || "",
+
           is_active:
             users[0].is_active !== undefined ? users[0].is_active : true,
-          // is_staff: users[0].is_staff !== undefined ? users[0].is_staff : false,
           is_superuser:
             users[0].is_superuser !== undefined ? users[0].is_superuser : false,
-          // phone: users[0].phone || "",
-          // department_id: users[0].department_id || null,
-          // department: users[0].department || "",
           role_id: users[0].role_id || null,
           role: users[0].role || "",
         });
@@ -1135,22 +1129,8 @@ const EmployeeManagement = () => {
     );
   };
 
-  // User Handlers
   const handleSaveUser = async () => {
-    // if (!userFormData.username || !userFormData.email) {
-    //   CommonToast("Username and Email are required", "error");
-    //   return;
-    // }
-
-    // if (!editingUser && !userFormData.password) {
-    //   CommonToast("Password is required for new user", "error");
-    //   return;
-    // }
-
-    // if (userFormData.password && userFormData.password.length < 6) {
-    //   CommonToast("Password must be at least 6 characters", "error");
-    //   return;
-    // }
+   
 
     const dataToSend = {
       ...userFormData,
@@ -1700,13 +1680,6 @@ const EmployeeManagement = () => {
                   </Grid>
                 )}
 
-                {/* <Grid item xs={12} sm={6}>
-                  {renderTextField("Designation", "designation")}
-                </Grid> */}
-
-                {/* <Grid item xs={12} sm={6}>
-                  {renderTextField("Emergency Contact Name", "emergency_contact_name")}
-                </Grid> */}
                 <Grid item xs={12} sm={6}>
                   {renderTextField(
                     "Emergency Contact Phone",
@@ -1906,110 +1879,7 @@ const EmployeeManagement = () => {
                   )}
                 </Grid>
 
-                {/* <Grid item xs={12} sm={6}>
-                  {viewMode === "edit" || viewMode === "create" ? (
-                    <Autocomplete
-                      options={departments}
-                      getOptionLabel={(option) => option.name || ""}
-                      value={departments.find((d) => d.id === formData.department_id) || null}
-                      onChange={(event, newValue) => {
-                        setFormData({
-                          ...formData,
-                          department_id: newValue ? newValue.id : null,
-                          department: newValue ? newValue.name : "",
-                        });
-                        if (formErrors.department_id) {
-                          setFormErrors({ ...formErrors, department_id: undefined });
-                        }
-                      }}
-                      loading={departmentsLoading}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={viewMode === "create" || viewMode === "edit" ? "Department *" : "Department"}
-                          error={!!(viewMode === "create" || viewMode === "edit") && !!formErrors.department_id}
-                          helperText={(viewMode === "create" || viewMode === "edit") && formErrors.department_id}
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <>
-                                {departmentsLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                                {params.InputProps.endAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
-                    />
-                  ) : (
-                    <TextField
-                      fullWidth
-                      label="Department"
-                      value={selectedEmployee?.department || ""}
-                      InputProps={{ readOnly: true }}
-                    />
-                  )}
-                </Grid> */}
 
-                {/* <Grid item xs={12} sm={6}>
-                  {viewMode === "edit" || viewMode === "create" ? (
-                    <Autocomplete
-                      options={roles}
-                      getOptionLabel={(option) => option.name || ""}
-                      value={roles.find((r) => r.id === formData.role_id) || null}
-                      onChange={(event, newValue) => {
-                        setFormData({
-                          ...formData,
-                          role_id: newValue ? newValue.id : null,
-                          role: newValue ? newValue.name : "",
-                        });
-                        if (formErrors.role_id) {
-                          setFormErrors({ ...formErrors, role_id: undefined });
-                        }
-                      }}
-                      loading={rolesLoading}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={viewMode === "create" || viewMode === "edit" ? "Role *" : "Role"}
-                          error={!!(viewMode === "create" || viewMode === "edit") && !!formErrors.role_id}
-                          helperText={(viewMode === "create" || viewMode === "edit") && formErrors.role_id}
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <>
-                                {rolesLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                                {params.InputProps.endAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
-                    />
-                  ) : (
-                    <TextField
-                      fullWidth
-                      label="Role"
-                      value={selectedEmployee?.role || ""}
-                      InputProps={{ readOnly: true }}
-                    />
-                  )}
-                </Grid> */}
-
-                {/* <Grid item xs={12}>
-                  {renderTextField("Address", "address")}
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  {renderTextField("City", "city")}
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  {renderTextField("State", "state")}
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  {renderTextField("Pincode", "pincode", "tel", {
-                    inputProps: { inputMode: "numeric", pattern: "[0-9]*", maxLength: 6 },
-                  })}
-                </Grid> */}
               </Grid>
             </CardContent>
           </Card>
@@ -2327,66 +2197,7 @@ const EmployeeManagement = () => {
                       disabled={viewMode !== "edit"}
                     />
                   </Grid>
-                  {/* <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="HRA"
-                          type="number"
-                          value={salaryFormData.hra}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              hra: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid> */}
-                  {/* <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="DA"
-                          type="number"
-                          value={salaryFormData.da}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              da: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="TA"
-                          type="number"
-                          value={salaryFormData.ta}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              ta: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid> */}
-                  {/* <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Medical Allowance"
-                          type="number"
-                          value={salaryFormData.medical_allowance}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              medical_allowance: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid> */}
+                  
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -2419,52 +2230,7 @@ const EmployeeManagement = () => {
                       disabled={viewMode !== "edit"}
                     />
                   </Grid>
-                  {/* 
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Provident Fund"
-                          type="number"
-                          value={salaryFormData.provident_fund}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              provident_fund: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Professional Tax"
-                          type="number"
-                          value={salaryFormData.professional_tax}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              professional_tax: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Income Tax"
-                          type="number"
-                          value={salaryFormData.income_tax}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              income_tax: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid> */}
+                
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -2482,22 +2248,7 @@ const EmployeeManagement = () => {
                       disabled={viewMode !== "edit"}
                     />
                   </Grid>
-                  {/* <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Remarks"
-                          multiline
-                          rows={2}
-                          value={salaryFormData.remarks}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              remarks: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid> */}
+               
                 </Grid>
               </Box>
             </CardContent>
@@ -2544,21 +2295,7 @@ const EmployeeManagement = () => {
                       disabled={viewMode !== "edit"}
                     />
                   </Grid>
-                  {/* <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Email *"
-                          type="email"
-                          value={userFormData.email}
-                          onChange={(e) => {
-                            setUserFormData({
-                              ...userFormData,
-                              email: e.target.value,
-                            });
-                            setHasModifiedUser(true);
-                          }}
-                        />
-                      </Grid> */}
+                 
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -2579,81 +2316,7 @@ const EmployeeManagement = () => {
                       disabled={viewMode !== "edit"}
                     />
                   </Grid>
-                  {/* <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="First Name"
-                          value={userFormData.first_name}
-                          onChange={(e) => {
-                            setUserFormData({
-                              ...userFormData,
-                              first_name: e.target.value,
-                            });
-                            setHasModifiedUser(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Last Name"
-                          value={userFormData.last_name}
-                          onChange={(e) => {
-                            setUserFormData({
-                              ...userFormData,
-                              last_name: e.target.value,
-                            });
-                            setHasModifiedUser(true);
-                          }}
-                        />
-                      </Grid> */}
-                  {/* <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Phone"
-                          value={userFormData.phone}
-                          onChange={(e) => {
-                            setUserFormData({
-                              ...userFormData,
-                              phone: e.target.value,
-                            });
-                            setHasModifiedUser(true);
-                          }}
-                        />
-                      </Grid> */}
-                  {/* <Grid item xs={12} sm={6}>
-                        <Autocomplete
-                          options={departments}
-                          getOptionLabel={(option) => option.name || ""}
-                          value={departments.find((d) => d.id === userFormData.department_id) || null}
-                          onChange={(event, newValue) => {
-                            setUserFormData({
-                              ...userFormData,
-                              department_id: newValue ? newValue.id : null,
-                              department: newValue ? newValue.name : "",
-                            });
-                            setHasModifiedUser(true);
-                          }}
-                          loading={departmentsLoading}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Department"
-                              InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                  <>
-                                    {departmentsLoading ? (
-                                      <CircularProgress color="inherit" size={20} />
-                                    ) : null}
-                                    {params.InputProps.endAdornment}
-                                  </>
-                                ),
-                              }}
-                            />
-                          )}
-                        />
-                      </Grid> */}
+                 
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
                       disabled={viewMode !== "edit"}
@@ -2708,40 +2371,7 @@ const EmployeeManagement = () => {
                       label="Active"
                     />
                   </Grid>
-                  {/* <Grid item xs={12}>
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              checked={userFormData.is_active}
-                              onChange={(e) => {
-                                setUserFormData({
-                                  ...userFormData,
-                                  is_active: e.target.checked,
-                                });
-                                setHasModifiedUser(true);
-                              }}
-                            />
-                          }
-                          label="Is Active"
-                        />
-                      </Grid> */}
-                  {/* <Grid item xs={12}>
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              checked={userFormData.is_superuser}
-                              onChange={(e) => {
-                                setUserFormData({
-                                  ...userFormData,
-                                  is_superuser: e.target.checked,
-                                });
-                                setHasModifiedUser(true);
-                              }}
-                            />
-                          }
-                          label="Superuser Status"
-                        />
-                      </Grid> */}
+                 
                 </Grid>
               </Box>
             </CardContent>
