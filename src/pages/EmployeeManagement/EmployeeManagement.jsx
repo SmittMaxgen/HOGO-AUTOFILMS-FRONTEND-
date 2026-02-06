@@ -355,7 +355,7 @@ const EmployeeManagement = () => {
       });
     }
   }, [selectedEmployee, viewMode]);
-  
+
   useEffect(() => {
     if (selectedEmployee && viewMode !== "create") {
       setDocumentFormData({
@@ -375,9 +375,10 @@ const EmployeeManagement = () => {
 
   // Load data when switching to edit mode
   useEffect(() => {
-    if (viewMode === "edit" && selectedEmployee) {
+    if (selectedEmployee) {
       // Load personal details if exists
       if (personalDetailsArray.length > 0) {
+        console.log("personalDetailsArray", personalDetailsArray);
         setPersonalDetailsFormData({
           father_name: personalDetailsArray[0].father_name || "",
           mother_name: personalDetailsArray[0].mother_name || "",
@@ -430,7 +431,7 @@ const EmployeeManagement = () => {
           // phone: users[0].phone || "",
           // department_id: users[0].department_id || null,
           // department: users[0].department || "",
-          role_id: users[0].role || null,
+          role_id: users[0].role_id || null,
           role: users[0].role || "",
         });
         setEditingUser(users[0]);
@@ -2029,411 +2030,304 @@ const EmployeeManagement = () => {
 
         {/* TAB 1: EMPLOYEE DOCUMENTS */}
         {/* {viewMode !== "create" && ( */}
-          <TabPanel value={activeTab} index={1}>
-            <Card elevation={2}>
-              <CardContent>
-                {/* ================= HEADER ================= */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 2,
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={700}>
-                    Employee Documents
-                  </Typography>
+        <TabPanel value={activeTab} index={1}>
+          <Card elevation={2}>
+            <CardContent>
+              {/* ================= HEADER ================= */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h6" fontWeight={700}>
+                  Employee Documents
+                </Typography>
 
-                  {viewMode === "edit" && (
-                    <CommonButton
-                      variant="contained"
-                      startIcon={<AddIcon />}
-                      onClick={handleUploadDocument}
-                      size="small"
-                    >
-                      {docsArray.length > 0
-                        ? "Upload More Documents"
-                        : "Add Document"}
-                    </CommonButton>
-                  )}
+                {viewMode === "edit" && (
+                  <CommonButton
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={handleUploadDocument}
+                    size="small"
+                  >
+                    {docsArray.length > 0
+                      ? "Upload More Documents"
+                      : "Add Document"}
+                  </CommonButton>
+                )}
+              </Box>
+
+              <Divider sx={{ mb: 3 }} />
+
+              {/* ================= GRID LAYOUT ================= */}
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 3,
+                  width: "100%",
+                  alignItems: "flex-start",
+                }}
+              >
+                {/* ========== LEFT : TEXT FIELDS ========== */}
+                <Box>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Aadhaar Number"
+                        value={documentFormData.aadhar_number || ""}
+                        InputProps={{ readOnly: viewMode === "view" }}
+                        onChange={(e) =>
+                          setDocumentFormData({
+                            ...documentFormData,
+                            aadhar_number: e.target.value,
+                          })
+                        }
+                      />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="PAN Number"
+                        value={documentFormData.pancard_number || ""}
+                        InputProps={{ readOnly: viewMode === "view" }}
+                        onChange={(e) =>
+                          setDocumentFormData({
+                            ...documentFormData,
+                            pancard_number: e.target.value,
+                          })
+                        }
+                      />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Driving License Number"
+                        value={documentFormData.driving_license_number || ""}
+                        InputProps={{ readOnly: viewMode === "view" }}
+                        onChange={(e) =>
+                          setDocumentFormData({
+                            ...documentFormData,
+                            driving_license_number: e.target.value,
+                          })
+                        }
+                      />
+                    </Grid>
+                  </Grid>
                 </Box>
 
-                <Divider sx={{ mb: 3 }} />
-
-                {/* ================= GRID LAYOUT ================= */}
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 3,
-                    width: "100%",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  {/* ========== LEFT : TEXT FIELDS ========== */}
-                  <Box>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Aadhaar Number"
-                          value={documentFormData.aadhar_number || ""}
-                          InputProps={{ readOnly: viewMode === "view" }}
-                          onChange={(e) =>
-                            setDocumentFormData({
-                              ...documentFormData,
-                              aadhar_number: e.target.value,
-                            })
-                          }
-                        />
+                {/* ========== RIGHT : DOCUMENT FILES ========== */}
+                <Box>
+                  <Grid container spacing={2}>
+                    {[
+                      { label: "Aadhaar Front", key: "aadhar_front" },
+                      { label: "Aadhaar Back", key: "aadhar_back" },
+                      { label: "PAN Card", key: "pan_card" },
+                      { label: "Photo", key: "photo" },
+                      {
+                        label: "Driving License Front",
+                        key: "driving_license_front",
+                      },
+                      {
+                        label: "Driving License Back",
+                        key: "driving_license_back",
+                      },
+                    ].map((doc) => (
+                      <Grid item xs={12} sm={6} key={doc.key}>
+                        {renderDocumentField(
+                          doc.label,
+                          doc.key,
+                          // viewMode === "edit",
+                        )}
                       </Grid>
-
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="PAN Number"
-                          value={documentFormData.pancard_number || ""}
-                          InputProps={{ readOnly: viewMode === "view" }}
-                          onChange={(e) =>
-                            setDocumentFormData({
-                              ...documentFormData,
-                              pancard_number: e.target.value,
-                            })
-                          }
-                        />
-                      </Grid>
-
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Driving License Number"
-                          value={documentFormData.driving_license_number || ""}
-                          InputProps={{ readOnly: viewMode === "view" }}
-                          onChange={(e) =>
-                            setDocumentFormData({
-                              ...documentFormData,
-                              driving_license_number: e.target.value,
-                            })
-                          }
-                        />
-                      </Grid>
-                    </Grid>
-                  </Box>
-
-                  {/* ========== RIGHT : DOCUMENT FILES ========== */}
-                  <Box>
-                    <Grid container spacing={2}>
-                      {[
-                        { label: "Aadhaar Front", key: "aadhar_front" },
-                        { label: "Aadhaar Back", key: "aadhar_back" },
-                        { label: "PAN Card", key: "pan_card" },
-                        { label: "Photo", key: "photo" },
-                        {
-                          label: "Driving License Front",
-                          key: "driving_license_front",
-                        },
-                        {
-                          label: "Driving License Back",
-                          key: "driving_license_back",
-                        },
-                      ].map((doc) => (
-                        <Grid item xs={12} sm={6} key={doc.key}>
-                          {renderDocumentField(
-                            doc.label,
-                            doc.key,
-                            // viewMode === "edit",
-                          )}
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Box>
+                    ))}
+                  </Grid>
                 </Box>
-              </CardContent>
-            </Card>
-          </TabPanel>
+              </Box>
+            </CardContent>
+          </Card>
+        </TabPanel>
         {/* )} */}
 
         {/* TAB 2: PERSONAL DETAILS */}
         {/* {viewMode !== "create" && ( */}
-          <TabPanel value={activeTab} index={2}>
-            <Card elevation={2}>
-              <CardContent>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 2,
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={700}>
-                    Personal Details
-                  </Typography>
-                </Box>
-                <Divider sx={{ mb: 3 }} />
+        <TabPanel value={activeTab} index={2}>
+          <Card elevation={2}>
+            <CardContent>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h6" fontWeight={700}>
+                  Personal Details
+                </Typography>
+              </Box>
+              <Divider sx={{ mb: 3 }} />
 
-                {viewMode === "edit" && (
-                  <Box
-                    sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}
-                  >
-                    <Typography
-                      variant="subtitle2"
-                      fontWeight={600}
-                      sx={{ mb: 2 }}
+              <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+                <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
+                  {editingPersonalDetails
+                    ? "Edit Personal Details"
+                    : viewMode === "edit"
+                      ? "Add Personal Details"
+                      : "Personal Details"}
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Father Name"
+                      value={personalDetailsFormData.father_name}
+                      onChange={(e) => {
+                        setPersonalDetailsFormData({
+                          ...personalDetailsFormData,
+                          father_name: e.target.value,
+                        });
+                        setHasModifiedPersonalDetails(true);
+                      }}
+                      disabled={viewMode !== "edit"}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Mother Name"
+                      value={personalDetailsFormData.mother_name}
+                      onChange={(e) => {
+                        setPersonalDetailsFormData({
+                          ...personalDetailsFormData,
+                          mother_name: e.target.value,
+                        });
+                        setHasModifiedPersonalDetails(true);
+                      }}
+                      disabled={viewMode !== "edit"}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Marital Status *"
+                      select
+                      value={personalDetailsFormData.marital_status}
+                      onChange={(e) => {
+                        setPersonalDetailsFormData({
+                          ...personalDetailsFormData,
+                          marital_status: e.target.value,
+                        });
+                        setHasModifiedPersonalDetails(true);
+                      }}
+                      disabled={viewMode !== "edit"}
                     >
-                      {editingPersonalDetails
-                        ? "Edit Personal Details"
-                        : "Add Personal Details"}
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Father Name"
-                          value={personalDetailsFormData.father_name}
-                          onChange={(e) => {
-                            setPersonalDetailsFormData({
-                              ...personalDetailsFormData,
-                              father_name: e.target.value,
-                            });
-                            setHasModifiedPersonalDetails(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Mother Name"
-                          value={personalDetailsFormData.mother_name}
-                          onChange={(e) => {
-                            setPersonalDetailsFormData({
-                              ...personalDetailsFormData,
-                              mother_name: e.target.value,
-                            });
-                            setHasModifiedPersonalDetails(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Marital Status *"
-                          select
-                          value={personalDetailsFormData.marital_status}
-                          onChange={(e) => {
-                            setPersonalDetailsFormData({
-                              ...personalDetailsFormData,
-                              marital_status: e.target.value,
-                            });
-                            setHasModifiedPersonalDetails(true);
-                          }}
-                        >
-                          <MenuItem value="single">Single</MenuItem>
-                          <MenuItem value="married">Married</MenuItem>
-                        </TextField>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Spouse Name"
-                          value={personalDetailsFormData.spouse_name}
-                          onChange={(e) => {
-                            setPersonalDetailsFormData({
-                              ...personalDetailsFormData,
-                              spouse_name: e.target.value,
-                            });
-                            setHasModifiedPersonalDetails(true);
-                          }}
-                        />
-                      </Grid>
-                      {/* <Grid item xs={12} sm={6}>
-                  {renderTextField("Emergency Contact Name", "emergency_contact_name")}
-                </Grid> */}
-                      <Grid item xs={12} sm={6}>
-                        {renderTextField(
-                          "Emergency Contact Phone",
-                          "emergency_contact_phone",
-                          "tel",
-                          {
-                            inputProps: {
-                              inputMode: "numeric",
-                              pattern: "[0-9]*",
-                              maxLength: 10,
-                            },
-                          },
-                        )}
-                      </Grid>
-                      {/* <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Blood Group"
-                          select
-                          value={personalDetailsFormData.blood_group}
-                          onChange={(e) => {
-                            setPersonalDetailsFormData({
-                              ...personalDetailsFormData,
-                              blood_group: e.target.value,
-                            });
-                            setHasModifiedPersonalDetails(true);
-                          }}
-                        >
-                          <MenuItem value="A+">A+</MenuItem>
-                          <MenuItem value="A-">A-</MenuItem>
-                          <MenuItem value="B+">B+</MenuItem>
-                          <MenuItem value="B-">B-</MenuItem>
-                          <MenuItem value="AB+">AB+</MenuItem>
-                          <MenuItem value="AB-">AB-</MenuItem>
-                          <MenuItem value="O+">O+</MenuItem>
-                          <MenuItem value="O-">O-</MenuItem>
-                        </TextField>
-                      </Grid> */}
-                      {/* <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Nationality"
-                          value={personalDetailsFormData.nationality}
-                          onChange={(e) => {
-                            setPersonalDetailsFormData({
-                              ...personalDetailsFormData,
-                              nationality: e.target.value,
-                            });
-                            setHasModifiedPersonalDetails(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Religion"
-                          value={personalDetailsFormData.religion}
-                          onChange={(e) => {
-                            setPersonalDetailsFormData({
-                              ...personalDetailsFormData,
-                              religion: e.target.value,
-                            });
-                            setHasModifiedPersonalDetails(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Caste"
-                          value={personalDetailsFormData.caste}
-                          onChange={(e) => {
-                            setPersonalDetailsFormData({
-                              ...personalDetailsFormData,
-                              caste: e.target.value,
-                            });
-                            setHasModifiedPersonalDetails(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Identification Marks"
-                          value={personalDetailsFormData.identification_marks}
-                          onChange={(e) => {
-                            setPersonalDetailsFormData({
-                              ...personalDetailsFormData,
-                              identification_marks: e.target.value,
-                            });
-                            setHasModifiedPersonalDetails(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Hobbies"
-                          multiline
-                          rows={2}
-                          value={personalDetailsFormData.hobbies}
-                          onChange={(e) => {
-                            setPersonalDetailsFormData({
-                              ...personalDetailsFormData,
-                              hobbies: e.target.value,
-                            });
-                            setHasModifiedPersonalDetails(true);
-                          }}
-                        />
-                      </Grid> */}
-                    </Grid>
-                  </Box>
-                )}
-
-            
-              </CardContent>
-            </Card>
-          </TabPanel>
+                      <MenuItem value="single">Single</MenuItem>
+                      <MenuItem value="married">Married</MenuItem>
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Spouse Name"
+                      value={personalDetailsFormData.spouse_name}
+                      onChange={(e) => {
+                        setPersonalDetailsFormData({
+                          ...personalDetailsFormData,
+                          spouse_name: e.target.value,
+                        });
+                        setHasModifiedPersonalDetails(true);
+                      }}
+                      disabled={viewMode !== "edit"}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField(
+                      "Emergency Contact Phone",
+                      "emergency_contact_phone",
+                      "tel",
+                      {
+                        inputProps: {
+                          inputMode: "numeric",
+                          pattern: "[0-9]*",
+                          maxLength: 10,
+                        },
+                        disabled: viewMode !== "edit",
+                      },
+                    )}
+                  </Grid>
+                </Grid>
+              </Box>
+            </CardContent>
+          </Card>
+        </TabPanel>
         {/* )} */}
 
         {/* TAB 3: SALARY */}
         {/* {viewMode !== "create" && ( */}
-          <TabPanel value={activeTab} index={3}>
-            <Card elevation={2}>
-              <CardContent>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 2,
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={700}>
-                    Salary Information
-                  </Typography>
-                </Box>
-                <Divider sx={{ mb: 3 }} />
+        <TabPanel value={activeTab} index={3}>
+          <Card elevation={2}>
+            <CardContent>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h6" fontWeight={700}>
+                  Salary Information
+                </Typography>
+              </Box>
+              <Divider sx={{ mb: 3 }} />
 
-                {viewMode === "edit" && (
-                  <Box
-                    sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}
-                  >
-                    <Typography
-                      variant="subtitle2"
-                      fontWeight={600}
-                      sx={{ mb: 2 }}
-                    >
-                      {editingSalary
-                        ? "Edit Salary Information"
-                        : "Add Salary Information"}
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Gross Salary *"
-                          type="number"
-                          value={salaryFormData.gross_salary}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              gross_salary: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Basic Salary *"
-                          type="number"
-                          value={salaryFormData.basic_salary}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              basic_salary: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid>
-                      {/* <Grid item xs={12} sm={6}>
+              <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+                <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
+                  {editingSalary
+                    ? "Edit Salary Information"
+                    : "Add Salary Information"}
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Gross Salary *"
+                      type="number"
+                      value={salaryFormData.gross_salary}
+                      onChange={(e) => {
+                        setSalaryFormData({
+                          ...salaryFormData,
+                          gross_salary: e.target.value,
+                        });
+                        setHasModifiedSalary(true);
+                      }}
+                      disabled={viewMode !== "edit"}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Basic Salary *"
+                      type="number"
+                      value={salaryFormData.basic_salary}
+                      onChange={(e) => {
+                        setSalaryFormData({
+                          ...salaryFormData,
+                          basic_salary: e.target.value,
+                        });
+                        setHasModifiedSalary(true);
+                      }}
+                      disabled={viewMode !== "edit"}
+                    />
+                  </Grid>
+                  {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="HRA"
@@ -2448,7 +2342,7 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid> */}
-                      {/* <Grid item xs={12} sm={6}>
+                  {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="DA"
@@ -2478,7 +2372,7 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid> */}
-                      {/* <Grid item xs={12} sm={6}>
+                  {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="Medical Allowance"
@@ -2493,37 +2387,39 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid> */}
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Allowances"
-                          type="number"
-                          value={salaryFormData.alloances}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              alloances: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Deductions"
-                          type="number"
-                          value={salaryFormData.deductions}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              deductions: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid>
-                      {/* 
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Allowances"
+                      type="number"
+                      value={salaryFormData.alloances}
+                      onChange={(e) => {
+                        setSalaryFormData({
+                          ...salaryFormData,
+                          alloances: e.target.value,
+                        });
+                        setHasModifiedSalary(true);
+                      }}
+                      disabled={viewMode !== "edit"}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Deductions"
+                      type="number"
+                      value={salaryFormData.deductions}
+                      onChange={(e) => {
+                        setSalaryFormData({
+                          ...salaryFormData,
+                          deductions: e.target.value,
+                        });
+                        setHasModifiedSalary(true);
+                      }}
+                      disabled={viewMode !== "edit"}
+                    />
+                  </Grid>
+                  {/* 
                       <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
@@ -2569,23 +2465,24 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid> */}
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Effective From *"
-                          type="date"
-                          InputLabelProps={{ shrink: true }}
-                          value={salaryFormData.effective_from}
-                          onChange={(e) => {
-                            setSalaryFormData({
-                              ...salaryFormData,
-                              effective_from: e.target.value,
-                            });
-                            setHasModifiedSalary(true);
-                          }}
-                        />
-                      </Grid>
-                      {/* <Grid item xs={12}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Effective From *"
+                      type="date"
+                      InputLabelProps={{ shrink: true }}
+                      value={salaryFormData.effective_from}
+                      onChange={(e) => {
+                        setSalaryFormData({
+                          ...salaryFormData,
+                          effective_from: e.target.value,
+                        });
+                        setHasModifiedSalary(true);
+                      }}
+                      disabled={viewMode !== "edit"}
+                    />
+                  </Grid>
+                  {/* <Grid item xs={12}>
                         <TextField
                           fullWidth
                           label="Remarks"
@@ -2601,62 +2498,53 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid> */}
-                    </Grid>
-                  </Box>
-                )}
-
-             
-              </CardContent>
-            </Card>
-          </TabPanel>
+                </Grid>
+              </Box>
+            </CardContent>
+          </Card>
+        </TabPanel>
         {/* )} */}
 
         {/* TAB 4: USERS */}
         {/* {viewMode !== "create" && ( */}
-          <TabPanel value={activeTab} index={4}>
-            <Card elevation={2}>
-              <CardContent>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 2,
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={700}>
-                    User Accounts
-                  </Typography>
-                </Box>
-                <Divider sx={{ mb: 3 }} />
+        <TabPanel value={activeTab} index={4}>
+          <Card elevation={2}>
+            <CardContent>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h6" fontWeight={700}>
+                  User Accounts
+                </Typography>
+              </Box>
+              <Divider sx={{ mb: 3 }} />
 
-                {viewMode === "edit" && (
-                  <Box
-                    sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}
-                  >
-                    <Typography
-                      variant="subtitle2"
-                      fontWeight={600}
-                      sx={{ mb: 2 }}
-                    >
-                      {editingUser ? "Edit User Account" : "Add User Account"}
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label="Username *"
-                          value={userFormData.username}
-                          onChange={(e) => {
-                            setUserFormData({
-                              ...userFormData,
-                              username: e.target.value,
-                            });
-                            setHasModifiedUser(true);
-                          }}
-                        />
-                      </Grid>
-                      {/* <Grid item xs={12} sm={6}>
+              <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+                <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
+                  {editingUser ? "Edit User Account" : "Add User Account"}
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Username *"
+                      value={userFormData.username}
+                      onChange={(e) => {
+                        setUserFormData({
+                          ...userFormData,
+                          username: e.target.value,
+                        });
+                        setHasModifiedUser(true);
+                      }}
+                      disabled={viewMode !== "edit"}
+                    />
+                  </Grid>
+                  {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="Email *"
@@ -2671,26 +2559,27 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid> */}
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          label={
-                            editingUser
-                              ? "Password (leave blank to keep current)"
-                              : "Password *"
-                          }
-                          type="password"
-                          value={userFormData.password}
-                          onChange={(e) => {
-                            setUserFormData({
-                              ...userFormData,
-                              password: e.target.value,
-                            });
-                            setHasModifiedUser(true);
-                          }}
-                        />
-                      </Grid>
-                      {/* <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label={
+                        editingUser
+                          ? "Password (leave blank to keep current)"
+                          : "Password *"
+                      }
+                      type="password"
+                      value={userFormData.password}
+                      onChange={(e) => {
+                        setUserFormData({
+                          ...userFormData,
+                          password: e.target.value,
+                        });
+                        setHasModifiedUser(true);
+                      }}
+                      disabled={viewMode !== "edit"}
+                    />
+                  </Grid>
+                  {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="First Name"
@@ -2718,7 +2607,7 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid> */}
-                      {/* <Grid item xs={12} sm={6}>
+                  {/* <Grid item xs={12} sm={6}>
                         <TextField
                           fullWidth
                           label="Phone"
@@ -2732,7 +2621,7 @@ const EmployeeManagement = () => {
                           }}
                         />
                       </Grid> */}
-                      {/* <Grid item xs={12} sm={6}>
+                  {/* <Grid item xs={12} sm={6}>
                         <Autocomplete
                           options={departments}
                           getOptionLabel={(option) => option.name || ""}
@@ -2765,63 +2654,61 @@ const EmployeeManagement = () => {
                           )}
                         />
                       </Grid> */}
-                      <Grid item xs={12} sm={6}>
-                        <Autocomplete
-                          options={roles}
-                          getOptionLabel={(option) => option.name || ""}
-                          value={
-                            roles.find((r) => r.id === userFormData.role_id) ||
-                            null
-                          }
-                          onChange={(event, newValue) => {
+                  <Grid item xs={12} sm={6}>
+                    <Autocomplete
+                      disabled={viewMode !== "edit"}
+                      options={roles}
+                      getOptionLabel={(option) => option.name || ""}
+                      value={
+                        roles.find((r) => r.id === userFormData.role_id) || null
+                      }
+                      onChange={(event, newValue) => {
+                        setUserFormData({
+                          ...userFormData,
+                          role_id: newValue ? newValue.id : null,
+                          role: newValue ? newValue.name : "",
+                        });
+                        setHasModifiedUser(true);
+                      }}
+                      loading={rolesLoading}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Role"
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {rolesLoading ? (
+                                  <CircularProgress color="inherit" size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FormControlLabel
+                      disabled={viewMode !== "edit"}
+                      control={
+                        <Switch
+                          checked={userFormData.is_active}
+                          onChange={(e) => {
                             setUserFormData({
                               ...userFormData,
-                              role_id: newValue ? newValue.id : null,
-                              role: newValue ? newValue.name : "",
+                              is_active: e.target.checked,
                             });
                             setHasModifiedUser(true);
                           }}
-                          loading={rolesLoading}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Role"
-                              InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                  <>
-                                    {rolesLoading ? (
-                                      <CircularProgress
-                                        color="inherit"
-                                        size={20}
-                                      />
-                                    ) : null}
-                                    {params.InputProps.endAdornment}
-                                  </>
-                                ),
-                              }}
-                            />
-                          )}
                         />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              checked={userFormData.is_active}
-                              onChange={(e) => {
-                                setUserFormData({
-                                  ...userFormData,
-                                  is_active: e.target.checked,
-                                });
-                                setHasModifiedUser(true);
-                              }}
-                            />
-                          }
-                          label="Active"
-                        />
-                      </Grid>
-                      {/* <Grid item xs={12}>
+                      }
+                      label="Active"
+                    />
+                  </Grid>
+                  {/* <Grid item xs={12}>
                         <FormControlLabel
                           control={
                             <Switch
@@ -2838,7 +2725,7 @@ const EmployeeManagement = () => {
                           label="Is Active"
                         />
                       </Grid> */}
-                      {/* <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                         <FormControlLabel
                           control={
                             <Switch
@@ -2855,13 +2742,11 @@ const EmployeeManagement = () => {
                           label="Superuser Status"
                         />
                       </Grid> */}
-                    </Grid>
-                  </Box>
-                )}
-
-                            </CardContent>
-            </Card>
-          </TabPanel>
+                </Grid>
+              </Box>
+            </CardContent>
+          </Card>
+        </TabPanel>
         {/* )} */}
       </Box>
 
