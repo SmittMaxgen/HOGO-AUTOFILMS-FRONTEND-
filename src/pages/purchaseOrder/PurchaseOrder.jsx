@@ -419,13 +419,13 @@ const PurchaseOrder = () => {
                     <IconButton onClick={() => handleEdit(po)}>
                       <EditIcon />
                     </IconButton>
-                    <IconButton
+                    {/* <IconButton
                       color="error"
                       disabled={deleteLoading}
                       onClick={() => handleDelete(po.id)}
                     >
                       <DeleteIcon />
-                    </IconButton>
+                    </IconButton> */}
                   </TableCell>
                 </TableRow>
               ))}
