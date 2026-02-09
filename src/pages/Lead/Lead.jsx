@@ -18,6 +18,10 @@ import {
   selectDeleteLeadLoading,
 } from "../../feature/leads/leadSelector";
 
+import { selectEmployees } from "../../feature/employee/employeeSelector";
+
+import { getEmployees } from "../../feature/employee/employeeThunks";
+
 import {
   Box,
   Paper,
@@ -72,6 +76,9 @@ const Lead = () => {
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
 
+  const employees = useSelector(selectEmployees);
+  console.log("employees::::", employees);
+
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
@@ -92,10 +99,11 @@ const Lead = () => {
     interest_level: "",
     lead_status: "Lead",
     remarks: "",
-    created_by: "",
+    created_by: null,
   });
 
   const [errors, setErrors] = useState({});
+  console.log("errors:::", errors);
 
   useEffect(() => {
     dispatch(getLeads());
@@ -195,6 +203,10 @@ const Lead = () => {
     }
   };
 
+  const handleAddLeads = () => {
+    setIsEditing(true);
+    dispatch(getEmployees());
+  };
   const handleReset = () => {
     setIsEditing(false);
     setEditId(null);
@@ -212,7 +224,7 @@ const Lead = () => {
       interest_level: "",
       lead_status: "Lead",
       remarks: "",
-      created_by: "",
+      created_by: null,
     });
     setErrors({});
   };
@@ -312,12 +324,29 @@ const Lead = () => {
               )}
             />
 
-            <TextField
+            {/* <TextField
               label="Created By"
               value={form.created_by}
               onChange={(e) => setForm({ ...form, created_by: e.target.value })}
+            /> */}
+            <Autocomplete
+              options={employees || []}
+              getOptionLabel={(option) =>
+                `${option.first_name || "User"} ${option.last_name || ""}` || ""
+              }
+              value={
+                employees?.find((emp) => emp.id === form.created_by) || null
+              }
+              onChange={(event, newValue) =>
+                setForm({
+                  ...form,
+                  created_by: newValue ? newValue.id : "",
+                })
+              }
+              renderInput={(params) => (
+                <TextField {...params} label="Created By" />
+              )}
             />
-
             <TextField
               label="Remarks"
               value={form.remarks}
@@ -392,10 +421,7 @@ const Lead = () => {
             Leads
           </Typography>
         </Stack>
-        <CommonButton
-          startIcon={<AddIcon />}
-          onClick={() => setIsEditing(true)}
-        >
+        <CommonButton startIcon={<AddIcon />} onClick={() => handleAddLeads()}>
           Add Lead
         </CommonButton>
       </Stack>
@@ -580,14 +606,13 @@ const Lead = () => {
               ))}
           </TableBody>
         </Table>
-        
       </TableContainer>
       <Stack alignItems="flex-end" mt={3}>
-      <Pagination
-        count={Math.ceil((filteredLeads?.length || 0) / rowsPerPage)}
-        page={page}
-        onChange={(_, v) => setPage(v)}
-      />
+        <Pagination
+          count={Math.ceil((filteredLeads?.length || 0) / rowsPerPage)}
+          page={page}
+          onChange={(_, v) => setPage(v)}
+        />
       </Stack>
     </Box>
   );
