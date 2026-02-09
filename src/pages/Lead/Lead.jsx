@@ -34,8 +34,11 @@ import {
   Chip,
   Pagination,
   CircularProgress,
+  Select,
   MenuItem,
 } from "@mui/material";
+
+import Autocomplete from "@mui/material/Autocomplete";
 
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -47,6 +50,10 @@ import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
 import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
+
+const LEAD_TYPE_OPTIONS = ["Distributor", "Retailer", "Direct"];
+const INTEREST_LEVEL_OPTIONS = ["Low", "Medium", "High"];
+const LEAD_STATUS_OPTIONS = ["Lead", "Prospect", "Converted", "Lost"];
 
 const Lead = () => {
   const dispatch = useDispatch();
@@ -83,13 +90,13 @@ const Lead = () => {
     city: "",
     state: "",
     interest_level: "",
+    lead_status: "Lead",
     remarks: "",
     created_by: "",
   });
 
   const [errors, setErrors] = useState({});
 
-  // ================= FETCH =================
   useEffect(() => {
     dispatch(getLeads());
     setPage(1);
@@ -102,10 +109,8 @@ const Lead = () => {
     }
   }, [createSuccess, updateSuccess, dispatch]);
 
-  // ================= HELPERS =================
   const validate = () => {
     const temp = {};
-
     [
       "lead_type",
       "business_name",
@@ -116,13 +121,29 @@ const Lead = () => {
       "city",
       "state",
       "interest_level",
+      "lead_status",
       "created_by",
     ].forEach((field) => {
       if (!form[field]) temp[field] = "Required";
     });
-
     setErrors(temp);
     return Object.keys(temp).length === 0;
+  };
+
+  // Add this helper function near the top of your component
+  const handleInlineUpdate = (leadId, field, value) => {
+    const leadToUpdate = leads.find((l) => l.id === leadId);
+    if (!leadToUpdate) return;
+
+    const updatedData = {
+      ...leadToUpdate,
+      [field]: value,
+    };
+
+    dispatch(updateLead({ id: leadId, data: updatedData }))
+      .unwrap()
+      .then(() => CommonToast(`${field} updated successfully`, "success"))
+      .catch(() => CommonToast(`Failed to update ${field}`, "error"));
   };
 
   const handleSubmit = () => {
@@ -131,31 +152,13 @@ const Lead = () => {
     if (isEditing && editId) {
       dispatch(updateLead({ id: editId, data: form }))
         .unwrap()
-        .then(() => {
-          CommonToast("Lead updated successfully", "success");
-        })
-        .catch((err) => {
-          CommonToast(
-            err?.errors
-              ? Object.values(err.errors)[0][0]
-              : "Failed to update lead",
-            "error",
-          );
-        });
+        .then(() => CommonToast("Lead updated successfully", "success"))
+        .catch(() => CommonToast("Failed to update lead", "error"));
     } else {
       dispatch(createLead(form))
         .unwrap()
-        .then(() => {
-          CommonToast("Lead created successfully", "success");
-        })
-        .catch((err) => {
-          CommonToast(
-            err?.errors
-              ? Object.values(err.errors)[0][0]
-              : "Failed to create lead",
-            "error",
-          );
-        });
+        .then(() => CommonToast("Lead created successfully", "success"))
+        .catch(() => CommonToast("Failed to create lead", "error"));
     }
   };
 
@@ -177,6 +180,7 @@ const Lead = () => {
       city: lead.city,
       state: lead.state,
       interest_level: lead.interest_level,
+      lead_status: lead.lead_status,
       remarks: lead.remarks || "",
       created_by: lead.created_by,
     });
@@ -206,6 +210,7 @@ const Lead = () => {
       city: "",
       state: "",
       interest_level: "",
+      lead_status: "Lead",
       remarks: "",
       created_by: "",
     });
@@ -221,7 +226,7 @@ const Lead = () => {
     page * rowsPerPage,
   );
 
-  // ================= CREATE / EDIT =================
+  /* ================= CREATE / EDIT ================= */
   if (isEditing) {
     return (
       <Box mt={4}>
@@ -234,48 +239,99 @@ const Lead = () => {
 
         <Paper sx={{ p: 3 }}>
           <Stack spacing={2}>
-            {[
-              ["lead_type", "Lead Type"],
-              ["business_name", "Business Name"],
-              ["contact_person", "Contact Person"],
-              ["phone", "Phone"],
-              ["email", "Email"],
-              ["address", "Address"],
-              ["city", "City"],
-              ["state", "State"],
-              ["interest_level", "Interest Level"],
-              ["created_by", "Created By (User ID)"],
-            ].map(([key, label]) => (
-              <TextField
-                key={key}
-                label={label}
-                value={form[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                error={!!errors[key]}
-                helperText={errors[key]}
-                fullWidth
-              />
-            ))}
+            <Autocomplete
+              options={LEAD_TYPE_OPTIONS}
+              value={form.lead_type}
+              onChange={(_, v) => setForm({ ...form, lead_type: v || "" })}
+              renderInput={(params) => (
+                <TextField {...params} label="Lead Type" />
+              )}
+            />
+
+            <TextField
+              label="Business Name"
+              value={form.business_name}
+              onChange={(e) =>
+                setForm({ ...form, business_name: e.target.value })
+              }
+            />
+
+            <TextField
+              label="Contact Person"
+              value={form.contact_person}
+              onChange={(e) =>
+                setForm({ ...form, contact_person: e.target.value })
+              }
+            />
+
+            <TextField
+              label="Phone"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            />
+
+            <TextField
+              label="Email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+
+            <TextField
+              label="Address"
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
+            />
+
+            <TextField
+              label="City"
+              value={form.city}
+              onChange={(e) => setForm({ ...form, city: e.target.value })}
+            />
+
+            <TextField
+              label="State"
+              value={form.state}
+              onChange={(e) => setForm({ ...form, state: e.target.value })}
+            />
+
+            <Autocomplete
+              options={INTEREST_LEVEL_OPTIONS}
+              value={form.interest_level}
+              onChange={(_, v) => setForm({ ...form, interest_level: v || "" })}
+              renderInput={(params) => (
+                <TextField {...params} label="Interest Level" />
+              )}
+            />
+
+            <Autocomplete
+              options={LEAD_STATUS_OPTIONS}
+              value={form.lead_status}
+              onChange={(_, v) => setForm({ ...form, lead_status: v || "" })}
+              renderInput={(params) => (
+                <TextField {...params} label="Lead Status" />
+              )}
+            />
+
+            <TextField
+              label="Created By"
+              value={form.created_by}
+              onChange={(e) => setForm({ ...form, created_by: e.target.value })}
+            />
 
             <TextField
               label="Remarks"
               value={form.remarks}
-              onChange={(e) => setForm({ ...form, remarks: e.target.value })}
-              fullWidth
               multiline
               rows={3}
+              onChange={(e) => setForm({ ...form, remarks: e.target.value })}
             />
 
             <Stack direction="row" justifyContent="flex-end" spacing={2}>
               <CommonButton variant="outlined" onClick={handleReset}>
                 Cancel
               </CommonButton>
-              <CommonButton
-                variant="contained"
-                onClick={handleSubmit}
-                disabled={createLoading || updateLoading}
-              >
-                {createLoading || updateLoading ? "Saving..." : "Save"}
+              <CommonButton variant="contained" onClick={handleSubmit}>
+                Save
               </CommonButton>
             </Stack>
           </Stack>
@@ -284,7 +340,7 @@ const Lead = () => {
     );
   }
 
-  // ================= VIEW =================
+  /* ================= VIEW ================= */
   if (isViewing && viewLead) {
     return (
       <Box mt={4}>
@@ -300,10 +356,9 @@ const Lead = () => {
             {Object.entries(viewLead).map(([k, v]) => (
               <TextField
                 key={k}
-                label={k.replaceAll("_", " ").toUpperCase()}
+                label={k}
                 value={v ?? "-"}
                 InputProps={{ readOnly: true }}
-                fullWidth
               />
             ))}
           </Stack>
@@ -312,20 +367,32 @@ const Lead = () => {
     );
   }
 
-  // ================= LIST =================
+  /* ================= LIST ================= */
   return (
     <Box>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={3}
-      >
-        <Typography variant="h4" fontWeight={700}>
-          Leads
-        </Typography>
+      <Stack direction="row" justifyContent="space-between" mb={3}>
+        {/* <Typography variant="h4">Leads</Typography> */}
+        <Stack
+          direction="row"
+          justifyContent=""
+          alignItems="center"
+          spacing={1}
+          mb={3}
+        >
+          <Typography
+            variant="h4"
+            fontWeight={700}
+            sx={{ display: "flex", alignItems: "center", color: "#7E7E7E" }}
+          >
+            <IconButton onClick={() => setShowViewDialog(false)}>
+              {/* {showViewDialog && (
+                <ArrowBackIcon sx={{ color: "grey", marginRight: "5px" }} />
+              )} */}
+            </IconButton>
+            Leads
+          </Typography>
+        </Stack>
         <CommonButton
-          variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setIsEditing(true)}
         >
@@ -334,61 +401,170 @@ const Lead = () => {
       </Stack>
 
       <TableContainer component={Paper}>
-        <Box sx={{ display: "flex" }}>
-          <CommonSearchField
-            value={searchQuery}
-            placeholder="Search business..."
-            onChange={(value) => setSearchQuery(value)}
-          />
-        </Box>
+        <CommonSearchField
+          value={searchQuery}
+          onChange={(v) => setSearchQuery(v)}
+        />
 
         <Table>
           <TableHead>
             <TableRow>
-              {[
-                "Sr",
-                "Business",
-                "Lead Type",
-                "Interest",
-                "Status",
-                "Actions",
-              ].map((h) => (
-                <TableCell key={h} sx={{ fontWeight: 700 }}>
-                  {h}
-                </TableCell>
-              ))}
+              <TableCell>Sr</TableCell>
+              <TableCell>Business</TableCell>
+              <TableCell>Lead Type</TableCell>
+              <TableCell>Interest</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {loading && (
-              <TableRow>
-                <TableCell colSpan={6} align="center">
-                  <CircularProgress size={28} />
-                </TableCell>
-              </TableRow>
-            )}
-
             {!loading &&
               paginatedData?.map((lead, index) => (
-                <TableRow key={lead.id} hover>
+                <TableRow key={lead.id}>
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>{lead.business_name}</TableCell>
-                  <TableCell>{lead.lead_type}</TableCell>
+                  {/* <TableCell>{lead.lead_type}</TableCell>
                   <TableCell>
-                    <Chip
-                      label={lead.interest_level}
-                      color={
-                        lead.interest_level === "High"
-                          ? "success"
-                          : lead.interest_level === "Medium"
-                            ? "warning"
-                            : "default"
-                      }
-                      size="small"
-                    />
+                    <Chip label={lead.interest_level} size="small" />
                   </TableCell>
-                  <TableCell>{lead.lead_status}</TableCell>
+                  <TableCell>{lead.lead_status}</TableCell> */}
+                  {/* Lead Type - Chip Dropdown */}
+                  <TableCell>
+                    <Select
+                      size="small"
+                      value={lead.lead_type}
+                      onChange={(e) =>
+                        handleInlineUpdate(lead.id, "lead_type", e.target.value)
+                      }
+                      sx={{
+                        minWidth: 100,
+                        height: 25,
+                        borderRadius: "999px",
+                        fontWeight: 500,
+                        color: "white",
+                        bgcolor:
+                          lead.lead_type === "Distributor"
+                            ? "primary.main"
+                            : lead.lead_type === "Retailer"
+                              ? "info.main"
+                              : "secondary.main",
+                        "& .MuiSelect-select": {
+                          py: 0.5,
+                          pl: 2,
+                          display: "flex",
+                          alignItems: "center",
+                        },
+                        "& fieldset": {
+                          border: "none",
+                        },
+                        "& svg": {
+                          color: "white",
+                        },
+                      }}
+                    >
+                      {LEAD_TYPE_OPTIONS.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </TableCell>
+
+                  {/* Interest Level - Pill Style */}
+                  <TableCell>
+                    <Select
+                      size="small"
+                      value={lead.interest_level}
+                      onChange={(e) =>
+                        handleInlineUpdate(
+                          lead.id,
+                          "interest_level",
+                          e.target.value,
+                        )
+                      }
+                      sx={{
+                        minWidth: 90,
+                        height: 25,
+                        borderRadius: "999px",
+                        fontWeight: 500,
+                        color: "white",
+                        bgcolor:
+                          lead.interest_level === "High"
+                            ? "success.main"
+                            : lead.interest_level === "Medium"
+                              ? "warning.main"
+                              : "error.main",
+                        "& .MuiSelect-select": {
+                          py: 0.5,
+                          pl: 2,
+                          display: "flex",
+                          alignItems: "center",
+                        },
+                        "& fieldset": {
+                          border: "none",
+                        },
+                        "& svg": {
+                          color: "white",
+                        },
+                      }}
+                    >
+                      {INTEREST_LEVEL_OPTIONS.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </TableCell>
+
+                  {/* Lead Status - Pill Style */}
+                  <TableCell>
+                    <Select
+                      size="small"
+                      value={lead.lead_status}
+                      onChange={(e) =>
+                        handleInlineUpdate(
+                          lead.id,
+                          "lead_status",
+                          e.target.value,
+                        )
+                      }
+                      sx={{
+                        minWidth: 100,
+                        height: 25,
+                        borderRadius: "999px",
+                        fontWeight: 500,
+                        color: "white",
+                        bgcolor:
+                          lead.lead_status === "Converted"
+                            ? "success.main"
+                            : lead.lead_status === "Prospect"
+                              ? "info.main"
+                              : lead.lead_status === "Lost"
+                                ? "error.main"
+                                : "warning.main",
+                        "& .MuiSelect-select": {
+                          py: 0.5,
+                          pl: 2,
+                          display: "flex",
+                          alignItems: "center",
+                        },
+                        "& fieldset": {
+                          border: "none",
+                        },
+                        "& svg": {
+                          color: "white",
+                        },
+                      }}
+                    >
+                      {LEAD_STATUS_OPTIONS.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </TableCell>
+
                   <TableCell>
                     <IconButton onClick={() => handleView(lead)}>
                       <VisibilityIcon />
@@ -396,34 +572,22 @@ const Lead = () => {
                     <IconButton onClick={() => handleEdit(lead)}>
                       <EditIcon />
                     </IconButton>
-                    <IconButton
-                      color="error"
-                      disabled={deleteLoading}
-                      onClick={() => handleDelete(lead.id)}
-                    >
+                    <IconButton onClick={() => handleDelete(lead.id)}>
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
-
-            {!loading && filteredLeads?.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} align="center">
-                  No leads found
-                </TableCell>
-              </TableRow>
-            )}
           </TableBody>
         </Table>
+        
       </TableContainer>
-
       <Stack alignItems="flex-end" mt={3}>
-        <Pagination
-          count={Math.ceil((filteredLeads?.length || 0) / rowsPerPage)}
-          page={page}
-          onChange={(_, v) => setPage(v)}
-        />
+      <Pagination
+        count={Math.ceil((filteredLeads?.length || 0) / rowsPerPage)}
+        page={page}
+        onChange={(_, v) => setPage(v)}
+      />
       </Stack>
     </Box>
   );

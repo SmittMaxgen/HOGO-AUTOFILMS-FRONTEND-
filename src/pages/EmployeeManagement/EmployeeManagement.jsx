@@ -378,7 +378,6 @@ const EmployeeManagement = () => {
     if (selectedEmployee) {
       // Load personal details if exists
       if (personalDetailsArray.length > 0) {
-        console.log("personalDetailsArray", personalDetailsArray);
         setPersonalDetailsFormData({
           father_name: personalDetailsArray[0].father_name || "",
           mother_name: personalDetailsArray[0].mother_name || "",
@@ -419,7 +418,7 @@ const EmployeeManagement = () => {
       if (users.length > 0) {
         setUserFormData({
           username: users[0].username || "",
-          password: users[0].username || "",
+          password: users[0].password || "",
 
           is_active:
             users[0].is_active !== undefined ? users[0].is_active : true,
@@ -779,16 +778,139 @@ const EmployeeManagement = () => {
   };
 
   // Document handlers
-  const handleUploadDocument = async () => {
-    // if (!documentFormData.document_type) {
-    //   CommonToast("Please select document type", "error");
-    //   return;
-    // }
+  // const handleUploadDocument = async () => {
+  //   // if (!documentFormData.document_type) {
+  //   //   CommonToast("Please select document type", "error");
+  //   //   return;
+  //   // }
 
+  //   const formDataToSend = new FormData();
+  //   formDataToSend.append("employee_id", selectedEmployee.id);
+  //   formDataToSend.append("document_type", documentFormData.document_type);
+
+  //   if (documentFormData.pancard_number)
+  //     formDataToSend.append("pancard_number", documentFormData.pancard_number);
+  //   if (documentFormData.aadhar_number)
+  //     formDataToSend.append("aadhar_number", documentFormData.aadhar_number);
+  //   if (documentFormData.driving_license_number)
+  //     formDataToSend.append(
+  //       "driving_license_number",
+  //       documentFormData.driving_license_number,
+  //     );
+  //   if (documentFormData.aadhar_front)
+  //     formDataToSend.append("aadhar_front", documentFormData.aadhar_front);
+  //   if (documentFormData.aadhar_back)
+  //     formDataToSend.append("aadhar_back", documentFormData.aadhar_back);
+  //   if (documentFormData.pan_card)
+  //     formDataToSend.append("pan_card", documentFormData.pan_card);
+  //   if (documentFormData.photo)
+  //     formDataToSend.append("photo", documentFormData.photo);
+  //   if (documentFormData.driving_license_front)
+  //     formDataToSend.append(
+  //       "driving_license_front",
+  //       documentFormData.driving_license_front,
+  //     );
+  //   if (documentFormData.driving_license_back)
+  //     formDataToSend.append(
+  //       "driving_license_back",
+  //       documentFormData.driving_license_back,
+  //     );
+  //   if (documentFormData.remarks)
+  //     formDataToSend.append("remarks", documentFormData.remarks);
+
+  //   try {
+  //     const result = await dispatch(createEmployeeDocument(formDataToSend));
+  //     if (result.type.includes("fulfilled")) {
+  //       CommonToast("Document uploaded successfully", "success");
+  //       dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+  //       setDocumentFormData({
+  //         document_type: "",
+  //         pancard_number: "",
+  //         aadhar_number: "",
+  //         driving_license_number: "",
+  //         aadhar_front: null,
+  //         aadhar_back: null,
+  //         pan_card: null,
+  //         photo: null,
+  //         driving_license_front: null,
+  //         driving_license_back: null,
+  //         remarks: "",
+  //       });
+  //     }
+  //   } catch {
+  //     CommonToast("Failed to upload document", "error");
+  //   }
+  // };
+
+  // const handleUploadDocument = async () => {
+  //   const formDataToSend = new FormData();
+  //   formDataToSend.append("employee_id", selectedEmployee.id);
+  //   formDataToSend.append("document_type", documentFormData.document_type);
+
+  //   // Text fields - append if they exist
+  //   if (documentFormData.pancard_number)
+  //     formDataToSend.append("pancard_number", documentFormData.pancard_number);
+  //   if (documentFormData.aadhar_number)
+  //     formDataToSend.append("aadhar_number", documentFormData.aadhar_number);
+  //   if (documentFormData.driving_license_number)
+  //     formDataToSend.append(
+  //       "driving_license_number",
+  //       documentFormData.driving_license_number,
+  //     );
+  //   if (documentFormData.remarks)
+  //     formDataToSend.append("remarks", documentFormData.remarks);
+
+  //   // File fields - ONLY append if they are actual File objects (new uploads)
+  //   // Don't send existing URL strings back to the server
+  //   if (documentFormData.aadhar_front instanceof File)
+  //     formDataToSend.append("aadhar_front", documentFormData.aadhar_front);
+  //   if (documentFormData.aadhar_back instanceof File)
+  //     formDataToSend.append("aadhar_back", documentFormData.aadhar_back);
+  //   if (documentFormData.pan_card instanceof File)
+  //     formDataToSend.append("pan_card", documentFormData.pan_card);
+  //   if (documentFormData.photo instanceof File)
+  //     formDataToSend.append("photo", documentFormData.photo);
+  //   if (documentFormData.driving_license_front instanceof File)
+  //     formDataToSend.append(
+  //       "driving_license_front",
+  //       documentFormData.driving_license_front,
+  //     );
+  //   if (documentFormData.driving_license_back instanceof File)
+  //     formDataToSend.append(
+  //       "driving_license_back",
+  //       documentFormData.driving_license_back,
+  //     );
+
+  //   try {
+  //     const result = await dispatch(createEmployeeDocument(formDataToSend));
+  //     if (result.type.includes("fulfilled")) {
+  //       CommonToast("Document uploaded successfully", "success");
+  //       dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+  //       setDocumentFormData({
+  //         document_type: "",
+  //         pancard_number: "",
+  //         aadhar_number: "",
+  //         driving_license_number: "",
+  //         aadhar_front: null,
+  //         aadhar_back: null,
+  //         pan_card: null,
+  //         photo: null,
+  //         driving_license_front: null,
+  //         driving_license_back: null,
+  //         remarks: "",
+  //       });
+  //     }
+  //   } catch {
+  //     CommonToast("Failed to upload document", "error");
+  //   }
+  // };
+  const handleUploadDocument = async () => {
     const formDataToSend = new FormData();
     formDataToSend.append("employee_id", selectedEmployee.id);
-    formDataToSend.append("document_type", documentFormData.document_type);
 
+    // Text fields - append if they exist
+    if (documentFormData.document_type)
+      formDataToSend.append("document_type", documentFormData.document_type);
     if (documentFormData.pancard_number)
       formDataToSend.append("pancard_number", documentFormData.pancard_number);
     if (documentFormData.aadhar_number)
@@ -798,48 +920,57 @@ const EmployeeManagement = () => {
         "driving_license_number",
         documentFormData.driving_license_number,
       );
-    if (documentFormData.aadhar_front)
+    if (documentFormData.remarks)
+      formDataToSend.append("remarks", documentFormData.remarks);
+
+    // File fields - ONLY append if they are actual File objects (new uploads)
+    if (documentFormData.aadhar_front instanceof File)
       formDataToSend.append("aadhar_front", documentFormData.aadhar_front);
-    if (documentFormData.aadhar_back)
+    if (documentFormData.aadhar_back instanceof File)
       formDataToSend.append("aadhar_back", documentFormData.aadhar_back);
-    if (documentFormData.pan_card)
+    if (documentFormData.pan_card instanceof File)
       formDataToSend.append("pan_card", documentFormData.pan_card);
-    if (documentFormData.photo)
+    if (documentFormData.photo instanceof File)
       formDataToSend.append("photo", documentFormData.photo);
-    if (documentFormData.driving_license_front)
+    if (documentFormData.driving_license_front instanceof File)
       formDataToSend.append(
         "driving_license_front",
         documentFormData.driving_license_front,
       );
-    if (documentFormData.driving_license_back)
+    if (documentFormData.driving_license_back instanceof File)
       formDataToSend.append(
         "driving_license_back",
         documentFormData.driving_license_back,
       );
-    if (documentFormData.remarks)
-      formDataToSend.append("remarks", documentFormData.remarks);
 
     try {
-      const result = await dispatch(createEmployeeDocument(formDataToSend));
-      if (result.type.includes("fulfilled")) {
-        CommonToast("Document uploaded successfully", "success");
-        dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
-        setDocumentFormData({
-          document_type: "",
-          pancard_number: "",
-          aadhar_number: "",
-          driving_license_number: "",
-          aadhar_front: null,
-          aadhar_back: null,
-          pan_card: null,
-          photo: null,
-          driving_license_front: null,
-          driving_license_back: null,
-          remarks: "",
-        });
+      let result;
+
+      // Check if document already exists
+      if (docsArray.length > 0 && docsArray[0]?.id) {
+        // UPDATE existing document (PATCH)
+        result = await dispatch(
+          updateEmployeeDocument({
+            id: docsArray[0].id,
+            data: formDataToSend,
+          }),
+        );
+
+        if (result.type.includes("fulfilled")) {
+          CommonToast("Document updated successfully", "success");
+          dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+        }
+      } else {
+        // CREATE new document (POST)
+        result = await dispatch(createEmployeeDocument(formDataToSend));
+
+        if (result.type.includes("fulfilled")) {
+          CommonToast("Document uploaded successfully", "success");
+          dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+        }
       }
     } catch {
-      CommonToast("Failed to upload document", "error");
+      CommonToast("Failed to save document", "error");
     }
   };
 
@@ -1130,8 +1261,6 @@ const EmployeeManagement = () => {
   };
 
   const handleSaveUser = async () => {
-   
-
     const dataToSend = {
       ...userFormData,
       employee_id: selectedEmployee.id,
@@ -1655,9 +1784,9 @@ const EmployeeManagement = () => {
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Last Name", "last_name")}
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   {renderTextField("Full Name", "name")}
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Employee Code", "employee_code")}
                 </Grid>
@@ -1680,7 +1809,7 @@ const EmployeeManagement = () => {
                   </Grid>
                 )}
 
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   {renderTextField(
                     "Emergency Contact Phone",
                     "emergency_contact_phone",
@@ -1693,7 +1822,7 @@ const EmployeeManagement = () => {
                       },
                     },
                   )}
-                </Grid>
+                </Grid> */}
 
                 <Grid item xs={12} sm={6}>
                   {renderTextField("Date of Joining", "joining_date", "date", {
@@ -1777,11 +1906,58 @@ const EmployeeManagement = () => {
                       )}
                     />
                   ) : (
-                    <TextField
-                      fullWidth
-                      label="Department"
-                      value={selectedEmployee?.department || ""}
-                      InputProps={{ readOnly: true }}
+                   <Autocomplete
+                   disabled={true}
+                      options={departments}
+                      getOptionLabel={(option) => option.name || ""}
+                      value={
+                        departments.find(
+                          (d) => d.id === formData.department_id,
+                        ) || null
+                      }
+                      onChange={(event, newValue) => {
+                        setFormData({
+                          ...formData,
+                          department_id: newValue ? newValue.id : null,
+                          department: newValue ? newValue.name : "",
+                        });
+                        if (formErrors.department_id) {
+                          setFormErrors({
+                            ...formErrors,
+                            department_id: undefined,
+                          });
+                        }
+                      }}
+                      loading={departmentsLoading}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label={
+                            viewMode === "create" || viewMode === "edit"
+                              ? "Department *"
+                              : "Department"
+                          }
+                          error={
+                            !!(viewMode === "create" || viewMode === "edit") &&
+                            !!formErrors.department_id
+                          }
+                          helperText={
+                            (viewMode === "create" || viewMode === "edit") &&
+                            formErrors.department_id
+                          }
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {departmentsLoading ? (
+                                  <CircularProgress color="inherit" size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
                     />
                   )}
                 </Grid>
@@ -1835,11 +2011,53 @@ const EmployeeManagement = () => {
                       )}
                     />
                   ) : (
-                    <TextField
-                      fullWidth
-                      label="Role"
-                      value={selectedEmployee?.role || ""}
-                      InputProps={{ readOnly: true }}
+                     <Autocomplete
+                     disabled={true}
+                      options={roles}
+                      getOptionLabel={(option) => option.name || ""}
+                      value={
+                        roles.find((r) => r.id === formData.role_id) || null
+                      }
+                      onChange={(event, newValue) => {
+                        setFormData({
+                          ...formData,
+                          role_id: newValue ? newValue.id : null,
+                          role: newValue ? newValue.name : "",
+                        });
+                        if (formErrors.role_id) {
+                          setFormErrors({ ...formErrors, role_id: undefined });
+                        }
+                      }}
+                      loading={rolesLoading}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label={
+                            viewMode === "create" || viewMode === "edit"
+                              ? "Role *"
+                              : "Role"
+                          }
+                          error={
+                            !!(viewMode === "create" || viewMode === "edit") &&
+                            !!formErrors.role_id
+                          }
+                          helperText={
+                            (viewMode === "create" || viewMode === "edit") &&
+                            formErrors.role_id
+                          }
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {rolesLoading ? (
+                                  <CircularProgress color="inherit" size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
                     />
                   )}
                 </Grid>
@@ -1878,8 +2096,6 @@ const EmployeeManagement = () => {
                     },
                   )}
                 </Grid>
-
-
               </Grid>
             </CardContent>
           </Card>
@@ -1916,7 +2132,7 @@ const EmployeeManagement = () => {
                   Employee Documents
                 </Typography>
 
-                {viewMode === "edit" && (
+                {/* {viewMode === "edit" && (
                   <CommonButton
                     variant="contained"
                     startIcon={<AddIcon />}
@@ -1925,6 +2141,20 @@ const EmployeeManagement = () => {
                   >
                     {docsArray.length > 0
                       ? "Upload More Documents"
+                      : "Add Document"}
+                  </CommonButton>
+                )} */}
+                {viewMode === "edit" && (
+                  <CommonButton
+                    variant="contained"
+                    startIcon={
+                      docsArray.length > 0 ? <SaveIcon /> : <AddIcon />
+                    }
+                    onClick={handleUploadDocument}
+                    size="small"
+                  >
+                    {docsArray.length > 0
+                      ? "Update Documents" // Updated text
                       : "Add Document"}
                   </CommonButton>
                 )}
@@ -2197,7 +2427,7 @@ const EmployeeManagement = () => {
                       disabled={viewMode !== "edit"}
                     />
                   </Grid>
-                  
+
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -2230,7 +2460,7 @@ const EmployeeManagement = () => {
                       disabled={viewMode !== "edit"}
                     />
                   </Grid>
-                
+
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -2248,7 +2478,6 @@ const EmployeeManagement = () => {
                       disabled={viewMode !== "edit"}
                     />
                   </Grid>
-               
                 </Grid>
               </Box>
             </CardContent>
@@ -2295,7 +2524,7 @@ const EmployeeManagement = () => {
                       disabled={viewMode !== "edit"}
                     />
                   </Grid>
-                 
+
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -2304,7 +2533,7 @@ const EmployeeManagement = () => {
                           ? "Password (leave blank to keep current)"
                           : "Password *"
                       }
-                      type="password"
+                      // type="password"
                       value={userFormData.password}
                       onChange={(e) => {
                         setUserFormData({
@@ -2316,7 +2545,7 @@ const EmployeeManagement = () => {
                       disabled={viewMode !== "edit"}
                     />
                   </Grid>
-                 
+
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
                       disabled={viewMode !== "edit"}
@@ -2371,7 +2600,6 @@ const EmployeeManagement = () => {
                       label="Active"
                     />
                   </Grid>
-                 
                 </Grid>
               </Box>
             </CardContent>
