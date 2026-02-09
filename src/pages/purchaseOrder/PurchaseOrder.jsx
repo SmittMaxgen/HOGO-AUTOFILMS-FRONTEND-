@@ -1022,9 +1022,9 @@ const PurchaseOrder = () => {
                           <Typography variant="body2" fontWeight={600}>
                             {item?.product_name}
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
+                          {/* <Typography variant="caption" color="text.secondary">
                             ID: {item?.product_id}
-                          </Typography>
+                          </Typography> */}
                         </TableCell>
                         <TableCell align="center">
                           <Chip
