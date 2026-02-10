@@ -62,7 +62,7 @@ const Product = () => {
   );
 
   const [page, setPage] = useState(1);
-  const rowsPerPage = 5;
+  const rowsPerPage = 10;
 
   const [isViewing, setIsViewing] = useState(false);
   const [viewItem, setViewItem] = useState(null);
