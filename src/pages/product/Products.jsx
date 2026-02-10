@@ -1102,7 +1102,7 @@ const Product = () => {
                 <Box
                   sx={{
                     display: "grid",
-                    gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+                    gridTemplateColumns: { xs: "4fr", md: "repeat(4, 1fr)" },
                     gap: 3,
                   }}
                 >
@@ -1158,7 +1158,7 @@ const Product = () => {
                         form.image1 instanceof File
                           ? form.image1.name
                           : form.image1
-                            ? "Current image uploaded"
+                            ? "Current image "
                             : ""
                       }
                       InputProps={{
@@ -1248,7 +1248,7 @@ const Product = () => {
                         form.image2 instanceof File
                           ? form.image2.name
                           : form.image2
-                            ? "Current image uploaded"
+                            ? "Current image "
                             : ""
                       }
                       InputProps={{
@@ -1338,7 +1338,7 @@ const Product = () => {
                         form.image3 instanceof File
                           ? form.image3.name
                           : form.image3
-                            ? "Current image uploaded"
+                            ? "Current image "
                             : ""
                       }
                       InputProps={{
@@ -1428,7 +1428,7 @@ const Product = () => {
                         form.image4 instanceof File
                           ? form.image4.name
                           : form.image4
-                            ? "Current image uploaded"
+                            ? "Current image "
                             : ""
                       }
                       InputProps={{
@@ -1767,7 +1767,7 @@ const Product = () => {
                     </Typography>
                     <Grid container spacing={2}>
                       {viewItem.product_images.map((img, idx) => (
-                        <Grid item xs={6} sm={4} md={3} key={idx}>
+                        <Grid item xs={6} sm={6} md={6} key={idx}>
                           <Avatar
                             src={`https://hogofilm.pythonanywhere.com${img}`}
                             variant="rounded"
