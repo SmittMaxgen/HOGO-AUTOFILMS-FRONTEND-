@@ -1257,6 +1257,8 @@ const Product = () => {
                 "Category",
                 "Material",
                 "MRP",
+                "In Stocks",
+                "Reserved Product",
                 "Status",
                 "Actions",
               ].map((h) => (
@@ -1313,6 +1315,8 @@ const Product = () => {
                   <TableCell>{p?.category_name}</TableCell>
                   <TableCell>{p?.material_name}</TableCell>
                   <TableCell>₹ {p.mrp}</TableCell>
+                  <TableCell>{p.stock_available}</TableCell>
+                  <TableCell>{p.reserved_product}</TableCell>
                   <TableCell>
                     <Box display="flex" alignItems="center" gap={1}>
                       <Switch
