@@ -461,31 +461,31 @@ const EmployeeManagement = () => {
   const validateForm = () => {
     const errors = {};
 
-    // if (!formData.first_name?.trim()) errors.first_name = "First name is required";
-    // if (!formData.last_name?.trim()) errors.last_name = "Last name is required";
-    // if (!formData.email?.trim()) {
-    //   errors.email = "Email is required";
-    // } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-    //   errors.email = "Email is invalid";
-    // }
-    // if (!formData.phone?.trim()) {
-    //   errors.phone = "Phone number is required";
-    // } else if (!/^\d{10}$/.test(formData.phone)) {
-    //   errors.phone = "Phone number must be 10 digits";
-    // }
-    // if (viewMode === "create" && !formData.password?.trim()) {
-    //   errors.password = "Password is required";
-    // } else if (viewMode === "create" && formData.password?.length < 6) {
-    //   errors.password = "Password must be at least 6 characters";
-    // }
-    // if (!formData.employee_code?.trim()) errors.employee_code = "Employee code is required";
-    // if (!formData.department_id) errors.department_id = "Department is required";
+    if (!formData.first_name?.trim()) errors.first_name = "First name is required";
+    if (!formData.last_name?.trim()) errors.last_name = "Last name is required";
+    if (!formData.email?.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Email is invalid";
+    }
+    if (!formData.phone?.trim()) {
+      errors.phone = "Phone number is required";
+    } else if (!/^\d{10}$/.test(formData.phone)) {
+      errors.phone = "Phone number must be 10 digits";
+    }
+    if (viewMode === "create" && !formData.password?.trim()) {
+      errors.password = "Password is required";
+    } else if (viewMode === "create" && formData.password?.length < 6) {
+      errors.password = "Password must be at least 6 characters";
+    }
+    if (!formData.employee_code?.trim()) errors.employee_code = "Employee code is required";
+    if (!formData.department_id) errors.department_id = "Department is required";
     // if (!formData.designation?.trim()) errors.designation = "Designation is required";
-    // if (!formData.employment_type) errors.employment_type = "Employment type is required";
-    // if (!formData.role_id) errors.role_id = "Role is required";
-    // if (!formData.joining_date) errors.joining_date = "Date of joining is required";
-    // if (!formData.date_of_birth) errors.date_of_birth = "Date of birth is required";
-    // if (!formData.gender) errors.gender = "Gender is required";
+    if (!formData.employment_type) errors.employment_type = "Employment type is required";
+    if (!formData.role_id) errors.role_id = "Role is required";
+    if (!formData.joining_date) errors.joining_date = "Date of joining is required";
+    if (!formData.date_of_birth) errors.date_of_birth = "Date of birth is required";
+    if (!formData.gender) errors.gender = "Gender is required";
     // if (!formData.address?.trim()) errors.address = "Address is required";
     // if (!formData.city?.trim()) errors.city = "City is required";
     // if (!formData.state?.trim()) errors.state = "State is required";
@@ -1346,6 +1346,9 @@ const EmployeeManagement = () => {
     const isRequired = requiredFields.includes(field);
 
     const commonProps = {
+        // fullWidth: true,   // <-- ADD HERE
+          sx: { width: 200 },   // ✅ fixed width
+
       label:
         isRequired && (viewMode === "create" || viewMode === "edit")
           ? `${label} *`
@@ -1835,7 +1838,7 @@ const EmployeeManagement = () => {
                   })}
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid sx={{width:200}} item xs={12} sm={6}>
                   {renderTextField("Gender", "gender", "text", {
                     select: true,
                     children: [
@@ -1854,6 +1857,7 @@ const EmployeeManagement = () => {
                 <Grid item xs={12} sm={6}>
                   {viewMode === "edit" || viewMode === "create" ? (
                     <Autocomplete
+                    sx={{width:200}}
                       options={departments}
                       getOptionLabel={(option) => option.name || ""}
                       value={
@@ -1907,6 +1911,8 @@ const EmployeeManagement = () => {
                     />
                   ) : (
                    <Autocomplete
+                                       sx={{width:200}}
+
                    disabled={true}
                       options={departments}
                       getOptionLabel={(option) => option.name || ""}
@@ -1964,6 +1970,8 @@ const EmployeeManagement = () => {
                 <Grid item xs={12} sm={6}>
                   {viewMode === "edit" || viewMode === "create" ? (
                     <Autocomplete
+                                        sx={{width:200}}
+
                       options={roles}
                       getOptionLabel={(option) => option.name || ""}
                       value={
@@ -2012,6 +2020,8 @@ const EmployeeManagement = () => {
                     />
                   ) : (
                      <Autocomplete
+                                         sx={{width:200}}
+
                      disabled={true}
                       options={roles}
                       getOptionLabel={(option) => option.name || ""}
@@ -2315,7 +2325,8 @@ const EmployeeManagement = () => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
-                      fullWidth
+                    sx={{width:200}}
+                      // fullWidth
                       label="Marital Status *"
                       select
                       value={personalDetailsFormData.marital_status}
@@ -2548,6 +2559,7 @@ const EmployeeManagement = () => {
 
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
+                    sx={{width:200}}
                       disabled={viewMode !== "edit"}
                       options={roles}
                       getOptionLabel={(option) => option.name || ""}

@@ -48,6 +48,8 @@ import {
   Button,
   Alert,
   Autocomplete,
+  Select,
+  MenuItem,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -274,6 +276,41 @@ const PurchaseOrder = () => {
       return item;
     });
     setForm({ ...form, product_items: updated });
+  };
+
+  const PO_STATUS_OPTIONS = [
+    "DRAFT",
+    "SUBMITTED",
+    "APPROVED",
+    "REJECTED",
+    "PARTIALLY_APPROVED",
+    "CANCELLED",
+  ];
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "APPROVED":
+        return "success.main";
+      case "SUBMITTED":
+        return "warning.main";
+      case "REJECTED":
+        return "error.main";
+      case "PARTIALLY_APPROVED":
+        return "info.main";
+      case "CANCELLED":
+        return "grey.600";
+      default:
+        return "default";
+    }
+  };
+
+  const handleStatusChange = (id, value) => {
+    dispatch(
+      updatePurchaseOrder({
+        id,
+        data: { status: value },
+      }),
+    );
   };
 
   // ================= FORM HELPERS =================
@@ -1078,13 +1115,13 @@ const PurchaseOrder = () => {
         <Typography variant="h4" fontWeight={700}>
           Purchase Orders
         </Typography>
-        <CommonButton
+        {/* <CommonButton
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setIsEditing(true)}
         >
           Add PO
-        </CommonButton>
+        </CommonButton> */}
       </Stack>
 
       <TableContainer component={Paper}>
@@ -1127,6 +1164,9 @@ const PurchaseOrder = () => {
 
             {!loading &&
               paginatedData?.map((po, index) => {
+                {
+                  console.log("po::::::", po);
+                }
                 const distributorInfo = distributors.find(
                   (d) => d.distributor_id === po.distributor_id,
                 );
@@ -1145,27 +1185,46 @@ const PurchaseOrder = () => {
                         {distributorInfo?.distributor_name || "N/A"}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        ID: {po.distributor_id}
+                        ID: {po?.distributor_id}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {new Date(po.po_date).toLocaleDateString()}
+                        {new Date(po?.po_date).toLocaleDateString()}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Chip
-                        label={po.status}
-                        color={
-                          po.status === "APPROVED"
-                            ? "success"
-                            : po.status === "SUBMITTED"
-                              ? "warning"
-                              : "default"
-                        }
+                      <Select
                         size="small"
-                      />
+                        value={po?.status}
+                        onChange={(e) =>
+                          handleStatusChange(po.id, e.target.value)
+                        }
+                        sx={{
+                          minWidth: 140,
+                          height: 26,
+                          borderRadius: "999px",
+                          fontWeight: 500,
+                          color: "white",
+                          bgcolor: getStatusColor(po.status),
+                          "& .MuiSelect-select": {
+                            py: 0.5,
+                            pl: 2,
+                            display: "flex",
+                            alignItems: "center",
+                          },
+                          "& fieldset": { border: "none" },
+                          "& svg": { color: "white" },
+                        }}
+                      >
+                        {PO_STATUS_OPTIONS.map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </Select>
                     </TableCell>
+
                     <TableCell>{po.total_items || 0}</TableCell>
                     <TableCell>
                       <Chip

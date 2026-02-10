@@ -23,6 +23,8 @@
 //   Divider,
 //   Stack,
 //   IconButton,
+//   Menu,
+//   MenuItem,
 // } from "@mui/material";
 // import {
 //   CheckCircle,
@@ -44,7 +46,6 @@
 //   selectWarrantyUpdateLoading,
 //   selectWarrantyUpdateSuccess,
 //   selectWarrantyError,
-//   //   clearWarrantyState,
 // } from "../../feature/Warranty/warrantySelector";
 
 // import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -52,10 +53,11 @@
 // import CommonButton from "../../components/commonComponents/CommonButton";
 // import CommonToast from "../../components/commonComponents/Toster";
 
+// const BASE_URL = "http://hogofilm.pythonanywhere.com/";
+
 // const WarrantyManagement = () => {
 //   const dispatch = useDispatch();
 
-//   // Redux selectors
 //   const warranties = useSelector(selectWarrantyList);
 //   const count = useSelector(selectWarrantyCount);
 //   const loading = useSelector(selectWarrantyLoading);
@@ -63,8 +65,19 @@
 //   const updateSuccess = useSelector(selectWarrantyUpdateSuccess);
 //   const error = useSelector(selectWarrantyError);
 
-//   // Local state
+//   const [anchorEl, setAnchorEl] = useState(null);
+
+//   const handleOpenMenu = (event, warranty) => {
+//     setAnchorEl(event.currentTarget);
+//     setSelectedWarranty(warranty);
+//   };
+
+//   const handleCloseMenu = () => {
+//     setAnchorEl(null);
+//   };
+
 //   const [selectedWarranty, setSelectedWarranty] = useState(null);
+//   console.log("selectedWarranty::::", selectedWarranty);
 //   const [showViewDialog, setShowViewDialog] = useState(false);
 //   const [showRejectDialog, setShowRejectDialog] = useState(false);
 //   const [rejectionReason, setRejectionReason] = useState("");
@@ -74,16 +87,10 @@
 //     type: "success",
 //   });
 
-//   // Fetch warranties on component mount
 //   useEffect(() => {
 //     dispatch(getWarranties());
-
-//     // return () => {
-//     //   dispatch(clearWarrantyState());
-//     // };
 //   }, [dispatch]);
 
-//   // Handle update success
 //   useEffect(() => {
 //     if (updateSuccess) {
 //       CommonToast("Warranty updated successfully", "success");
@@ -91,22 +98,13 @@
 //       setShowRejectDialog(false);
 //       setRejectionReason("");
 //       setSelectedWarranty(null);
-
 //       dispatch(getWarranties());
-
-//       //   setTimeout(() => {
-//       //     dispatch(clearWarrantyState());
-//       //   }, 1000);
 //     }
 //   }, [updateSuccess, dispatch]);
 
-//   // Handle errors
 //   useEffect(() => {
 //     if (error) {
 //       CommonToast(error, "error");
-//       //   setTimeout(() => {
-//       //     dispatch(clearWarrantyState());
-//       //   }, 3000);
 //     }
 //   }, [error, dispatch]);
 
@@ -124,6 +122,18 @@
 //         }),
 //       );
 //     }
+//   };
+
+//   const handleWarrantyStatusChange = (status, warranty, reason = "") => {
+//     dispatch(
+//       updateWarranty({
+//         id: warranty.id,
+//         data: {
+//           warranty_status: status,
+//           rejection_reason: status === "REJECT" ? reason : "",
+//         },
+//       }),
+//     );
 //   };
 
 //   const handleRejectClick = () => {
@@ -196,6 +206,13 @@
 //     });
 //   };
 
+//   const getImageUrl = (imagePath) => {
+//     if (!imagePath) return "";
+//     console.log("imagePath::::", imagePath);
+//     // if (imagePath.startsWith("http")) return imagePath;
+//     return `${BASE_URL}/${imagePath}`;
+//   };
+
 //   if (loading) {
 //     return (
 //       <Box
@@ -217,7 +234,6 @@
 
 //   return (
 //     <Box sx={{ p: 3 }}>
-//       {/* Alert */}
 //       {alert.show && (
 //         <Alert
 //           severity={alert.type}
@@ -230,7 +246,6 @@
 //         </Alert>
 //       )}
 
-//       {/* Header */}
 //       <Stack
 //         direction="row"
 //         justifyContent=""
@@ -252,23 +267,6 @@
 //         </Typography>
 //       </Stack>
 
-//       {/* Filter Summary */}
-//       {/* <Box sx={{ mb: 3, display: "flex", gap: 3 }}>
-//         <Typography variant="body2" color="textSecondary">
-//           <strong>Pending:</strong>{" "}
-//           {warranties.filter((w) => w.product_status === "PENDING").length}
-//         </Typography>
-//         <Typography variant="body2" color="textSecondary">
-//           <strong>Accepted:</strong>{" "}
-//           {warranties.filter((w) => w.product_status === "ACCEPT").length}
-//         </Typography>
-//         <Typography variant="body2" color="textSecondary">
-//           <strong>Rejected:</strong>{" "}
-//           {warranties.filter((w) => w.product_status === "REJECT").length}
-//         </Typography>
-//       </Box> */}
-
-//       {/* Table */}
 //       {!showViewDialog && (
 //         <TableContainer component={Paper} elevation={3}>
 //           <Table>
@@ -334,18 +332,79 @@
 //                       {formatDate(warranty.installation_date)}
 //                     </TableCell>
 //                     <TableCell>{warranty.warranty_period} months</TableCell>
-//                     <TableCell>
+//                     {/* <TableCell>
 //                       {getStatusChip(warranty.warranty_status)}
-//                     </TableCell>
+//                     </TableCell> */}
 //                     <TableCell align="center">
-//                       {/* <Button
-//                         variant="outlined"
-//                         size="small"
-//                         startIcon={<Visibility />}
-//                         onClick={() => handleView(warranty)}
+//                       <Chip
+//                         label={warranty.warranty_status}
+//                         color={
+//                           warranty.warranty_status === "ACCEPT"
+//                             ? "success"
+//                             : warranty.warranty_status === "REJECT"
+//                               ? "error"
+//                               : "warning"
+//                         }
+//                         onClick={(e) => handleOpenMenu(e, warranty)}
+//                         clickable
+//                       />
+
+//                       <Menu
+//                         anchorEl={anchorEl}
+//                         open={Boolean(anchorEl)}
+//                         onClose={handleCloseMenu}
 //                       >
-//                         View
-//                       </Button> */}
+//                         <MenuItem
+//                           onClick={() => {
+//                             handleWarrantyStatusChange(
+//                               "PENDING",
+//                               selectedWarranty,
+//                             );
+//                             handleCloseMenu();
+//                           }}
+//                         >
+//                           Pending
+//                         </MenuItem>
+
+//                         <MenuItem
+//                           onClick={() => {
+//                             handleWarrantyStatusChange(
+//                               "ACTIVE",
+//                               selectedWarranty,
+//                             );
+//                             handleCloseMenu();
+//                           }}
+//                         >
+//                           Active
+//                         </MenuItem>
+
+//                         <MenuItem
+//                           onClick={() => {
+//                             handleWarrantyStatusChange(
+//                               "EXPIRED",
+//                               selectedWarranty,
+//                             );
+//                             handleCloseMenu();
+//                           }}
+//                         >
+//                           Expired
+//                         </MenuItem>
+
+//                         <MenuItem
+//                           onClick={() => {
+//                             handleWarrantyStatusChange(
+//                               "VOID",
+//                               selectedWarranty,
+//                             );
+//                             handleCloseMenu();
+//                           }}
+//                         >
+//                           Void
+//                         </MenuItem>
+//                       </Menu>
+//                     </TableCell>
+
+//                     <TableCell align="center">
 //                       <IconButton
 //                         color="primary"
 //                         onClick={() => handleView(warranty)}
@@ -362,32 +421,16 @@
 //         </TableContainer>
 //       )}
 
-//       {/* View Dialog */}
 //       {showViewDialog && (
-//         <Box fullWidth>
+//         <Box>
 //           <DialogTitle
 //             style={{ display: "flex", justifyContent: "space-between" }}
 //           >
-//             {/* <Box
-//               sx={{
-//                 gap: "5px",
-//                 display: "flex",
-//                 justifyContent: "",
-//                 alignItems: "center",
-//               }}
-//             >
-//               <Typography sx={{ color: "grey" }} variant="h4">
-//                 Warranty Details
-//               </Typography>
-//               {selectedWarranty &&
-//                 getStatusChip(selectedWarranty.warranty_status)}
-//             </Box> */}
 //             <DialogActions sx={{ display: "flex", width: "100%" }}>
 //               {selectedWarranty &&
 //                 (selectedWarranty.warranty_status === "PENDING" ||
 //                   selectedWarranty.warranty_status === "REJECT") && (
 //                   <>
-//                     {/* <Box>Dummy</Box> */}
 //                     <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
 //                       <Chip
 //                         icon={<CheckCircle />}
@@ -411,40 +454,69 @@
 //                     </Box>
 //                   </>
 //                 )}
-//               {/* <Button
-//               onClick={() => setShowViewDialog(false)}
-//               disabled={updateLoading}
-//             >
-//               Close
-//             </Button> */}
 //             </DialogActions>
 //           </DialogTitle>
 //           <DialogContent dividers>
 //             {selectedWarranty && (
-//               <Grid container spacing={3}>
-//                 {/* ================= CAR IMAGE ================= */}
-//                 {Boolean(selectedWarranty.car_image) && (
-//                   <Grid item xs={12}>
-//                     <Box
-//                       component="img"
-//                       src={selectedWarranty.car_image}
-//                       alt="Car"
-//                       sx={{
-//                         width: "100%",
-//                         maxHeight: { xs: 220, sm: 280, md: 320 },
-//                         objectFit: "cover",
-//                         borderRadius: 2,
-//                       }}
-//                       onError={(e) => {
-//                         e.currentTarget.src =
-//                           "https://via.placeholder.com/600x300?text=No+Car+Image";
-//                       }}
-//                     />
-//                   </Grid>
-//                 )}
+//               <Grid>
+//                 {selectedWarranty.car_images &&
+//                   selectedWarranty.car_images.length > 0 && (
+//                     <Grid>
+//                       <Typography
+//                         variant="subtitle2"
+//                         color="text.secondary"
+//                         gutterBottom
+//                       >
+//                         Car Images
+//                       </Typography>
+//                       <Grid>
+//                         {/* {selectedWarranty.car_images.map((image, index) => (
+//                           <Grid item xs={12} sm={6} md={4} key={index}>
+//                             <Box
+//                               component="img"
+//                               src={`${BASE_URL}${image}`}
+//                               alt={`Car ${index + 1}`}
+//                               sx={{
+//                                 width: "100%",
+//                                 height: "auto",
+//                                 maxHeight: 250,
+//                                 objectFit: "cover",
+//                                 borderRadius: 2,
+//                                 border: "1px solid #e0e0e0",
+//                               }}
+//                               onError={(e) => {
+//                                 e.currentTarget.src =
+//                                   "https://via.placeholder.com/400x300?text=No+Image";
+//                               }}
+//                             />
+//                           </Grid>
+//                         ))} */}
+//                         {selectedWarranty.car_images.map((image, index) => (
+//                           <Grid key={index}>
+//                             <Box
+//                               component="img"
+//                               src={getImageUrl(image)} // ✅ Use helper function
+//                               alt={`Car ${index + 1}`}
+//                               sx={{
+//                                 width: "100%",
+//                                 height: "auto",
+//                                 maxHeight: 250,
+//                                 objectFit: "cover",
+//                                 borderRadius: 2,
+//                                 border: "1px solid #e0e0e0",
+//                               }}
+//                               onError={(e) => {
+//                                 e.currentTarget.src =
+//                                   "https://via.placeholder.com/400x300?text=No+Image";
+//                               }}
+//                             />
+//                           </Grid>
+//                         ))}
+//                       </Grid>
+//                     </Grid>
+//                   )}
 
-//                 {/* ================= LEFT COLUMN ================= */}
-//                 <Grid item xs={12} md={6}>
+//                 <Grid>
 //                   <Typography variant="subtitle2" color="text.secondary">
 //                     Serial ID
 //                   </Typography>
@@ -487,8 +559,7 @@
 //                   </Typography>
 //                 </Grid>
 
-//                 {/* ================= RIGHT COLUMN ================= */}
-//                 <Grid item xs={12} md={6}>
+//                 <Grid>
 //                   <Typography variant="subtitle2" color="text.secondary">
 //                     Installation Date
 //                   </Typography>
@@ -535,10 +606,9 @@
 //                   )}
 //                 </Grid>
 
-//                 {/* ================= REJECTION ================= */}
 //                 {selectedWarranty.warranty_status === "REJECT" &&
 //                   selectedWarranty.rejection_reason && (
-//                     <Grid item xs={12}>
+//                     <Grid item >
 //                       <Alert severity="error">
 //                         <Typography variant="subtitle2" gutterBottom>
 //                           Rejection Reason
@@ -550,8 +620,7 @@
 //                     </Grid>
 //                   )}
 
-//                 {/* ================= DOCUMENTS ================= */}
-//                 <Grid item xs={12}>
+//                 <Grid item >
 //                   <Typography
 //                     variant="subtitle2"
 //                     color="text.secondary"
@@ -560,81 +629,104 @@
 //                     Documents
 //                   </Typography>
 
-//                   {selectedWarranty.installation_image ||
+//                   {(selectedWarranty.installation_images &&
+//                     selectedWarranty.installation_images.length > 0) ||
 //                   selectedWarranty.invoice_image ? (
 //                     <Grid container spacing={2}>
-//                       {/* Installation Image */}
-//                       {selectedWarranty.installation_image && (
-//                         <Grid item xs={12} sm={6}>
-//                           <Box
-//                             component="img"
-//                             src={selectedWarranty.installation_image}
-//                             alt="Installation"
-//                             sx={{
-//                               width: "100%",
-//                               // height: 200,
-//                               height: "auto",
-//                               maxHeight: 300,
-//                               backgroundColor: "#f5f5f5",
+//                       {selectedWarranty.installation_images &&
+//                         selectedWarranty.installation_images.length > 0 && (
+//                           <>
+//                             <Grid item >
+//                               <Typography
+//                                 variant="body2"
+//                                 fontWeight={600}
+//                                 gutterBottom
+//                               >
+//                                 Installation Images
+//                               </Typography>
+//                             </Grid>
+//                             {selectedWarranty.installation_images.map(
+//                               (image, index) => (
+//                                 <Grid item  sm={6} key={index}>
+//                                   <Box
+//                                     component="img"
+//                                     src={getImageUrl(image)}
+//                                     alt={`Installation ${index + 1}`}
+//                                     sx={{
+//                                       width: "100%",
+//                                       height: "auto",
+//                                       maxHeight: 300,
+//                                       backgroundColor: "#f5f5f5",
+//                                       objectFit: "cover",
+//                                       borderRadius: 2,
+//                                       mb: 1,
+//                                     }}
+//                                     onError={(e) => {
+//                                       e.currentTarget.src =
+//                                         "https://via.placeholder.com/400x200?text=No+Image";
+//                                     }}
+//                                   />
+//                                   <Button
+//                                     fullWidth
+//                                     variant="outlined"
+//                                     size="small"
+//                                     startIcon={<Visibility />}
+//                                     href={getImageUrl(image)}
+//                                     target="_blank"
+//                                     rel="noopener noreferrer"
+//                                   >
+//                                     View Full Image {index + 1}
+//                                   </Button>
+//                                 </Grid>
+//                               ),
+//                             )}
+//                           </>
+//                         )}
 
-//                               objectFit: "cover",
-//                               borderRadius: 2,
-//                               mb: 1,
-//                             }}
-//                             onError={(e) => {
-//                               e.currentTarget.src =
-//                                 "https://via.placeholder.com/400x200?text=No+Image";
-//                             }}
-//                           />
-//                           <Button
-//                             fullWidth
-//                             variant="outlined"
-//                             size="small"
-//                             startIcon={<Visibility />}
-//                             href={selectedWarranty.installation_image}
-//                             target="_blank"
-//                             rel="noopener noreferrer"
-//                           >
-//                             Installation Image
-//                           </Button>
-//                         </Grid>
-//                       )}
-
-//                       {/* Invoice Image */}
 //                       {selectedWarranty.invoice_image && (
-//                         <Grid item xs={12} sm={6}>
-//                           <Box
-//                             component="img"
-//                             src={selectedWarranty.invoice_image}
-//                             alt="Invoice"
-//                             sx={{
-//                               width: "100%",
-//                               // height: 200,
-//                               height: "auto",
-//                               maxHeight: 300,
-//                               backgroundColor: "#f5f5f5",
-
-//                               objectFit: "cover",
-//                               borderRadius: 2,
-//                               mb: 1,
-//                             }}
-//                             onError={(e) => {
-//                               e.currentTarget.src =
-//                                 "https://via.placeholder.com/400x200?text=No+Image";
-//                             }}
-//                           />
-//                           <Button
-//                             fullWidth
-//                             variant="outlined"
-//                             size="small"
-//                             startIcon={<Visibility />}
-//                             href={selectedWarranty.invoice_image}
-//                             target="_blank"
-//                             rel="noopener noreferrer"
-//                           >
-//                             Invoice Image
-//                           </Button>
-//                         </Grid>
+//                         <>
+//                           <Grid item >
+//                             <Typography
+//                               variant="body2"
+//                               fontWeight={600}
+//                               gutterBottom
+//                               sx={{ mt: 2 }}
+//                             >
+//                               Invoice Image
+//                             </Typography>
+//                           </Grid>
+//                           <Grid item  sm={6}>
+//                             <Box
+//                               component="img"
+//                               src={getImageUrl(selectedWarranty.invoice_image)}
+//                               alt="Invoice"
+//                               sx={{
+//                                 width: "100%",
+//                                 height: "auto",
+//                                 maxHeight: 300,
+//                                 backgroundColor: "#f5f5f5",
+//                                 objectFit: "cover",
+//                                 borderRadius: 2,
+//                                 mb: 1,
+//                               }}
+//                               onError={(e) => {
+//                                 e.currentTarget.src =
+//                                   "https://via.placeholder.com/400x200?text=No+Image";
+//                               }}
+//                             />
+//                             <Button
+//                               fullWidth
+//                               variant="outlined"
+//                               size="small"
+//                               startIcon={<Visibility />}
+//                               href={getImageUrl(selectedWarranty.invoice_image)}
+//                               target="_blank"
+//                               rel="noopener noreferrer"
+//                             >
+//                               View Invoice
+//                             </Button>
+//                           </Grid>
+//                         </>
 //                       )}
 //                     </Grid>
 //                   ) : (
@@ -649,7 +741,6 @@
 //         </Box>
 //       )}
 
-//       {/* Reject Reason Dialog */}
 //       <Dialog
 //         open={showRejectDialog}
 //         onClose={() => setShowRejectDialog(false)}
@@ -719,7 +810,6 @@ import {
   Typography,
   Box,
   CircularProgress,
-  Grid,
   Divider,
   Stack,
   IconButton,
@@ -753,7 +843,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 
-const BASE_URL = "https://hogofilm.pythonanywhere.com";
+const BASE_URL = "http://hogofilm.pythonanywhere.com";
 
 const WarrantyManagement = () => {
   const dispatch = useDispatch();
@@ -907,8 +997,7 @@ const WarrantyManagement = () => {
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "";
-    if (imagePath.startsWith("http")) return imagePath;
-    return `${BASE_URL}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
+    return `${BASE_URL}/media/${imagePath}`;
   };
 
   if (loading) {
@@ -1030,9 +1119,6 @@ const WarrantyManagement = () => {
                       {formatDate(warranty.installation_date)}
                     </TableCell>
                     <TableCell>{warranty.warranty_period} months</TableCell>
-                    {/* <TableCell>
-                      {getStatusChip(warranty.warranty_status)}
-                    </TableCell> */}
                     <TableCell align="center">
                       <Chip
                         label={warranty.warranty_status}
@@ -1067,25 +1153,37 @@ const WarrantyManagement = () => {
                         <MenuItem
                           onClick={() => {
                             handleWarrantyStatusChange(
-                              "ACCEPT",
+                              "ACTIVE",
                               selectedWarranty,
                             );
                             handleCloseMenu();
                           }}
                         >
-                          Accept
+                          Active
                         </MenuItem>
 
                         <MenuItem
                           onClick={() => {
                             handleWarrantyStatusChange(
-                              "REJECT",
+                              "EXPIRED",
                               selectedWarranty,
                             );
                             handleCloseMenu();
                           }}
                         >
-                          Reject
+                          Expired
+                        </MenuItem>
+
+                        <MenuItem
+                          onClick={() => {
+                            handleWarrantyStatusChange(
+                              "VOID",
+                              selectedWarranty,
+                            );
+                            handleCloseMenu();
+                          }}
+                        >
+                          Void
                         </MenuItem>
                       </Menu>
                     </TableCell>
@@ -1108,80 +1206,103 @@ const WarrantyManagement = () => {
       )}
 
       {showViewDialog && (
-        <Box fullWidth>
-          <DialogTitle
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
-            <DialogActions sx={{ display: "flex", width: "100%" }}>
-              {selectedWarranty &&
-                (selectedWarranty.warranty_status === "PENDING" ||
-                  selectedWarranty.warranty_status === "REJECT") && (
-                  <>
-                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                      <Chip
-                        icon={<CheckCircle />}
-                        label="Accept"
-                        color="success"
-                        clickable
-                        onClick={handleAccept}
-                        disabled={updateLoading}
-                        sx={{ px: 1.5, fontWeight: 600 }}
-                      />
+        <Box>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+            {selectedWarranty &&
+              (selectedWarranty.warranty_status === "PENDING" ||
+                selectedWarranty.warranty_status === "REJECT") && (
+                <Stack direction="row" spacing={2} flexWrap="wrap">
+                  <Chip
+                    icon={<CheckCircle />}
+                    label="Accept"
+                    color="success"
+                    clickable
+                    onClick={handleAccept}
+                    disabled={updateLoading}
+                    sx={{ px: 1.5, fontWeight: 600 }}
+                  />
 
-                      <Chip
-                        icon={<Cancel />}
-                        label="Reject"
-                        color="error"
-                        clickable
-                        onClick={handleRejectClick}
-                        disabled={updateLoading}
-                        sx={{ px: 1.5, fontWeight: 600 }}
-                      />
+                  <Chip
+                    icon={<Cancel />}
+                    label="Reject"
+                    color="error"
+                    clickable
+                    onClick={handleRejectClick}
+                    disabled={updateLoading}
+                    sx={{ px: 1.5, fontWeight: 600 }}
+                  />
+                </Stack>
+              )}
+          </Box>
+
+          <Divider sx={{ mb: 3 }} />
+
+          {selectedWarranty && (
+            <Box>
+              {/* Car Images Section */}
+              {selectedWarranty.car_images &&
+                selectedWarranty.car_images.length > 0 && (
+                  <Box sx={{ mb: 4 }}>
+                    <Typography
+                      variant="subtitle2"
+                      color="text.secondary"
+                      gutterBottom
+                    >
+                      Car Images
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 2,
+                        mt: 2,
+                      }}
+                    >
+                      {selectedWarranty.car_images.map((image, index) => (
+                        <Box
+                          key={index}
+                          sx={{
+                            width: {
+                              xs: "100%",
+                              sm: "calc(50% - 8px)",
+                              md: "calc(33.333% - 11px)",
+                            },
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={getImageUrl(image)}
+                            alt={`Car ${index + 1}`}
+                            sx={{
+                              width: "100%",
+                              height: "auto",
+                              maxHeight: 250,
+                              objectFit: "cover",
+                              borderRadius: 2,
+                              border: "1px solid #e0e0e0",
+                            }}
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                "https://via.placeholder.com/400x300?text=No+Image";
+                            }}
+                          />
+                        </Box>
+                      ))}
                     </Box>
-                  </>
+                  </Box>
                 )}
-            </DialogActions>
-          </DialogTitle>
-          <DialogContent dividers>
-            {selectedWarranty && (
-              <Grid container spacing={3}>
-                {selectedWarranty.car_images &&
-                  selectedWarranty.car_images.length > 0 && (
-                    <Grid item xs={12}>
-                      <Typography
-                        variant="subtitle2"
-                        color="text.secondary"
-                        gutterBottom
-                      >
-                        Car Images
-                      </Typography>
-                      <Grid container spacing={2}>
-                        {selectedWarranty.car_images.map((image, index) => (
-                          <Grid item xs={12} sm={6} md={4} key={index}>
-                            <Box
-                              component="img"
-                              src={getImageUrl(image)}
-                              alt={`Car ${index + 1}`}
-                              sx={{
-                                width: "100%",
-                                height: "auto",
-                                maxHeight: 250,
-                                objectFit: "cover",
-                                borderRadius: 2,
-                                border: "1px solid #e0e0e0",
-                              }}
-                              onError={(e) => {
-                                e.currentTarget.src =
-                                  "https://via.placeholder.com/400x300?text=No+Image";
-                              }}
-                            />
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </Grid>
-                  )}
 
-                <Grid item xs={12} md={6}>
+              {/* Main Details Section - Two Columns */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  gap: 3,
+                  mb: 4,
+                }}
+              >
+                {/* Left Column - Car & Detailer Info */}
+                <Box sx={{ flex: 1 }}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Serial ID
                   </Typography>
@@ -1222,9 +1343,10 @@ const WarrantyManagement = () => {
                   <Typography variant="body2" color="text.secondary">
                     Mobile: {selectedWarranty.detailer_mobile}
                   </Typography>
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} md={6}>
+                {/* Right Column - Warranty Info */}
+                <Box sx={{ flex: 1 }}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Installation Date
                   </Typography>
@@ -1269,50 +1391,69 @@ const WarrantyManagement = () => {
                       </Typography>
                     </>
                   )}
-                </Grid>
+                </Box>
+              </Box>
 
-                {selectedWarranty.warranty_status === "REJECT" &&
-                  selectedWarranty.rejection_reason && (
-                    <Grid item xs={12}>
-                      <Alert severity="error">
-                        <Typography variant="subtitle2" gutterBottom>
-                          Rejection Reason
-                        </Typography>
-                        <Typography variant="body2">
-                          {selectedWarranty.rejection_reason}
-                        </Typography>
-                      </Alert>
-                    </Grid>
-                  )}
+              {/* Rejection Reason Alert */}
+              {selectedWarranty.warranty_status === "REJECT" &&
+                selectedWarranty.rejection_reason && (
+                  <Box sx={{ mb: 4 }}>
+                    <Alert severity="error">
+                      <Typography variant="subtitle2" gutterBottom>
+                        Rejection Reason
+                      </Typography>
+                      <Typography variant="body2">
+                        {selectedWarranty.rejection_reason}
+                      </Typography>
+                    </Alert>
+                  </Box>
+                )}
 
-                <Grid item xs={12}>
-                  <Typography
-                    variant="subtitle2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    Documents
-                  </Typography>
+              {/* Documents Section */}
+              <Box>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  gutterBottom
+                >
+                  Documents
+                </Typography>
 
-                  {(selectedWarranty.installation_images &&
-                    selectedWarranty.installation_images.length > 0) ||
-                  selectedWarranty.invoice_image ? (
-                    <Grid container spacing={2}>
-                      {selectedWarranty.installation_images &&
-                        selectedWarranty.installation_images.length > 0 && (
-                          <>
-                            <Grid item xs={12}>
-                              <Typography
-                                variant="body2"
-                                fontWeight={600}
-                                gutterBottom
-                              >
-                                Installation Images
-                              </Typography>
-                            </Grid>
+                {(selectedWarranty.installation_images &&
+                  selectedWarranty.installation_images.length > 0) ||
+                selectedWarranty.invoice_image ? (
+                  <Box>
+                    {/* Installation Images */}
+                    {selectedWarranty.installation_images &&
+                      selectedWarranty.installation_images.length > 0 && (
+                        <Box sx={{ mb: 3 }}>
+                          <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            gutterBottom
+                          >
+                            Installation Images
+                          </Typography>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: 2,
+                              mt: 2,
+                            }}
+                          >
                             {selectedWarranty.installation_images.map(
                               (image, index) => (
-                                <Grid item xs={12} sm={6} md={4} key={index}>
+                                <Box
+                                  key={index}
+                                  sx={{
+                                    width: {
+                                      xs: "100%",
+                                      sm: "calc(50% - 8px)",
+                                      md: "calc(33.333% - 11px)",
+                                    },
+                                  }}
+                                >
                                   <Box
                                     component="img"
                                     src={getImageUrl(image)}
@@ -1342,70 +1483,79 @@ const WarrantyManagement = () => {
                                   >
                                     View Full Image {index + 1}
                                   </Button>
-                                </Grid>
+                                </Box>
                               ),
                             )}
-                          </>
-                        )}
-
-                      {selectedWarranty.invoice_image && (
-                        <>
-                          <Grid item xs={12}>
-                            <Typography
-                              variant="body2"
-                              fontWeight={600}
-                              gutterBottom
-                              sx={{ mt: 2 }}
-                            >
-                              Invoice Image
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={12} sm={6} md={4}>
-                            <Box
-                              component="img"
-                              src={getImageUrl(selectedWarranty.invoice_image)}
-                              alt="Invoice"
-                              sx={{
-                                width: "100%",
-                                height: "auto",
-                                maxHeight: 300,
-                                backgroundColor: "#f5f5f5",
-                                objectFit: "cover",
-                                borderRadius: 2,
-                                mb: 1,
-                              }}
-                              onError={(e) => {
-                                e.currentTarget.src =
-                                  "https://via.placeholder.com/400x200?text=No+Image";
-                              }}
-                            />
-                            <Button
-                              fullWidth
-                              variant="outlined"
-                              size="small"
-                              startIcon={<Visibility />}
-                              href={getImageUrl(selectedWarranty.invoice_image)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              View Invoice
-                            </Button>
-                          </Grid>
-                        </>
+                          </Box>
+                        </Box>
                       )}
-                    </Grid>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      No documents uploaded
-                    </Typography>
-                  )}
-                </Grid>
-              </Grid>
-            )}
-          </DialogContent>
+
+                    {/* Invoice Image */}
+                    {selectedWarranty.invoice_image && (
+                      <Box>
+                        <Typography
+                          variant="body2"
+                          fontWeight={600}
+                          gutterBottom
+                          sx={{ mt: 2 }}
+                        >
+                          Invoice Image
+                        </Typography>
+                        <Box
+                          sx={{
+                            width: {
+                              xs: "100%",
+                              sm: "50%",
+                              md: "33.333%",
+                            },
+                            mt: 2,
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={getImageUrl(selectedWarranty.invoice_image)}
+                            alt="Invoice"
+                            sx={{
+                              width: "100%",
+                              height: "auto",
+                              maxHeight: 300,
+                              backgroundColor: "#f5f5f5",
+                              objectFit: "cover",
+                              borderRadius: 2,
+                              mb: 1,
+                            }}
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                "https://via.placeholder.com/400x200?text=No+Image";
+                            }}
+                          />
+                          <Button
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            startIcon={<Visibility />}
+                            href={getImageUrl(selectedWarranty.invoice_image)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View Invoice
+                          </Button>
+                        </Box>
+                      </Box>
+                    )}
+                  </Box>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No documents uploaded
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+          )}
         </Box>
       )}
 
+      {/* Rejection Dialog */}
       <Dialog
         open={showRejectDialog}
         onClose={() => setShowRejectDialog(false)}
