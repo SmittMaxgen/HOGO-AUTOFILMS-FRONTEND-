@@ -287,22 +287,31 @@ const PurchaseOrder = () => {
     "CANCELLED",
   ];
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "APPROVED":
-        return "success.main";
-      case "SUBMITTED":
-        return "warning.main";
-      case "REJECTED":
-        return "error.main";
-      case "PARTIALLY_APPROVED":
-        return "info.main";
-      case "CANCELLED":
-        return "grey.600";
-      default:
-        return "default";
-    }
-  };
+const getStatusColor = (status) => {
+  switch (status) {
+    case "DRAFT":
+      return "grey.500";
+
+    case "APPROVED":
+      return "success.main";
+
+    case "SUBMITTED":
+      return "warning.main";
+
+    case "REJECTED":
+      return "error.main";
+
+    case "PARTIALLY_APPROVED":
+      return "info.main";
+
+    case "CANCELLED":
+      return "grey.600";
+
+    default:
+      return "grey.400";   // fallback (important)
+  }
+};
+
 
   const handleStatusChange = (id, value) => {
     dispatch(
