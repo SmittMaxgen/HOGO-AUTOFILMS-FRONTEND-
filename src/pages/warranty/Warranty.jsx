@@ -117,28 +117,60 @@ const WarrantyManagement = () => {
     setShowViewDialog(true);
   };
 
+  // productStatusConfig.js
+  const PRODUCT_STATUS = {
+    PENDING: {
+      label: "Pending",
+      color: "warning",
+    },
+    ACTIVATED: {
+      label: "Activated",
+      color: "success",
+    },
+    REJECTED: {
+      label: "Rejected",
+      color: "error",
+    },
+    INVALID: {
+      label: "Invalid",
+      color: "default",
+    },
+  };
+  const handleWarrantyStatusChange = (status) => {
+    if (!selectedWarranty) return;
+
+    dispatch(
+      updateWarranty({
+        id: selectedWarranty.id,
+        data: { product_status: status },
+      }),
+    );
+
+    handleCloseMenu();
+  };
+
   const handleAccept = () => {
     if (window.confirm("Are you sure you want to accept this warranty?")) {
       dispatch(
         updateWarranty({
           id: selectedWarranty.id,
-          data: { warranty_status: "ACCEPT" },
+          data: { product_status: "ACTIVATED" },
         }),
       );
     }
   };
 
-  const handleWarrantyStatusChange = (status, warranty, reason = "") => {
-    dispatch(
-      updateWarranty({
-        id: warranty.id,
-        data: {
-          warranty_status: status,
-          rejection_reason: status === "REJECT" ? reason : "",
-        },
-      }),
-    );
-  };
+  // const handleWarrantyStatusChange = (status, warranty, reason = "") => {
+  //   dispatch(
+  //     updateWarranty({
+  //       id: warranty.id,
+  //       data: {
+  //         warranty_status: status,
+  //         rejection_reason: status === "REJECT" ? reason : "",
+  //       },
+  //     }),
+  //   );
+  // };
 
   const handleRejectClick = () => {
     setShowViewDialog(false);
@@ -305,7 +337,7 @@ const WarrantyManagement = () => {
                   <strong>Warranty Period</strong>
                 </TableCell>
                 <TableCell>
-                  <strong>Status</strong>
+                  <strong>Product Status</strong>
                 </TableCell>
                 <TableCell align="center">
                   <strong>Action</strong>
@@ -349,17 +381,11 @@ const WarrantyManagement = () => {
                     <TableCell>{warranty.warranty_period} months</TableCell>
                     <TableCell align="center">
                       <Chip
-                        label={warranty.warranty_status}
-                        color={
-                          warranty.warranty_status === "ACCEPT" ||
-                          warranty.warranty_status === "ACTIVE"
-                            ? "success"
-                            : warranty.warranty_status === "REJECT"
-                              ? "error"
-                              : "warning"
-                        }
+                        label={PRODUCT_STATUS[warranty.product_status]?.label}
+                        color={PRODUCT_STATUS[warranty.product_status]?.color}
                         onClick={(e) => handleOpenMenu(e, warranty)}
                         clickable
+                        size="small"
                       />
 
                       <Menu
@@ -367,53 +393,14 @@ const WarrantyManagement = () => {
                         open={Boolean(anchorEl)}
                         onClose={handleCloseMenu}
                       >
-                        <MenuItem
-                          onClick={() => {
-                            handleWarrantyStatusChange(
-                              "PENDING",
-                              selectedWarranty,
-                            );
-                            handleCloseMenu();
-                          }}
-                        >
-                          Pending
-                        </MenuItem>
-
-                        <MenuItem
-                          onClick={() => {
-                            handleWarrantyStatusChange(
-                              "ACTIVE",
-                              selectedWarranty,
-                            );
-                            handleCloseMenu();
-                          }}
-                        >
-                          Active
-                        </MenuItem>
-
-                        <MenuItem
-                          onClick={() => {
-                            handleWarrantyStatusChange(
-                              "EXPIRED",
-                              selectedWarranty,
-                            );
-                            handleCloseMenu();
-                          }}
-                        >
-                          Expired
-                        </MenuItem>
-
-                        <MenuItem
-                          onClick={() => {
-                            handleWarrantyStatusChange(
-                              "VOID",
-                              selectedWarranty,
-                            );
-                            handleCloseMenu();
-                          }}
-                        >
-                          Void
-                        </MenuItem>
+                        {Object.keys(PRODUCT_STATUS).map((status) => (
+                          <MenuItem
+                            key={status}
+                            onClick={() => handleWarrantyStatusChange(status)}
+                          >
+                            {PRODUCT_STATUS[status].label}
+                          </MenuItem>
+                        ))}
                       </Menu>
                     </TableCell>
 
