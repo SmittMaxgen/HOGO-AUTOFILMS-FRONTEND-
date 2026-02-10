@@ -73,6 +73,18 @@ const Product = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const BASE_URL = "https://hogofilm.pythonanywhere.com";
+
+  // Helper function to get image URL
+  const getImageUrl = (imageValue) => {
+    if (imageValue instanceof File) {
+      return URL.createObjectURL(imageValue);
+    } else if (imageValue && typeof imageValue === "string") {
+      return `${BASE_URL}${imageValue}`;
+    }
+    return null;
+  };
+
   const [form, setForm] = useState({
     product_name: "",
     product_codes: "",
@@ -185,7 +197,7 @@ const Product = () => {
     if (!form.stain_resistant) temp.stain_resistant = "Required";
     if (!form.elongation) temp.elongation = "Required";
     if (!form.tear_strength) temp.tear_strength = "Required";
-    
+
     if (!form.mrp) {
       temp.mrp = "Required";
     } else if (isNaN(form.mrp)) {
@@ -195,7 +207,7 @@ const Product = () => {
     }
 
     if (!isEditing && !form.thumbnail_image) temp.thumbnail_image = "Required";
-    
+
     setErrors(temp);
     return Object.keys(temp).length === 0;
   };
@@ -245,7 +257,7 @@ const Product = () => {
     formData.append("scratch_resistant", form.scratch_resistant);
     formData.append("uv_resistance", form.uv_resistance);
     formData.append("installation_video_url", form.installation_video_url);
-    
+
     // New fields
     formData.append("tempeerature_resistance", form.tempeerature_resistance);
     formData.append("peel_adhesion", form.peel_adhesion);
@@ -407,7 +419,7 @@ const Product = () => {
               <Typography variant="h6" color="primary" gutterBottom>
                 Basic Information
               </Typography>
-              
+
               <TextField
                 label="Product Name"
                 name="product_name"
@@ -766,10 +778,10 @@ const Product = () => {
                 placeholder="e.g., 250%"
               />
 
-              <Divider sx={{ my: 2 }} />
+              {/* <Divider sx={{ my: 2 }} /> */}
 
               {/* Images Section */}
-              <Typography variant="h6" color="primary" gutterBottom>
+              {/* <Typography variant="h6" color="primary" gutterBottom>
                 Product Images
               </Typography>
 
@@ -977,8 +989,529 @@ const Product = () => {
                 value={form.installation_video_url}
                 onChange={handleChange}
                 placeholder="https://youtu.be/..."
-              />
+              /> */}
+              <Divider sx={{ my: 3 }} />
 
+              {/* Images Section */}
+              <Box sx={{ mb: 4 }}>
+                <Typography
+                  variant="h6"
+                  color="primary"
+                  gutterBottom
+                  sx={{
+                    fontWeight: 600,
+                    mb: 3,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <ImageIcon /> Product Images
+                </Typography>
+
+                {/* Thumbnail Image - Full Width */}
+                <Box
+                  sx={{
+                    mb: 3,
+                    p: 2,
+                    border: "1px solid #E0E0E0",
+                    borderRadius: 2,
+                    bgcolor: "#FAFAFA",
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ mb: 2, fontWeight: 600, color: "#424242" }}
+                  >
+                    Thumbnail Image *
+                  </Typography>
+
+                  {getImageUrl(form.thumbnail_image) && (
+                    <Box
+                      sx={{
+                        mb: 2,
+                        textAlign: "center",
+                        p: 2,
+                        bgcolor: "#FFF",
+                        borderRadius: 1,
+                      }}
+                    >
+                      <img
+                        src={getImageUrl(form.thumbnail_image)}
+                        alt="Thumbnail preview"
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "300px",
+                          objectFit: "contain",
+                          borderRadius: "8px",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                  <TextField
+                    fullWidth
+                    value={
+                      form.thumbnail_image instanceof File
+                        ? form.thumbnail_image.name
+                        : form.thumbnail_image
+                          ? "Current image uploaded"
+                          : ""
+                    }
+                    InputProps={{
+                      readOnly: true,
+                      startAdornment: (
+                        <ImageIcon sx={{ mr: 1, color: "#7E7E7E" }} />
+                      ),
+                      endAdornment: (
+                        <Button
+                          component="label"
+                          sx={{
+                            bgcolor: "#D20000",
+                            color: "#FAFAFA",
+                            textTransform: "none",
+                            "&:hover": { bgcolor: "#ED3434" },
+                          }}
+                        >
+                          Browse
+                          <input
+                            type="file"
+                            name="thumbnail_image"
+                            hidden
+                            accept="image/*"
+                            onChange={handleFileChange}
+                          />
+                        </Button>
+                      ),
+                    }}
+                    placeholder="Select thumbnail image"
+                    error={!!errors.thumbnail_image}
+                    helperText={errors.thumbnail_image}
+                  />
+                </Box>
+
+                {/* Gallery Images - Grid Layout */}
+                <Typography
+                  variant="subtitle2"
+                  sx={{ mb: 2, fontWeight: 600, color: "#424242" }}
+                >
+                  Gallery Images
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+                    gap: 3,
+                  }}
+                >
+                  {/* Gallery Image 1 */}
+                  <Box
+                    sx={{
+                      p: 2,
+                      border: "1px solid #E0E0E0",
+                      borderRadius: 2,
+                      bgcolor: "#FAFAFA",
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mb: 2,
+                        fontWeight: 600,
+                        color: "#616161",
+                        display: "block",
+                      }}
+                    >
+                      Gallery Image 1
+                    </Typography>
+
+                    {getImageUrl(form.image1) && (
+                      <Box
+                        sx={{
+                          mb: 2,
+                          textAlign: "center",
+                          p: 2,
+                          bgcolor: "#FFF",
+                          borderRadius: 1,
+                        }}
+                      >
+                        <img
+                          src={getImageUrl(form.image1)}
+                          alt="Gallery 1 preview"
+                          style={{
+                            width: "100%",
+                            height: "180px",
+                            objectFit: "cover",
+                            borderRadius: "8px",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                          }}
+                        />
+                      </Box>
+                    )}
+
+                    <TextField
+                      fullWidth
+                      size="small"
+                      value={
+                        form.image1 instanceof File
+                          ? form.image1.name
+                          : form.image1
+                            ? "Current image uploaded"
+                            : ""
+                      }
+                      InputProps={{
+                        readOnly: true,
+                        startAdornment: (
+                          <ImageIcon
+                            sx={{ mr: 1, color: "#7E7E7E", fontSize: 18 }}
+                          />
+                        ),
+                        endAdornment: (
+                          <Button
+                            component="label"
+                            size="small"
+                            sx={{
+                              bgcolor: "#D20000",
+                              color: "#FAFAFA",
+                              textTransform: "none",
+                              "&:hover": { bgcolor: "#ED3434" },
+                              fontSize: "0.75rem",
+                              px: 1.5,
+                            }}
+                          >
+                            Browse
+                            <input
+                              type="file"
+                              name="image1"
+                              hidden
+                              accept="image/*"
+                              onChange={handleFileChange}
+                            />
+                          </Button>
+                        ),
+                      }}
+                      placeholder="Select gallery image 1"
+                    />
+                  </Box>
+
+                  {/* Gallery Image 2 */}
+                  <Box
+                    sx={{
+                      p: 2,
+                      border: "1px solid #E0E0E0",
+                      borderRadius: 2,
+                      bgcolor: "#FAFAFA",
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mb: 2,
+                        fontWeight: 600,
+                        color: "#616161",
+                        display: "block",
+                      }}
+                    >
+                      Gallery Image 2
+                    </Typography>
+
+                    {getImageUrl(form.image2) && (
+                      <Box
+                        sx={{
+                          mb: 2,
+                          textAlign: "center",
+                          p: 2,
+                          bgcolor: "#FFF",
+                          borderRadius: 1,
+                        }}
+                      >
+                        <img
+                          src={getImageUrl(form.image2)}
+                          alt="Gallery 2 preview"
+                          style={{
+                            width: "100%",
+                            height: "180px",
+                            objectFit: "cover",
+                            borderRadius: "8px",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                          }}
+                        />
+                      </Box>
+                    )}
+
+                    <TextField
+                      fullWidth
+                      size="small"
+                      value={
+                        form.image2 instanceof File
+                          ? form.image2.name
+                          : form.image2
+                            ? "Current image uploaded"
+                            : ""
+                      }
+                      InputProps={{
+                        readOnly: true,
+                        startAdornment: (
+                          <ImageIcon
+                            sx={{ mr: 1, color: "#7E7E7E", fontSize: 18 }}
+                          />
+                        ),
+                        endAdornment: (
+                          <Button
+                            component="label"
+                            size="small"
+                            sx={{
+                              bgcolor: "#D20000",
+                              color: "#FAFAFA",
+                              textTransform: "none",
+                              "&:hover": { bgcolor: "#ED3434" },
+                              fontSize: "0.75rem",
+                              px: 1.5,
+                            }}
+                          >
+                            Browse
+                            <input
+                              type="file"
+                              name="image2"
+                              hidden
+                              accept="image/*"
+                              onChange={handleFileChange}
+                            />
+                          </Button>
+                        ),
+                      }}
+                      placeholder="Select gallery image 2"
+                    />
+                  </Box>
+
+                  {/* Gallery Image 3 */}
+                  <Box
+                    sx={{
+                      p: 2,
+                      border: "1px solid #E0E0E0",
+                      borderRadius: 2,
+                      bgcolor: "#FAFAFA",
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mb: 2,
+                        fontWeight: 600,
+                        color: "#616161",
+                        display: "block",
+                      }}
+                    >
+                      Gallery Image 3
+                    </Typography>
+
+                    {getImageUrl(form.image3) && (
+                      <Box
+                        sx={{
+                          mb: 2,
+                          textAlign: "center",
+                          p: 2,
+                          bgcolor: "#FFF",
+                          borderRadius: 1,
+                        }}
+                      >
+                        <img
+                          src={getImageUrl(form.image3)}
+                          alt="Gallery 3 preview"
+                          style={{
+                            width: "100%",
+                            height: "180px",
+                            objectFit: "cover",
+                            borderRadius: "8px",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                          }}
+                        />
+                      </Box>
+                    )}
+
+                    <TextField
+                      fullWidth
+                      size="small"
+                      value={
+                        form.image3 instanceof File
+                          ? form.image3.name
+                          : form.image3
+                            ? "Current image uploaded"
+                            : ""
+                      }
+                      InputProps={{
+                        readOnly: true,
+                        startAdornment: (
+                          <ImageIcon
+                            sx={{ mr: 1, color: "#7E7E7E", fontSize: 18 }}
+                          />
+                        ),
+                        endAdornment: (
+                          <Button
+                            component="label"
+                            size="small"
+                            sx={{
+                              bgcolor: "#D20000",
+                              color: "#FAFAFA",
+                              textTransform: "none",
+                              "&:hover": { bgcolor: "#ED3434" },
+                              fontSize: "0.75rem",
+                              px: 1.5,
+                            }}
+                          >
+                            Browse
+                            <input
+                              type="file"
+                              name="image3"
+                              hidden
+                              accept="image/*"
+                              onChange={handleFileChange}
+                            />
+                          </Button>
+                        ),
+                      }}
+                      placeholder="Select gallery image 3"
+                    />
+                  </Box>
+
+                  {/* Gallery Image 4 */}
+                  <Box
+                    sx={{
+                      p: 2,
+                      border: "1px solid #E0E0E0",
+                      borderRadius: 2,
+                      bgcolor: "#FAFAFA",
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mb: 2,
+                        fontWeight: 600,
+                        color: "#616161",
+                        display: "block",
+                      }}
+                    >
+                      Gallery Image 4
+                    </Typography>
+
+                    {getImageUrl(form.image4) && (
+                      <Box
+                        sx={{
+                          mb: 2,
+                          textAlign: "center",
+                          p: 2,
+                          bgcolor: "#FFF",
+                          borderRadius: 1,
+                        }}
+                      >
+                        <img
+                          src={getImageUrl(form.image4)}
+                          alt="Gallery 4 preview"
+                          style={{
+                            width: "100%",
+                            height: "180px",
+                            objectFit: "cover",
+                            borderRadius: "8px",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                          }}
+                        />
+                      </Box>
+                    )}
+
+                    <TextField
+                      fullWidth
+                      size="small"
+                      value={
+                        form.image4 instanceof File
+                          ? form.image4.name
+                          : form.image4
+                            ? "Current image uploaded"
+                            : ""
+                      }
+                      InputProps={{
+                        readOnly: true,
+                        startAdornment: (
+                          <ImageIcon
+                            sx={{ mr: 1, color: "#7E7E7E", fontSize: 18 }}
+                          />
+                        ),
+                        endAdornment: (
+                          <Button
+                            component="label"
+                            size="small"
+                            sx={{
+                              bgcolor: "#D20000",
+                              color: "#FAFAFA",
+                              textTransform: "none",
+                              "&:hover": { bgcolor: "#ED3434" },
+                              fontSize: "0.75rem",
+                              px: 1.5,
+                            }}
+                          >
+                            Browse
+                            <input
+                              type="file"
+                              name="image4"
+                              hidden
+                              accept="image/*"
+                              onChange={handleFileChange}
+                            />
+                          </Button>
+                        ),
+                      }}
+                      placeholder="Select gallery image 4"
+                    />
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Installation Video URL */}
+              <Box
+                sx={{
+                  p: 2,
+                  border: "1px solid #E0E0E0",
+                  borderRadius: 2,
+                  bgcolor: "#FAFAFA",
+                  mb: 3,
+                }}
+              >
+                <Typography
+                  variant="subtitle2"
+                  sx={{ mb: 2, fontWeight: 600, color: "#424242" }}
+                >
+                  Installation Video
+                </Typography>
+
+                <TextField
+                  label="Video URL"
+                  name="installation_video_url"
+                  fullWidth
+                  value={form.installation_video_url}
+                  onChange={handleChange}
+                  placeholder="https://youtu.be/..."
+                  InputProps={{
+                    endAdornment: form.installation_video_url && (
+                      <Button
+                        onClick={() =>
+                          window.open(form.installation_video_url, "_blank")
+                        }
+                        sx={{
+                          bgcolor: "#D20000",
+                          color: "#FAFAFA",
+                          textTransform: "none",
+                          "&:hover": { bgcolor: "#ED3434" },
+                          ml: 1,
+                        }}
+                      >
+                        Open Video
+                      </Button>
+                    ),
+                  }}
+                />
+              </Box>
               <Divider sx={{ my: 2 }} />
 
               <FormControlLabel
@@ -1001,7 +1534,11 @@ const Product = () => {
                   onClick={handleSubmit}
                   disabled={createLoading || loading}
                 >
-                  {createLoading || loading ? "Saving..." : editId ? "Update" : "Save"}
+                  {createLoading || loading
+                    ? "Saving..."
+                    : editId
+                      ? "Update"
+                      : "Save"}
                 </CommonButton>
               </Stack>
             </Stack>
@@ -1057,35 +1594,51 @@ const Product = () => {
               {/* Basic Details */}
               <Grid container spacing={2} textAlign="center">
                 <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>MRP</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    MRP
+                  </Typography>
                   <Typography>₹ {viewItem.mrp}</Typography>
                 </Grid>
                 <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>Application Area</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Application Area
+                  </Typography>
                   <Typography>{viewItem.application_area}</Typography>
                 </Grid>
                 <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>Film Type</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Film Type
+                  </Typography>
                   <Typography>{viewItem.film_type}</Typography>
                 </Grid>
                 <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>Finish</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Finish
+                  </Typography>
                   <Typography>{viewItem.finish}</Typography>
                 </Grid>
                 <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>Specification</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Specification
+                  </Typography>
                   <Typography>{viewItem.specification}</Typography>
                 </Grid>
                 <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>Thickness</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Thickness
+                  </Typography>
                   <Typography>{viewItem.thickness}</Typography>
                 </Grid>
                 <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>Warranty</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Warranty
+                  </Typography>
                   <Typography>{viewItem.warranty}</Typography>
                 </Grid>
                 <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>Status</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Status
+                  </Typography>
                   <Chip
                     label={viewItem.status ? "Active" : "Inactive"}
                     color={viewItem.status ? "success" : "default"}
@@ -1102,36 +1655,54 @@ const Product = () => {
               </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Hydrophobic</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Hydrophobic
+                  </Typography>
                   <Typography>{viewItem.hydrophobic}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Stain Resistant</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Stain Resistant
+                  </Typography>
                   <Typography>{viewItem.stain_resistant}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Elongation</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Elongation
+                  </Typography>
                   <Typography>{viewItem.elongation}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Tear Strength</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Tear Strength
+                  </Typography>
                   <Typography>{viewItem.tear_strength}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Adhesive</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Adhesive
+                  </Typography>
                   <Typography>{viewItem.adhesive || "N/A"}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Anti Yellowing</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Anti Yellowing
+                  </Typography>
                   <Typography>{viewItem.anti_yellowing || "N/A"}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Scratch Resistant</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Scratch Resistant
+                  </Typography>
                   <Typography>{viewItem.scratch_resistant || "N/A"}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>UV Resistance</Typography>
-                  <Typography>{viewItem.uv_resistance ? "Yes" : "No"}</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    UV Resistance
+                  </Typography>
+                  <Typography>
+                    {viewItem.uv_resistance ? "Yes" : "No"}
+                  </Typography>
                 </Grid>
               </Grid>
 
@@ -1143,59 +1714,84 @@ const Product = () => {
               </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Temperature Resistance</Typography>
-                  <Typography>{viewItem.tempeerature_resistance || "N/A"}</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Temperature Resistance
+                  </Typography>
+                  <Typography>
+                    {viewItem.tempeerature_resistance || "N/A"}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Peel Adhesion</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Peel Adhesion
+                  </Typography>
                   <Typography>{viewItem.peel_adhesion || "N/A"}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Anti Rockclip</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Anti Rockclip
+                  </Typography>
                   <Typography>{viewItem.anti_rockclip || "N/A"}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Elongation Rate TPU</Typography>
-                  <Typography>{viewItem.elongation_rate_tpu || "N/A"}</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Elongation Rate TPU
+                  </Typography>
+                  <Typography>
+                    {viewItem.elongation_rate_tpu || "N/A"}
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>Elongation Rate Hard</Typography>
-                  <Typography>{viewItem.elongation_rate_hard || "N/A"}</Typography>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    Elongation Rate Hard
+                  </Typography>
+                  <Typography>
+                    {viewItem.elongation_rate_hard || "N/A"}
+                  </Typography>
                 </Grid>
               </Grid>
 
               {/* Gallery Images */}
-              {viewItem.product_images && viewItem.product_images.length > 0 && (
-                <>
-                  <Divider sx={{ width: "100%", my: 2 }} />
-                  <Typography variant="h6" fontWeight={600} alignSelf="flex-start">
-                    Gallery Images
-                  </Typography>
-                  <Grid container spacing={2}>
-                    {viewItem.product_images.map((img, idx) => (
-                      <Grid item xs={6} sm={4} md={3} key={idx}>
-                        <Avatar
-                          src={`https://hogofilm.pythonanywhere.com${img}`}
-                          variant="rounded"
-                          sx={{ width: "100%", height: 120 }}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                </>
-              )}
+              {viewItem.product_images &&
+                viewItem.product_images.length > 0 && (
+                  <>
+                    <Divider sx={{ width: "100%", my: 2 }} />
+                    <Typography
+                      variant="h6"
+                      fontWeight={600}
+                      alignSelf="flex-start"
+                    >
+                      Gallery Images
+                    </Typography>
+                    <Grid container spacing={2}>
+                      {viewItem.product_images.map((img, idx) => (
+                        <Grid item xs={6} sm={4} md={3} key={idx}>
+                          <Avatar
+                            src={`https://hogofilm.pythonanywhere.com${img}`}
+                            variant="rounded"
+                            sx={{ width: "100%", height: 120 }}
+                          />
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </>
+                )}
 
               {/* Installation Video */}
               {viewItem.installation_video_url && (
                 <>
                   <Divider sx={{ width: "100%", my: 2 }} />
-                  <Typography variant="h6" fontWeight={600} alignSelf="flex-start">
+                  <Typography
+                    variant="h6"
+                    fontWeight={600}
+                    alignSelf="flex-start"
+                  >
                     Installation Video
                   </Typography>
                   <Typography>
-                    <a 
-                      href={viewItem.installation_video_url} 
-                      target="_blank" 
+                    <a
+                      href={viewItem.installation_video_url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       style={{ color: "#D20000" }}
                     >
