@@ -1495,10 +1495,12 @@ const Product = () => {
                   InputProps={{
                     endAdornment: form.installation_video_url && (
                       <Button
+                        size="small"
                         onClick={() =>
                           window.open(form.installation_video_url, "_blank")
                         }
                         sx={{
+                          width: "150px",
                           bgcolor: "#D20000",
                           color: "#FAFAFA",
                           textTransform: "none",
