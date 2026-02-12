@@ -424,8 +424,7 @@ const WarrantyManagement = () => {
       {showViewDialog && selectedWarranty && (
         <Box>
           {/* Action Buttons */}
-          {(selectedWarranty.warranty_status === "PENDING" ||
-            selectedWarranty.warranty_status === "REJECT") && (
+          {selectedWarranty.product_status !== "ACTIVATED" && (
             <Box sx={{ mb: 3 }}>
               <Stack direction="row" spacing={2} flexWrap="wrap">
                 <Button
@@ -575,7 +574,7 @@ const WarrantyManagement = () => {
                     Serial ID
                   </Typography>
                   <Typography variant="h6" sx={{ mt: 0.5 }}>
-                    #{selectedWarranty.serial_id}
+                    {selectedWarranty.serial_number}
                   </Typography>
                 </Box>
 
@@ -676,7 +675,7 @@ const WarrantyManagement = () => {
                   </Typography>
                 </Box>
 
-                <Box sx={{ mb: 3 }}>
+                {/* <Box sx={{ mb: 3 }}>
                   <Typography
                     variant="caption"
                     color="text.secondary"
@@ -690,7 +689,7 @@ const WarrantyManagement = () => {
                     Status
                   </Typography>
                   {getStatusChip(selectedWarranty.warranty_status)}
-                </Box>
+                </Box> */}
 
                 {selectedWarranty.registered_by && (
                   <Box>
