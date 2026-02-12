@@ -1385,7 +1385,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           {!collapsed && "Dashboard"}
         </Box>
 
-        <Box
+        {/* <Box
           className={`${classes.sidebarItem} ${
             isActive("/banners") ? classes.activeItem : ""
           }`}
@@ -1393,7 +1393,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <ImageIcon />
           {!collapsed && "Banners"}
-        </Box>
+        </Box> */}
 
         <Box
           className={classes.sidebarItem}
