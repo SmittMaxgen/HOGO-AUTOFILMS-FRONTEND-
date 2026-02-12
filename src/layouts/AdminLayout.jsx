@@ -1054,7 +1054,7 @@ const useStyles = makeStyles(() => ({
     top: 0,
     left: 0,
     height: "100vh",
-    overflowY: "scroll",
+    overflowY: "auto",
     backgroundColor: SIDEBAR_BG,
     padding: "1.2rem",
     display: "flex",
@@ -1062,6 +1062,23 @@ const useStyles = makeStyles(() => ({
     transition: "width 0.3s ease",
     boxShadow: "4px 0 15px rgba(0, 0, 0, 0.2)",
     zIndex: 1200,
+
+    scrollbarWidth: "thin",
+    scrollbarColor: "rgba(255,255,255,0.2) transparent",
+
+    "&::-webkit-scrollbar": {
+      width: "6px",
+    },
+    "&::-webkit-scrollbar-track": {
+      background: "transparent",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      background: "rgba(255,255,255,0.2)",
+      borderRadius: "10px",
+    },
+    "&::-webkit-scrollbar-thumb:hover": {
+      background: "rgba(255,255,255,0.35)",
+    },
   },
 
   sidebarExpanded: {
