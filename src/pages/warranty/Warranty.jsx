@@ -259,7 +259,7 @@ const WarrantyManagement = () => {
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "";
-    return `${BASE_URL}/media/${imagePath}`;
+    return `${BASE_URL}/${imagePath}`;
   };
 
   if (loading) {
