@@ -15,6 +15,7 @@ import {
   selectCreatePurchaseOrderSuccess,
   selectUpdatePurchaseOrderLoading,
   selectUpdatePurchaseOrderSuccess,
+  selectPurchaseOrderError,
   selectDeletePurchaseOrderLoading,
 } from "../../feature/purchaseOrder/purchaseOrderSelector";
 
@@ -74,6 +75,7 @@ const PurchaseOrder = () => {
   const createSuccess = useSelector(selectCreatePurchaseOrderSuccess);
   const updateLoading = useSelector(selectUpdatePurchaseOrderLoading);
   const updateSuccess = useSelector(selectUpdatePurchaseOrderSuccess);
+  const updateError = useSelector(selectPurchaseOrderError);
   const deleteLoading = useSelector(selectDeletePurchaseOrderLoading);
 
   // TODO: Replace these with your actual Redux selectors
@@ -159,6 +161,13 @@ const PurchaseOrder = () => {
 
     return () => clearTimeout(delay);
   }, [dispatch, searchQuery]);
+
+  useEffect(() => {
+    if (updateError && updateError[0]) {
+      const message = updateError[0];
+      CommonToast(message, "info");
+    }
+  }, [updateError]);
 
   useEffect(() => {
     if (createSuccess || updateSuccess) {
@@ -287,30 +296,30 @@ const PurchaseOrder = () => {
     "CANCELLED",
   ];
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "DRAFT":
-      return "grey.500";
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "DRAFT":
+        return "grey.500";
 
-    case "APPROVED":
-      return "success.main";
+      case "APPROVED":
+        return "success.main";
 
-    case "SUBMITTED":
-      return "warning.main";
+      case "SUBMITTED":
+        return "warning.main";
 
-    case "REJECTED":
-      return "error.main";
+      case "REJECTED":
+        return "error.main";
 
-    case "PARTIALLY_APPROVED":
-      return "info.main";
+      case "PARTIALLY_APPROVED":
+        return "info.main";
 
-    case "CANCELLED":
-      return "grey.600";
+      case "CANCELLED":
+        return "grey.600";
 
-    default:
-      return "grey.400";   // fallback (important)
-  }
-};
+      default:
+        return "grey.400";   // fallback (important)
+    }
+  };
 
 
   const handleStatusChange = (id, value) => {
@@ -619,7 +628,7 @@ const getStatusColor = (status) => {
               <Divider sx={{ mb: 2 }} />
 
               {/* Add Product Form */}
-           
+
 
               {/* Products List */}
               {form.product_items.length === 0 ? (
