@@ -309,10 +309,9 @@ const Location = () => {
   return (
     <Box>
       <Stack direction="row" justifyContent="space-between" mb={3}>
-        <Typography variant="h4" fontWeight={700}>
+        <Typography variant="h4" fontWeight={700} sx={{ color: "#7E7E7E" }}>
           Locations
         </Typography>
-
         <CommonButton
           variant="contained"
           startIcon={<AddIcon />}
