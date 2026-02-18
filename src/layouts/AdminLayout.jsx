@@ -531,7 +531,7 @@
 //     [menuName]: !prev[menuName],
 //   }));
 // };
-  
+
 //   const [query, setQuery] = useState("");
 //   const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -761,7 +761,7 @@
 //           <BusinessIcon />
 //           {!collapsed && "Purchase Order"}
 //         </Box>
-        
+
 //         <Box
 //           className={`${classes.sidebarItem} ${
 //             isActive("/leads") ? classes.activeItem : ""
@@ -956,7 +956,7 @@
 //                 <EditOutlinedIcon fontSize="small" sx={{ mr: 1 }} />
 //                 Edit profile
 //               </MenuItem>
-//               {/* 
+//               {/*
 //               <MenuItem onClick={() => handleNavigate("/account_settings")}>
 //                 <SettingsOutlinedIcon fontSize="small" sx={{ mr: 1 }} />
 //                 Account settings
@@ -1557,6 +1557,26 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <BusinessIcon />
           {!collapsed && "Leads"}
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/warehouse") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/warehouse")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Warehouse"}
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/location") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/location")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Location"}
         </Box>
 
         <Box className={classes.spacer} />

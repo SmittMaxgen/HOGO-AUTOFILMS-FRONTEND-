@@ -22,6 +22,8 @@ import employeeSalaryReducer from "../feature/employeeSalary/employeeSalarySlice
 import employeeReducer from "../feature/employee/employeeSlice";
 import employeeDocumentsReducer from "../feature/employeeDocuments/employeeDocumentsSlice";
 import employeePersonalDetailsReducer from "../feature/employeePersonalDetails/employeePersonalDetailsSlice";
+import warehouseReducer from "../feature/warehouse/warehouseSlice";
+import locationReducer from "../feature/location/locationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -49,5 +51,7 @@ export const store = configureStore({
     purchaseOrder: purchaseOrderReducer,
     leads: leadsReducer,
     employeeSalary: employeeSalaryReducer,
+    warehouse: warehouseReducer,
+    location: locationReducer,
   },
 });

@@ -14,6 +14,8 @@ import Warranty from "../pages/warranty/Warranty";
 import EmployeeManagement from "../pages/EmployeeManagement/EmployeeManagement";
 import PurchaseOrder from "../pages/purchaseOrder/PurchaseOrder";
 import Leads from "../pages/Lead/Lead";
+import Warehouse from "../pages/warehouse/Warehouse";
+import Location from "../pages/location/Location";
 import EditProfile from "../pages/auth/EditProfile";
 import AccountSettings from "../pages/auth/AccountSettings";
 import Distributors from "../pages/distributor/Distributor";
@@ -51,6 +53,8 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/employee_management" element={<EmployeeManagement />} />
           <Route path="/purchase_order" element={<PurchaseOrder />} />
           <Route path="/leads" element={<Leads />} />
+          <Route path="/warehouse" element={<Warehouse />} />
+          <Route path="/location" element={<Location />} />
         </Route>
       </Route>
     </Routes>
