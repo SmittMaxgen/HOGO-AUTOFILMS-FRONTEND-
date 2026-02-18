@@ -65,11 +65,8 @@ const Location = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [isAdd, setIsAdd] = useState(false);
-  console.log("isEditing::::", isEditing);
-  const [editId, setEditId] = useState(null);
-
   const [isViewing, setIsViewing] = useState(false);
-  const [viewData, setViewData] = useState(null);
+  const [editId, setEditId] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -80,21 +77,17 @@ const Location = () => {
     code: "",
     status: "active",
   });
-  console.log("form::::", form);
 
   const [errors, setErrors] = useState({});
 
-  // =========================
-  // FETCH
-  // =========================
+  // ================= FETCH =================
   useEffect(() => {
-    dispatch(getWarehouses()); // dropdown
+    dispatch(getWarehouses());
   }, [dispatch]);
 
   useEffect(() => {
     const payload = {};
     if (searchQuery) payload.name = searchQuery;
-
     dispatch(getLocations(payload));
   }, [dispatch, searchQuery]);
 
@@ -105,9 +98,7 @@ const Location = () => {
     }
   }, [success, dispatch]);
 
-  // =========================
-  // HANDLERS
-  // =========================
+  // ================= HANDLERS =================
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -126,31 +117,46 @@ const Location = () => {
   const handleSubmit = () => {
     if (!validate()) return;
 
-    if (isEditing) {
+    if (editId) {
       dispatch(updateLocation({ id: editId, data: form }))
         .unwrap()
         .then(() => {
           CommonToast("Location updated successfully", "success");
-          dispatch(getLocations());
           handleReset();
         })
         .catch(() => CommonToast("Failed to update location", "error"));
-    } else if (isAdd) {
+    } else {
       dispatch(createLocation(form))
         .unwrap()
         .then(() => {
           CommonToast("Location created successfully", "success");
-          isAdd(false);
-          dispatch(getLocations());
           handleReset();
         })
-        .catch(() => console.log(""));
+        .catch(() => CommonToast("Failed to create location", "error"));
     }
   };
 
   const handleEdit = (item) => {
     setIsEditing(true);
+    setIsAdd(false);
+    setIsViewing(false);
     setEditId(item.id);
+
+    setForm({
+      warehouse_id: item.warehouse_id,
+      name: item.name,
+      address: item.address,
+      code: item.code,
+      status: item.status,
+    });
+  };
+
+  const handleView = (item) => {
+    setIsViewing(true);
+    setIsEditing(false);
+    setIsAdd(false);
+    setEditId(item.id);
+
     setForm({
       warehouse_id: item.warehouse_id,
       name: item.name,
@@ -166,7 +172,6 @@ const Location = () => {
         .unwrap()
         .then(() => {
           CommonToast("Location deleted", "success");
-          dispatch(getLocations());
         })
         .catch(() => CommonToast("Failed to delete location", "error"));
     }
@@ -182,16 +187,8 @@ const Location = () => {
       }),
     )
       .unwrap()
-      .then(() => {
-        CommonToast("Status updated", "success");
-        dispatch(getLocations());
-      })
+      .then(() => CommonToast("Status updated", "success"))
       .catch(() => CommonToast("Failed to update status", "error"));
-  };
-
-  const handleView = (item) => {
-    setViewData(item);
-    setIsViewing(true);
   };
 
   const handleReset = () => {
@@ -202,9 +199,11 @@ const Location = () => {
       code: "",
       status: "active",
     });
+
     setEditId(null);
     setIsAdd(false);
     setIsEditing(false);
+    setIsViewing(false);
     setErrors({});
   };
 
@@ -213,10 +212,8 @@ const Location = () => {
     page * rowsPerPage,
   );
 
-  // =========================
-  // FORM VIEW
-  // =========================
-  if (isEditing || isAdd) {
+  // ================= FORM VIEW =================
+  if (isEditing || isAdd || isViewing) {
     return (
       <Box mt={4}>
         <Stack direction="row" alignItems="center" spacing={1} mb={3}>
@@ -224,7 +221,11 @@ const Location = () => {
             <ArrowBackIcon />
           </IconButton>
           <CommonLabel>
-            {editId ? "Edit Location" : "Create Location"}
+            {isViewing
+              ? "View Location"
+              : isEditing
+                ? "Edit Location"
+                : "Create Location"}
           </CommonLabel>
         </Stack>
 
@@ -236,6 +237,7 @@ const Location = () => {
               name="warehouse_id"
               value={form.warehouse_id}
               onChange={handleChange}
+              disabled={isViewing}
               error={!!errors.warehouse_id}
               helperText={errors.warehouse_id}
               fullWidth
@@ -252,6 +254,7 @@ const Location = () => {
               name="name"
               value={form.name}
               onChange={handleChange}
+              disabled={isViewing}
               error={!!errors.name}
               helperText={errors.name}
               fullWidth
@@ -262,6 +265,7 @@ const Location = () => {
               name="code"
               value={form.code}
               onChange={handleChange}
+              disabled={isViewing}
               error={!!errors.code}
               helperText={errors.code}
               fullWidth
@@ -272,6 +276,7 @@ const Location = () => {
               name="address"
               value={form.address}
               onChange={handleChange}
+              disabled={isViewing}
               error={!!errors.address}
               helperText={errors.address}
               fullWidth
@@ -283,13 +288,16 @@ const Location = () => {
               <CommonButton variant="outlined" onClick={handleReset}>
                 Cancel
               </CommonButton>
-              <CommonButton
-                variant="contained"
-                onClick={handleSubmit}
-                disabled={createLoading || updateLoading}
-              >
-                {createLoading || updateLoading ? "Saving..." : "Save"}
-              </CommonButton>
+
+              {!isViewing && (
+                <CommonButton
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={createLoading || updateLoading}
+                >
+                  {createLoading || updateLoading ? "Saving..." : "Save"}
+                </CommonButton>
+              )}
             </Stack>
           </Stack>
         </Paper>
@@ -297,9 +305,7 @@ const Location = () => {
     );
   }
 
-  // =========================
-  // LIST VIEW
-  // =========================
+  // ================= LIST VIEW =================
   return (
     <Box>
       <Stack direction="row" justifyContent="space-between" mb={3}>
@@ -320,14 +326,6 @@ const Location = () => {
       </Stack>
 
       <TableContainer component={Paper}>
-        <Box sx={{ display: "flex" }}>
-          <CommonSearchField
-            value={searchQuery}
-            placeholder="Search by location name..."
-            onChange={(value) => setSearchQuery(value)}
-          />
-        </Box>
-
         <Table>
           <TableHead>
             <TableRow>
@@ -342,16 +340,13 @@ const Location = () => {
           </TableHead>
 
           <TableBody>
-            {loading && (
+            {loading ? (
               <TableRow>
                 <TableCell colSpan={6} align="center">
                   <CircularProgress size={28} />
-                  <Typography mt={1}>Loading locations...</Typography>
                 </TableCell>
               </TableRow>
-            )}
-
-            {!loading &&
+            ) : (
               paginatedData?.map((item, index) => (
                 <TableRow key={item.id} hover>
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
@@ -359,23 +354,12 @@ const Location = () => {
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{item.code}</TableCell>
                   <TableCell>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <Switch
-                        checked={item.status === "active"}
-                        onChange={() => handleStatusToggle(item)}
-                        size="small"
-                        color="success"
-                      />
-                      <Typography
-                        color={
-                          item.status === "active"
-                            ? "success.main"
-                            : "text.secondary"
-                        }
-                      >
-                        {item.status}
-                      </Typography>
-                    </Stack>
+                    <Switch
+                      checked={item.status === "active"}
+                      onChange={() => handleStatusToggle(item)}
+                      size="small"
+                      color="success"
+                    />
                   </TableCell>
                   <TableCell>
                     <IconButton onClick={() => handleView(item)}>
@@ -395,14 +379,7 @@ const Location = () => {
                     </IconButton>
                   </TableCell>
                 </TableRow>
-              ))}
-
-            {!loading && locations?.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} align="center">
-                  No locations found
-                </TableCell>
-              </TableRow>
+              ))
             )}
           </TableBody>
         </Table>
