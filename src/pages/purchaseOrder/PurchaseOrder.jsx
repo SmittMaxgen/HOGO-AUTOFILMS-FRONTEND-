@@ -66,6 +66,8 @@ import CommonLabel from "../../components/commonComponents/CommonLabel";
 import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
 
+import DownloadIcon from "@mui/icons-material/Download";
+
 const PurchaseOrder = () => {
   const dispatch = useDispatch();
 
@@ -133,6 +135,7 @@ const PurchaseOrder = () => {
     product_items: [],
     remarks: "",
   });
+  const [poStatus, setPoStatus] = useState("");
 
   // Product line item form with selected product object
   const [productForm, setProductForm] = useState({
@@ -292,9 +295,35 @@ const PurchaseOrder = () => {
     "SUBMITTED",
     "APPROVED",
     "REJECTED",
-    "PARTIALLY_APPROVED",
     "CANCELLED",
+    "PICKED",
+    "PACKED",
+    "DELIVERED",
   ];
+
+  const getAvailableStatusOptions = (currentStatus) => {
+    switch (currentStatus) {
+      case "APPROVED":
+        return ["APPROVED", "PICKED", "PACKED", "DELIVERED"];
+      case "PARTIALLY_APPROVED":
+        return ["PARTIALLY_APPROVED", "PICKED", "PACKED", "DELIVERED"];
+      case "PICKED":
+        return ["PICKED", "PACKED", "DELIVERED"];
+      case "PACKED":
+        return ["PACKED", "DELIVERED"];
+      case "DELIVERED":
+        return ["DELIVERED"]; // locked, no forward options
+      default:
+        return [
+          "DRAFT",
+          "SUBMITTED",
+          "APPROVED",
+          "REJECTED",
+          "PARTIALLY_APPROVED",
+          "CANCELLED",
+        ];
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -316,11 +345,19 @@ const PurchaseOrder = () => {
       case "CANCELLED":
         return "grey.600";
 
+      case "PICKED":
+        return "orange";
+
+      case "PACKED":
+        return "primary.main";
+
+      case "DELIVERED":
+        return "#7c3aed";
+
       default:
-        return "grey.400";   // fallback (important)
+        return "grey.400"; // fallback (important)
     }
   };
-
 
   const handleStatusChange = (id, value) => {
     dispatch(
@@ -349,7 +386,6 @@ const PurchaseOrder = () => {
       CommonToast("Please fill all required fields", "error");
       return;
     }
-    console.log("reached ????");
 
     // Prepare the data exactly as your API expects
     const submitData = {
@@ -368,13 +404,11 @@ const PurchaseOrder = () => {
       remarks: form.remarks || "",
     };
 
-    console.log("Submitting PO Data:", submitData); // DEBUG: Check what's being sent
 
     if (isEditing && editId) {
       dispatch(updatePurchaseOrder({ id: editId, data: submitData }))
         .unwrap()
         .then((response) => {
-          console.log("Update Success:", response); // DEBUG
           CommonToast("Purchase order updated successfully", "success");
         })
         .catch((error) => {
@@ -385,11 +419,9 @@ const PurchaseOrder = () => {
           );
         });
     } else {
-      console.log("comes ????");
       dispatch(createPurchaseOrder(submitData))
         .unwrap()
         .then((response) => {
-          console.log("Create Success:", response); // DEBUG
           CommonToast("Purchase order created successfully", "success");
         })
         .catch((error) => {
@@ -408,6 +440,7 @@ const PurchaseOrder = () => {
   };
 
   const handleEdit = (po) => {
+    setPoStatus(po?.status);
     setIsEditing(true);
     setEditId(po.id);
     setForm({
@@ -629,7 +662,6 @@ const PurchaseOrder = () => {
 
               {/* Add Product Form */}
 
-
               {/* Products List */}
               {form.product_items.length === 0 ? (
                 <Alert severity="info">
@@ -640,23 +672,37 @@ const PurchaseOrder = () => {
                   <Table size="small">
                     <TableHead>
                       <TableRow sx={{ bgcolor: "grey.100" }}>
-                        <TableCell sx={{ fontWeight: 700 }}>#</TableCell>
+                        <TableCell sx={{ fontWeight: 700 }}>Sr</TableCell>
                         <TableCell sx={{ fontWeight: 700 }}>Product</TableCell>
                         <TableCell sx={{ fontWeight: 700 }} align="center">
                           Qty
                         </TableCell>
-                        <TableCell sx={{ fontWeight: 700 }} align="right">
+                        <TableCell sx={{ fontWeight: 700 }} align="center">
                           Dist. Price
                         </TableCell>
-                        <TableCell sx={{ fontWeight: 700 }} align="right">
+                        <TableCell sx={{ fontWeight: 700 }} align="center">
                           MRP
                         </TableCell>
-                        <TableCell sx={{ fontWeight: 700 }} align="right">
+                        <TableCell sx={{ fontWeight: 700 }} align="center">
                           Total Dist.
                         </TableCell>
-                        <TableCell sx={{ fontWeight: 700 }} align="right">
+                        <TableCell sx={{ fontWeight: 700 }} align="center">
                           Total MRP
                         </TableCell>
+                        {poStatus === "PICKED" && (
+                          <>
+                            <TableCell sx={{ fontWeight: 700 }} align="center">
+                              Qty Picked
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 700 }} align="center">
+                              Short Pick
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 700 }} align="center">
+                              Remarks
+                            </TableCell>
+                          </>
+                        )}
+
                         <TableCell sx={{ fontWeight: 700 }} align="center">
                           Action
                         </TableCell>
@@ -754,6 +800,69 @@ const PurchaseOrder = () => {
                                 ₹ {calculated.total_mrp_price.toFixed(2)}
                               </Typography>
                             </TableCell>
+                            {poStatus === "PICKED" && (
+                              <>
+                                <TableCell align="center">
+                                  <TextField
+                                    value={item.qty_picked}
+                                    onChange={(e) =>
+                                      handleUpdateProductItem(
+                                        index,
+                                        "qty_picked",
+                                        Number(e.target.value),
+                                      )
+                                    }
+                                    size="small"
+                                    type="number"
+                                    inputProps={{
+                                      min: 1,
+                                      style: { textAlign: "center" },
+                                    }}
+                                    sx={{ width: 70 }}
+                                  />
+                                </TableCell>
+
+                                <TableCell align="center">
+                                  <TextField
+                                    value={item.short_pick}
+                                    onChange={(e) =>
+                                      handleUpdateProductItem(
+                                        index,
+                                        "short_pick",
+                                        Number(e.target.value),
+                                      )
+                                    }
+                                    size="small"
+                                    type="number"
+                                    inputProps={{
+                                      min: 1,
+                                      style: { textAlign: "center" },
+                                    }}
+                                    sx={{ width: 70 }}
+                                  />
+                                </TableCell>
+
+                                <TableCell align="center">
+                                  <TextField
+                                    value={item.remarks || ""}
+                                    onChange={(e) =>
+                                      handleUpdateProductItem(
+                                        index,
+                                        "remarks",
+                                        e.target.value, // ✅ no Number()
+                                      )
+                                    }
+                                    size="small"
+                                    type="text"
+                                    inputProps={{
+                                      style: { textAlign: "center" },
+                                    }}
+                                    sx={{ width: 120 }}
+                                  />
+                                </TableCell>
+                              </>
+                            )}
+
                             <TableCell align="center">
                               <IconButton
                                 size="small"
@@ -955,7 +1064,6 @@ const PurchaseOrder = () => {
                   <TableBody>
                     {viewPO.product_items?.map((item, index) => (
                       <TableRow key={index} hover>
-                        {console.log("item::::::", item)}
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>
                           <Typography variant="body2" fontWeight={600}>
@@ -1047,6 +1155,7 @@ const PurchaseOrder = () => {
                 "Total Items",
                 "Total Qty",
                 "Actions",
+                "Pdf",
               ].map((h) => (
                 <TableCell key={h} sx={{ fontWeight: 700 }}>
                   {h}
@@ -1066,9 +1175,6 @@ const PurchaseOrder = () => {
 
             {!loading &&
               paginatedData?.map((po, index) => {
-                {
-                  console.log("po::::::", po);
-                }
                 const distributorInfo = distributors.find(
                   (d) => d.distributor_id === po.distributor_id,
                 );
@@ -1096,7 +1202,7 @@ const PurchaseOrder = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Select
+                      {/* <Select
                         size="small"
                         value={po?.status}
                         onChange={(e) =>
@@ -1120,6 +1226,42 @@ const PurchaseOrder = () => {
                         }}
                       >
                         {PO_STATUS_OPTIONS.map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </Select> */}
+                      <Select
+                        size="small"
+                        value={po?.status}
+                        onChange={(e) =>
+                          handleStatusChange(po.id, e.target.value)
+                        }
+                        // disable if DELIVERED (no further options)
+                        disabled={po?.status === "DELIVERED"}
+                        sx={{
+                          minWidth: 140,
+                          height: 26,
+                          borderRadius: "999px",
+                          fontWeight: 500,
+                          color: "white",
+                          bgcolor: getStatusColor(po.status),
+                          "& .MuiSelect-select": {
+                            py: 0.5,
+                            pl: 2,
+                            display: "flex",
+                            alignItems: "center",
+                          },
+                          "& fieldset": { border: "none" },
+                          "& svg": {
+                            color:
+                              po?.status === "DELIVERED"
+                                ? "transparent"
+                                : "white",
+                          }, // hide arrow when locked
+                        }}
+                      >
+                        {getAvailableStatusOptions(po?.status).map((option) => (
                           <MenuItem key={option} value={option}>
                             {option}
                           </MenuItem>
@@ -1150,6 +1292,30 @@ const PurchaseOrder = () => {
                       >
                         <DeleteIcon fontSize="small" />
                       </IconButton>
+                    </TableCell>
+                    <TableCell>
+                      {po?.status === "PICKED" && po?.id && (
+                        <>
+                          <IconButton
+                            size="small"
+                            color="warning"
+                            onClick={async () => {
+                              const response = await fetch(
+                                `https://hogofilm.pythonanywhere.com/purchase-orders/${po?.id}/pdf/`,
+                              );
+                              const blob = await response.blob();
+                              const url = window.URL.createObjectURL(blob);
+                              const a = document.createElement("a");
+                              a.href = url;
+                              a.download = `PO-${editId}.pdf`;
+                              a.click();
+                              window.URL.revokeObjectURL(url);
+                            }}
+                          >
+                            <DownloadIcon fontSize="small" />
+                          </IconButton>
+                        </>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
