@@ -400,10 +400,16 @@ const PurchaseOrder = () => {
         total_distributor_price:
           Number(item.quantity) * Number(item.unit_distributor_price),
         total_mrp_price: Number(item.quantity) * Number(item.mrp),
+        short_pick: Number(item.short_pick),
+        hsn_code: Number(item.hsn_code),
+        cartons: Number(item.cartons),
+        qty_picked: Number(item.qty_picked),
+        gross_weight: Number(item.gross_weight),
+        net_weight: Number(item.net_weight),
+        remarks: item.remarks || "",
       })),
       remarks: form.remarks || "",
     };
-
 
     if (isEditing && editId) {
       dispatch(updatePurchaseOrder({ id: editId, data: submitData }))
@@ -689,7 +695,10 @@ const PurchaseOrder = () => {
                         <TableCell sx={{ fontWeight: 700 }} align="center">
                           Total MRP
                         </TableCell>
-                        {poStatus === "PICKED" && (
+                        {(poStatus === "PICKED" ||
+                          poStatus === "PACKED" ||
+                          poStatus === "APPROVED" ||
+                          poStatus === "DELIVERED") && (
                           <>
                             <TableCell sx={{ fontWeight: 700 }} align="center">
                               Qty Picked
@@ -697,11 +706,30 @@ const PurchaseOrder = () => {
                             <TableCell sx={{ fontWeight: 700 }} align="center">
                               Short Pick
                             </TableCell>
+                          </>
+                        )}
+
+                        {(poStatus === "PACKED" ||
+                          poStatus === "DELIVERED") && (
+                          <>
+                            {" "}
                             <TableCell sx={{ fontWeight: 700 }} align="center">
-                              Remarks
+                              HSN Code
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 700 }} align="center">
+                              No. of Cartons / Boxes
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 700 }} align="center">
+                              Gross Weight (KG)
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 700 }} align="center">
+                              Net Weight (KG)
                             </TableCell>
                           </>
                         )}
+                        <TableCell sx={{ fontWeight: 700 }} align="center">
+                          Remarks
+                        </TableCell>
 
                         <TableCell sx={{ fontWeight: 700 }} align="center">
                           Action
@@ -800,11 +828,15 @@ const PurchaseOrder = () => {
                                 ₹ {calculated.total_mrp_price.toFixed(2)}
                               </Typography>
                             </TableCell>
-                            {poStatus === "PICKED" && (
+                            {(poStatus === "PICKED" ||
+                              poStatus === "APPROVED" ||
+                              poStatus === "DELIVERED" ||
+                              poStatus === "PACKED") && (
                               <>
                                 <TableCell align="center">
                                   <TextField
-                                    value={item.qty_picked}
+                                    disabled={poStatus !== "APPROVED"}
+                                    value={item.qty_picked || ""}
                                     onChange={(e) =>
                                       handleUpdateProductItem(
                                         index,
@@ -824,7 +856,8 @@ const PurchaseOrder = () => {
 
                                 <TableCell align="center">
                                   <TextField
-                                    value={item.short_pick}
+                                    disabled={poStatus !== "APPROVED"}
+                                    value={item.short_pick || ""}
                                     onChange={(e) =>
                                       handleUpdateProductItem(
                                         index,
@@ -835,34 +868,122 @@ const PurchaseOrder = () => {
                                     size="small"
                                     type="number"
                                     inputProps={{
-                                      min: 1,
+                                      min: 0,
                                       style: { textAlign: "center" },
                                     }}
                                     sx={{ width: 70 }}
                                   />
                                 </TableCell>
+                                {(poStatus === "PACKED" ||
+                                  poStatus ===
+                                    "DELIVERED") && 
+                                      <>
+                                        <TableCell align="center">
+                                          <TextField
+                                            disabled={poStatus !== "PACKED"}
+                                            value={item.hsn_code || ""}
+                                            onChange={(e) =>
+                                              handleUpdateProductItem(
+                                                index,
+                                                "hsn_code",
+                                                Number(e.target.value),
+                                              )
+                                            }
+                                            size="small"
+                                            type="number"
+                                            inputProps={{
+                                              min: 0,
+                                              style: { textAlign: "center" },
+                                            }}
+                                            sx={{ width: 70 }}
+                                          />
+                                        </TableCell>
 
-                                <TableCell align="center">
-                                  <TextField
-                                    value={item.remarks || ""}
-                                    onChange={(e) =>
-                                      handleUpdateProductItem(
-                                        index,
-                                        "remarks",
-                                        e.target.value, // ✅ no Number()
-                                      )
+                                        <TableCell align="center">
+                                          <TextField
+                                            disabled={poStatus !== "PACKED"}
+                                            value={item.cartons || ""}
+                                            onChange={(e) =>
+                                              handleUpdateProductItem(
+                                                index,
+                                                "cartons",
+                                                Number(e.target.value),
+                                              )
+                                            }
+                                            size="small"
+                                            type="number"
+                                            inputProps={{
+                                              min: 0,
+                                              style: { textAlign: "center" },
+                                            }}
+                                            sx={{ width: 70 }}
+                                          />
+                                        </TableCell>
+
+                                        <TableCell align="center">
+                                          <TextField
+                                            disabled={poStatus !== "PACKED"}
+                                            value={item.gross_weight || ""}
+                                            onChange={(e) =>
+                                              handleUpdateProductItem(
+                                                index,
+                                                "gross_weight",
+                                                Number(e.target.value),
+                                              )
+                                            }
+                                            size="small"
+                                            type="number"
+                                            inputProps={{
+                                              min: 0,
+                                              style: { textAlign: "center" },
+                                            }}
+                                            sx={{ width: 70 }}
+                                          />
+                                        </TableCell>
+
+                                        <TableCell align="center">
+                                          <TextField
+                                            disabled={poStatus !== "PACKED"}
+                                            value={item.net_weight || ""}
+                                            onChange={(e) =>
+                                              handleUpdateProductItem(
+                                                index,
+                                                "net_weight",
+                                                Number(e.target.value),
+                                              )
+                                            }
+                                            size="small"
+                                            type="number"
+                                            inputProps={{
+                                              min: 0,
+                                              style: { textAlign: "center" },
+                                            }}
+                                            sx={{ width: 70 }}
+                                          />
+                                        </TableCell>
+                                      </>
                                     }
-                                    size="small"
-                                    type="text"
-                                    inputProps={{
-                                      style: { textAlign: "center" },
-                                    }}
-                                    sx={{ width: 120 }}
-                                  />
-                                </TableCell>
                               </>
                             )}
-
+                            <TableCell align="center">
+                              <TextField
+                                disabled={poStatus !== "APPROVED"}
+                                value={item.remarks || ""}
+                                onChange={(e) =>
+                                  handleUpdateProductItem(
+                                    index,
+                                    "remarks",
+                                    e.target.value,
+                                  )
+                                }
+                                size="small"
+                                type="text"
+                                inputProps={{
+                                  style: { textAlign: "center" },
+                                }}
+                                sx={{ width: 120 }}
+                              />
+                            </TableCell>
                             <TableCell align="center">
                               <IconButton
                                 size="small"
@@ -1155,9 +1276,10 @@ const PurchaseOrder = () => {
                 "Total Items",
                 "Total Qty",
                 "Actions",
-                "Pdf",
+                "Picked Pdf",
+                "Packed Pdf",
               ].map((h) => (
-                <TableCell key={h} sx={{ fontWeight: 700 }}>
+                <TableCell align="center" key={h} sx={{ fontWeight: 700 }}>
                   {h}
                 </TableCell>
               ))}
@@ -1180,15 +1302,15 @@ const PurchaseOrder = () => {
                 );
                 return (
                   <TableRow key={po.id} hover>
-                    <TableCell>
+                    <TableCell align="center">
                       {(page - 1) * rowsPerPage + index + 1}
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="center">
                       <Typography variant="body2" fontWeight={600}>
                         {po.po_number}
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="center">
                       <Typography variant="body2">
                         {distributorInfo?.distributor_name || "N/A"}
                       </Typography>
@@ -1196,12 +1318,12 @@ const PurchaseOrder = () => {
                         ID: {po?.distributor_id}
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="center">
                       <Typography variant="body2">
                         {new Date(po?.po_date).toLocaleDateString()}
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="center">
                       {/* <Select
                         size="small"
                         value={po?.status}
@@ -1277,7 +1399,7 @@ const PurchaseOrder = () => {
                         variant="outlined"
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="center">
                       <IconButton size="small" onClick={() => handleView(po)}>
                         <VisibilityIcon fontSize="small" />
                       </IconButton>
@@ -1293,15 +1415,39 @@ const PurchaseOrder = () => {
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
-                    <TableCell>
-                      {po?.status === "PICKED" && po?.id && (
+                    <TableCell align="center">
+                      {po?.status === "PICKED" && (
                         <>
                           <IconButton
                             size="small"
                             color="warning"
                             onClick={async () => {
                               const response = await fetch(
-                                `https://hogofilm.pythonanywhere.com/purchase-orders/${po?.id}/pdf/`,
+                                `https://hogofilm.pythonanywhere.com/purchase-orders/${po?.id}/picked-pdf/`,
+                              );
+                              const blob = await response.blob();
+                              const url = window.URL.createObjectURL(blob);
+                              const a = document.createElement("a");
+                              a.href = url;
+                              a.download = `PO-${editId}.pdf`;
+                              a.click();
+                              window.URL.revokeObjectURL(url);
+                            }}
+                          >
+                            <DownloadIcon fontSize="small" />
+                          </IconButton>
+                        </>
+                      )}
+                    </TableCell>
+                    <TableCell align="center">
+                      {po?.status === "PACKED" && (
+                        <>
+                          <IconButton
+                            size="small"
+                            color="warning"
+                            onClick={async () => {
+                              const response = await fetch(
+                                `https://hogofilm.pythonanywhere.com/purchase-orders/${po?.id}/packing-pdf/`,
                               );
                               const blob = await response.blob();
                               const url = window.URL.createObjectURL(blob);
