@@ -725,11 +725,11 @@ const PurchaseOrder = () => {
                             <TableCell sx={{ fontWeight: 700 }} align="center">
                               Net Weight (KG)
                             </TableCell>
+                            <TableCell sx={{ fontWeight: 700 }} align="center">
+                              Remarks
+                            </TableCell>
                           </>
                         )}
-                        <TableCell sx={{ fontWeight: 700 }} align="center">
-                          Remarks
-                        </TableCell>
 
                         <TableCell sx={{ fontWeight: 700 }} align="center">
                           Action
@@ -875,115 +875,115 @@ const PurchaseOrder = () => {
                                   />
                                 </TableCell>
                                 {(poStatus === "PACKED" ||
-                                  poStatus ===
-                                    "DELIVERED") && 
-                                      <>
-                                        <TableCell align="center">
-                                          <TextField
-                                            disabled={poStatus !== "PACKED"}
-                                            value={item.hsn_code || ""}
-                                            onChange={(e) =>
-                                              handleUpdateProductItem(
-                                                index,
-                                                "hsn_code",
-                                                Number(e.target.value),
-                                              )
-                                            }
-                                            size="small"
-                                            type="number"
-                                            inputProps={{
-                                              min: 0,
-                                              style: { textAlign: "center" },
-                                            }}
-                                            sx={{ width: 70 }}
-                                          />
-                                        </TableCell>
+                                  poStatus === "DELIVERED") && (
+                                  <>
+                                    <TableCell align="center">
+                                      <TextField
+                                        disabled={poStatus !== "PACKED"}
+                                        value={item.hsn_code || ""}
+                                        onChange={(e) =>
+                                          handleUpdateProductItem(
+                                            index,
+                                            "hsn_code",
+                                            Number(e.target.value),
+                                          )
+                                        }
+                                        size="small"
+                                        type="number"
+                                        inputProps={{
+                                          min: 0,
+                                          style: { textAlign: "center" },
+                                        }}
+                                        sx={{ width: 70 }}
+                                      />
+                                    </TableCell>
 
-                                        <TableCell align="center">
-                                          <TextField
-                                            disabled={poStatus !== "PACKED"}
-                                            value={item.cartons || ""}
-                                            onChange={(e) =>
-                                              handleUpdateProductItem(
-                                                index,
-                                                "cartons",
-                                                Number(e.target.value),
-                                              )
-                                            }
-                                            size="small"
-                                            type="number"
-                                            inputProps={{
-                                              min: 0,
-                                              style: { textAlign: "center" },
-                                            }}
-                                            sx={{ width: 70 }}
-                                          />
-                                        </TableCell>
+                                    <TableCell align="center">
+                                      <TextField
+                                        disabled={poStatus !== "PACKED"}
+                                        value={item.cartons || ""}
+                                        onChange={(e) =>
+                                          handleUpdateProductItem(
+                                            index,
+                                            "cartons",
+                                            Number(e.target.value),
+                                          )
+                                        }
+                                        size="small"
+                                        type="number"
+                                        inputProps={{
+                                          min: 0,
+                                          style: { textAlign: "center" },
+                                        }}
+                                        sx={{ width: 70 }}
+                                      />
+                                    </TableCell>
 
-                                        <TableCell align="center">
-                                          <TextField
-                                            disabled={poStatus !== "PACKED"}
-                                            value={item.gross_weight || ""}
-                                            onChange={(e) =>
-                                              handleUpdateProductItem(
-                                                index,
-                                                "gross_weight",
-                                                Number(e.target.value),
-                                              )
-                                            }
-                                            size="small"
-                                            type="number"
-                                            inputProps={{
-                                              min: 0,
-                                              style: { textAlign: "center" },
-                                            }}
-                                            sx={{ width: 70 }}
-                                          />
-                                        </TableCell>
+                                    <TableCell align="center">
+                                      <TextField
+                                        disabled={poStatus !== "PACKED"}
+                                        value={item.gross_weight || ""}
+                                        onChange={(e) =>
+                                          handleUpdateProductItem(
+                                            index,
+                                            "gross_weight",
+                                            Number(e.target.value),
+                                          )
+                                        }
+                                        size="small"
+                                        type="number"
+                                        inputProps={{
+                                          min: 0,
+                                          style: { textAlign: "center" },
+                                        }}
+                                        sx={{ width: 70 }}
+                                      />
+                                    </TableCell>
 
-                                        <TableCell align="center">
-                                          <TextField
-                                            disabled={poStatus !== "PACKED"}
-                                            value={item.net_weight || ""}
-                                            onChange={(e) =>
-                                              handleUpdateProductItem(
-                                                index,
-                                                "net_weight",
-                                                Number(e.target.value),
-                                              )
-                                            }
-                                            size="small"
-                                            type="number"
-                                            inputProps={{
-                                              min: 0,
-                                              style: { textAlign: "center" },
-                                            }}
-                                            sx={{ width: 70 }}
-                                          />
-                                        </TableCell>
-                                      </>
-                                    }
+                                    <TableCell align="center">
+                                      <TextField
+                                        disabled={poStatus !== "PACKED"}
+                                        value={item.net_weight || ""}
+                                        onChange={(e) =>
+                                          handleUpdateProductItem(
+                                            index,
+                                            "net_weight",
+                                            Number(e.target.value),
+                                          )
+                                        }
+                                        size="small"
+                                        type="number"
+                                        inputProps={{
+                                          min: 0,
+                                          style: { textAlign: "center" },
+                                        }}
+                                        sx={{ width: 70 }}
+                                      />
+                                    </TableCell>
+                                    <TableCell align="center">
+                                      <TextField
+                                        // disabled={poStatus !== "APPROVED"}
+                                        value={item.remarks || ""}
+                                        onChange={(e) =>
+                                          handleUpdateProductItem(
+                                            index,
+                                            "remarks",
+                                            e.target.value,
+                                          )
+                                        }
+                                        size="small"
+                                        type="text"
+                                        inputProps={{
+                                          style: { textAlign: "center" },
+                                        }}
+                                        sx={{ width: 120 }}
+                                      />
+                                    </TableCell>
+                                  </>
+                                )}
                               </>
                             )}
-                            <TableCell align="center">
-                              <TextField
-                                disabled={poStatus !== "APPROVED"}
-                                value={item.remarks || ""}
-                                onChange={(e) =>
-                                  handleUpdateProductItem(
-                                    index,
-                                    "remarks",
-                                    e.target.value,
-                                  )
-                                }
-                                size="small"
-                                type="text"
-                                inputProps={{
-                                  style: { textAlign: "center" },
-                                }}
-                                sx={{ width: 120 }}
-                              />
-                            </TableCell>
+
                             <TableCell align="center">
                               <IconButton
                                 size="small"
