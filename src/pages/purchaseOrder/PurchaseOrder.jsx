@@ -2694,7 +2694,7 @@ const PurchaseOrder = () => {
                                     <>
                                       <TableCell align="center">
                                         <TextField
-                                          disabled={poStatus !== "PACKED"}
+                                          disabled={true}
                                           value={item.hsn_code || ""}
                                           onChange={(e) =>
                                             handleUpdateProductItem(
@@ -3463,7 +3463,8 @@ const PurchaseOrder = () => {
 
                       {/* Picked PDF */}
                       <TableCell align="center">
-                        {po?.status === "PICKED" && (
+                        {(po?.status === "PICKED" ||
+                          po?.status === "APPROVED") && (
                           <Tooltip title="Download Picked PDF">
                             <IconButton
                               size="small"
