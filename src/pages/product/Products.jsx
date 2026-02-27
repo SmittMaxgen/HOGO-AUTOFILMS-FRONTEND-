@@ -403,6 +403,45 @@ const Product = () => {
     page * rowsPerPage,
   );
 
+  const SectionHeading = ({ title }) => (
+    <Box display="flex" alignItems="center" gap={1.5} mb={2}>
+      <Box sx={{ width: 4, height: 22, bgcolor: "#D20000", borderRadius: 1 }} />
+      <Typography
+        variant="subtitle1"
+        fontWeight={700}
+        color="#1a1a1a"
+        letterSpacing={0.5}
+      >
+        {title}
+      </Typography>
+    </Box>
+  );
+
+  const DetailCard = ({ label, value }) => (
+    <Box
+      sx={{
+        p: 1.5,
+        bgcolor: "#fafafa",
+        border: "1px solid #ebebeb",
+        borderRadius: 1.5,
+        height: "100%",
+      }}
+    >
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        fontWeight={700}
+        display="block"
+        mb={0.4}
+      >
+        {label}
+      </Typography>
+      <Typography variant="body2" fontWeight={500} color="text.primary">
+        {value || "N/A"}
+      </Typography>
+    </Box>
+  );
+
   if (isEditing) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
@@ -1555,255 +1594,296 @@ const Product = () => {
     return (
       <Box mt={4}>
         <Box width="100%">
-          <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+          {/* Header Bar */}
+          <Box
+            display="flex"
+            alignItems="center"
+            mb={3}
+            px={2}
+            py={1.5}
+            sx={{
+              background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+              borderRadius: 2,
+              boxShadow: "0 4px 12px rgba(210,0,0,0.25)",
+            }}
+          >
             <IconButton
               onClick={() => {
                 setIsViewing(false);
                 setViewItem(null);
               }}
+              sx={{ color: "#fff", mr: 1.5 }}
             >
               <ArrowBackIcon />
             </IconButton>
-            <CommonLabel>View Product</CommonLabel>
-          </Stack>
+            <Typography
+              variant="h6"
+              fontWeight={700}
+              color="#fff"
+              letterSpacing={1}
+            >
+              Product Details
+            </Typography>
+          </Box>
 
-          <Paper sx={{ p: 3 }}>
-            <Stack spacing={2} alignItems="center">
-              {/* Image */}
-              {viewItem.thumbnail_image && (
+          <Paper
+            elevation={3}
+            sx={{
+              borderRadius: 3,
+              overflow: "hidden",
+              border: "1px solid #f0f0f0",
+            }}
+          >
+            {/* Top Section: Image + Identity */}
+            <Box
+              sx={{
+                background: "linear-gradient(135deg, #fafafa 0%, #f3f3f3 100%)",
+                px: 4,
+                py: 4,
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                alignItems: { xs: "center", sm: "flex-start" },
+                gap: 3,
+                borderBottom: "2px solid #D20000",
+              }}
+            >
+              {viewItem.thumbnail_image ? (
                 <Avatar
                   src={`https://hogofilm.pythonanywhere.com/${viewItem.thumbnail_image}`}
                   variant="rounded"
-                  sx={{ width: 160, height: 160 }}
+                  sx={{
+                    width: 150,
+                    height: 150,
+                    border: "3px solid #D20000",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+                    flexShrink: 0,
+                  }}
                 />
+              ) : (
+                <Avatar
+                  variant="rounded"
+                  sx={{
+                    width: 150,
+                    height: 150,
+                    bgcolor: "#e0e0e0",
+                    color: "#aaa",
+                    fontSize: 14,
+                    flexShrink: 0,
+                  }}
+                >
+                  No Image
+                </Avatar>
               )}
 
-              {/* Name & basic info */}
-              <Typography variant="h6" fontWeight={600}>
-                {viewItem.product_name}
-              </Typography>
+              <Box flex={1}>
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  color="#1a1a1a"
+                  gutterBottom
+                >
+                  {viewItem.product_name}
+                </Typography>
 
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                textAlign="center"
-              >
-                SKU: {viewItem.sku} | {viewItem.category_name} |{" "}
-                {viewItem.material_name} | {viewItem.colour_name}
-              </Typography>
+                <Stack direction="row" flexWrap="wrap" gap={1} mb={2}>
+                  {[
+                    { label: "SKU", value: viewItem.sku },
+                    { label: "Category", value: viewItem.category_name },
+                    { label: "Material", value: viewItem.material_name },
+                    { label: "Colour", value: viewItem.colour_name },
+                  ].map((item) => (
+                    <Box
+                      key={item.label}
+                      sx={{
+                        px: 1.5,
+                        py: 0.5,
+                        bgcolor: "#fff",
+                        border: "1px solid #e0e0e0",
+                        borderRadius: 1,
+                        display: "flex",
+                        gap: 0.5,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        fontWeight={600}
+                      >
+                        {item.label}:
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="text.primary"
+                        fontWeight={500}
+                      >
+                        {item.value}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Stack>
 
-              <Divider sx={{ width: "100%", my: 1 }} />
-
-              {/* Basic Details */}
-              <Grid container spacing={2} textAlign="center">
-                <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    MRP
+                <Stack direction="row" alignItems="center" gap={1.5}>
+                  <Typography variant="h6" fontWeight={800} color="#D20000">
+                    ₹ {viewItem.mrp}
                   </Typography>
-                  <Typography>₹ {viewItem.mrp}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Application Area
-                  </Typography>
-                  <Typography>{viewItem.application_area}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Film Type
-                  </Typography>
-                  <Typography>{viewItem.film_type}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Finish
-                  </Typography>
-                  <Typography>{viewItem.finish}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Specification
-                  </Typography>
-                  <Typography>{viewItem.specification}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Thickness
-                  </Typography>
-                  <Typography>{viewItem.thickness}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Warranty
-                  </Typography>
-                  <Typography>{viewItem.warranty}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={4} md={3}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Status
+                  <Typography variant="caption" color="text.secondary">
+                    MRP (Incl. of all taxes)
                   </Typography>
                   <Chip
                     label={viewItem.status ? "Active" : "Inactive"}
                     color={viewItem.status ? "success" : "default"}
                     size="small"
+                    sx={{ fontWeight: 700, borderRadius: 1 }}
                   />
-                </Grid>
+                </Stack>
+              </Box>
+            </Box>
+
+            <Box px={4} py={3}>
+              {/* Section: Basic Details */}
+              <SectionHeading title="Basic Details" />
+              <Grid container spacing={2} mb={3}>
+                {[
+                  {
+                    label: "Application Area",
+                    value: viewItem.application_area,
+                  },
+                  { label: "Film Type", value: viewItem.film_type },
+                  { label: "Finish", value: viewItem.finish },
+                  { label: "Specification", value: viewItem.specification },
+                  { label: "Thickness", value: viewItem.thickness },
+                  { label: "Warranty", value: viewItem.warranty },
+                ].map((item) => (
+                  <Grid item xs={6} sm={4} md={3} key={item.label}>
+                    <DetailCard label={item.label} value={item.value} />
+                  </Grid>
+                ))}
               </Grid>
 
-              <Divider sx={{ width: "100%", my: 2 }} />
+              <Divider sx={{ my: 3 }} />
 
-              {/* Properties */}
-              <Typography variant="h6" fontWeight={600} alignSelf="flex-start">
-                Properties
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Hydrophobic
-                  </Typography>
-                  <Typography>{viewItem.hydrophobic}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Stain Resistant
-                  </Typography>
-                  <Typography>{viewItem.stain_resistant}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Elongation
-                  </Typography>
-                  <Typography>{viewItem.elongation}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Tear Strength
-                  </Typography>
-                  <Typography>{viewItem.tear_strength}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Adhesive
-                  </Typography>
-                  <Typography>{viewItem.adhesive || "N/A"}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Anti Yellowing
-                  </Typography>
-                  <Typography>{viewItem.anti_yellowing || "N/A"}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Scratch Resistant
-                  </Typography>
-                  <Typography>{viewItem.scratch_resistant || "N/A"}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    UV Resistance
-                  </Typography>
-                  <Typography>
-                    {viewItem.uv_resistance ? "Yes" : "No"}
-                  </Typography>
-                </Grid>
+              {/* Section: Properties */}
+              <SectionHeading title="Properties" />
+              <Grid container spacing={2} mb={3}>
+                {[
+                  { label: "Hydrophobic", value: viewItem.hydrophobic },
+                  { label: "Stain Resistant", value: viewItem.stain_resistant },
+                  { label: "Elongation", value: viewItem.elongation },
+                  { label: "Tear Strength", value: viewItem.tear_strength },
+                  { label: "Adhesive", value: viewItem.adhesive },
+                  { label: "Anti Yellowing", value: viewItem.anti_yellowing },
+                  {
+                    label: "Scratch Resistant",
+                    value: viewItem.scratch_resistant,
+                  },
+                  {
+                    label: "UV Resistance",
+                    value: viewItem.uv_resistance ? "Yes" : "No",
+                  },
+                ].map((item) => (
+                  <Grid item xs={6} sm={4} md={3} key={item.label}>
+                    <DetailCard label={item.label} value={item.value} />
+                  </Grid>
+                ))}
               </Grid>
 
-              <Divider sx={{ width: "100%", my: 2 }} />
+              <Divider sx={{ my: 3 }} />
 
-              {/* New Technical Properties */}
-              <Typography variant="h6" fontWeight={600} alignSelf="flex-start">
-                Technical Properties
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Temperature Resistance
-                  </Typography>
-                  <Typography>
-                    {viewItem.tempeerature_resistance || "N/A"}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Peel Adhesion
-                  </Typography>
-                  <Typography>{viewItem.peel_adhesion || "N/A"}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Anti Rockclip
-                  </Typography>
-                  <Typography>{viewItem.anti_rockclip || "N/A"}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Elongation Rate TPU
-                  </Typography>
-                  <Typography>
-                    {viewItem.elongation_rate_tpu || "N/A"}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Elongation Rate Hard
-                  </Typography>
-                  <Typography>
-                    {viewItem.elongation_rate_hard || "N/A"}
-                  </Typography>
-                </Grid>
+              {/* Section: Technical Properties */}
+              <SectionHeading title="Technical Properties" />
+              <Grid container spacing={2} mb={3}>
+                {[
+                  {
+                    label: "Temperature Resistance",
+                    value: viewItem.tempeerature_resistance,
+                  },
+                  { label: "Peel Adhesion", value: viewItem.peel_adhesion },
+                  { label: "Anti Rockclip", value: viewItem.anti_rockclip },
+                  {
+                    label: "Elongation Rate TPU",
+                    value: viewItem.elongation_rate_tpu,
+                  },
+                  {
+                    label: "Elongation Rate Hard",
+                    value: viewItem.elongation_rate_hard,
+                  },
+                ].map((item) => (
+                  <Grid item xs={6} sm={4} md={3} key={item.label}>
+                    <DetailCard label={item.label} value={item.value} />
+                  </Grid>
+                ))}
               </Grid>
 
-              {/* Gallery Images */}
+              {/* Section: Gallery */}
               {viewItem.product_images &&
                 viewItem.product_images.length > 0 && (
                   <>
-                    <Divider sx={{ width: "100%", my: 2 }} />
-                    <Typography
-                      variant="h6"
-                      fontWeight={600}
-                      alignSelf="flex-start"
-                    >
-                      Gallery Images
-                    </Typography>
-                    <Grid container spacing={2}>
+                    <Divider sx={{ my: 3 }} />
+                    <SectionHeading title="Gallery" />
+                    <Grid container spacing={2} mb={2}>
                       {viewItem.product_images.map((img, idx) => (
-                        <Grid item xs={6} sm={6} md={6} key={idx}>
-                          <Avatar
-                            src={`https://hogofilm.pythonanywhere.com${img}`}
-                            variant="rounded"
-                            sx={{ width: "100%", height: 120 }}
-                          />
+                        <Grid item xs={6} sm={4} md={3} key={idx}>
+                          <Box
+                            sx={{
+                              border: "1px solid #e0e0e0",
+                              borderRadius: 2,
+                              overflow: "hidden",
+                              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                            }}
+                          >
+                            <Avatar
+                              src={`https://hogofilm.pythonanywhere.com${img}`}
+                              variant="rounded"
+                              sx={{
+                                width: "100%",
+                                height: 130,
+                                borderRadius: 0,
+                              }}
+                            />
+                          </Box>
                         </Grid>
                       ))}
                     </Grid>
                   </>
                 )}
 
-              {/* Installation Video */}
+              {/* Section: Installation Video */}
               {viewItem.installation_video_url && (
                 <>
-                  <Divider sx={{ width: "100%", my: 2 }} />
-                  <Typography
-                    variant="h6"
-                    fontWeight={600}
-                    alignSelf="flex-start"
+                  <Divider sx={{ my: 3 }} />
+                  <SectionHeading title="Installation Video" />
+                  <Box
+                    sx={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 1,
+                      px: 2,
+                      py: 1,
+                      bgcolor: "#fff5f5",
+                      border: "1px solid #D20000",
+                      borderRadius: 1.5,
+                    }}
                   >
-                    Installation Video
-                  </Typography>
-                  <Typography>
-                    <a
+                    <Typography
+                      component="a"
                       href={viewItem.installation_video_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: "#D20000" }}
+                      sx={{
+                        color: "#D20000",
+                        fontWeight: 600,
+                        fontSize: 14,
+                        textDecoration: "none",
+                        "&:hover": { textDecoration: "underline" },
+                      }}
                     >
-                      {viewItem.installation_video_url}
-                    </a>
-                  </Typography>
+                      ▶ Watch Installation Video
+                    </Typography>
+                  </Box>
                 </>
               )}
-            </Stack>
+            </Box>
           </Paper>
         </Box>
       </Box>
