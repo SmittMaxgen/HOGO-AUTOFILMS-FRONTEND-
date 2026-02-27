@@ -184,6 +184,7 @@ const Product = () => {
     if (!form.product_name) temp.product_name = "Required";
     if (!form.product_codes) temp.product_codes = "Required";
     if (!form.sku) temp.sku = "Required";
+    if (!form.thumbnail_image) temp.thumbnail_image = "Required";
     if (!form.category_id) temp.category_id = "Required";
     if (!form.material_id) temp.material_id = "Required";
     if (!form.colour_id) temp.colour_id = "Required";

@@ -391,9 +391,15 @@ const Cost = () => {
 
           <Paper sx={{ p: 3 }}>
             <Stack spacing={2}>
-              <TextField
+              {/* <TextField
                 label="Shipment ID"
                 value={viewCost.shipment_id}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              /> */}
+              <TextField
+                label="Shipment"
+                value={viewCost.shipment_name}
                 fullWidth
                 InputProps={{ readOnly: true }}
               />
@@ -408,6 +414,55 @@ const Cost = () => {
               <TextField
                 label="Reference Document"
                 value={viewCost.reference_doc}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+
+              <TextField
+                label="CHA"
+                value={viewCost.cost_type_cha}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+              <TextField
+                label="Transport"
+                value={viewCost.cost_type_trasnport}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+              <TextField
+                label="Duty"
+                value={viewCost.cost_type_duty}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+              <TextField
+                label="Freight"
+                value={viewCost.cost_type_freight}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+              <TextField
+                label="IGST"
+                value={viewCost.cost_type_igst}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+              <TextField
+                label="Insurance"
+                value={viewCost.cost_type_insurance}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+              <TextField
+                label="Others"
+                value={viewCost.cost_type_others}
+                fullWidth
+                InputProps={{ readOnly: true }}
+              />
+              <TextField
+                label="Port"
+                value={viewCost.cost_type_port}
                 fullWidth
                 InputProps={{ readOnly: true }}
               />

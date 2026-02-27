@@ -165,6 +165,19 @@ const ShipmentProducts = () => {
   };
 
   const handleView = (item) => {
+    setIsEditing(false);
+    setEditId(item.id);
+
+    setForm({
+      shipment_id: shipments.find((s) => s.id === item.shipment_id) || null,
+      product_id: products.find((p) => p.id === item.product_id) || null,
+      batch_data: item.batch_data,
+      quantity: item.quantity,
+      allocation_basis: item.allocation_basis,
+      landed_cost_allocated: item.landed_cost_allocated,
+      per_unit_cost_inr: item.per_unit_cost_inr,
+      per_unit_cost_usd: item.per_unit_cost_usd,
+    });
     setViewData(item);
     setIsViewing(true);
   };
@@ -205,7 +218,7 @@ const ShipmentProducts = () => {
     page * rowsPerPage,
   );
 
-  if (isEditing) {
+  if (isEditing || isViewing) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
         <Box width="100%">
@@ -214,13 +227,16 @@ const ShipmentProducts = () => {
               <ArrowBackIcon />
             </IconButton>
             <CommonLabel>
-              {editId ? "Edit Shipment Product" : "Add Shipment Product"}
+              {editId
+                ? `${isViewing ? "View" : "Edit"} Shipment Product`
+                : `${isViewing ? "View" : "Edit"} Shipment Product`}
             </CommonLabel>
           </Stack>
 
           <Paper sx={{ p: 3 }}>
             <Stack spacing={2}>
               <Autocomplete
+                disabled={isViewing}
                 options={shipments}
                 getOptionLabel={(o) => `#${o.id} - ${o.supplier_invoice_no}`}
                 value={form.shipment_id}
@@ -239,6 +255,7 @@ const ShipmentProducts = () => {
               />
 
               <Autocomplete
+                disabled={isViewing}
                 options={products}
                 getOptionLabel={(o) => o.product_name}
                 value={form.product_id}
@@ -257,6 +274,7 @@ const ShipmentProducts = () => {
               />
 
               <TextField
+                disabled={isViewing}
                 label="Batch Data"
                 name="batch_data"
                 value={form.batch_data}
@@ -269,6 +287,7 @@ const ShipmentProducts = () => {
               />
 
               <TextField
+                disabled={isViewing}
                 label="Quantity"
                 type="number"
                 name="quantity"
@@ -282,6 +301,7 @@ const ShipmentProducts = () => {
               />
 
               <TextField
+                disabled={isViewing}
                 label="Allocation Basis"
                 name="allocation_basis"
                 value={form.allocation_basis}
@@ -294,6 +314,7 @@ const ShipmentProducts = () => {
               />
 
               <TextField
+                disabled={isViewing}
                 label="Landed Cost Allocated"
                 type="number"
                 name="landed_cost_allocated"
@@ -307,6 +328,7 @@ const ShipmentProducts = () => {
               />
 
               <TextField
+                disabled={isViewing}
                 label="Per Unit Cost (INR)"
                 type="number"
                 name="per_unit_cost_inr"
@@ -320,6 +342,7 @@ const ShipmentProducts = () => {
               />
 
               <TextField
+                disabled={isViewing}
                 label="Per Unit Cost (USD)"
                 type="number"
                 name="per_unit_cost_usd"
@@ -331,19 +354,22 @@ const ShipmentProducts = () => {
                 error={!!errors.per_unit_cost_usd}
                 helperText={errors.per_unit_cost_usd}
               />
-
-              <Stack direction="row" justifyContent="flex-end" spacing={2}>
-                <CommonButton variant="outlined" onClick={handleReset}>
-                  Cancel
-                </CommonButton>
-                <CommonButton
-                  variant="contained"
-                  onClick={handleSubmit}
-                  disabled={createLoading || updateLoading}
-                >
-                  {createLoading || updateLoading ? "Saving..." : "Save"}
-                </CommonButton>
-              </Stack>
+              {!isViewing && (
+                <>
+                  <Stack direction="row" justifyContent="flex-end" spacing={2}>
+                    <CommonButton variant="outlined" onClick={handleReset}>
+                      Cancel
+                    </CommonButton>
+                    <CommonButton
+                      variant="contained"
+                      onClick={handleSubmit}
+                      disabled={createLoading || updateLoading}
+                    >
+                      {createLoading || updateLoading ? "Saving..." : "Save"}
+                    </CommonButton>
+                  </Stack>
+                </>
+              )}
             </Stack>
           </Paper>
         </Box>
@@ -414,9 +440,9 @@ const ShipmentProducts = () => {
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell>{item.per_unit_cost_inr}</TableCell>
                   <TableCell>
-                    {/* <IconButton onClick={() => handleView(item)}>
+                    <IconButton onClick={() => handleView(item)}>
                       <VisibilityIcon />
-                    </IconButton> */}
+                    </IconButton>
                     <IconButton
                       onClick={() => handleEdit(item)}
                       color="warning"

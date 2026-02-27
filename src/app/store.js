@@ -24,6 +24,7 @@ import employeeDocumentsReducer from "../feature/employeeDocuments/employeeDocum
 import employeePersonalDetailsReducer from "../feature/employeePersonalDetails/employeePersonalDetailsSlice";
 import warehouseReducer from "../feature/warehouse/warehouseSlice";
 import locationReducer from "../feature/location/locationSlice";
+import visitReducer from "../feature/visit/visitSlice";
 
 export const store = configureStore({
   reducer: {
@@ -53,5 +54,6 @@ export const store = configureStore({
     employeeSalary: employeeSalaryReducer,
     warehouse: warehouseReducer,
     location: locationReducer,
+    visit: visitReducer,
   },
 });

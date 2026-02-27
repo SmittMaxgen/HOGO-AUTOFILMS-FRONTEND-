@@ -17,10 +17,14 @@ import {
   selectUpdateLeadSuccess,
   selectDeleteLeadLoading,
 } from "../../feature/leads/leadSelector";
+import { selectVisitList } from "../../feature/visit/visitSelector";
 
 import { selectEmployees } from "../../feature/employee/employeeSelector";
 
 import { getEmployees } from "../../feature/employee/employeeThunks";
+import { getVisits } from "../../feature/visit/visitThunks";
+
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 
 import {
   Box,
@@ -63,6 +67,8 @@ const Lead = () => {
   const dispatch = useDispatch();
 
   const leads = useSelector(selectLeads);
+  const visits = useSelector(selectVisitList);
+  console.log("visits:::>>>", visits);
   const loading = useSelector(selectLeadsLoading);
 
   const createLoading = useSelector(selectCreateLeadLoading);
@@ -200,6 +206,18 @@ const Lead = () => {
         .unwrap()
         .then(() => CommonToast("Lead deleted successfully", "success"))
         .catch(() => CommonToast("Failed to delete lead", "error"));
+    }
+  };
+
+  const handleVisitsByLead = (id) => {
+    console.log("id:::>>>", id);
+    if (id) {
+      const payload = {
+        lead_id: id,
+      };
+      dispatch(getVisits(payload));
+    } else {
+      console.log("ID not found !");
     }
   };
 
@@ -600,6 +618,9 @@ const Lead = () => {
                     </IconButton>
                     <IconButton onClick={() => handleDelete(lead.id)}>
                       <DeleteIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleVisitsByLead(lead.id)}>
+                      <TrendingUpIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>
