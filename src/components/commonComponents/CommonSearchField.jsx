@@ -52,7 +52,7 @@ const CommonSearchField = ({
           </InputAdornment>
         ),
         sx: {
-          margin: "10px",
+          // margin: "10px",
           borderRadius: "12px",
           color: "grey",
           backgroundColor: "#f5f5f5",

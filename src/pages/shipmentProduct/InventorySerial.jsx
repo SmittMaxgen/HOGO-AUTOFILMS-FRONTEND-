@@ -320,6 +320,8 @@ import {
   CircularProgress,
   Chip,
   Grid,
+  MenuItem,
+  Select,
   Divider,
 } from "@mui/material";
 
@@ -335,6 +337,14 @@ import CommonSearchField from "../../components/commonComponents/CommonSearchFie
 import CommonToast from "../../components/commonComponents/Toster";
 
 // ─── Shared Helpers ────────────────────────────────────────────────────────────
+
+const STATUS_COLORS = {
+  IN_STOCK: { bg: "#e8f5e9", color: "#2e7d32" },
+  RESERVED: { bg: "#fff8e1", color: "#f57c00" },
+  PICKED: { bg: "#e3f2fd", color: "#1565c0" },
+  PACKED: { bg: "#f3e5f5", color: "#6a1b9a" },
+  DELIVERED: { bg: "#e0f7fa", color: "#006064" },
+};
 
 const SectionHeading = ({ title }) => (
   <Box display="flex" alignItems="center" gap={1.5} mb={2}>
@@ -429,6 +439,7 @@ const InventorySerial = () => {
   const [searchQuery, setSearchQuery] = useState({
     serial_number: "",
     batch_id: "",
+    status: "",
   });
 
   const [isViewing, setIsViewing] = useState(false);
@@ -440,10 +451,16 @@ const InventorySerial = () => {
       if (searchQuery.serial_number)
         payload.serial_number = searchQuery.serial_number;
       if (searchQuery.batch_id) payload.batch_id = searchQuery.batch_id;
+      if (searchQuery.status) payload.status = searchQuery.status;
       dispatch(getInventorySerials(payload));
     }, 500);
     return () => clearTimeout(timeoutId);
-  }, [dispatch, searchQuery.serial_number, searchQuery.batch_id]);
+  }, [
+    dispatch,
+    searchQuery.serial_number,
+    searchQuery.batch_id,
+    searchQuery.status,
+  ]);
 
   const handleView = (item) => {
     setViewSerial(item);
@@ -634,6 +651,64 @@ const InventorySerial = () => {
                 setSearchQuery((prev) => ({ ...prev, batch_id: value }))
               }
             />
+            {/* <CommonSearchField
+              value={searchQuery.status}
+              placeholder="Search by Status..."
+              onChange={(value) =>
+                setSearchQuery((prev) => ({ ...prev, status: value }))
+              }
+            /> */}
+            <Box sx={{ minWidth: 140, marginTop: "15px" }}>
+              <Select
+                value={searchQuery.status || ""}
+                onChange={(e) => {
+                  setSearchQuery((prev) => ({
+                    ...prev,
+                    status: e.target.value,
+                  }));
+                }}
+                displayEmpty
+                size="small"
+                renderValue={(selected) => {
+                  if (!selected) return <em>Filter by Status</em>;
+                  return selected;
+                }}
+                sx={{
+                  height: 39,
+                  borderRadius: "10px",
+                  fontSize: 13,
+                  color: "grey",
+                  // fontWeight: 600,
+                  backgroundColor: "#f5f5f5",
+                  // bgcolor: searchQuery.status
+                  //   ? STATUS_COLORS[searchQuery.status]?.bg || "#f5f5f5"
+                  //   : "#f5f5f5",
+                  // color: searchQuery.status
+                  //   ? STATUS_COLORS[searchQuery.status]?.color || "#424242"
+                  //   : "#757575",
+                  // "& fieldset": {
+                  //   borderColor: searchQuery.status ? "#D20000" : "#e0e0e0",
+                  // },
+                  "&:hover fieldset": { borderColor: "#D20000" },
+                  "&.Mui-focused fieldset": { borderColor: "#D20000" },
+                }}
+              >
+                <MenuItem value="">
+                  <em>All Statuses</em>
+                </MenuItem>
+                {[
+                  { value: "IN_STOCK", label: "In Stock" },
+                  { value: "RESERVED", label: "Reserved" },
+                  { value: "PICKED", label: "Picked" },
+                  { value: "PACKED", label: "Packed" },
+                  { value: "DELIVERED", label: "Delivered" },
+                ].map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
           </Stack>
         </Box>
 
