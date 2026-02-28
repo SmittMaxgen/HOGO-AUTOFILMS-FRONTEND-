@@ -862,6 +862,10 @@ const Lead = () => {
   const [viewLead, setViewLead] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [selectedLeadVisits, setSelectedLeadVisits] = useState([]);
+  const [isViewingVisits, setIsViewingVisits] = useState(false);
+  const [selectedLeadForVisits, setSelectedLeadForVisits] = useState(null);
+
   const [form, setForm] = useState({
     lead_type: "",
     business_name: "",
@@ -890,6 +894,15 @@ const Lead = () => {
       handleReset();
     }
   }, [createSuccess, updateSuccess, dispatch]);
+
+  useEffect(() => {
+    if (isViewingVisits && selectedLeadForVisits) {
+      const relevantVisits = visits.filter(
+        (v) => v.lead_id === selectedLeadForVisits.id,
+      );
+      setSelectedLeadVisits(relevantVisits);
+    }
+  }, [visits, isViewingVisits, selectedLeadForVisits]);
 
   const validate = () => {
     const temp = {};
@@ -969,8 +982,18 @@ const Lead = () => {
     }
   };
 
-  const handleVisitsByLead = (id) => {
-    if (id) dispatch(getVisits({ lead_id: id }));
+  const handleShowVisits = (lead) => {
+    setSelectedLeadForVisits(lead);
+    setSelectedLeadVisits([]); 
+    setIsViewingVisits(true);
+
+    dispatch(getVisits({ lead_id: lead.id }))
+      .unwrap()
+      .then(() => {
+      })
+      .catch(() => {
+        CommonToast("Failed to load visits", "error");
+      });
   };
 
   const handleAddLeads = () => {
@@ -1487,6 +1510,190 @@ const Lead = () => {
     );
   }
 
+  // --- Visit Viwe
+
+  const [visitPage, setVisitPage] = useState(1);
+  const visitsPerPage = 10;
+
+  useEffect(() => {
+    setVisitPage(1);
+  }, [selectedLeadForVisits?.id]);
+
+  useEffect(() => {
+    if (!isViewingVisits) {
+      setVisitPage(1);
+    }
+  }, [isViewingVisits]);
+
+  if (isViewingVisits && selectedLeadForVisits) {
+    const totalVisits = selectedLeadVisits.length;
+    const totalPages = Math.ceil(totalVisits / visitsPerPage);
+
+    const startIndex = (visitPage - 1) * visitsPerPage;
+    const paginatedVisits = selectedLeadVisits.slice(
+      startIndex,
+      startIndex + visitsPerPage,
+    );
+
+    return (
+      <Box mt={4}>
+        <PageHeader
+          title={`Visits for ${selectedLeadForVisits.business_name}`}
+          onBack={() => {
+            setIsViewingVisits(false);
+            setSelectedLeadForVisits(null);
+            setSelectedLeadVisits([]);
+          }}
+        />
+
+        <Paper
+          elevation={3}
+          sx={{
+            borderRadius: 3,
+            overflow: "hidden",
+            border: "1px solid #f0f0f0",
+          }}
+        >
+          {/* Lead quick info */}
+          <Box
+            sx={{
+              px: 4,
+              py: 2.5,
+              bgcolor: "#f8f8f8",
+              borderBottom: "2px solid #D20000",
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <BusinessIcon sx={{ fontSize: 32, color: "#D20000" }} />
+            <Box>
+              <Typography variant="h6" fontWeight={700}>
+                {selectedLeadForVisits.business_name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {selectedLeadForVisits.city} • {selectedLeadForVisits.lead_type}{" "}
+                • {totalVisits} visit{totalVisits !== 1 ? "s" : ""}
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box p={3}>
+            {totalVisits === 0 ? (
+              <Box textAlign="center" py={6}>
+                <Typography color="text.secondary" variant="body1">
+                  No visits recorded for this lead yet.
+                </Typography>
+              </Box>
+            ) : (
+              <>
+                <TableContainer sx={{ mb: totalPages > 1 ? 2 : 0 }}>
+                  <Table>
+                    <TableHead>
+                      <TableRow sx={{ bgcolor: "#f0f0f0" }}>
+                        {[
+                          "Date",
+                          "Employee",
+                          "Purpose",
+                          "Status",
+                          "Check-in",
+                          "Check-out",
+                          "Duration",
+                          "Notes",
+                        ].map((h) => (
+                          <TableCell key={h} sx={{ fontWeight: 700, py: 1.5 }}>
+                            {h}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+
+                    <TableBody>
+                      {paginatedVisits.map((visit) => (
+                        <TableRow key={visit.id} hover>
+                          <TableCell>
+                            {visit.visit_date
+                              ? new Date(visit.visit_date).toLocaleDateString()
+                              : "—"}
+                          </TableCell>
+                          <TableCell>{visit.employee_name || "—"}</TableCell>
+                          <TableCell>{visit.visit_purpose || "—"}</TableCell>
+                          <TableCell>
+                            <Chip
+                              label={visit.status_display || visit.status}
+                              size="small"
+                              color={
+                                visit.status === "COMPLETED"
+                                  ? "success"
+                                  : visit.status === "FOLLOW_UP"
+                                    ? "warning"
+                                    : "default"
+                              }
+                            />
+                          </TableCell>
+                          <TableCell>
+                            {visit.check_in_time
+                              ? new Date(
+                                  visit.check_in_time,
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })
+                              : "—"}
+                          </TableCell>
+                          <TableCell>
+                            {visit.checkout_time
+                              ? new Date(
+                                  visit.checkout_time,
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })
+                              : "—"}
+                          </TableCell>
+                          <TableCell>{visit.total_hr || "—"}</TableCell>
+                          <TableCell>
+                            <Typography
+                              variant="body2"
+                              noWrap
+                              title={visit.notes}
+                            >
+                              {visit.notes?.substring(0, 60) || "—"}
+                              {visit.notes?.length > 60 ? "..." : ""}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+                {totalPages > 1 && (
+                  <Box
+                    sx={{ display: "flex", justifyContent: "center", mt: 3 }}
+                  >
+                    <Pagination
+                      count={totalPages}
+                      page={visitPage}
+                      onChange={(_, value) => setVisitPage(value)}
+                      sx={{
+                        "& .MuiPaginationItem-root.Mui-selected": {
+                          bgcolor: "#D20000",
+                          color: "#fff",
+                          "&:hover": { bgcolor: "#a80000" },
+                        },
+                      }}
+                    />
+                  </Box>
+                )}
+              </>
+            )}
+          </Box>
+        </Paper>
+      </Box>
+    );
+  }
+
   // ── List View ────────────────────────────────────────────────────────────────
   return (
     <Box>
@@ -1729,7 +1936,7 @@ const Lead = () => {
                         </IconButton>
                         <IconButton
                           size="small"
-                          onClick={() => handleVisitsByLead(lead.id)}
+                          onClick={() => handleShowVisits(lead)}
                           sx={{
                             bgcolor: "#f3e5f5",
                             color: "#6a1b9a",
