@@ -1,3 +1,2650 @@
+// import { useEffect, useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import {
+//   Box,
+//   Paper,
+//   Typography,
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableContainer,
+//   TableHead,
+//   TableRow,
+//   Chip,
+//   IconButton,
+//   CircularProgress,
+//   Tabs,
+//   Tab,
+//   Grid,
+//   Card,
+//   CardContent,
+//   Button,
+//   Divider,
+//   Stack,
+//   Avatar,
+//   Dialog,
+//   DialogTitle,
+//   DialogContent,
+//   DialogActions,
+//   TextField,
+//   MenuItem,
+//   FormControlLabel,
+//   Switch,
+//   Alert,
+//   Autocomplete,
+// } from "@mui/material";
+// import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+// import VisibilityIcon from "@mui/icons-material/Visibility";
+// import EditIcon from "@mui/icons-material/Edit";
+// import DeleteIcon from "@mui/icons-material/Delete";
+// import AddIcon from "@mui/icons-material/Add";
+// import SaveIcon from "@mui/icons-material/Save";
+// import CancelIcon from "@mui/icons-material/Cancel";
+// import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+// import DescriptionIcon from "@mui/icons-material/Description";
+// import PersonIcon from "@mui/icons-material/Person";
+// import FolderIcon from "@mui/icons-material/Folder";
+// import DownloadIcon from "@mui/icons-material/Download";
+// import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+
+// import {
+//   getEmployees,
+//   createEmployee,
+//   updateEmployee,
+//   deleteEmployee,
+// } from "../../feature/employee/employeeThunks";
+// import {
+//   selectEmployees,
+//   selectEmployeeLoading,
+//   selectCreateEmployeeLoading,
+//   selectEmployeeError,
+// } from "../../feature/employee/employeeSelector";
+// import {
+//   getEmployeeDocuments,
+//   createEmployeeDocument,
+//   updateEmployeeDocument,
+//   deleteEmployeeDocument,
+// } from "../../feature/employeeDocuments/employeeDocumentsThunks";
+// import {
+//   selectEmployeeDocuments,
+//   selectEmployeeDocumentsLoading,
+//   selectCreateEmployeeDocumentLoading,
+// } from "../../feature/employeeDocuments/employeeDocumentsSelector";
+// import {
+//   getEmployeePersonalDetails,
+//   createEmployeePersonalDetails,
+//   updateEmployeePersonalDetails,
+//   deleteEmployeePersonalDetails,
+// } from "../../feature/employeePersonalDetails/employeePersonalDetailsThunks";
+// import {
+//   selectEmployeePersonalDetails,
+//   selectEmployeePersonalDetailsLoading,
+//   selectCreateEmployeePersonalDetailsLoading,
+// } from "../../feature/employeePersonalDetails/employeePersonalDetailsSelector";
+// import {
+//   getEmployeeSalaries,
+//   createEmployeeSalary,
+//   updateEmployeeSalary,
+//   deleteEmployeeSalary,
+// } from "../../feature/employeeSalary/employeeSalaryThunks";
+// import {
+//   selectEmployeeSalaries,
+//   selectEmployeeSalaryLoading,
+//   selectCreateEmployeeSalaryLoading,
+// } from "../../feature/employeeSalary/employeeSalarySelector";
+// import {
+//   getUsers,
+//   createUser,
+//   updateUser,
+//   deleteUser,
+// } from "../../feature/users/userThunks";
+// import {
+//   selectUsers,
+//   selectUserLoading,
+//   selectCreateUserLoading,
+// } from "../../feature/users/userSelector";
+// import { getDepartments } from "../../feature/department/departmentThunks";
+// import { getRoles } from "../../feature/role/roleThunks";
+// import {
+//   selectDepartmentList,
+//   selectDepartmentLoading,
+// } from "../../feature/department/departmentSelector";
+// import {
+//   selectRoleList,
+//   selectRoleLoading,
+// } from "../../feature/role/roleSelector";
+// import CommonButton from "../../components/commonComponents/CommonButton";
+// import CommonToast from "../../components/commonComponents/Toster";
+
+// const BASE_URL = "https://hogofilm.pythonanywhere.com";
+
+// // ==================== UTILITY COMPONENTS ====================
+
+// const TabPanel = ({ children, value, index }) => {
+//   if (value !== index) return null;
+//   return <Box pt={3}>{children}</Box>;
+// };
+
+// const InfoRow = ({ label, value }) => (
+//   <Box sx={{ mb: 2 }}>
+//     <Typography variant="body2" color="text.secondary" fontWeight={600}>
+//       {label}
+//     </Typography>
+//     <Typography variant="body1" sx={{ mt: 0.5 }}>
+//       {value || "—"}
+//     </Typography>
+//   </Box>
+// );
+
+// const DocumentLink = ({ url, label }) => {
+//   if (!url) return null;
+//   return (
+//     <Button
+//       variant="outlined"
+//       size="small"
+//       href={`${BASE_URL}${url}`}
+//       target="_blank"
+//       startIcon={<VisibilityIcon />}
+//       sx={{ mr: 1, mb: 1 }}
+//     >
+//       {label}
+//     </Button>
+//   );
+// };
+
+// // ==================== MAIN COMPONENT ====================
+
+// const EmployeeManagement = () => {
+//   const dispatch = useDispatch();
+//   const employees = useSelector(selectEmployees);
+//   const loading = useSelector(selectEmployeeLoading);
+//   const error = useSelector(selectEmployeeError);
+//   const createLoading = useSelector(selectCreateEmployeeLoading);
+
+//   const employeeDocuments = useSelector(selectEmployeeDocuments);
+//   const docsArray = Array.isArray(employeeDocuments)
+//     ? employeeDocuments
+//     : employeeDocuments
+//       ? [employeeDocuments]
+//       : [];
+
+//   const documentsLoading = useSelector(selectEmployeeDocumentsLoading);
+//   const createDocumentLoading = useSelector(
+//     selectCreateEmployeeDocumentLoading,
+//   );
+
+//   const employeePersonalDetails = useSelector(selectEmployeePersonalDetails);
+//   const personalDetailsArray = Array.isArray(employeePersonalDetails)
+//     ? employeePersonalDetails
+//     : employeePersonalDetails
+//       ? [employeePersonalDetails]
+//       : [];
+
+//   const personalDetailsLoading = useSelector(
+//     selectEmployeePersonalDetailsLoading,
+//   );
+//   const createPersonalDetailsLoading = useSelector(
+//     selectCreateEmployeePersonalDetailsLoading,
+//   );
+
+//   const employeeSalaries = useSelector(selectEmployeeSalaries);
+//   const employeeSalary = Array.isArray(employeeSalaries)
+//     ? employeeSalaries
+//     : employeeSalaries
+//       ? [employeeSalaries]
+//       : [];
+
+//   const salariesLoading = useSelector(selectEmployeeSalaryLoading);
+//   const createSalaryLoading = useSelector(selectCreateEmployeeSalaryLoading);
+
+//   const users = useSelector(selectUsers);
+//   const usersLoading = useSelector(selectUserLoading);
+//   const createUserLoading = useSelector(selectCreateUserLoading);
+
+//   const departments = useSelector(selectDepartmentList);
+//   const roles = useSelector(selectRoleList);
+//   const departmentsLoading = useSelector(selectDepartmentLoading);
+//   const rolesLoading = useSelector(selectRoleLoading);
+
+//   // ==================== STATE MANAGEMENT ====================
+
+//   const [selectedEmployee, setSelectedEmployee] = useState(null);
+//   const [activeTab, setActiveTab] = useState(0);
+//   const [viewMode, setViewMode] = useState("list"); // 'list', 'view', 'edit', 'create'
+//   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+//   const [formErrors, setFormErrors] = useState({});
+//   const [validationAlert, setValidationAlert] = useState(null);
+
+//   // Track editing state for each tab
+//   const [editingDocument, setEditingDocument] = useState(null);
+//   const [editingPersonalDetails, setEditingPersonalDetails] = useState(null);
+//   const [editingSalary, setEditingSalary] = useState(null);
+//   const [editingUser, setEditingUser] = useState(null);
+
+//   // Track which forms have been modified
+//   const [hasModifiedPersonalDetails, setHasModifiedPersonalDetails] =
+//     useState(false);
+//   const [hasModifiedSalary, setHasModifiedSalary] = useState(false);
+//   const [hasModifiedUser, setHasModifiedUser] = useState(false);
+
+//   // Form states
+//   const [formData, setFormData] = useState({
+//     first_name: "",
+//     last_name: "",
+//     name: "",
+//     email: "",
+//     phone: "",
+//     password: "",
+//     employee_code: "",
+//     department: "",
+//     role: "",
+//     department_id: null,
+//     designation: "",
+//     employment_type: "",
+//     role_id: null,
+//     joining_date: "",
+//     date_of_birth: "",
+//     gender: "",
+//     address: "",
+//     city: "",
+//     state: "",
+//     pincode: "",
+//     emergency_contact_name: "",
+//     emergency_contact_phone: "",
+//     status: "Active",
+//     gross_salary: "",
+//     basic_salary: "",
+//     bank_account_number: "",
+//     ifsc_code: "",
+//     pan_number: "",
+//     aadhaar_number: "",
+//   });
+
+//   // Document upload state
+//   const [documentFormData, setDocumentFormData] = useState({
+//     document_type: "",
+//     pancard_number: "",
+//     aadhar_number: "",
+//     driving_license_number: "",
+//     aadhar_front: null,
+//     aadhar_back: null,
+//     pan_card: null,
+//     photo: null,
+//     driving_license_front: null,
+//     driving_license_back: null,
+//     remarks: "",
+//   });
+//   // Personal details state
+//   const [personalDetailsFormData, setPersonalDetailsFormData] = useState({
+//     father_name: "",
+//     mother_name: "",
+//     marital_status: "",
+//     spouse_name: "",
+//     blood_group: "",
+//     nationality: "",
+//     religion: "",
+//     caste: "",
+//     identification_marks: "",
+//     hobbies: "",
+//   });
+
+//   // Salary state
+//   const [salaryFormData, setSalaryFormData] = useState({
+//     gross_salary: "",
+//     basic_salary: "",
+//     hra: "",
+//     da: "",
+//     ta: "",
+//     medical_allowance: "",
+//     alloances: "",
+//     deductions: "",
+//     provident_fund: "",
+//     professional_tax: "",
+//     income_tax: "",
+//     effective_from: "",
+//     remarks: "",
+//   });
+
+//   // User state
+//   const [userFormData, setUserFormData] = useState({
+//     username: "",
+//     email: "",
+//     password: "",
+//     first_name: "",
+//     last_name: "",
+//     is_active: true,
+//     is_staff: false,
+//     is_superuser: false,
+//     phone: "",
+//     department_id: null,
+//     department: "",
+//     role_id: null,
+//     role: "",
+//   });
+//   // ==================== LIFECYCLE ====================
+
+//   useEffect(() => {
+//     dispatch(getEmployees());
+//     dispatch(getDepartments());
+//     dispatch(getRoles());
+//   }, [dispatch]);
+
+//   useEffect(() => {
+//     if (selectedEmployee && viewMode === "view") {
+//       dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+//       dispatch(
+//         getEmployeePersonalDetails({ employee_id: selectedEmployee.id }),
+//       );
+//       dispatch(getEmployeeSalaries({ employee_id: selectedEmployee.id }));
+//       dispatch(getUsers({ employee_id: selectedEmployee.id }));
+//     }
+//   }, [selectedEmployee, viewMode, dispatch]);
+//   useEffect(() => {
+//     if (selectedEmployee && viewMode !== "create") {
+//       setDocumentFormData({
+//         aadhar_number: selectedEmployee.aadhar_number || "",
+//         pancard_number: selectedEmployee.pancard_number || "",
+//         driving_license_number: selectedEmployee.driving_license_number || "",
+
+//         aadhar_front: selectedEmployee.aadhar_front || "",
+//         aadhar_back: selectedEmployee.aadhar_back || "",
+//         pan_card: selectedEmployee.pan_card || "",
+//         photo: selectedEmployee.photo || "",
+//         driving_license_front: selectedEmployee.driving_license_front || "",
+//         driving_license_back: selectedEmployee.driving_license_back || "",
+//       });
+//     }
+//   }, [selectedEmployee, viewMode]);
+
+//   useEffect(() => {
+//     if (selectedEmployee && viewMode !== "create") {
+//       setDocumentFormData({
+//         aadhar_number: selectedEmployee.aadhar_number || "",
+//         pancard_number: selectedEmployee.pancard_number || "",
+//         driving_license_number: selectedEmployee.driving_license_number || "",
+
+//         aadhar_front: selectedEmployee.aadhar_front || "",
+//         aadhar_back: selectedEmployee.aadhar_back || "",
+//         pan_card: selectedEmployee.pan_card || "",
+//         photo: selectedEmployee.photo || "",
+//         driving_license_front: selectedEmployee.driving_license_front || "",
+//         driving_license_back: selectedEmployee.driving_license_back || "",
+//       });
+//     }
+//   }, [selectedEmployee, viewMode]);
+
+//   // Load data when switching to edit mode
+//   useEffect(() => {
+//     if (selectedEmployee) {
+//       // Load personal details if exists
+//       if (personalDetailsArray.length > 0) {
+//         setPersonalDetailsFormData({
+//           father_name: personalDetailsArray[0].father_name || "",
+//           mother_name: personalDetailsArray[0].mother_name || "",
+//           marital_status: personalDetailsArray[0].marital_status || "",
+//           spouse_name: personalDetailsArray[0].spouse_name || "",
+//           blood_group: personalDetailsArray[0].blood_group || "",
+//           nationality: personalDetailsArray[0].nationality || "",
+//           religion: personalDetailsArray[0].religion || "",
+//           caste: personalDetailsArray[0].caste || "",
+//           identification_marks:
+//             personalDetailsArray[0].identification_marks || "",
+//           hobbies: personalDetailsArray[0].hobbies || "",
+//         });
+//         setEditingPersonalDetails(personalDetailsArray[0]);
+//       }
+
+//       // Load salary if exists
+//       if (employeeSalary.length > 0) {
+//         setSalaryFormData({
+//           gross_salary: employeeSalary[0].gross_salary || "",
+//           basic_salary: employeeSalary[0].basic_salary || "",
+//           hra: employeeSalary[0].hra || "",
+//           da: employeeSalary[0].da || "",
+//           ta: employeeSalary[0].ta || "",
+//           medical_allowance: employeeSalary[0].medical_allowance || "",
+//           alloances: employeeSalary[0].alloances || "",
+//           deductions: employeeSalary[0].deductions || "",
+//           provident_fund: employeeSalary[0].provident_fund || "",
+//           professional_tax: employeeSalary[0].professional_tax || "",
+//           income_tax: employeeSalary[0].income_tax || "",
+//           effective_from: employeeSalary[0].effective_from || "",
+//           remarks: employeeSalary[0].remarks || "",
+//         });
+//         setEditingSalary(employeeSalary[0]);
+//       }
+
+//       // Load user if exists
+//       if (users.length > 0) {
+//         setUserFormData({
+//           username: users[0].username || "",
+//           password: users[0].password || "",
+
+//           is_active:
+//             users[0].is_active !== undefined ? users[0].is_active : true,
+//           is_superuser:
+//             users[0].is_superuser !== undefined ? users[0].is_superuser : false,
+//           role_id: users[0].role_id || null,
+//           role: users[0].role || "",
+//         });
+//         setEditingUser(users[0]);
+//       }
+//       if (docsArray.length > 0) {
+//         const doc = docsArray?.[0] || {};
+
+//         setDocumentFormData({
+//           document_type: doc.document_type || "",
+//           pancard_number: doc.pancard_number || "",
+//           aadhar_number: doc.aadhar_number || "",
+//           driving_license_number: doc.driving_license_number || "",
+//           aadhar_front: doc.aadhar_front || null,
+//           aadhar_back: doc.aadhar_back || null,
+//           pan_card: doc.pan_card || null,
+//           photo: doc.photo || null,
+//           driving_license_front: doc.driving_license_front || null,
+//           driving_license_back: doc.driving_license_back || null,
+//           remarks: doc.remarks || "",
+//         });
+//       }
+//     }
+//   }, [
+//     viewMode,
+//     personalDetailsArray,
+//     docsArray,
+//     employeeSalary,
+//     users,
+//     selectedEmployee,
+//   ]);
+
+//   // ==================== VALIDATION ====================
+
+//   const validateForm = () => {
+//     const errors = {};
+
+//     if (!formData.first_name?.trim()) errors.first_name = "First name is required";
+//     if (!formData.last_name?.trim()) errors.last_name = "Last name is required";
+//     if (!formData.email?.trim()) {
+//       errors.email = "Email is required";
+//     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+//       errors.email = "Email is invalid";
+//     }
+//     if (!formData.phone?.trim()) {
+//       errors.phone = "Phone number is required";
+//     } else if (!/^\d{10}$/.test(formData.phone)) {
+//       errors.phone = "Phone number must be 10 digits";
+//     }
+//     if (viewMode === "create" && !formData.password?.trim()) {
+//       errors.password = "Password is required";
+//     } else if (viewMode === "create" && formData.password?.length < 6) {
+//       errors.password = "Password must be at least 6 characters";
+//     }
+//     if (!formData.employee_code?.trim()) errors.employee_code = "Employee code is required";
+//     if (!formData.department_id) errors.department_id = "Department is required";
+//     // if (!formData.designation?.trim()) errors.designation = "Designation is required";
+//     if (!formData.employment_type) errors.employment_type = "Employment type is required";
+//     if (!formData.role_id) errors.role_id = "Role is required";
+//     if (!formData.joining_date) errors.joining_date = "Date of joining is required";
+//     if (!formData.date_of_birth) errors.date_of_birth = "Date of birth is required";
+//     if (!formData.gender) errors.gender = "Gender is required";
+//     // if (!formData.address?.trim()) errors.address = "Address is required";
+//     // if (!formData.city?.trim()) errors.city = "City is required";
+//     // if (!formData.state?.trim()) errors.state = "State is required";
+//     // if (!formData.pincode?.trim()) {
+//     //   errors.pincode = "Pincode is required";
+//     // } else if (!/^\d{6}$/.test(formData.pincode)) {
+//     //   errors.pincode = "Pincode must be 6 digits";
+//     // }
+
+//     setFormErrors(errors);
+
+//     if (Object.keys(errors).length > 0) {
+//       setActiveTab(0);
+//       setValidationAlert("Please fill all required fields in Employee Profile");
+//       return false;
+//     }
+
+//     setValidationAlert(null);
+//     return true;
+//   };
+
+//   // ==================== DATA LOADING ====================
+
+//   const loadFormData = (emp) => {
+//     setFormData({
+//       first_name: emp.first_name || "",
+//       last_name: emp.last_name || "",
+//       name: emp.name || "",
+//       email: emp.email || "",
+//       phone: emp.phone || "",
+//       employee_code: emp.employee_code || "",
+//       department: emp.department || "",
+//       role: emp.role || "",
+//       department_id: emp.department_id || null,
+//       role_id: emp.role_id || null,
+//       designation: emp.designation || "",
+//       employment_type: emp.employment_type || "",
+//       joining_date: emp.joining_date || "",
+//       date_of_birth: emp.date_of_birth || "",
+//       gender: emp.gender || "",
+//       address: emp.address || "",
+//       city: emp.city || "",
+//       state: emp.state || "",
+//       pincode: emp.pincode || "",
+//       emergency_contact_name: emp.emergency_contact_name || "",
+//       emergency_contact_phone: emp.emergency_contact_phone || "",
+//       status: emp.status || "Active",
+//       gross_salary: emp.gross_salary || "",
+//       basic_salary: emp.basic_salary || "",
+//       bank_account_number: emp.bank_account_number || "",
+//       ifsc_code: emp.ifsc_code || "",
+//       pan_number: emp.pan_number || "",
+//       aadhaar_number: emp.aadhaar_number || "",
+//     });
+//   };
+
+//   const resetFormData = () => {
+//     setFormData({
+//       first_name: "",
+//       last_name: "",
+//       name: "",
+//       email: "",
+//       phone: "",
+//       password: "",
+//       employee_code: "",
+//       department: "",
+//       role: "",
+//       department_id: null,
+//       designation: "",
+//       employment_type: "",
+//       role_id: null,
+//       joining_date: "",
+//       date_of_birth: "",
+//       gender: "",
+//       address: "",
+//       city: "",
+//       state: "",
+//       pincode: "",
+//       emergency_contact_name: "",
+//       emergency_contact_phone: "",
+//       status: "Active",
+//       gross_salary: "",
+//       basic_salary: "",
+//       bank_account_number: "",
+//       ifsc_code: "",
+//       pan_number: "",
+//       aadhaar_number: "",
+//     });
+//   };
+
+//   // ==================== EVENT HANDLERS ====================
+
+//   const handleViewDetails = (employee) => {
+//     setSelectedEmployee(employee);
+//     loadFormData(employee);
+//     setViewMode("view");
+//     setActiveTab(0);
+//     setValidationAlert(null);
+//     setFormErrors({});
+//     // Reset all editing states
+//     setEditingDocument(null);
+//     setEditingPersonalDetails(null);
+//     setEditingSalary(null);
+//     setEditingUser(null);
+//   };
+
+//   const handleEditEmployee = () => {
+//     setViewMode("edit");
+//     setValidationAlert(null);
+//   };
+
+//   const handleCancelEdit = () => {
+//     loadFormData(selectedEmployee);
+//     setViewMode("view");
+//     setFormErrors({});
+//     setValidationAlert(null);
+//     // Reset all editing states
+//     setEditingDocument(null);
+//     setEditingPersonalDetails(null);
+//     setEditingSalary(null);
+//     setEditingUser(null);
+//     // Reset modification flags
+//     setHasModifiedPersonalDetails(false);
+//     setHasModifiedSalary(false);
+//     setHasModifiedUser(false);
+//     // Reset all form data
+//     setPersonalDetailsFormData({
+//       father_name: "",
+//       mother_name: "",
+//       marital_status: "",
+//       spouse_name: "",
+//       blood_group: "",
+//       nationality: "",
+//       religion: "",
+//       caste: "",
+//       identification_marks: "",
+//       hobbies: "",
+//     });
+//     setSalaryFormData({
+//       gross_salary: "",
+//       basic_salary: "",
+//       hra: "",
+//       da: "",
+//       ta: "",
+//       medical_allowance: "",
+//       alloances: "",
+//       deductions: "",
+//       provident_fund: "",
+//       professional_tax: "",
+//       income_tax: "",
+//       effective_from: "",
+//       remarks: "",
+//     });
+//     setUserFormData({
+//       username: "",
+//       email: "",
+//       password: "",
+//       first_name: "",
+//       last_name: "",
+//       is_active: true,
+//       is_staff: false,
+//       is_superuser: false,
+//       phone: "",
+//       department_id: null,
+//       department: "",
+//       role_id: null,
+//       role: "",
+//     });
+//     setDocumentFormData({
+//       document_type: "",
+//       pancard_number: "",
+//       aadhar_number: "",
+//       driving_license_number: "",
+//       aadhar_front: null,
+//       aadhar_back: null,
+//       pan_card: null,
+//       photo: null,
+//       driving_license_front: null,
+//       driving_license_back: null,
+//       remarks: "",
+//     });
+//   };
+
+//   const handleBackToList = () => {
+//     dispatch(getEmployees());
+//     setSelectedEmployee(null);
+//     setViewMode("list");
+//     resetFormData();
+//     setValidationAlert(null);
+//     setFormErrors({});
+//   };
+
+//   const handleSaveEdit = async () => {
+//     if (!validateForm()) return;
+
+//     const formDataToSend = new FormData();
+//     Object.keys(formData).forEach((key) => {
+//       if (
+//         formData[key] !== null &&
+//         formData[key] !== undefined &&
+//         formData[key] !== ""
+//       ) {
+//         formDataToSend.append(key, formData[key]);
+//       }
+//     });
+
+//     const result = await dispatch(
+//       updateEmployee({ id: selectedEmployee.id, data: formDataToSend }),
+//     );
+
+//     if (result.type.includes("fulfilled")) {
+//       CommonToast("Employee updated successfully", "success");
+//       const updatedEmployee = { ...selectedEmployee, ...formData };
+//       setSelectedEmployee(updatedEmployee);
+//       loadFormData(updatedEmployee);
+//       dispatch(getEmployees());
+
+//       // Only save Personal Details if user modified the form
+//       if (
+//         hasModifiedPersonalDetails &&
+//         personalDetailsFormData.marital_status
+//       ) {
+//         await handleSavePersonalDetails();
+//       }
+
+//       // Only save Salary if user modified the form
+//       if (
+//         hasModifiedSalary &&
+//         salaryFormData.basic_salary &&
+//         salaryFormData.gross_salary &&
+//         salaryFormData.effective_from
+//       ) {
+//         await handleSaveSalary();
+//       }
+
+//       // Only save User if user modified the form
+//       // if (hasModifiedUser) {
+//       await handleSaveUser();
+//       // }
+
+//       // Reset modification flags
+//       setHasModifiedPersonalDetails(false);
+//       setHasModifiedSalary(false);
+//       setHasModifiedUser(false);
+
+//       setViewMode("view");
+//     } else {
+//       CommonToast("Failed to update employee", "error");
+//     }
+//   };
+
+//   const handleDelete = async () => {
+//     await dispatch(deleteEmployee(selectedEmployee.id));
+//     CommonToast("Employee deleted successfully", "success");
+//     dispatch(getEmployees());
+//     setDeleteDialogOpen(false);
+//     handleBackToList();
+//   };
+
+//   const handleAddEmployee = () => {
+//     resetFormData();
+//     setSelectedEmployee(null);
+//     setViewMode("create");
+//     setActiveTab(0);
+//     setValidationAlert(null);
+//     setFormErrors({});
+//   };
+
+//   const handleCreateEmployee = async () => {
+//     if (!validateForm()) return;
+
+//     const formDataToSend = new FormData();
+//     Object.entries(formData).forEach(([key, value]) => {
+//       if (value !== null && value !== undefined && value !== "") {
+//         formDataToSend.append(key, value);
+//       }
+//     });
+
+//     try {
+//       const result = await dispatch(createEmployee(formDataToSend));
+
+//       if (result.type.includes("fulfilled")) {
+//         CommonToast("Employee created successfully", "success");
+//         dispatch(getEmployees());
+//         handleBackToList();
+//       }
+//     } catch (err) {
+//       CommonToast("Failed to create employee", "error");
+//     }
+//   };
+
+//   // Document handlers
+//   // const handleUploadDocument = async () => {
+//   //   // if (!documentFormData.document_type) {
+//   //   //   CommonToast("Please select document type", "error");
+//   //   //   return;
+//   //   // }
+
+//   //   const formDataToSend = new FormData();
+//   //   formDataToSend.append("employee_id", selectedEmployee.id);
+//   //   formDataToSend.append("document_type", documentFormData.document_type);
+
+//   //   if (documentFormData.pancard_number)
+//   //     formDataToSend.append("pancard_number", documentFormData.pancard_number);
+//   //   if (documentFormData.aadhar_number)
+//   //     formDataToSend.append("aadhar_number", documentFormData.aadhar_number);
+//   //   if (documentFormData.driving_license_number)
+//   //     formDataToSend.append(
+//   //       "driving_license_number",
+//   //       documentFormData.driving_license_number,
+//   //     );
+//   //   if (documentFormData.aadhar_front)
+//   //     formDataToSend.append("aadhar_front", documentFormData.aadhar_front);
+//   //   if (documentFormData.aadhar_back)
+//   //     formDataToSend.append("aadhar_back", documentFormData.aadhar_back);
+//   //   if (documentFormData.pan_card)
+//   //     formDataToSend.append("pan_card", documentFormData.pan_card);
+//   //   if (documentFormData.photo)
+//   //     formDataToSend.append("photo", documentFormData.photo);
+//   //   if (documentFormData.driving_license_front)
+//   //     formDataToSend.append(
+//   //       "driving_license_front",
+//   //       documentFormData.driving_license_front,
+//   //     );
+//   //   if (documentFormData.driving_license_back)
+//   //     formDataToSend.append(
+//   //       "driving_license_back",
+//   //       documentFormData.driving_license_back,
+//   //     );
+//   //   if (documentFormData.remarks)
+//   //     formDataToSend.append("remarks", documentFormData.remarks);
+
+//   //   try {
+//   //     const result = await dispatch(createEmployeeDocument(formDataToSend));
+//   //     if (result.type.includes("fulfilled")) {
+//   //       CommonToast("Document uploaded successfully", "success");
+//   //       dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+//   //       setDocumentFormData({
+//   //         document_type: "",
+//   //         pancard_number: "",
+//   //         aadhar_number: "",
+//   //         driving_license_number: "",
+//   //         aadhar_front: null,
+//   //         aadhar_back: null,
+//   //         pan_card: null,
+//   //         photo: null,
+//   //         driving_license_front: null,
+//   //         driving_license_back: null,
+//   //         remarks: "",
+//   //       });
+//   //     }
+//   //   } catch {
+//   //     CommonToast("Failed to upload document", "error");
+//   //   }
+//   // };
+
+//   // const handleUploadDocument = async () => {
+//   //   const formDataToSend = new FormData();
+//   //   formDataToSend.append("employee_id", selectedEmployee.id);
+//   //   formDataToSend.append("document_type", documentFormData.document_type);
+
+//   //   // Text fields - append if they exist
+//   //   if (documentFormData.pancard_number)
+//   //     formDataToSend.append("pancard_number", documentFormData.pancard_number);
+//   //   if (documentFormData.aadhar_number)
+//   //     formDataToSend.append("aadhar_number", documentFormData.aadhar_number);
+//   //   if (documentFormData.driving_license_number)
+//   //     formDataToSend.append(
+//   //       "driving_license_number",
+//   //       documentFormData.driving_license_number,
+//   //     );
+//   //   if (documentFormData.remarks)
+//   //     formDataToSend.append("remarks", documentFormData.remarks);
+
+//   //   // File fields - ONLY append if they are actual File objects (new uploads)
+//   //   // Don't send existing URL strings back to the server
+//   //   if (documentFormData.aadhar_front instanceof File)
+//   //     formDataToSend.append("aadhar_front", documentFormData.aadhar_front);
+//   //   if (documentFormData.aadhar_back instanceof File)
+//   //     formDataToSend.append("aadhar_back", documentFormData.aadhar_back);
+//   //   if (documentFormData.pan_card instanceof File)
+//   //     formDataToSend.append("pan_card", documentFormData.pan_card);
+//   //   if (documentFormData.photo instanceof File)
+//   //     formDataToSend.append("photo", documentFormData.photo);
+//   //   if (documentFormData.driving_license_front instanceof File)
+//   //     formDataToSend.append(
+//   //       "driving_license_front",
+//   //       documentFormData.driving_license_front,
+//   //     );
+//   //   if (documentFormData.driving_license_back instanceof File)
+//   //     formDataToSend.append(
+//   //       "driving_license_back",
+//   //       documentFormData.driving_license_back,
+//   //     );
+
+//   //   try {
+//   //     const result = await dispatch(createEmployeeDocument(formDataToSend));
+//   //     if (result.type.includes("fulfilled")) {
+//   //       CommonToast("Document uploaded successfully", "success");
+//   //       dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+//   //       setDocumentFormData({
+//   //         document_type: "",
+//   //         pancard_number: "",
+//   //         aadhar_number: "",
+//   //         driving_license_number: "",
+//   //         aadhar_front: null,
+//   //         aadhar_back: null,
+//   //         pan_card: null,
+//   //         photo: null,
+//   //         driving_license_front: null,
+//   //         driving_license_back: null,
+//   //         remarks: "",
+//   //       });
+//   //     }
+//   //   } catch {
+//   //     CommonToast("Failed to upload document", "error");
+//   //   }
+//   // };
+//   const handleUploadDocument = async () => {
+//     const formDataToSend = new FormData();
+//     formDataToSend.append("employee_id", selectedEmployee.id);
+
+//     // Text fields - append if they exist
+//     if (documentFormData.document_type)
+//       formDataToSend.append("document_type", documentFormData.document_type);
+//     if (documentFormData.pancard_number)
+//       formDataToSend.append("pancard_number", documentFormData.pancard_number);
+//     if (documentFormData.aadhar_number)
+//       formDataToSend.append("aadhar_number", documentFormData.aadhar_number);
+//     if (documentFormData.driving_license_number)
+//       formDataToSend.append(
+//         "driving_license_number",
+//         documentFormData.driving_license_number,
+//       );
+//     if (documentFormData.remarks)
+//       formDataToSend.append("remarks", documentFormData.remarks);
+
+//     // File fields - ONLY append if they are actual File objects (new uploads)
+//     if (documentFormData.aadhar_front instanceof File)
+//       formDataToSend.append("aadhar_front", documentFormData.aadhar_front);
+//     if (documentFormData.aadhar_back instanceof File)
+//       formDataToSend.append("aadhar_back", documentFormData.aadhar_back);
+//     if (documentFormData.pan_card instanceof File)
+//       formDataToSend.append("pan_card", documentFormData.pan_card);
+//     if (documentFormData.photo instanceof File)
+//       formDataToSend.append("photo", documentFormData.photo);
+//     if (documentFormData.driving_license_front instanceof File)
+//       formDataToSend.append(
+//         "driving_license_front",
+//         documentFormData.driving_license_front,
+//       );
+//     if (documentFormData.driving_license_back instanceof File)
+//       formDataToSend.append(
+//         "driving_license_back",
+//         documentFormData.driving_license_back,
+//       );
+
+//     try {
+//       let result;
+
+//       // Check if document already exists
+//       if (docsArray.length > 0 && docsArray[0]?.id) {
+//         // UPDATE existing document (PATCH)
+//         result = await dispatch(
+//           updateEmployeeDocument({
+//             id: docsArray[0].id,
+//             data: formDataToSend,
+//           }),
+//         );
+
+//         if (result.type.includes("fulfilled")) {
+//           CommonToast("Document updated successfully", "success");
+//           dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+//         }
+//       } else {
+//         // CREATE new document (POST)
+//         result = await dispatch(createEmployeeDocument(formDataToSend));
+
+//         if (result.type.includes("fulfilled")) {
+//           CommonToast("Document uploaded successfully", "success");
+//           dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+//         }
+//       }
+//     } catch {
+//       CommonToast("Failed to save document", "error");
+//     }
+//   };
+
+//   const handleDeleteDocument = async (docId) => {
+//     try {
+//       await dispatch(deleteEmployeeDocument(docId));
+//       CommonToast("Document deleted successfully", "success");
+//       dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+//     } catch (err) {
+//       CommonToast("Failed to delete document", "error");
+//     }
+//   };
+
+//   // Personal Details Handlers
+//   const handleSavePersonalDetails = async () => {
+//     if (!personalDetailsFormData.marital_status) {
+//       CommonToast("Marital status is required", "error");
+//       return;
+//     }
+
+//     const dataToSend = {
+//       ...personalDetailsFormData,
+//       employee_id: selectedEmployee.id,
+//     };
+
+//     try {
+//       if (editingPersonalDetails) {
+//         const result = await dispatch(
+//           updateEmployeePersonalDetails({
+//             id: editingPersonalDetails.id,
+//             data: dataToSend,
+//           }),
+//         );
+//         if (result.type.includes("fulfilled")) {
+//           CommonToast("Personal details updated successfully", "success");
+//           dispatch(
+//             getEmployeePersonalDetails({ employee_id: selectedEmployee.id }),
+//           );
+//         }
+//       } else {
+//         const result = await dispatch(
+//           createEmployeePersonalDetails(dataToSend),
+//         );
+//         if (result.type.includes("fulfilled")) {
+//           CommonToast("Personal details created successfully", "success");
+//           dispatch(
+//             getEmployeePersonalDetails({ employee_id: selectedEmployee.id }),
+//           );
+//         }
+//       }
+//     } catch (err) {
+//       CommonToast("Failed to save personal details", "error");
+//     }
+//   };
+
+//   const handleDeletePersonalDetails = async (detailsId) => {
+//     try {
+//       await dispatch(deleteEmployeePersonalDetails(detailsId));
+//       CommonToast("Personal details deleted successfully", "success");
+//       dispatch(
+//         getEmployeePersonalDetails({ employee_id: selectedEmployee.id }),
+//       );
+//       setEditingPersonalDetails(null);
+//       setPersonalDetailsFormData({
+//         father_name: "",
+//         mother_name: "",
+//         marital_status: "",
+//         spouse_name: "",
+//         blood_group: "",
+//         nationality: "",
+//         religion: "",
+//         caste: "",
+//         identification_marks: "",
+//         hobbies: "",
+//       });
+//     } catch (err) {
+//       CommonToast("Failed to delete personal details", "error");
+//     }
+//   };
+
+//   // Salary Handlers
+//   const handleSaveSalary = async () => {
+//     if (
+//       !salaryFormData.basic_salary ||
+//       !salaryFormData.gross_salary ||
+//       !salaryFormData.effective_from
+//     ) {
+//       CommonToast(
+//         "Please fill required fields (Gross Salary, Basic Salary, Effective From)",
+//         "error",
+//       );
+//       return;
+//     }
+
+//     const dataToSend = {
+//       ...salaryFormData,
+//       employee_id: selectedEmployee.id,
+//     };
+
+//     try {
+//       if (editingSalary) {
+//         const result = await dispatch(
+//           updateEmployeeSalary({ id: editingSalary.id, data: dataToSend }),
+//         );
+//         if (result.type.includes("fulfilled")) {
+//           CommonToast("Salary updated successfully", "success");
+//           dispatch(getEmployeeSalaries({ employee_id: selectedEmployee.id }));
+//         }
+//       } else {
+//         const result = await dispatch(createEmployeeSalary(dataToSend));
+//         if (result.type.includes("fulfilled")) {
+//           CommonToast("Salary created successfully", "success");
+//           dispatch(getEmployeeSalaries({ employee_id: selectedEmployee.id }));
+//         }
+//       }
+//     } catch (err) {
+//       CommonToast("Failed to save salary", "error");
+//     }
+//   };
+
+//   const handleDeleteSalary = async (salaryId) => {
+//     try {
+//       await dispatch(deleteEmployeeSalary(salaryId));
+//       CommonToast("Salary deleted successfully", "success");
+//       dispatch(getEmployeeSalaries({ employee_id: selectedEmployee.id }));
+//       setEditingSalary(null);
+//       setSalaryFormData({
+//         gross_salary: "",
+//         basic_salary: "",
+//         hra: "",
+//         da: "",
+//         ta: "",
+//         deductions: "",
+//         medical_allowance: "",
+//         alloances: "",
+//         provident_fund: "",
+//         professional_tax: "",
+//         income_tax: "",
+//         effective_from: "",
+//         remarks: "",
+//       });
+//     } catch (err) {
+//       CommonToast("Failed to delete salary", "error");
+//     }
+//   };
+
+//   const BASE_URL = "https://hogofilm.pythonanywhere.com";
+//   const renderFileUpload = (label, fileKey, isRequired = false) => {
+//     const isEditable = createDistributorFlag || editMode;
+
+//     // 🔹 get correct value based on mode
+//     const getValue = () => {
+//       if (createDistributorFlag) return newDistFiles[fileKey];
+//       if (editMode) return formData[fileKey];
+//       return selectedDistributor?.[fileKey];
+//     };
+
+//     const value = getValue();
+
+//     // 🔹 resolve preview source safely
+//     const getPreviewSrc = () => {
+//       // File object (new upload)
+//       if (value instanceof File) {
+//         return URL.createObjectURL(value);
+//       }
+
+//       // String URL from backend
+//       if (typeof value === "string" && value.trim() !== "") {
+//         return value.startsWith("http") ? value : `${BASE_URL}${value}`;
+//       }
+
+//       return null;
+//     };
+
+//     const previewSrc = getPreviewSrc();
+
+//     const isImage =
+//       typeof previewSrc === "string" &&
+//       !previewSrc.toLowerCase().endsWith(".pdf");
+
+//     return (
+//       <Grid item xs={12} md={6}>
+//         <Stack spacing={1.5}>
+//           {/* 🔹 IMAGE PREVIEW */}
+//           {previewSrc && isImage && (
+//             <Box
+//               sx={{
+//                 width: "100%",
+//                 height: 160,
+//                 borderRadius: 2,
+//                 border: "1px dashed #ccc",
+//                 display: "flex",
+//                 alignItems: "center",
+//                 justifyContent: "center",
+//                 overflow: "hidden",
+//                 bgcolor: "#fafafa",
+//               }}
+//             >
+//               <img
+//                 src={previewSrc}
+//                 alt={label}
+//                 style={{
+//                   maxWidth: "100%",
+//                   maxHeight: "100%",
+//                   objectFit: "contain",
+//                 }}
+//               />
+//             </Box>
+//           )}
+
+//           {/* 🔹 PDF VIEW */}
+//           {previewSrc && !isImage && (
+//             <CommonButton
+//               variant="outlined"
+//               fullWidth
+//               onClick={() => window.open(previewSrc, "_blank")}
+//             >
+//               View {label}
+//             </CommonButton>
+//           )}
+
+//           {/* 🔹 UPLOAD BUTTON (CREATE / EDIT) */}
+//           {isEditable && (
+//             <>
+//               <CommonButton
+//                 variant="outlined"
+//                 component="label"
+//                 fullWidth
+//                 color={formErrors[fileKey] ? "error" : "primary"}
+//               >
+//                 {previewSrc ? "Replace" : "Upload"} {label}
+//                 {isRequired && createDistributorFlag ? " *" : ""}
+//                 <input
+//                   type="file"
+//                   hidden
+//                   accept="image/*,.pdf"
+//                   onChange={(e) => {
+//                     const file = e.target.files?.[0];
+//                     if (!file) return;
+
+//                     if (createDistributorFlag) {
+//                       setNewDistFiles({
+//                         ...newDistFiles,
+//                         [fileKey]: file,
+//                       });
+//                     } else {
+//                       setFormData({
+//                         ...formData,
+//                         [fileKey]: file,
+//                       });
+//                     }
+
+//                     if (formErrors[fileKey]) {
+//                       setFormErrors({
+//                         ...formErrors,
+//                         [fileKey]: undefined,
+//                       });
+//                     }
+//                   }}
+//                 />
+//               </CommonButton>
+
+//               {/* 🔹 FILE NAME */}
+//               {value && (
+//                 <Typography variant="body2" color="success.main">
+//                   Selected: {value?.name || value}
+//                 </Typography>
+//               )}
+//             </>
+//           )}
+
+//           {/* 🔹 VIEW MODE (NO EDIT) */}
+//           {!isEditable && !previewSrc && (
+//             <Typography variant="body2" color="text.secondary">
+//               Not Uploaded
+//             </Typography>
+//           )}
+
+//           {/* 🔹 ERROR */}
+//           {formErrors[fileKey] && (
+//             <Typography color="error" variant="caption">
+//               {formErrors[fileKey]}
+//             </Typography>
+//           )}
+//         </Stack>
+//       </Grid>
+//     );
+//   };
+
+//   const handleSaveUser = async () => {
+//     const dataToSend = {
+//       ...userFormData,
+//       employee_id: selectedEmployee.id,
+//     };
+
+//     if (editingUser && !userFormData.password) {
+//       delete dataToSend.password;
+//     }
+
+//     try {
+//       if (editingUser) {
+//         const result = await dispatch(
+//           updateUser({ id: editingUser.id, data: dataToSend }),
+//         );
+//         if (result.type.includes("fulfilled")) {
+//           CommonToast("User updated successfully", "success");
+//           dispatch(getUsers({ employee_id: selectedEmployee.id }));
+//         }
+//       } else {
+//         const result = await dispatch(createUser(dataToSend));
+//         if (result.type.includes("fulfilled")) {
+//           CommonToast("User created successfully", "success");
+//           dispatch(getUsers({ employee_id: selectedEmployee.id }));
+//         }
+//       }
+//     } catch (err) {
+//       CommonToast("Failed to save user", "error");
+//     }
+//   };
+
+//   const handleDeleteUser = async (userId) => {
+//     try {
+//       await dispatch(deleteUser(userId));
+//       CommonToast("User deleted successfully", "success");
+//       dispatch(getUsers({ employee_id: selectedEmployee.id }));
+//       setEditingUser(null);
+//       setUserFormData({
+//         username: "",
+//         email: "",
+//         password: "",
+//         first_name: "",
+//         last_name: "",
+//         is_active: true,
+//         is_staff: false,
+//         is_superuser: false,
+//         phone: "",
+//         department_id: null,
+//         department: "",
+//         role_id: null,
+//         role: "",
+//       });
+//     } catch (err) {
+//       CommonToast("Failed to delete user", "error");
+//     }
+//   };
+
+//   // ==================== RENDER HELPER FUNCTIONS ====================
+
+//   const renderTextField = (label, field, type = "text", options = {}) => {
+//     const isEditable = viewMode === "edit" || viewMode === "create";
+//     const value = formData[field] || "";
+
+//     const requiredFields = [
+//       "first_name",
+//       "last_name",
+//       "email",
+//       "phone",
+//       "password",
+//       "employee_code",
+//       "department_id",
+//       "role_id",
+//       "designation",
+//       "employment_type",
+//       "joining_date",
+//       "date_of_birth",
+//       "gender",
+//       "address",
+//       "city",
+//       "state",
+//       "pincode",
+//     ];
+
+//     const isRequired = requiredFields.includes(field);
+
+//     const commonProps = {
+//         // fullWidth: true,   // <-- ADD HERE
+//           sx: { width: 200 },   // ✅ fixed width
+
+//       label:
+//         isRequired && (viewMode === "create" || viewMode === "edit")
+//           ? `${label} *`
+//           : label,
+//       type,
+//       value: value,
+//       InputProps: { readOnly: !isEditable },
+//       error: isEditable && !!formErrors[field],
+//       helperText: isEditable && formErrors[field],
+//       ...options,
+//     };
+
+//     if (isEditable) {
+//       commonProps.onChange = (e) => {
+//         let newValue = e.target.value;
+
+//         if (type === "tel" || options.inputMode === "numeric") {
+//           newValue = newValue.replace(/\D/g, "");
+//         }
+
+//         setFormData({
+//           ...formData,
+//           [field]: newValue,
+//         });
+
+//         if (formErrors[field]) {
+//           setFormErrors({
+//             ...formErrors,
+//             [field]: undefined,
+//           });
+//         }
+//       };
+//     }
+
+//     return <TextField {...commonProps} />;
+//   };
+//   // const BASE_URL = "https://hogofilm.pythonanywhere.com";
+
+//   const getDocumentSrc = (key) => {
+//     const value = documentFormData?.[key];
+
+//     if (!value) return null;
+
+//     // File object (edit mode upload)
+//     if (value instanceof File) {
+//       return URL.createObjectURL(value);
+//     }
+
+//     // String URL from API (view mode)
+//     if (typeof value === "string") {
+//       return `${BASE_URL}${value}`;
+//     }
+
+//     return null;
+//   };
+
+//   const renderDocumentField = (label, key, isEditable) => {
+//     const src = getDocumentSrc(key);
+//     const isImage = src && !src.toLowerCase().endsWith(".pdf");
+
+//     return (
+//       <Box
+//         sx={{
+//           border: "1px dashed #ccc",
+//           borderRadius: 2,
+//           p: 1.5,
+//           height: "100%",
+//         }}
+//       >
+//         {/* LABEL */}
+//         <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
+//           {label}
+//         </Typography>
+
+//         {/* IMAGE / PREVIEW */}
+//         {src && isImage ? (
+//           <Box
+//             sx={{
+//               width: "100%",
+//               height: 150,
+//               borderRadius: 1,
+//               overflow: "hidden",
+//               display: "flex",
+//               alignItems: "center",
+//               justifyContent: "center",
+//               bgcolor: "#fafafa",
+//               mb: 1,
+//             }}
+//           >
+//             <img
+//               src={src}
+//               alt={label}
+//               style={{
+//                 maxWidth: "100%",
+//                 maxHeight: "100%",
+//                 objectFit: "contain",
+//               }}
+//             />
+//           </Box>
+//         ) : (
+//           <Box
+//             sx={{
+//               height: 150,
+//               display: "flex",
+//               alignItems: "center",
+//               justifyContent: "center",
+//               color: "text.secondary",
+//               bgcolor: "#fafafa",
+//               borderRadius: 1,
+//               mb: 1,
+//             }}
+//           >
+//             Not Uploaded
+//           </Box>
+//         )}
+
+//         {/* ACTION */}
+//         {true ? (
+//           <Button component="label" variant="outlined" fullWidth size="small">
+//             {src ? "Replace" : "Upload"} {label}
+//             <input
+//               hidden
+//               type="file"
+//               accept="image/*,.pdf"
+//               onChange={(e) => {
+//                 const file = e.target.files[0];
+//                 if (!file) return;
+
+//                 setDocumentFormData({
+//                   ...documentFormData,
+//                   [key]: file,
+//                 });
+//               }}
+//             />
+//           </Button>
+//         ) : (
+//           src && (
+//             <Button
+//               variant="outlined"
+//               fullWidth
+//               size="small"
+//               href={src}
+//               target="_blank"
+//             >
+//               View
+//             </Button>
+//           )
+//         )}
+//       </Box>
+//     );
+//   };
+
+//   // ==================== TABLE VIEW ====================
+
+//   if (viewMode === "list") {
+//     return (
+//       <Box sx={{ height: "100vh" }}>
+//         <Box
+//           sx={{
+//             display: "flex",
+//             justifyContent: "space-between",
+//             alignItems: "center",
+//             mb: 3,
+//           }}
+//         >
+//           <Box>
+//             <Typography
+//               variant="h4"
+//               fontWeight={700}
+//               sx={{ color: "#7E7E7E", mb: 1 }}
+//             >
+//               Employee Management
+//             </Typography>
+//             <Typography variant="body2" color="text.secondary">
+//               Manage employees, documents, and information
+//             </Typography>
+//           </Box>
+//           <CommonButton
+//             variant="contained"
+//             startIcon={<AddIcon />}
+//             onClick={handleAddEmployee}
+//             size="large"
+//           >
+//             Add Employee
+//           </CommonButton>
+//         </Box>
+
+//         <Paper elevation={3}>
+//           {loading ? (
+//             <Box display="flex" justifyContent="center" py={10}>
+//               <CircularProgress />
+//             </Box>
+//           ) : (
+//             <TableContainer>
+//               <Table>
+//                 <TableHead>
+//                   <TableRow>
+//                     <TableCell sx={{ fontWeight: 700 }}>Sr</TableCell>
+//                     <TableCell sx={{ fontWeight: 700 }}>
+//                       Employee Code
+//                     </TableCell>
+//                     <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
+//                     <TableCell sx={{ fontWeight: 700 }}>Department</TableCell>
+//                     <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
+//                     <TableCell sx={{ fontWeight: 700 }}>Phone</TableCell>
+//                     <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
+//                     <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+//                     <TableCell sx={{ fontWeight: 700 }}>Actions</TableCell>
+//                   </TableRow>
+//                 </TableHead>
+//                 <TableBody>
+//                   {employees.length > 0 &&
+//                     employees?.map((emp, index) => (
+//                       <TableRow key={emp.id} hover>
+//                         <TableCell>{index + 1}</TableCell>
+//                         <TableCell>
+//                           <Typography>{emp.employee_code}</Typography>
+//                         </TableCell>
+//                         <TableCell>{`${emp.first_name} ${emp.last_name}`}</TableCell>
+//                         <TableCell>{emp.department_name}</TableCell>
+//                         <TableCell>{emp.role_name}</TableCell>
+//                         <TableCell>{emp.phone}</TableCell>
+//                         <TableCell>{emp.email}</TableCell>
+//                         <TableCell>
+//                           <Chip
+//                             label={emp.status}
+//                             color={
+//                               emp.status === "Active"
+//                                 ? "success"
+//                                 : emp.status === "Inactive"
+//                                   ? "default"
+//                                   : "warning"
+//                             }
+//                             size="small"
+//                           />
+//                         </TableCell>
+//                         <TableCell>
+//                           <IconButton
+//                             color="primary"
+//                             onClick={() => handleViewDetails(emp)}
+//                             size="small"
+//                           >
+//                             <VisibilityIcon />
+//                           </IconButton>
+//                         </TableCell>
+//                       </TableRow>
+//                     ))}
+//                 </TableBody>
+//               </Table>
+//             </TableContainer>
+//           )}
+//         </Paper>
+//       </Box>
+//     );
+//   }
+
+//   // ==================== DETAIL VIEW (VIEW/EDIT/CREATE) ====================
+
+//   return (
+//     <Box sx={{ height: "100vh", overflow: "auto", bgcolor: "grey.50" }}>
+//       {/* Header Section */}
+//       <Paper
+//         elevation={0}
+//         sx={{
+//           background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+//           color: "white",
+//           p: 3,
+//         }}
+//       >
+//         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+//           <IconButton onClick={handleBackToList} sx={{ color: "white", mr: 2 }}>
+//             <ArrowBackIcon />
+//           </IconButton>
+//           <Typography variant="h5" fontWeight={700} sx={{ flex: 1 }}>
+//             {viewMode === "create"
+//               ? "Add New Employee"
+//               : viewMode === "edit"
+//                 ? "Edit Employee"
+//                 : "Employee Details"}
+//           </Typography>
+
+//           {viewMode === "view" && (
+//             <Stack direction="row" spacing={1}>
+//               <Button
+//                 variant="contained"
+//                 color="warning"
+//                 startIcon={<EditIcon />}
+//                 onClick={handleEditEmployee}
+//               >
+//                 Edit
+//               </Button>
+//               <Button
+//                 variant="contained"
+//                 color="error"
+//                 startIcon={<DeleteIcon />}
+//                 onClick={() => setDeleteDialogOpen(true)}
+//               >
+//                 Delete
+//               </Button>
+//             </Stack>
+//           )}
+
+//           {viewMode === "edit" && (
+//             <Stack direction="row" spacing={1}>
+//               <CommonButton
+//                 variant="contained"
+//                 startIcon={<SaveIcon />}
+//                 onClick={handleSaveEdit}
+//                 disabled={loading}
+//               >
+//                 Save All
+//               </CommonButton>
+//               <Button
+//                 variant="outlined"
+//                 startIcon={<CancelIcon />}
+//                 onClick={handleCancelEdit}
+//                 sx={{ color: "white", borderColor: "white" }}
+//               >
+//                 Cancel
+//               </Button>
+//             </Stack>
+//           )}
+//         </Box>
+
+//         {viewMode === "view" && selectedEmployee && (
+//           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+//             {selectedEmployee.profile_photo && (
+//               <Avatar
+//                 src={`${BASE_URL}${selectedEmployee.profile_photo}`}
+//                 sx={{ width: 80, height: 80, border: "3px solid white" }}
+//               />
+//             )}
+//             <Box>
+//               <Typography variant="h4" fontWeight={700}>
+//                 {selectedEmployee.name}
+//               </Typography>
+//               <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+//                 <Chip
+//                   label={selectedEmployee.status}
+//                   size="small"
+//                   sx={{ bgcolor: "white", color: "success.main" }}
+//                 />
+//                 <Chip
+//                   label={selectedEmployee.employee_code}
+//                   size="small"
+//                   sx={{ bgcolor: "white", color: "primary.main" }}
+//                 />
+//               </Box>
+//               <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+//                 {selectedEmployee.designation} • {selectedEmployee.department}
+//               </Typography>
+//               <Typography variant="body2" sx={{ opacity: 0.9 }}>
+//                 {selectedEmployee.email} • {selectedEmployee.phone}
+//               </Typography>
+//             </Box>
+//           </Box>
+//         )}
+//       </Paper>
+
+//       {/* Validation Alert */}
+//       {validationAlert && viewMode === "create" && (
+//         <Box sx={{ p: 3, pb: 0 }}>
+//           <Alert severity="error" onClose={() => setValidationAlert(null)}>
+//             {validationAlert}
+//           </Alert>
+//         </Box>
+//       )}
+
+//       {/* Tabs Section */}
+//       <Box sx={{ bgcolor: "white", borderBottom: 1, borderColor: "divider" }}>
+//         <Tabs
+//           value={activeTab}
+//           onChange={(e, v) => setActiveTab(v)}
+//           variant="scrollable"
+//           scrollButtons="auto"
+//           sx={{ px: 3 }}
+//         >
+//           <Tab
+//             icon={<PersonIcon />}
+//             iconPosition="start"
+//             label="Employee Profile"
+//           />
+//           {viewMode !== "create" && [
+//             <Tab
+//               key="documents"
+//               icon={<FolderIcon />}
+//               iconPosition="start"
+//               label="Employee Documents"
+//             />,
+//             <Tab
+//               key="personal"
+//               icon={<DescriptionIcon />}
+//               iconPosition="start"
+//               label="Personal Details"
+//             />,
+//             <Tab
+//               key="salary"
+//               icon={<AccountBalanceIcon />}
+//               iconPosition="start"
+//               label="Salary"
+//             />,
+//             <Tab
+//               key="users"
+//               icon={<PersonIcon />}
+//               iconPosition="start"
+//               label="Users"
+//             />,
+//           ]}
+//         </Tabs>
+//       </Box>
+
+//       {/* Content Section */}
+//       <Box sx={{ p: 3 }}>
+//         {/* TAB 0: EMPLOYEE PROFILE */}
+//         <TabPanel value={activeTab} index={0}>
+//           <Card elevation={2}>
+//             <CardContent>
+//               <Box
+//                 sx={{
+//                   display: "flex",
+//                   justifyContent: "space-between",
+//                   alignItems: "center",
+//                   mb: 2,
+//                 }}
+//               >
+//                 <Typography variant="h6" fontWeight={700}>
+//                   Employee Information
+//                 </Typography>
+//               </Box>
+//               <Divider sx={{ mb: 3 }} />
+
+//               <Grid container spacing={2}>
+//                 <Grid item xs={12} sm={6}>
+//                   {renderTextField("First Name", "first_name")}
+//                 </Grid>
+//                 <Grid item xs={12} sm={6}>
+//                   {renderTextField("Last Name", "last_name")}
+//                 </Grid>
+//                 {/* <Grid item xs={12} sm={6}>
+//                   {renderTextField("Full Name", "name")}
+//                 </Grid> */}
+//                 <Grid item xs={12} sm={6}>
+//                   {renderTextField("Employee Code", "employee_code")}
+//                 </Grid>
+//                 <Grid item xs={12} sm={6}>
+//                   {renderTextField("Email", "email", "email")}
+//                 </Grid>
+//                 <Grid item xs={12} sm={6}>
+//                   {renderTextField("Phone", "phone", "tel", {
+//                     inputProps: {
+//                       inputMode: "numeric",
+//                       pattern: "[0-9]*",
+//                       maxLength: 10,
+//                     },
+//                   })}
+//                 </Grid>
+
+//                 {viewMode === "create" && (
+//                   <Grid item xs={12} sm={6}>
+//                     {renderTextField("Password", "password", "password")}
+//                   </Grid>
+//                 )}
+
+//                 {/* <Grid item xs={12} sm={6}>
+//                   {renderTextField(
+//                     "Emergency Contact Phone",
+//                     "emergency_contact_phone",
+//                     "tel",
+//                     {
+//                       inputProps: {
+//                         inputMode: "numeric",
+//                         pattern: "[0-9]*",
+//                         maxLength: 10,
+//                       },
+//                     },
+//                   )}
+//                 </Grid> */}
+
+//                 <Grid item xs={12} sm={6}>
+//                   {renderTextField("Date of Joining", "joining_date", "date", {
+//                     InputLabelProps: { shrink: true },
+//                   })}
+//                 </Grid>
+//                 <Grid item xs={12} sm={6}>
+//                   {renderTextField("Date of Birth", "date_of_birth", "date", {
+//                     InputLabelProps: { shrink: true },
+//                   })}
+//                 </Grid>
+
+//                 <Grid sx={{width:200}} item xs={12} sm={6}>
+//                   {renderTextField("Gender", "gender", "text", {
+//                     select: true,
+//                     children: [
+//                       <MenuItem key="Male" value="Male">
+//                         Male
+//                       </MenuItem>,
+//                       <MenuItem key="Female" value="Female">
+//                         Female
+//                       </MenuItem>,
+//                       <MenuItem key="Other" value="Other">
+//                         Other
+//                       </MenuItem>,
+//                     ],
+//                   })}
+//                 </Grid>
+//                 <Grid item xs={12} sm={6}>
+//                   {viewMode === "edit" || viewMode === "create" ? (
+//                     <Autocomplete
+//                     sx={{width:200}}
+//                       options={departments}
+//                       getOptionLabel={(option) => option.name || ""}
+//                       value={
+//                         departments.find(
+//                           (d) => d.id === formData.department_id,
+//                         ) || null
+//                       }
+//                       onChange={(event, newValue) => {
+//                         setFormData({
+//                           ...formData,
+//                           department_id: newValue ? newValue.id : null,
+//                           department: newValue ? newValue.name : "",
+//                         });
+//                         if (formErrors.department_id) {
+//                           setFormErrors({
+//                             ...formErrors,
+//                             department_id: undefined,
+//                           });
+//                         }
+//                       }}
+//                       loading={departmentsLoading}
+//                       renderInput={(params) => (
+//                         <TextField
+//                           {...params}
+//                           label={
+//                             viewMode === "create" || viewMode === "edit"
+//                               ? "Department *"
+//                               : "Department"
+//                           }
+//                           error={
+//                             !!(viewMode === "create" || viewMode === "edit") &&
+//                             !!formErrors.department_id
+//                           }
+//                           helperText={
+//                             (viewMode === "create" || viewMode === "edit") &&
+//                             formErrors.department_id
+//                           }
+//                           InputProps={{
+//                             ...params.InputProps,
+//                             endAdornment: (
+//                               <>
+//                                 {departmentsLoading ? (
+//                                   <CircularProgress color="inherit" size={20} />
+//                                 ) : null}
+//                                 {params.InputProps.endAdornment}
+//                               </>
+//                             ),
+//                           }}
+//                         />
+//                       )}
+//                     />
+//                   ) : (
+//                    <Autocomplete
+//                                        sx={{width:200}}
+
+//                    disabled={true}
+//                       options={departments}
+//                       getOptionLabel={(option) => option.name || ""}
+//                       value={
+//                         departments.find(
+//                           (d) => d.id === formData.department_id,
+//                         ) || null
+//                       }
+//                       onChange={(event, newValue) => {
+//                         setFormData({
+//                           ...formData,
+//                           department_id: newValue ? newValue.id : null,
+//                           department: newValue ? newValue.name : "",
+//                         });
+//                         if (formErrors.department_id) {
+//                           setFormErrors({
+//                             ...formErrors,
+//                             department_id: undefined,
+//                           });
+//                         }
+//                       }}
+//                       loading={departmentsLoading}
+//                       renderInput={(params) => (
+//                         <TextField
+//                           {...params}
+//                           label={
+//                             viewMode === "create" || viewMode === "edit"
+//                               ? "Department *"
+//                               : "Department"
+//                           }
+//                           error={
+//                             !!(viewMode === "create" || viewMode === "edit") &&
+//                             !!formErrors.department_id
+//                           }
+//                           helperText={
+//                             (viewMode === "create" || viewMode === "edit") &&
+//                             formErrors.department_id
+//                           }
+//                           InputProps={{
+//                             ...params.InputProps,
+//                             endAdornment: (
+//                               <>
+//                                 {departmentsLoading ? (
+//                                   <CircularProgress color="inherit" size={20} />
+//                                 ) : null}
+//                                 {params.InputProps.endAdornment}
+//                               </>
+//                             ),
+//                           }}
+//                         />
+//                       )}
+//                     />
+//                   )}
+//                 </Grid>
+//                 <Grid item xs={12} sm={6}>
+//                   {viewMode === "edit" || viewMode === "create" ? (
+//                     <Autocomplete
+//                                         sx={{width:200}}
+
+//                       options={roles}
+//                       getOptionLabel={(option) => option.name || ""}
+//                       value={
+//                         roles.find((r) => r.id === formData.role_id) || null
+//                       }
+//                       onChange={(event, newValue) => {
+//                         setFormData({
+//                           ...formData,
+//                           role_id: newValue ? newValue.id : null,
+//                           role: newValue ? newValue.name : "",
+//                         });
+//                         if (formErrors.role_id) {
+//                           setFormErrors({ ...formErrors, role_id: undefined });
+//                         }
+//                       }}
+//                       loading={rolesLoading}
+//                       renderInput={(params) => (
+//                         <TextField
+//                           {...params}
+//                           label={
+//                             viewMode === "create" || viewMode === "edit"
+//                               ? "Role *"
+//                               : "Role"
+//                           }
+//                           error={
+//                             !!(viewMode === "create" || viewMode === "edit") &&
+//                             !!formErrors.role_id
+//                           }
+//                           helperText={
+//                             (viewMode === "create" || viewMode === "edit") &&
+//                             formErrors.role_id
+//                           }
+//                           InputProps={{
+//                             ...params.InputProps,
+//                             endAdornment: (
+//                               <>
+//                                 {rolesLoading ? (
+//                                   <CircularProgress color="inherit" size={20} />
+//                                 ) : null}
+//                                 {params.InputProps.endAdornment}
+//                               </>
+//                             ),
+//                           }}
+//                         />
+//                       )}
+//                     />
+//                   ) : (
+//                      <Autocomplete
+//                                          sx={{width:200}}
+
+//                      disabled={true}
+//                       options={roles}
+//                       getOptionLabel={(option) => option.name || ""}
+//                       value={
+//                         roles.find((r) => r.id === formData.role_id) || null
+//                       }
+//                       onChange={(event, newValue) => {
+//                         setFormData({
+//                           ...formData,
+//                           role_id: newValue ? newValue.id : null,
+//                           role: newValue ? newValue.name : "",
+//                         });
+//                         if (formErrors.role_id) {
+//                           setFormErrors({ ...formErrors, role_id: undefined });
+//                         }
+//                       }}
+//                       loading={rolesLoading}
+//                       renderInput={(params) => (
+//                         <TextField
+//                           {...params}
+//                           label={
+//                             viewMode === "create" || viewMode === "edit"
+//                               ? "Role *"
+//                               : "Role"
+//                           }
+//                           error={
+//                             !!(viewMode === "create" || viewMode === "edit") &&
+//                             !!formErrors.role_id
+//                           }
+//                           helperText={
+//                             (viewMode === "create" || viewMode === "edit") &&
+//                             formErrors.role_id
+//                           }
+//                           InputProps={{
+//                             ...params.InputProps,
+//                             endAdornment: (
+//                               <>
+//                                 {rolesLoading ? (
+//                                   <CircularProgress color="inherit" size={20} />
+//                                 ) : null}
+//                                 {params.InputProps.endAdornment}
+//                               </>
+//                             ),
+//                           }}
+//                         />
+//                       )}
+//                     />
+//                   )}
+//                 </Grid>
+//                 <Grid item xs={12} sm={6}>
+//                   {renderTextField("Status", "status", "text", {
+//                     select: true,
+//                     children: [
+//                       <MenuItem key="Active" value="Active">
+//                         Active
+//                       </MenuItem>,
+//                       <MenuItem key="Inactive" value="Inactive">
+//                         Inactive
+//                       </MenuItem>,
+//                     ],
+//                   })}
+//                 </Grid>
+
+//                 <Grid item xs={12} sm={6}>
+//                   {renderTextField(
+//                     "Employment Type",
+//                     "employment_type",
+//                     "text",
+//                     {
+//                       select: true,
+//                       children: [
+//                         <MenuItem key="Permanent" value="Permanent">
+//                           Permanent
+//                         </MenuItem>,
+//                         <MenuItem key="Contract" value="Contract">
+//                           Contract
+//                         </MenuItem>,
+//                         <MenuItem key="Intern" value="Intern">
+//                           Intern
+//                         </MenuItem>,
+//                       ],
+//                     },
+//                   )}
+//                 </Grid>
+//               </Grid>
+//             </CardContent>
+//           </Card>
+//         </TabPanel>
+
+//         <Box sx={{ marginTop: "10px" }}>
+//           {viewMode === "create" && (
+//             <CommonButton
+//               variant="contained"
+//               size="large"
+//               onClick={handleCreateEmployee}
+//               disabled={loading || createLoading}
+//             >
+//               {loading || createLoading ? "Creating..." : "Create Employee"}
+//             </CommonButton>
+//           )}
+//         </Box>
+
+//         {/* TAB 1: EMPLOYEE DOCUMENTS */}
+//         {/* {viewMode !== "create" && ( */}
+//         <TabPanel value={activeTab} index={1}>
+//           <Card elevation={2}>
+//             <CardContent>
+//               {/* ================= HEADER ================= */}
+//               <Box
+//                 sx={{
+//                   display: "flex",
+//                   justifyContent: "space-between",
+//                   alignItems: "center",
+//                   mb: 2,
+//                 }}
+//               >
+//                 <Typography variant="h6" fontWeight={700}>
+//                   Employee Documents
+//                 </Typography>
+
+//                 {/* {viewMode === "edit" && (
+//                   <CommonButton
+//                     variant="contained"
+//                     startIcon={<AddIcon />}
+//                     onClick={handleUploadDocument}
+//                     size="small"
+//                   >
+//                     {docsArray.length > 0
+//                       ? "Upload More Documents"
+//                       : "Add Document"}
+//                   </CommonButton>
+//                 )} */}
+//                 {viewMode === "edit" && (
+//                   <CommonButton
+//                     variant="contained"
+//                     startIcon={
+//                       docsArray.length > 0 ? <SaveIcon /> : <AddIcon />
+//                     }
+//                     onClick={handleUploadDocument}
+//                     size="small"
+//                   >
+//                     {docsArray.length > 0
+//                       ? "Update Documents" // Updated text
+//                       : "Add Document"}
+//                   </CommonButton>
+//                 )}
+//               </Box>
+
+//               <Divider sx={{ mb: 3 }} />
+
+//               {/* ================= GRID LAYOUT ================= */}
+//               <Box
+//                 sx={{
+//                   display: "grid",
+//                   gridTemplateColumns: "1fr 1fr",
+//                   gap: 3,
+//                   width: "100%",
+//                   alignItems: "flex-start",
+//                 }}
+//               >
+//                 {/* ========== LEFT : TEXT FIELDS ========== */}
+//                 <Box>
+//                   <Grid container spacing={2}>
+//                     <Grid item xs={12}>
+//                       <TextField
+//                         fullWidth
+//                         label="Aadhaar Number"
+//                         value={documentFormData.aadhar_number || ""}
+//                         InputProps={{ readOnly: viewMode === "view" }}
+//                         onChange={(e) =>
+//                           setDocumentFormData({
+//                             ...documentFormData,
+//                             aadhar_number: e.target.value,
+//                           })
+//                         }
+//                       />
+//                     </Grid>
+
+//                     <Grid item xs={12}>
+//                       <TextField
+//                         fullWidth
+//                         label="PAN Number"
+//                         value={documentFormData.pancard_number || ""}
+//                         InputProps={{ readOnly: viewMode === "view" }}
+//                         onChange={(e) =>
+//                           setDocumentFormData({
+//                             ...documentFormData,
+//                             pancard_number: e.target.value,
+//                           })
+//                         }
+//                       />
+//                     </Grid>
+
+//                     <Grid item xs={12}>
+//                       <TextField
+//                         fullWidth
+//                         label="Driving License Number"
+//                         value={documentFormData.driving_license_number || ""}
+//                         InputProps={{ readOnly: viewMode === "view" }}
+//                         onChange={(e) =>
+//                           setDocumentFormData({
+//                             ...documentFormData,
+//                             driving_license_number: e.target.value,
+//                           })
+//                         }
+//                       />
+//                     </Grid>
+//                   </Grid>
+//                 </Box>
+
+//                 {/* ========== RIGHT : DOCUMENT FILES ========== */}
+//                 <Box>
+//                   <Grid container spacing={2}>
+//                     {[
+//                       { label: "Aadhaar Front", key: "aadhar_front" },
+//                       { label: "Aadhaar Back", key: "aadhar_back" },
+//                       { label: "PAN Card", key: "pan_card" },
+//                       { label: "Photo", key: "photo" },
+//                       {
+//                         label: "Driving License Front",
+//                         key: "driving_license_front",
+//                       },
+//                       {
+//                         label: "Driving License Back",
+//                         key: "driving_license_back",
+//                       },
+//                     ].map((doc) => (
+//                       <Grid item xs={12} sm={6} key={doc.key}>
+//                         {renderDocumentField(
+//                           doc.label,
+//                           doc.key,
+//                           // viewMode === "edit",
+//                         )}
+//                       </Grid>
+//                     ))}
+//                   </Grid>
+//                 </Box>
+//               </Box>
+//             </CardContent>
+//           </Card>
+//         </TabPanel>
+//         {/* )} */}
+
+//         {/* TAB 2: PERSONAL DETAILS */}
+//         {/* {viewMode !== "create" && ( */}
+//         <TabPanel value={activeTab} index={2}>
+//           <Card elevation={2}>
+//             <CardContent>
+//               <Box
+//                 sx={{
+//                   display: "flex",
+//                   justifyContent: "space-between",
+//                   alignItems: "center",
+//                   mb: 2,
+//                 }}
+//               >
+//                 <Typography variant="h6" fontWeight={700}>
+//                   Personal Details
+//                 </Typography>
+//               </Box>
+//               <Divider sx={{ mb: 3 }} />
+
+//               <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+//                 <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
+//                   {editingPersonalDetails
+//                     ? "Edit Personal Details"
+//                     : viewMode === "edit"
+//                       ? "Add Personal Details"
+//                       : "Personal Details"}
+//                 </Typography>
+//                 <Grid container spacing={2}>
+//                   <Grid item xs={12} sm={6}>
+//                     <TextField
+//                       fullWidth
+//                       label="Father Name"
+//                       value={personalDetailsFormData.father_name}
+//                       onChange={(e) => {
+//                         setPersonalDetailsFormData({
+//                           ...personalDetailsFormData,
+//                           father_name: e.target.value,
+//                         });
+//                         setHasModifiedPersonalDetails(true);
+//                       }}
+//                       disabled={viewMode !== "edit"}
+//                     />
+//                   </Grid>
+//                   <Grid item xs={12} sm={6}>
+//                     <TextField
+//                       fullWidth
+//                       label="Mother Name"
+//                       value={personalDetailsFormData.mother_name}
+//                       onChange={(e) => {
+//                         setPersonalDetailsFormData({
+//                           ...personalDetailsFormData,
+//                           mother_name: e.target.value,
+//                         });
+//                         setHasModifiedPersonalDetails(true);
+//                       }}
+//                       disabled={viewMode !== "edit"}
+//                     />
+//                   </Grid>
+//                   <Grid item xs={12} sm={6}>
+//                     <TextField
+//                     sx={{width:200}}
+//                       // fullWidth
+//                       label="Marital Status *"
+//                       select
+//                       value={personalDetailsFormData.marital_status}
+//                       onChange={(e) => {
+//                         setPersonalDetailsFormData({
+//                           ...personalDetailsFormData,
+//                           marital_status: e.target.value,
+//                         });
+//                         setHasModifiedPersonalDetails(true);
+//                       }}
+//                       disabled={viewMode !== "edit"}
+//                     >
+//                       <MenuItem value="single">Single</MenuItem>
+//                       <MenuItem value="married">Married</MenuItem>
+//                     </TextField>
+//                   </Grid>
+//                   <Grid item xs={12} sm={6}>
+//                     <TextField
+//                       fullWidth
+//                       label="Spouse Name"
+//                       value={personalDetailsFormData.spouse_name}
+//                       onChange={(e) => {
+//                         setPersonalDetailsFormData({
+//                           ...personalDetailsFormData,
+//                           spouse_name: e.target.value,
+//                         });
+//                         setHasModifiedPersonalDetails(true);
+//                       }}
+//                       disabled={viewMode !== "edit"}
+//                     />
+//                   </Grid>
+//                   <Grid item xs={12} sm={6}>
+//                     {renderTextField(
+//                       "Emergency Contact Phone",
+//                       "emergency_contact_phone",
+//                       "tel",
+//                       {
+//                         inputProps: {
+//                           inputMode: "numeric",
+//                           pattern: "[0-9]*",
+//                           maxLength: 10,
+//                         },
+//                         disabled: viewMode !== "edit",
+//                       },
+//                     )}
+//                   </Grid>
+//                 </Grid>
+//               </Box>
+//             </CardContent>
+//           </Card>
+//         </TabPanel>
+//         {/* )} */}
+
+//         {/* TAB 3: SALARY */}
+//         {/* {viewMode !== "create" && ( */}
+//         <TabPanel value={activeTab} index={3}>
+//           <Card elevation={2}>
+//             <CardContent>
+//               <Box
+//                 sx={{
+//                   display: "flex",
+//                   justifyContent: "space-between",
+//                   alignItems: "center",
+//                   mb: 2,
+//                 }}
+//               >
+//                 <Typography variant="h6" fontWeight={700}>
+//                   Salary Information
+//                 </Typography>
+//               </Box>
+//               <Divider sx={{ mb: 3 }} />
+
+//               <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+//                 <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
+//                   {editingSalary
+//                     ? "Edit Salary Information"
+//                     : "Add Salary Information"}
+//                 </Typography>
+//                 <Grid container spacing={2}>
+//                   <Grid item xs={12} sm={6}>
+//                     <TextField
+//                       fullWidth
+//                       label="Gross Salary *"
+//                       type="number"
+//                       value={salaryFormData.gross_salary}
+//                       onChange={(e) => {
+//                         setSalaryFormData({
+//                           ...salaryFormData,
+//                           gross_salary: e.target.value,
+//                         });
+//                         setHasModifiedSalary(true);
+//                       }}
+//                       disabled={viewMode !== "edit"}
+//                     />
+//                   </Grid>
+//                   <Grid item xs={12} sm={6}>
+//                     <TextField
+//                       fullWidth
+//                       label="Basic Salary *"
+//                       type="number"
+//                       value={salaryFormData.basic_salary}
+//                       onChange={(e) => {
+//                         setSalaryFormData({
+//                           ...salaryFormData,
+//                           basic_salary: e.target.value,
+//                         });
+//                         setHasModifiedSalary(true);
+//                       }}
+//                       disabled={viewMode !== "edit"}
+//                     />
+//                   </Grid>
+
+//                   <Grid item xs={12} sm={6}>
+//                     <TextField
+//                       fullWidth
+//                       label="Allowances"
+//                       type="number"
+//                       value={salaryFormData.alloances}
+//                       onChange={(e) => {
+//                         setSalaryFormData({
+//                           ...salaryFormData,
+//                           alloances: e.target.value,
+//                         });
+//                         setHasModifiedSalary(true);
+//                       }}
+//                       disabled={viewMode !== "edit"}
+//                     />
+//                   </Grid>
+//                   <Grid item xs={12} sm={6}>
+//                     <TextField
+//                       fullWidth
+//                       label="Deductions"
+//                       type="number"
+//                       value={salaryFormData.deductions}
+//                       onChange={(e) => {
+//                         setSalaryFormData({
+//                           ...salaryFormData,
+//                           deductions: e.target.value,
+//                         });
+//                         setHasModifiedSalary(true);
+//                       }}
+//                       disabled={viewMode !== "edit"}
+//                     />
+//                   </Grid>
+
+//                   <Grid item xs={12} sm={6}>
+//                     <TextField
+//                       fullWidth
+//                       label="Effective From *"
+//                       type="date"
+//                       InputLabelProps={{ shrink: true }}
+//                       value={salaryFormData.effective_from}
+//                       onChange={(e) => {
+//                         setSalaryFormData({
+//                           ...salaryFormData,
+//                           effective_from: e.target.value,
+//                         });
+//                         setHasModifiedSalary(true);
+//                       }}
+//                       disabled={viewMode !== "edit"}
+//                     />
+//                   </Grid>
+//                 </Grid>
+//               </Box>
+//             </CardContent>
+//           </Card>
+//         </TabPanel>
+//         {/* )} */}
+
+//         {/* TAB 4: USERS */}
+//         {/* {viewMode !== "create" && ( */}
+//         <TabPanel value={activeTab} index={4}>
+//           <Card elevation={2}>
+//             <CardContent>
+//               <Box
+//                 sx={{
+//                   display: "flex",
+//                   justifyContent: "space-between",
+//                   alignItems: "center",
+//                   mb: 2,
+//                 }}
+//               >
+//                 <Typography variant="h6" fontWeight={700}>
+//                   User Accounts
+//                 </Typography>
+//               </Box>
+//               <Divider sx={{ mb: 3 }} />
+
+//               <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+//                 <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
+//                   {editingUser ? "Edit User Account" : "Add User Account"}
+//                 </Typography>
+//                 <Grid container spacing={2}>
+//                   <Grid item xs={12} sm={6}>
+//                     <TextField
+//                       fullWidth
+//                       label="Username *"
+//                       value={userFormData.username}
+//                       onChange={(e) => {
+//                         setUserFormData({
+//                           ...userFormData,
+//                           username: e.target.value,
+//                         });
+//                         setHasModifiedUser(true);
+//                       }}
+//                       disabled={viewMode !== "edit"}
+//                     />
+//                   </Grid>
+
+//                   <Grid item xs={12} sm={6}>
+//                     <TextField
+//                       fullWidth
+//                       label={
+//                         editingUser
+//                           ? "Password (leave blank to keep current)"
+//                           : "Password *"
+//                       }
+//                       // type="password"
+//                       value={userFormData.password}
+//                       onChange={(e) => {
+//                         setUserFormData({
+//                           ...userFormData,
+//                           password: e.target.value,
+//                         });
+//                         setHasModifiedUser(true);
+//                       }}
+//                       disabled={viewMode !== "edit"}
+//                     />
+//                   </Grid>
+
+//                   <Grid item xs={12} sm={6}>
+//                     <Autocomplete
+//                     sx={{width:200}}
+//                       disabled={viewMode !== "edit"}
+//                       options={roles}
+//                       getOptionLabel={(option) => option.name || ""}
+//                       value={
+//                         roles.find((r) => r.id === userFormData.role_id) || null
+//                       }
+//                       onChange={(event, newValue) => {
+//                         setUserFormData({
+//                           ...userFormData,
+//                           role_id: newValue ? newValue.id : null,
+//                           role: newValue ? newValue.name : "",
+//                         });
+//                         setHasModifiedUser(true);
+//                       }}
+//                       loading={rolesLoading}
+//                       renderInput={(params) => (
+//                         <TextField
+//                           {...params}
+//                           label="Role"
+//                           InputProps={{
+//                             ...params.InputProps,
+//                             endAdornment: (
+//                               <>
+//                                 {rolesLoading ? (
+//                                   <CircularProgress color="inherit" size={20} />
+//                                 ) : null}
+//                                 {params.InputProps.endAdornment}
+//                               </>
+//                             ),
+//                           }}
+//                         />
+//                       )}
+//                     />
+//                   </Grid>
+//                   <Grid item xs={12}>
+//                     <FormControlLabel
+//                       disabled={viewMode !== "edit"}
+//                       control={
+//                         <Switch
+//                           checked={userFormData.is_active}
+//                           onChange={(e) => {
+//                             setUserFormData({
+//                               ...userFormData,
+//                               is_active: e.target.checked,
+//                             });
+//                             setHasModifiedUser(true);
+//                           }}
+//                         />
+//                       }
+//                       label="Active"
+//                     />
+//                   </Grid>
+//                 </Grid>
+//               </Box>
+//             </CardContent>
+//           </Card>
+//         </TabPanel>
+//         {/* )} */}
+//       </Box>
+
+//       {/* Delete Confirmation Dialog */}
+//       <Dialog
+//         open={deleteDialogOpen}
+//         onClose={() => setDeleteDialogOpen(false)}
+//       >
+//         <DialogTitle>Confirm Delete</DialogTitle>
+//         <DialogContent>
+//           <Typography>
+//             Are you sure you want to delete{" "}
+//             <strong>{selectedEmployee?.name}</strong>? This action cannot be
+//             undone.
+//           </Typography>
+//         </DialogContent>
+//         <DialogActions>
+//           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+//           <Button variant="contained" color="error" onClick={handleDelete}>
+//             Delete
+//           </Button>
+//         </DialogActions>
+//       </Dialog>
+//     </Box>
+//   );
+// };
+
+// export default EmployeeManagement;
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -23,7 +2670,6 @@ import {
   Stack,
   Avatar,
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
@@ -40,11 +2686,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DescriptionIcon from "@mui/icons-material/Description";
 import PersonIcon from "@mui/icons-material/Person";
 import FolderIcon from "@mui/icons-material/Folder";
-import DownloadIcon from "@mui/icons-material/Download";
+import DescriptionIcon from "@mui/icons-material/Description";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 
 import {
@@ -118,47 +2762,280 @@ import CommonToast from "../../components/commonComponents/Toster";
 
 const BASE_URL = "https://hogofilm.pythonanywhere.com";
 
-// ==================== UTILITY COMPONENTS ====================
-
-const TabPanel = ({ children, value, index }) => {
-  if (value !== index) return null;
-  return <Box pt={3}>{children}</Box>;
+// ─── Design constants ─────────────────────────────────────────────────────────
+const fieldSx = {
+  "& .MuiOutlinedInput-root.Mui-focused fieldset": { borderColor: "#D20000" },
+  "& label.Mui-focused": { color: "#D20000" },
 };
 
-const InfoRow = ({ label, value }) => (
-  <Box sx={{ mb: 2 }}>
-    <Typography variant="body2" color="text.secondary" fontWeight={600}>
-      {label}
-    </Typography>
-    <Typography variant="body1" sx={{ mt: 0.5 }}>
-      {value || "—"}
+const STATUS_CHIP = {
+  Active: { bgcolor: "#e8f5e9", color: "#2e7d32", border: "1px solid #c8e6c9" },
+  Inactive: {
+    bgcolor: "#f5f5f5",
+    color: "#757575",
+    border: "1px solid #e0e0e0",
+  },
+};
+
+// ─── Initial state constants ──────────────────────────────────────────────────
+const EMPTY_FORM = {
+  first_name: "",
+  last_name: "",
+  name: "",
+  email: "",
+  phone: "",
+  password: "",
+  employee_code: "",
+  department: "",
+  role: "",
+  department_id: null,
+  designation: "",
+  employment_type: "",
+  role_id: null,
+  joining_date: "",
+  date_of_birth: "",
+  gender: "",
+  address: "",
+  city: "",
+  state: "",
+  pincode: "",
+  emergency_contact_name: "",
+  emergency_contact_phone: "",
+  status: "Active",
+  gross_salary: "",
+  basic_salary: "",
+  bank_account_number: "",
+  ifsc_code: "",
+  pan_number: "",
+  aadhaar_number: "",
+};
+
+const EMPTY_DOCS = {
+  document_type: "",
+  pancard_number: "",
+  aadhar_number: "",
+  driving_license_number: "",
+  aadhar_front: null,
+  aadhar_back: null,
+  pan_card: null,
+  photo: null,
+  driving_license_front: null,
+  driving_license_back: null,
+  remarks: "",
+};
+
+const EMPTY_PERSONAL = {
+  father_name: "",
+  mother_name: "",
+  marital_status: "",
+  spouse_name: "",
+  blood_group: "",
+  nationality: "",
+  religion: "",
+  caste: "",
+  identification_marks: "",
+  hobbies: "",
+};
+
+const EMPTY_SALARY = {
+  gross_salary: "",
+  basic_salary: "",
+  hra: "",
+  da: "",
+  ta: "",
+  medical_allowance: "",
+  alloances: "",
+  deductions: "",
+  provident_fund: "",
+  professional_tax: "",
+  income_tax: "",
+  effective_from: "",
+  remarks: "",
+};
+
+const EMPTY_USER = {
+  username: "",
+  email: "",
+  password: "",
+  first_name: "",
+  last_name: "",
+  is_active: true,
+  is_staff: false,
+  is_superuser: false,
+  phone: "",
+  department_id: null,
+  department: "",
+  role_id: null,
+  role: "",
+};
+
+// ─── Shared helper components (outside to prevent remount/focus-loss) ─────────
+
+const SectionHeading = ({ title }) => (
+  <Box display="flex" alignItems="center" gap={1.5} mb={2}>
+    <Box sx={{ width: 4, height: 22, bgcolor: "#D20000", borderRadius: 1 }} />
+    <Typography
+      variant="subtitle1"
+      fontWeight={700}
+      color="#1a1a1a"
+      letterSpacing={0.5}
+    >
+      {title}
     </Typography>
   </Box>
 );
 
-const DocumentLink = ({ url, label }) => {
-  if (!url) return null;
+const TabPanel = ({ children, value, index }) =>
+  value !== index ? null : <Box pt={3}>{children}</Box>;
+
+// DocumentCard: fully outside component → no remount, no focus loss
+const DocumentCard = ({ label, fileKey, src, isEditable, onFileChange }) => {
+  const isImage = src && !src.toLowerCase().endsWith(".pdf");
   return (
-    <Button
-      variant="outlined"
-      size="small"
-      href={`${BASE_URL}${url}`}
-      target="_blank"
-      startIcon={<VisibilityIcon />}
-      sx={{ mr: 1, mb: 1 }}
+    <Box
+      sx={{
+        border: "1px dashed #D20000",
+        borderRadius: 2,
+        p: 1.5,
+        bgcolor: "#fafafa",
+      }}
     >
-      {label}
-    </Button>
+      <Typography
+        variant="caption"
+        fontWeight={700}
+        color="#424242"
+        display="block"
+        mb={1}
+      >
+        {label}
+      </Typography>
+      {src && isImage ? (
+        <Box
+          sx={{
+            width: "100%",
+            height: 130,
+            borderRadius: 1,
+            overflow: "hidden",
+            mb: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            bgcolor: "#fff",
+          }}
+        >
+          <img
+            src={src}
+            alt={label}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              objectFit: "contain",
+            }}
+          />
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            height: 130,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "text.disabled",
+            bgcolor: "#f5f5f5",
+            borderRadius: 1,
+            mb: 1,
+          }}
+        >
+          <Typography variant="caption">Not uploaded</Typography>
+        </Box>
+      )}
+      <Button
+        component="label"
+        variant="outlined"
+        fullWidth
+        size="small"
+        sx={{
+          borderColor: "#D20000",
+          color: "#D20000",
+          "&:hover": { bgcolor: "#fff5f5" },
+          fontWeight: 600,
+          textTransform: "none",
+          borderRadius: 1.5,
+        }}
+      >
+        {src ? "Replace" : "Upload"}
+        <input
+          hidden
+          type="file"
+          accept="image/*,.pdf"
+          onChange={(e) => onFileChange(fileKey, e.target.files[0])}
+        />
+      </Button>
+    </Box>
   );
 };
 
-// ==================== MAIN COMPONENT ====================
+// ─── Field component (outside to prevent remount/focus-loss on every keystroke) ─
+const REQUIRED_EMPLOYEE_FIELDS = new Set([
+  "first_name",
+  "last_name",
+  "email",
+  "phone",
+  "password",
+  "employee_code",
+  "department_id",
+  "role_id",
+  "employment_type",
+  "joining_date",
+  "date_of_birth",
+  "gender",
+]);
+
+const Field = ({
+  label,
+  field,
+  type = "text",
+  options = {},
+  formData,
+  formErrors,
+  isEditable,
+  setFormData,
+  setFormErrors,
+}) => {
+  const required = REQUIRED_EMPLOYEE_FIELDS.has(field);
+  const { children: selectChildren, ...rest } = options;
+  const props = {
+    fullWidth: true,
+    label: required && isEditable ? `${label} *` : label,
+    type,
+    value: formData[field] ?? "",
+    sx: fieldSx,
+    InputProps: { readOnly: !isEditable },
+    error: isEditable && !!formErrors[field],
+    helperText: isEditable ? formErrors[field] : undefined,
+    onChange: isEditable
+      ? (e) => {
+          let v = e.target.value;
+          if (type === "tel") v = v.replace(/\D/g, "");
+          setFormData((p) => ({ ...p, [field]: v }));
+          if (formErrors[field])
+            setFormErrors((p) => ({ ...p, [field]: undefined }));
+        }
+      : undefined,
+    ...rest,
+  };
+  if (rest.select && selectChildren)
+    return <TextField {...props}>{selectChildren}</TextField>;
+  return <TextField {...props} />;
+};
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 const EmployeeManagement = () => {
   const dispatch = useDispatch();
+
   const employees = useSelector(selectEmployees);
   const loading = useSelector(selectEmployeeLoading);
-  const error = useSelector(selectEmployeeError);
   const createLoading = useSelector(selectCreateEmployeeLoading);
 
   const employeeDocuments = useSelector(selectEmployeeDocuments);
@@ -167,162 +3044,50 @@ const EmployeeManagement = () => {
     : employeeDocuments
       ? [employeeDocuments]
       : [];
-
-  const documentsLoading = useSelector(selectEmployeeDocumentsLoading);
-  const createDocumentLoading = useSelector(
-    selectCreateEmployeeDocumentLoading,
-  );
-
   const employeePersonalDetails = useSelector(selectEmployeePersonalDetails);
   const personalDetailsArray = Array.isArray(employeePersonalDetails)
     ? employeePersonalDetails
     : employeePersonalDetails
       ? [employeePersonalDetails]
       : [];
-
-  const personalDetailsLoading = useSelector(
-    selectEmployeePersonalDetailsLoading,
-  );
-  const createPersonalDetailsLoading = useSelector(
-    selectCreateEmployeePersonalDetailsLoading,
-  );
-
   const employeeSalaries = useSelector(selectEmployeeSalaries);
   const employeeSalary = Array.isArray(employeeSalaries)
     ? employeeSalaries
     : employeeSalaries
       ? [employeeSalaries]
       : [];
-
-  const salariesLoading = useSelector(selectEmployeeSalaryLoading);
-  const createSalaryLoading = useSelector(selectCreateEmployeeSalaryLoading);
-
   const users = useSelector(selectUsers);
-  const usersLoading = useSelector(selectUserLoading);
-  const createUserLoading = useSelector(selectCreateUserLoading);
 
   const departments = useSelector(selectDepartmentList);
   const roles = useSelector(selectRoleList);
   const departmentsLoading = useSelector(selectDepartmentLoading);
   const rolesLoading = useSelector(selectRoleLoading);
 
-  // ==================== STATE MANAGEMENT ====================
-
+  // ── State ──────────────────────────────────────────────────────────────────
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
-  const [viewMode, setViewMode] = useState("list"); // 'list', 'view', 'edit', 'create'
+  const [viewMode, setViewMode] = useState("list");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [validationAlert, setValidationAlert] = useState(null);
 
-  // Track editing state for each tab
-  const [editingDocument, setEditingDocument] = useState(null);
   const [editingPersonalDetails, setEditingPersonalDetails] = useState(null);
   const [editingSalary, setEditingSalary] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
 
-  // Track which forms have been modified
   const [hasModifiedPersonalDetails, setHasModifiedPersonalDetails] =
     useState(false);
   const [hasModifiedSalary, setHasModifiedSalary] = useState(false);
   const [hasModifiedUser, setHasModifiedUser] = useState(false);
 
-  // Form states
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    employee_code: "",
-    department: "",
-    role: "",
-    department_id: null,
-    designation: "",
-    employment_type: "",
-    role_id: null,
-    joining_date: "",
-    date_of_birth: "",
-    gender: "",
-    address: "",
-    city: "",
-    state: "",
-    pincode: "",
-    emergency_contact_name: "",
-    emergency_contact_phone: "",
-    status: "Active",
-    gross_salary: "",
-    basic_salary: "",
-    bank_account_number: "",
-    ifsc_code: "",
-    pan_number: "",
-    aadhaar_number: "",
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
+  const [documentFormData, setDocumentFormData] = useState(EMPTY_DOCS);
+  const [personalDetailsFormData, setPersonalDetailsFormData] =
+    useState(EMPTY_PERSONAL);
+  const [salaryFormData, setSalaryFormData] = useState(EMPTY_SALARY);
+  const [userFormData, setUserFormData] = useState(EMPTY_USER);
 
-  // Document upload state
-  const [documentFormData, setDocumentFormData] = useState({
-    document_type: "",
-    pancard_number: "",
-    aadhar_number: "",
-    driving_license_number: "",
-    aadhar_front: null,
-    aadhar_back: null,
-    pan_card: null,
-    photo: null,
-    driving_license_front: null,
-    driving_license_back: null,
-    remarks: "",
-  });
-  // Personal details state
-  const [personalDetailsFormData, setPersonalDetailsFormData] = useState({
-    father_name: "",
-    mother_name: "",
-    marital_status: "",
-    spouse_name: "",
-    blood_group: "",
-    nationality: "",
-    religion: "",
-    caste: "",
-    identification_marks: "",
-    hobbies: "",
-  });
-
-  // Salary state
-  const [salaryFormData, setSalaryFormData] = useState({
-    gross_salary: "",
-    basic_salary: "",
-    hra: "",
-    da: "",
-    ta: "",
-    medical_allowance: "",
-    alloances: "",
-    deductions: "",
-    provident_fund: "",
-    professional_tax: "",
-    income_tax: "",
-    effective_from: "",
-    remarks: "",
-  });
-
-  // User state
-  const [userFormData, setUserFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    first_name: "",
-    last_name: "",
-    is_active: true,
-    is_staff: false,
-    is_superuser: false,
-    phone: "",
-    department_id: null,
-    department: "",
-    role_id: null,
-    role: "",
-  });
-  // ==================== LIFECYCLE ====================
-
+  // ── Lifecycle ──────────────────────────────────────────────────────────────
   useEffect(() => {
     dispatch(getEmployees());
     dispatch(getDepartments());
@@ -339,113 +3104,75 @@ const EmployeeManagement = () => {
       dispatch(getUsers({ employee_id: selectedEmployee.id }));
     }
   }, [selectedEmployee, viewMode, dispatch]);
-  useEffect(() => {
-    if (selectedEmployee && viewMode !== "create") {
-      setDocumentFormData({
-        aadhar_number: selectedEmployee.aadhar_number || "",
-        pancard_number: selectedEmployee.pancard_number || "",
-        driving_license_number: selectedEmployee.driving_license_number || "",
 
-        aadhar_front: selectedEmployee.aadhar_front || "",
-        aadhar_back: selectedEmployee.aadhar_back || "",
-        pan_card: selectedEmployee.pan_card || "",
-        photo: selectedEmployee.photo || "",
-        driving_license_front: selectedEmployee.driving_license_front || "",
-        driving_license_back: selectedEmployee.driving_license_back || "",
+  useEffect(() => {
+    if (!selectedEmployee || viewMode === "create") return;
+
+    if (personalDetailsArray.length > 0) {
+      const pd = personalDetailsArray[0];
+      setPersonalDetailsFormData({
+        father_name: pd.father_name || "",
+        mother_name: pd.mother_name || "",
+        marital_status: pd.marital_status || "",
+        spouse_name: pd.spouse_name || "",
+        blood_group: pd.blood_group || "",
+        nationality: pd.nationality || "",
+        religion: pd.religion || "",
+        caste: pd.caste || "",
+        identification_marks: pd.identification_marks || "",
+        hobbies: pd.hobbies || "",
       });
+      setEditingPersonalDetails(pd);
     }
-  }, [selectedEmployee, viewMode]);
 
-  useEffect(() => {
-    if (selectedEmployee && viewMode !== "create") {
-      setDocumentFormData({
-        aadhar_number: selectedEmployee.aadhar_number || "",
-        pancard_number: selectedEmployee.pancard_number || "",
-        driving_license_number: selectedEmployee.driving_license_number || "",
-
-        aadhar_front: selectedEmployee.aadhar_front || "",
-        aadhar_back: selectedEmployee.aadhar_back || "",
-        pan_card: selectedEmployee.pan_card || "",
-        photo: selectedEmployee.photo || "",
-        driving_license_front: selectedEmployee.driving_license_front || "",
-        driving_license_back: selectedEmployee.driving_license_back || "",
+    if (employeeSalary.length > 0) {
+      const s = employeeSalary[0];
+      setSalaryFormData({
+        gross_salary: s.gross_salary || "",
+        basic_salary: s.basic_salary || "",
+        hra: s.hra || "",
+        da: s.da || "",
+        ta: s.ta || "",
+        medical_allowance: s.medical_allowance || "",
+        alloances: s.alloances || "",
+        deductions: s.deductions || "",
+        provident_fund: s.provident_fund || "",
+        professional_tax: s.professional_tax || "",
+        income_tax: s.income_tax || "",
+        effective_from: s.effective_from || "",
+        remarks: s.remarks || "",
       });
+      setEditingSalary(s);
     }
-  }, [selectedEmployee, viewMode]);
 
-  // Load data when switching to edit mode
-  useEffect(() => {
-    if (selectedEmployee) {
-      // Load personal details if exists
-      if (personalDetailsArray.length > 0) {
-        setPersonalDetailsFormData({
-          father_name: personalDetailsArray[0].father_name || "",
-          mother_name: personalDetailsArray[0].mother_name || "",
-          marital_status: personalDetailsArray[0].marital_status || "",
-          spouse_name: personalDetailsArray[0].spouse_name || "",
-          blood_group: personalDetailsArray[0].blood_group || "",
-          nationality: personalDetailsArray[0].nationality || "",
-          religion: personalDetailsArray[0].religion || "",
-          caste: personalDetailsArray[0].caste || "",
-          identification_marks:
-            personalDetailsArray[0].identification_marks || "",
-          hobbies: personalDetailsArray[0].hobbies || "",
-        });
-        setEditingPersonalDetails(personalDetailsArray[0]);
-      }
+    if (users.length > 0) {
+      const u = users[0];
+      setUserFormData({
+        username: u.username || "",
+        password: u.password || "",
+        is_active: u.is_active !== undefined ? u.is_active : true,
+        is_superuser: u.is_superuser !== undefined ? u.is_superuser : false,
+        role_id: u.role_id || null,
+        role: u.role || "",
+      });
+      setEditingUser(u);
+    }
 
-      // Load salary if exists
-      if (employeeSalary.length > 0) {
-        setSalaryFormData({
-          gross_salary: employeeSalary[0].gross_salary || "",
-          basic_salary: employeeSalary[0].basic_salary || "",
-          hra: employeeSalary[0].hra || "",
-          da: employeeSalary[0].da || "",
-          ta: employeeSalary[0].ta || "",
-          medical_allowance: employeeSalary[0].medical_allowance || "",
-          alloances: employeeSalary[0].alloances || "",
-          deductions: employeeSalary[0].deductions || "",
-          provident_fund: employeeSalary[0].provident_fund || "",
-          professional_tax: employeeSalary[0].professional_tax || "",
-          income_tax: employeeSalary[0].income_tax || "",
-          effective_from: employeeSalary[0].effective_from || "",
-          remarks: employeeSalary[0].remarks || "",
-        });
-        setEditingSalary(employeeSalary[0]);
-      }
-
-      // Load user if exists
-      if (users.length > 0) {
-        setUserFormData({
-          username: users[0].username || "",
-          password: users[0].password || "",
-
-          is_active:
-            users[0].is_active !== undefined ? users[0].is_active : true,
-          is_superuser:
-            users[0].is_superuser !== undefined ? users[0].is_superuser : false,
-          role_id: users[0].role_id || null,
-          role: users[0].role || "",
-        });
-        setEditingUser(users[0]);
-      }
-      if (docsArray.length > 0) {
-        const doc = docsArray?.[0] || {};
-
-        setDocumentFormData({
-          document_type: doc.document_type || "",
-          pancard_number: doc.pancard_number || "",
-          aadhar_number: doc.aadhar_number || "",
-          driving_license_number: doc.driving_license_number || "",
-          aadhar_front: doc.aadhar_front || null,
-          aadhar_back: doc.aadhar_back || null,
-          pan_card: doc.pan_card || null,
-          photo: doc.photo || null,
-          driving_license_front: doc.driving_license_front || null,
-          driving_license_back: doc.driving_license_back || null,
-          remarks: doc.remarks || "",
-        });
-      }
+    if (docsArray.length > 0) {
+      const doc = docsArray[0];
+      setDocumentFormData({
+        document_type: doc.document_type || "",
+        pancard_number: doc.pancard_number || "",
+        aadhar_number: doc.aadhar_number || "",
+        driving_license_number: doc.driving_license_number || "",
+        aadhar_front: doc.aadhar_front || null,
+        aadhar_back: doc.aadhar_back || null,
+        pan_card: doc.pan_card || null,
+        photo: doc.photo || null,
+        driving_license_front: doc.driving_license_front || null,
+        driving_license_back: doc.driving_license_back || null,
+        remarks: doc.remarks || "",
+      });
     }
   }, [
     viewMode,
@@ -456,60 +3183,44 @@ const EmployeeManagement = () => {
     selectedEmployee,
   ]);
 
-  // ==================== VALIDATION ====================
-
+  // ── Validation ─────────────────────────────────────────────────────────────
   const validateForm = () => {
     const errors = {};
-
-    if (!formData.first_name?.trim()) errors.first_name = "First name is required";
+    if (!formData.first_name?.trim())
+      errors.first_name = "First name is required";
     if (!formData.last_name?.trim()) errors.last_name = "Last name is required";
-    if (!formData.email?.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (!formData.email?.trim()) errors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
       errors.email = "Email is invalid";
-    }
-    if (!formData.phone?.trim()) {
-      errors.phone = "Phone number is required";
-    } else if (!/^\d{10}$/.test(formData.phone)) {
-      errors.phone = "Phone number must be 10 digits";
-    }
-    if (viewMode === "create" && !formData.password?.trim()) {
+    if (!formData.phone?.trim()) errors.phone = "Phone number is required";
+    else if (!/^\d{10}$/.test(formData.phone))
+      errors.phone = "Phone must be 10 digits";
+    if (viewMode === "create" && !formData.password?.trim())
       errors.password = "Password is required";
-    } else if (viewMode === "create" && formData.password?.length < 6) {
-      errors.password = "Password must be at least 6 characters";
-    }
-    if (!formData.employee_code?.trim()) errors.employee_code = "Employee code is required";
-    if (!formData.department_id) errors.department_id = "Department is required";
-    // if (!formData.designation?.trim()) errors.designation = "Designation is required";
-    if (!formData.employment_type) errors.employment_type = "Employment type is required";
+    if (!formData.employee_code?.trim())
+      errors.employee_code = "Employee code is required";
+    if (!formData.department_id)
+      errors.department_id = "Department is required";
+    if (!formData.employment_type)
+      errors.employment_type = "Employment type is required";
     if (!formData.role_id) errors.role_id = "Role is required";
-    if (!formData.joining_date) errors.joining_date = "Date of joining is required";
-    if (!formData.date_of_birth) errors.date_of_birth = "Date of birth is required";
+    if (!formData.joining_date)
+      errors.joining_date = "Date of joining is required";
+    if (!formData.date_of_birth)
+      errors.date_of_birth = "Date of birth is required";
     if (!formData.gender) errors.gender = "Gender is required";
-    // if (!formData.address?.trim()) errors.address = "Address is required";
-    // if (!formData.city?.trim()) errors.city = "City is required";
-    // if (!formData.state?.trim()) errors.state = "State is required";
-    // if (!formData.pincode?.trim()) {
-    //   errors.pincode = "Pincode is required";
-    // } else if (!/^\d{6}$/.test(formData.pincode)) {
-    //   errors.pincode = "Pincode must be 6 digits";
-    // }
-
     setFormErrors(errors);
-
     if (Object.keys(errors).length > 0) {
       setActiveTab(0);
       setValidationAlert("Please fill all required fields in Employee Profile");
       return false;
     }
-
     setValidationAlert(null);
     return true;
   };
 
-  // ==================== DATA LOADING ====================
-
-  const loadFormData = (emp) => {
+  // ── Data helpers ───────────────────────────────────────────────────────────
+  const loadFormData = (emp) =>
     setFormData({
       first_name: emp.first_name || "",
       last_name: emp.last_name || "",
@@ -540,53 +3251,29 @@ const EmployeeManagement = () => {
       pan_number: emp.pan_number || "",
       aadhaar_number: emp.aadhaar_number || "",
     });
+
+  const getDocSrc = (key) => {
+    const v = documentFormData[key];
+    if (!v) return null;
+    if (v instanceof File) return URL.createObjectURL(v);
+    if (typeof v === "string")
+      return v.startsWith("http") ? v : `${BASE_URL}${v}`;
+    return null;
   };
 
-  const resetFormData = () => {
-    setFormData({
-      first_name: "",
-      last_name: "",
-      name: "",
-      email: "",
-      phone: "",
-      password: "",
-      employee_code: "",
-      department: "",
-      role: "",
-      department_id: null,
-      designation: "",
-      employment_type: "",
-      role_id: null,
-      joining_date: "",
-      date_of_birth: "",
-      gender: "",
-      address: "",
-      city: "",
-      state: "",
-      pincode: "",
-      emergency_contact_name: "",
-      emergency_contact_phone: "",
-      status: "Active",
-      gross_salary: "",
-      basic_salary: "",
-      bank_account_number: "",
-      ifsc_code: "",
-      pan_number: "",
-      aadhaar_number: "",
-    });
+  const handleDocFileChange = (key, file) => {
+    if (!file) return;
+    setDocumentFormData((prev) => ({ ...prev, [key]: file }));
   };
 
-  // ==================== EVENT HANDLERS ====================
-
-  const handleViewDetails = (employee) => {
-    setSelectedEmployee(employee);
-    loadFormData(employee);
+  // ── Handlers ───────────────────────────────────────────────────────────────
+  const handleViewDetails = (emp) => {
+    setSelectedEmployee(emp);
+    loadFormData(emp);
     setViewMode("view");
     setActiveTab(0);
     setValidationAlert(null);
     setFormErrors({});
-    // Reset all editing states
-    setEditingDocument(null);
     setEditingPersonalDetails(null);
     setEditingSalary(null);
     setEditingUser(null);
@@ -602,135 +3289,55 @@ const EmployeeManagement = () => {
     setViewMode("view");
     setFormErrors({});
     setValidationAlert(null);
-    // Reset all editing states
-    setEditingDocument(null);
     setEditingPersonalDetails(null);
     setEditingSalary(null);
     setEditingUser(null);
-    // Reset modification flags
     setHasModifiedPersonalDetails(false);
     setHasModifiedSalary(false);
     setHasModifiedUser(false);
-    // Reset all form data
-    setPersonalDetailsFormData({
-      father_name: "",
-      mother_name: "",
-      marital_status: "",
-      spouse_name: "",
-      blood_group: "",
-      nationality: "",
-      religion: "",
-      caste: "",
-      identification_marks: "",
-      hobbies: "",
-    });
-    setSalaryFormData({
-      gross_salary: "",
-      basic_salary: "",
-      hra: "",
-      da: "",
-      ta: "",
-      medical_allowance: "",
-      alloances: "",
-      deductions: "",
-      provident_fund: "",
-      professional_tax: "",
-      income_tax: "",
-      effective_from: "",
-      remarks: "",
-    });
-    setUserFormData({
-      username: "",
-      email: "",
-      password: "",
-      first_name: "",
-      last_name: "",
-      is_active: true,
-      is_staff: false,
-      is_superuser: false,
-      phone: "",
-      department_id: null,
-      department: "",
-      role_id: null,
-      role: "",
-    });
-    setDocumentFormData({
-      document_type: "",
-      pancard_number: "",
-      aadhar_number: "",
-      driving_license_number: "",
-      aadhar_front: null,
-      aadhar_back: null,
-      pan_card: null,
-      photo: null,
-      driving_license_front: null,
-      driving_license_back: null,
-      remarks: "",
-    });
+    setPersonalDetailsFormData(EMPTY_PERSONAL);
+    setSalaryFormData(EMPTY_SALARY);
+    setUserFormData(EMPTY_USER);
+    setDocumentFormData(EMPTY_DOCS);
   };
 
   const handleBackToList = () => {
     dispatch(getEmployees());
     setSelectedEmployee(null);
     setViewMode("list");
-    resetFormData();
+    setFormData(EMPTY_FORM);
     setValidationAlert(null);
     setFormErrors({});
   };
 
   const handleSaveEdit = async () => {
     if (!validateForm()) return;
-
-    const formDataToSend = new FormData();
-    Object.keys(formData).forEach((key) => {
-      if (
-        formData[key] !== null &&
-        formData[key] !== undefined &&
-        formData[key] !== ""
-      ) {
-        formDataToSend.append(key, formData[key]);
-      }
+    const fd = new FormData();
+    Object.entries(formData).forEach(([k, v]) => {
+      if (v !== null && v !== undefined && v !== "") fd.append(k, v);
     });
-
     const result = await dispatch(
-      updateEmployee({ id: selectedEmployee.id, data: formDataToSend }),
+      updateEmployee({ id: selectedEmployee.id, data: fd }),
     );
-
     if (result.type.includes("fulfilled")) {
       CommonToast("Employee updated successfully", "success");
-      const updatedEmployee = { ...selectedEmployee, ...formData };
-      setSelectedEmployee(updatedEmployee);
-      loadFormData(updatedEmployee);
+      const updated = { ...selectedEmployee, ...formData };
+      setSelectedEmployee(updated);
+      loadFormData(updated);
       dispatch(getEmployees());
-
-      // Only save Personal Details if user modified the form
-      if (
-        hasModifiedPersonalDetails &&
-        personalDetailsFormData.marital_status
-      ) {
+      if (hasModifiedPersonalDetails && personalDetailsFormData.marital_status)
         await handleSavePersonalDetails();
-      }
-
-      // Only save Salary if user modified the form
       if (
         hasModifiedSalary &&
         salaryFormData.basic_salary &&
         salaryFormData.gross_salary &&
         salaryFormData.effective_from
-      ) {
+      )
         await handleSaveSalary();
-      }
-
-      // Only save User if user modified the form
-      // if (hasModifiedUser) {
       await handleSaveUser();
-      // }
-
-      // Reset modification flags
       setHasModifiedPersonalDetails(false);
       setHasModifiedSalary(false);
       setHasModifiedUser(false);
-
       setViewMode("view");
     } else {
       CommonToast("Failed to update employee", "error");
@@ -746,7 +3353,7 @@ const EmployeeManagement = () => {
   };
 
   const handleAddEmployee = () => {
-    resetFormData();
+    setFormData(EMPTY_FORM);
     setSelectedEmployee(null);
     setViewMode("create");
     setActiveTab(0);
@@ -756,214 +3363,57 @@ const EmployeeManagement = () => {
 
   const handleCreateEmployee = async () => {
     if (!validateForm()) return;
-
-    const formDataToSend = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== null && value !== undefined && value !== "") {
-        formDataToSend.append(key, value);
-      }
+    const fd = new FormData();
+    Object.entries(formData).forEach(([k, v]) => {
+      if (v !== null && v !== undefined && v !== "") fd.append(k, v);
     });
-
-    try {
-      const result = await dispatch(createEmployee(formDataToSend));
-
-      if (result.type.includes("fulfilled")) {
-        CommonToast("Employee created successfully", "success");
-        dispatch(getEmployees());
-        handleBackToList();
-      }
-    } catch (err) {
+    const result = await dispatch(createEmployee(fd));
+    if (result.type.includes("fulfilled")) {
+      CommonToast("Employee created successfully", "success");
+      dispatch(getEmployees());
+      handleBackToList();
+    } else {
       CommonToast("Failed to create employee", "error");
     }
   };
 
-  // Document handlers
-  // const handleUploadDocument = async () => {
-  //   // if (!documentFormData.document_type) {
-  //   //   CommonToast("Please select document type", "error");
-  //   //   return;
-  //   // }
-
-  //   const formDataToSend = new FormData();
-  //   formDataToSend.append("employee_id", selectedEmployee.id);
-  //   formDataToSend.append("document_type", documentFormData.document_type);
-
-  //   if (documentFormData.pancard_number)
-  //     formDataToSend.append("pancard_number", documentFormData.pancard_number);
-  //   if (documentFormData.aadhar_number)
-  //     formDataToSend.append("aadhar_number", documentFormData.aadhar_number);
-  //   if (documentFormData.driving_license_number)
-  //     formDataToSend.append(
-  //       "driving_license_number",
-  //       documentFormData.driving_license_number,
-  //     );
-  //   if (documentFormData.aadhar_front)
-  //     formDataToSend.append("aadhar_front", documentFormData.aadhar_front);
-  //   if (documentFormData.aadhar_back)
-  //     formDataToSend.append("aadhar_back", documentFormData.aadhar_back);
-  //   if (documentFormData.pan_card)
-  //     formDataToSend.append("pan_card", documentFormData.pan_card);
-  //   if (documentFormData.photo)
-  //     formDataToSend.append("photo", documentFormData.photo);
-  //   if (documentFormData.driving_license_front)
-  //     formDataToSend.append(
-  //       "driving_license_front",
-  //       documentFormData.driving_license_front,
-  //     );
-  //   if (documentFormData.driving_license_back)
-  //     formDataToSend.append(
-  //       "driving_license_back",
-  //       documentFormData.driving_license_back,
-  //     );
-  //   if (documentFormData.remarks)
-  //     formDataToSend.append("remarks", documentFormData.remarks);
-
-  //   try {
-  //     const result = await dispatch(createEmployeeDocument(formDataToSend));
-  //     if (result.type.includes("fulfilled")) {
-  //       CommonToast("Document uploaded successfully", "success");
-  //       dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
-  //       setDocumentFormData({
-  //         document_type: "",
-  //         pancard_number: "",
-  //         aadhar_number: "",
-  //         driving_license_number: "",
-  //         aadhar_front: null,
-  //         aadhar_back: null,
-  //         pan_card: null,
-  //         photo: null,
-  //         driving_license_front: null,
-  //         driving_license_back: null,
-  //         remarks: "",
-  //       });
-  //     }
-  //   } catch {
-  //     CommonToast("Failed to upload document", "error");
-  //   }
-  // };
-
-  // const handleUploadDocument = async () => {
-  //   const formDataToSend = new FormData();
-  //   formDataToSend.append("employee_id", selectedEmployee.id);
-  //   formDataToSend.append("document_type", documentFormData.document_type);
-
-  //   // Text fields - append if they exist
-  //   if (documentFormData.pancard_number)
-  //     formDataToSend.append("pancard_number", documentFormData.pancard_number);
-  //   if (documentFormData.aadhar_number)
-  //     formDataToSend.append("aadhar_number", documentFormData.aadhar_number);
-  //   if (documentFormData.driving_license_number)
-  //     formDataToSend.append(
-  //       "driving_license_number",
-  //       documentFormData.driving_license_number,
-  //     );
-  //   if (documentFormData.remarks)
-  //     formDataToSend.append("remarks", documentFormData.remarks);
-
-  //   // File fields - ONLY append if they are actual File objects (new uploads)
-  //   // Don't send existing URL strings back to the server
-  //   if (documentFormData.aadhar_front instanceof File)
-  //     formDataToSend.append("aadhar_front", documentFormData.aadhar_front);
-  //   if (documentFormData.aadhar_back instanceof File)
-  //     formDataToSend.append("aadhar_back", documentFormData.aadhar_back);
-  //   if (documentFormData.pan_card instanceof File)
-  //     formDataToSend.append("pan_card", documentFormData.pan_card);
-  //   if (documentFormData.photo instanceof File)
-  //     formDataToSend.append("photo", documentFormData.photo);
-  //   if (documentFormData.driving_license_front instanceof File)
-  //     formDataToSend.append(
-  //       "driving_license_front",
-  //       documentFormData.driving_license_front,
-  //     );
-  //   if (documentFormData.driving_license_back instanceof File)
-  //     formDataToSend.append(
-  //       "driving_license_back",
-  //       documentFormData.driving_license_back,
-  //     );
-
-  //   try {
-  //     const result = await dispatch(createEmployeeDocument(formDataToSend));
-  //     if (result.type.includes("fulfilled")) {
-  //       CommonToast("Document uploaded successfully", "success");
-  //       dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
-  //       setDocumentFormData({
-  //         document_type: "",
-  //         pancard_number: "",
-  //         aadhar_number: "",
-  //         driving_license_number: "",
-  //         aadhar_front: null,
-  //         aadhar_back: null,
-  //         pan_card: null,
-  //         photo: null,
-  //         driving_license_front: null,
-  //         driving_license_back: null,
-  //         remarks: "",
-  //       });
-  //     }
-  //   } catch {
-  //     CommonToast("Failed to upload document", "error");
-  //   }
-  // };
   const handleUploadDocument = async () => {
-    const formDataToSend = new FormData();
-    formDataToSend.append("employee_id", selectedEmployee.id);
-
-    // Text fields - append if they exist
-    if (documentFormData.document_type)
-      formDataToSend.append("document_type", documentFormData.document_type);
-    if (documentFormData.pancard_number)
-      formDataToSend.append("pancard_number", documentFormData.pancard_number);
-    if (documentFormData.aadhar_number)
-      formDataToSend.append("aadhar_number", documentFormData.aadhar_number);
-    if (documentFormData.driving_license_number)
-      formDataToSend.append(
-        "driving_license_number",
-        documentFormData.driving_license_number,
-      );
-    if (documentFormData.remarks)
-      formDataToSend.append("remarks", documentFormData.remarks);
-
-    // File fields - ONLY append if they are actual File objects (new uploads)
-    if (documentFormData.aadhar_front instanceof File)
-      formDataToSend.append("aadhar_front", documentFormData.aadhar_front);
-    if (documentFormData.aadhar_back instanceof File)
-      formDataToSend.append("aadhar_back", documentFormData.aadhar_back);
-    if (documentFormData.pan_card instanceof File)
-      formDataToSend.append("pan_card", documentFormData.pan_card);
-    if (documentFormData.photo instanceof File)
-      formDataToSend.append("photo", documentFormData.photo);
-    if (documentFormData.driving_license_front instanceof File)
-      formDataToSend.append(
-        "driving_license_front",
-        documentFormData.driving_license_front,
-      );
-    if (documentFormData.driving_license_back instanceof File)
-      formDataToSend.append(
-        "driving_license_back",
-        documentFormData.driving_license_back,
-      );
-
+    const fd = new FormData();
+    fd.append("employee_id", selectedEmployee.id);
+    const textFields = [
+      "document_type",
+      "pancard_number",
+      "aadhar_number",
+      "driving_license_number",
+      "remarks",
+    ];
+    textFields.forEach((k) => {
+      if (documentFormData[k]) fd.append(k, documentFormData[k]);
+    });
+    const fileFields = [
+      "aadhar_front",
+      "aadhar_back",
+      "pan_card",
+      "photo",
+      "driving_license_front",
+      "driving_license_back",
+    ];
+    fileFields.forEach((k) => {
+      if (documentFormData[k] instanceof File)
+        fd.append(k, documentFormData[k]);
+    });
     try {
       let result;
-
-      // Check if document already exists
       if (docsArray.length > 0 && docsArray[0]?.id) {
-        // UPDATE existing document (PATCH)
         result = await dispatch(
-          updateEmployeeDocument({
-            id: docsArray[0].id,
-            data: formDataToSend,
-          }),
+          updateEmployeeDocument({ id: docsArray[0].id, data: fd }),
         );
-
         if (result.type.includes("fulfilled")) {
           CommonToast("Document updated successfully", "success");
           dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
         }
       } else {
-        // CREATE new document (POST)
-        result = await dispatch(createEmployeeDocument(formDataToSend));
-
+        result = await dispatch(createEmployeeDocument(fd));
         if (result.type.includes("fulfilled")) {
           CommonToast("Document uploaded successfully", "success");
           dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
@@ -974,84 +3424,43 @@ const EmployeeManagement = () => {
     }
   };
 
-  const handleDeleteDocument = async (docId) => {
-    try {
-      await dispatch(deleteEmployeeDocument(docId));
-      CommonToast("Document deleted successfully", "success");
-      dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
-    } catch (err) {
-      CommonToast("Failed to delete document", "error");
-    }
-  };
-
-  // Personal Details Handlers
   const handleSavePersonalDetails = async () => {
     if (!personalDetailsFormData.marital_status) {
       CommonToast("Marital status is required", "error");
       return;
     }
-
-    const dataToSend = {
+    const data = {
       ...personalDetailsFormData,
       employee_id: selectedEmployee.id,
     };
-
     try {
       if (editingPersonalDetails) {
-        const result = await dispatch(
+        const r = await dispatch(
           updateEmployeePersonalDetails({
             id: editingPersonalDetails.id,
-            data: dataToSend,
+            data,
           }),
         );
-        if (result.type.includes("fulfilled")) {
-          CommonToast("Personal details updated successfully", "success");
+        if (r.type.includes("fulfilled")) {
+          CommonToast("Personal details updated", "success");
           dispatch(
             getEmployeePersonalDetails({ employee_id: selectedEmployee.id }),
           );
         }
       } else {
-        const result = await dispatch(
-          createEmployeePersonalDetails(dataToSend),
-        );
-        if (result.type.includes("fulfilled")) {
-          CommonToast("Personal details created successfully", "success");
+        const r = await dispatch(createEmployeePersonalDetails(data));
+        if (r.type.includes("fulfilled")) {
+          CommonToast("Personal details created", "success");
           dispatch(
             getEmployeePersonalDetails({ employee_id: selectedEmployee.id }),
           );
         }
       }
-    } catch (err) {
+    } catch {
       CommonToast("Failed to save personal details", "error");
     }
   };
 
-  const handleDeletePersonalDetails = async (detailsId) => {
-    try {
-      await dispatch(deleteEmployeePersonalDetails(detailsId));
-      CommonToast("Personal details deleted successfully", "success");
-      dispatch(
-        getEmployeePersonalDetails({ employee_id: selectedEmployee.id }),
-      );
-      setEditingPersonalDetails(null);
-      setPersonalDetailsFormData({
-        father_name: "",
-        mother_name: "",
-        marital_status: "",
-        spouse_name: "",
-        blood_group: "",
-        nationality: "",
-        religion: "",
-        caste: "",
-        identification_marks: "",
-        hobbies: "",
-      });
-    } catch (err) {
-      CommonToast("Failed to delete personal details", "error");
-    }
-  };
-
-  // Salary Handlers
   const handleSaveSalary = async () => {
     if (
       !salaryFormData.basic_salary ||
@@ -1059,470 +3468,90 @@ const EmployeeManagement = () => {
       !salaryFormData.effective_from
     ) {
       CommonToast(
-        "Please fill required fields (Gross Salary, Basic Salary, Effective From)",
+        "Please fill Gross Salary, Basic Salary, Effective From",
         "error",
       );
       return;
     }
-
-    const dataToSend = {
-      ...salaryFormData,
-      employee_id: selectedEmployee.id,
-    };
-
+    const data = { ...salaryFormData, employee_id: selectedEmployee.id };
     try {
       if (editingSalary) {
-        const result = await dispatch(
-          updateEmployeeSalary({ id: editingSalary.id, data: dataToSend }),
+        const r = await dispatch(
+          updateEmployeeSalary({ id: editingSalary.id, data }),
         );
-        if (result.type.includes("fulfilled")) {
-          CommonToast("Salary updated successfully", "success");
+        if (r.type.includes("fulfilled")) {
+          CommonToast("Salary updated", "success");
           dispatch(getEmployeeSalaries({ employee_id: selectedEmployee.id }));
         }
       } else {
-        const result = await dispatch(createEmployeeSalary(dataToSend));
-        if (result.type.includes("fulfilled")) {
-          CommonToast("Salary created successfully", "success");
+        const r = await dispatch(createEmployeeSalary(data));
+        if (r.type.includes("fulfilled")) {
+          CommonToast("Salary created", "success");
           dispatch(getEmployeeSalaries({ employee_id: selectedEmployee.id }));
         }
       }
-    } catch (err) {
+    } catch {
       CommonToast("Failed to save salary", "error");
     }
   };
 
-  const handleDeleteSalary = async (salaryId) => {
-    try {
-      await dispatch(deleteEmployeeSalary(salaryId));
-      CommonToast("Salary deleted successfully", "success");
-      dispatch(getEmployeeSalaries({ employee_id: selectedEmployee.id }));
-      setEditingSalary(null);
-      setSalaryFormData({
-        gross_salary: "",
-        basic_salary: "",
-        hra: "",
-        da: "",
-        ta: "",
-        deductions: "",
-        medical_allowance: "",
-        alloances: "",
-        provident_fund: "",
-        professional_tax: "",
-        income_tax: "",
-        effective_from: "",
-        remarks: "",
-      });
-    } catch (err) {
-      CommonToast("Failed to delete salary", "error");
-    }
-  };
-
-  const BASE_URL = "https://hogofilm.pythonanywhere.com";
-  const renderFileUpload = (label, fileKey, isRequired = false) => {
-    const isEditable = createDistributorFlag || editMode;
-
-    // 🔹 get correct value based on mode
-    const getValue = () => {
-      if (createDistributorFlag) return newDistFiles[fileKey];
-      if (editMode) return formData[fileKey];
-      return selectedDistributor?.[fileKey];
-    };
-
-    const value = getValue();
-
-    // 🔹 resolve preview source safely
-    const getPreviewSrc = () => {
-      // File object (new upload)
-      if (value instanceof File) {
-        return URL.createObjectURL(value);
-      }
-
-      // String URL from backend
-      if (typeof value === "string" && value.trim() !== "") {
-        return value.startsWith("http") ? value : `${BASE_URL}${value}`;
-      }
-
-      return null;
-    };
-
-    const previewSrc = getPreviewSrc();
-
-    const isImage =
-      typeof previewSrc === "string" &&
-      !previewSrc.toLowerCase().endsWith(".pdf");
-
-    return (
-      <Grid item xs={12} md={6}>
-        <Stack spacing={1.5}>
-          {/* 🔹 IMAGE PREVIEW */}
-          {previewSrc && isImage && (
-            <Box
-              sx={{
-                width: "100%",
-                height: 160,
-                borderRadius: 2,
-                border: "1px dashed #ccc",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-                bgcolor: "#fafafa",
-              }}
-            >
-              <img
-                src={previewSrc}
-                alt={label}
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                  objectFit: "contain",
-                }}
-              />
-            </Box>
-          )}
-
-          {/* 🔹 PDF VIEW */}
-          {previewSrc && !isImage && (
-            <CommonButton
-              variant="outlined"
-              fullWidth
-              onClick={() => window.open(previewSrc, "_blank")}
-            >
-              View {label}
-            </CommonButton>
-          )}
-
-          {/* 🔹 UPLOAD BUTTON (CREATE / EDIT) */}
-          {isEditable && (
-            <>
-              <CommonButton
-                variant="outlined"
-                component="label"
-                fullWidth
-                color={formErrors[fileKey] ? "error" : "primary"}
-              >
-                {previewSrc ? "Replace" : "Upload"} {label}
-                {isRequired && createDistributorFlag ? " *" : ""}
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*,.pdf"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-
-                    if (createDistributorFlag) {
-                      setNewDistFiles({
-                        ...newDistFiles,
-                        [fileKey]: file,
-                      });
-                    } else {
-                      setFormData({
-                        ...formData,
-                        [fileKey]: file,
-                      });
-                    }
-
-                    if (formErrors[fileKey]) {
-                      setFormErrors({
-                        ...formErrors,
-                        [fileKey]: undefined,
-                      });
-                    }
-                  }}
-                />
-              </CommonButton>
-
-              {/* 🔹 FILE NAME */}
-              {value && (
-                <Typography variant="body2" color="success.main">
-                  Selected: {value?.name || value}
-                </Typography>
-              )}
-            </>
-          )}
-
-          {/* 🔹 VIEW MODE (NO EDIT) */}
-          {!isEditable && !previewSrc && (
-            <Typography variant="body2" color="text.secondary">
-              Not Uploaded
-            </Typography>
-          )}
-
-          {/* 🔹 ERROR */}
-          {formErrors[fileKey] && (
-            <Typography color="error" variant="caption">
-              {formErrors[fileKey]}
-            </Typography>
-          )}
-        </Stack>
-      </Grid>
-    );
-  };
-
   const handleSaveUser = async () => {
-    const dataToSend = {
-      ...userFormData,
-      employee_id: selectedEmployee.id,
-    };
-
-    if (editingUser && !userFormData.password) {
-      delete dataToSend.password;
-    }
-
+    const data = { ...userFormData, employee_id: selectedEmployee.id };
+    if (editingUser && !userFormData.password) delete data.password;
     try {
       if (editingUser) {
-        const result = await dispatch(
-          updateUser({ id: editingUser.id, data: dataToSend }),
-        );
-        if (result.type.includes("fulfilled")) {
-          CommonToast("User updated successfully", "success");
+        const r = await dispatch(updateUser({ id: editingUser.id, data }));
+        if (r.type.includes("fulfilled")) {
+          CommonToast("User updated", "success");
           dispatch(getUsers({ employee_id: selectedEmployee.id }));
         }
       } else {
-        const result = await dispatch(createUser(dataToSend));
-        if (result.type.includes("fulfilled")) {
-          CommonToast("User created successfully", "success");
+        const r = await dispatch(createUser(data));
+        if (r.type.includes("fulfilled")) {
+          CommonToast("User created", "success");
           dispatch(getUsers({ employee_id: selectedEmployee.id }));
         }
       }
-    } catch (err) {
+    } catch {
       CommonToast("Failed to save user", "error");
     }
   };
 
-  const handleDeleteUser = async (userId) => {
-    try {
-      await dispatch(deleteUser(userId));
-      CommonToast("User deleted successfully", "success");
-      dispatch(getUsers({ employee_id: selectedEmployee.id }));
-      setEditingUser(null);
-      setUserFormData({
-        username: "",
-        email: "",
-        password: "",
-        first_name: "",
-        last_name: "",
-        is_active: true,
-        is_staff: false,
-        is_superuser: false,
-        phone: "",
-        department_id: null,
-        department: "",
-        role_id: null,
-        role: "",
-      });
-    } catch (err) {
-      CommonToast("Failed to delete user", "error");
-    }
+  // ── Derived state passed down to Field ────────────────────────────────────
+  const isEditable = viewMode === "edit" || viewMode === "create";
+  const fieldProps = {
+    formData,
+    formErrors,
+    isEditable,
+    setFormData,
+    setFormErrors,
   };
 
-  // ==================== RENDER HELPER FUNCTIONS ====================
-
-  const renderTextField = (label, field, type = "text", options = {}) => {
-    const isEditable = viewMode === "edit" || viewMode === "create";
-    const value = formData[field] || "";
-
-    const requiredFields = [
-      "first_name",
-      "last_name",
-      "email",
-      "phone",
-      "password",
-      "employee_code",
-      "department_id",
-      "role_id",
-      "designation",
-      "employment_type",
-      "joining_date",
-      "date_of_birth",
-      "gender",
-      "address",
-      "city",
-      "state",
-      "pincode",
-    ];
-
-    const isRequired = requiredFields.includes(field);
-
-    const commonProps = {
-        // fullWidth: true,   // <-- ADD HERE
-          sx: { width: 200 },   // ✅ fixed width
-
-      label:
-        isRequired && (viewMode === "create" || viewMode === "edit")
-          ? `${label} *`
-          : label,
-      type,
-      value: value,
-      InputProps: { readOnly: !isEditable },
-      error: isEditable && !!formErrors[field],
-      helperText: isEditable && formErrors[field],
-      ...options,
-    };
-
-    if (isEditable) {
-      commonProps.onChange = (e) => {
-        let newValue = e.target.value;
-
-        if (type === "tel" || options.inputMode === "numeric") {
-          newValue = newValue.replace(/\D/g, "");
-        }
-
-        setFormData({
-          ...formData,
-          [field]: newValue,
-        });
-
-        if (formErrors[field]) {
-          setFormErrors({
-            ...formErrors,
-            [field]: undefined,
-          });
-        }
-      };
-    }
-
-    return <TextField {...commonProps} />;
-  };
-  // const BASE_URL = "https://hogofilm.pythonanywhere.com";
-
-  const getDocumentSrc = (key) => {
-    const value = documentFormData?.[key];
-
-    if (!value) return null;
-
-    // File object (edit mode upload)
-    if (value instanceof File) {
-      return URL.createObjectURL(value);
-    }
-
-    // String URL from API (view mode)
-    if (typeof value === "string") {
-      return `${BASE_URL}${value}`;
-    }
-
-    return null;
-  };
-
-  const renderDocumentField = (label, key, isEditable) => {
-    const src = getDocumentSrc(key);
-    const isImage = src && !src.toLowerCase().endsWith(".pdf");
-
-    return (
-      <Box
-        sx={{
-          border: "1px dashed #ccc",
-          borderRadius: 2,
-          p: 1.5,
-          height: "100%",
-        }}
-      >
-        {/* LABEL */}
-        <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
-          {label}
-        </Typography>
-
-        {/* IMAGE / PREVIEW */}
-        {src && isImage ? (
-          <Box
-            sx={{
-              width: "100%",
-              height: 150,
-              borderRadius: 1,
-              overflow: "hidden",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              bgcolor: "#fafafa",
-              mb: 1,
-            }}
-          >
-            <img
-              src={src}
-              alt={label}
-              style={{
-                maxWidth: "100%",
-                maxHeight: "100%",
-                objectFit: "contain",
-              }}
-            />
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              height: 150,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "text.secondary",
-              bgcolor: "#fafafa",
-              borderRadius: 1,
-              mb: 1,
-            }}
-          >
-            Not Uploaded
-          </Box>
-        )}
-
-        {/* ACTION */}
-        {true ? (
-          <Button component="label" variant="outlined" fullWidth size="small">
-            {src ? "Replace" : "Upload"} {label}
-            <input
-              hidden
-              type="file"
-              accept="image/*,.pdf"
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                setDocumentFormData({
-                  ...documentFormData,
-                  [key]: file,
-                });
-              }}
-            />
-          </Button>
-        ) : (
-          src && (
-            <Button
-              variant="outlined"
-              fullWidth
-              size="small"
-              href={src}
-              target="_blank"
-            >
-              View
-            </Button>
-          )
-        )}
-      </Box>
-    );
-  };
-
-  // ==================== TABLE VIEW ====================
-
+  // ── LIST VIEW ──────────────────────────────────────────────────────────────
   if (viewMode === "list") {
     return (
-      <Box sx={{ height: "100vh" }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 3,
-          }}
+      <Box>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={3}
         >
           <Box>
-            <Typography
-              variant="h4"
-              fontWeight={700}
-              sx={{ color: "#7E7E7E", mb: 1 }}
-            >
-              Employee Management
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Box display="flex" alignItems="center" gap={1.5} mb={0.5}>
+              <Box
+                sx={{
+                  width: 5,
+                  height: 32,
+                  bgcolor: "#D20000",
+                  borderRadius: 1,
+                }}
+              />
+              <Typography variant="h5" fontWeight={800} color="#1a1a1a">
+                Employee Management
+              </Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary" ml={2.5}>
               Manage employees, documents, and information
             </Typography>
           </Box>
@@ -1530,72 +3559,200 @@ const EmployeeManagement = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleAddEmployee}
-            size="large"
+            sx={{
+              bgcolor: "#D20000",
+              "&:hover": { bgcolor: "#a80000" },
+              fontWeight: 700,
+              borderRadius: 1.5,
+              px: 2.5,
+              boxShadow: "0 4px 12px rgba(210,0,0,0.3)",
+            }}
           >
             Add Employee
           </CommonButton>
-        </Box>
+        </Stack>
 
-        <Paper elevation={3}>
+        <Paper
+          elevation={2}
+          sx={{
+            borderRadius: 3,
+            overflow: "hidden",
+            border: "1px solid #f0f0f0",
+          }}
+        >
           {loading ? (
-            <Box display="flex" justifyContent="center" py={10}>
-              <CircularProgress />
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              py={8}
+              gap={1}
+            >
+              <CircularProgress size={32} sx={{ color: "#D20000" }} />
+              <Typography variant="body2" color="text.secondary">
+                Loading employees...
+              </Typography>
             </Box>
           ) : (
             <TableContainer>
               <Table>
                 <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 700 }}>Sr</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>
-                      Employee Code
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Department</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Phone</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Actions</TableCell>
+                  <TableRow
+                    sx={{
+                      background:
+                        "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+                    }}
+                  >
+                    {[
+                      "Sr",
+                      "Code",
+                      "Name",
+                      "Department",
+                      "Role",
+                      "Phone",
+                      "Email",
+                      "Status",
+                      "Actions",
+                    ].map((h) => (
+                      <TableCell
+                        key={h}
+                        sx={{
+                          fontWeight: 700,
+                          color: "#fff",
+                          fontSize: 13,
+                          letterSpacing: 0.5,
+                          border: "none",
+                          py: 1.5,
+                        }}
+                      >
+                        {h}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {employees.length > 0 &&
-                    employees?.map((emp, index) => (
-                      <TableRow key={emp.id} hover>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell>
-                          <Typography>{emp.employee_code}</Typography>
-                        </TableCell>
-                        <TableCell>{`${emp.first_name} ${emp.last_name}`}</TableCell>
-                        <TableCell>{emp.department_name}</TableCell>
-                        <TableCell>{emp.role_name}</TableCell>
-                        <TableCell>{emp.phone}</TableCell>
-                        <TableCell>{emp.email}</TableCell>
-                        <TableCell>
-                          <Chip
-                            label={emp.status}
-                            color={
-                              emp.status === "Active"
-                                ? "success"
-                                : emp.status === "Inactive"
-                                  ? "default"
-                                  : "warning"
-                            }
-                            size="small"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <IconButton
-                            color="primary"
-                            onClick={() => handleViewDetails(emp)}
-                            size="small"
+                  {employees?.map((emp, index) => (
+                    <TableRow
+                      key={emp.id}
+                      hover
+                      sx={{
+                        "&:hover": { bgcolor: "#fff5f5" },
+                        "&:last-child td": { border: 0 },
+                        borderBottom: "1px solid #f5f5f5",
+                        transition: "background 0.15s",
+                      }}
+                    >
+                      <TableCell
+                        sx={{ fontWeight: 700, color: "#D20000", width: 45 }}
+                      >
+                        {index + 1}
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={emp.employee_code}
+                          size="small"
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: 11,
+                            borderRadius: 1,
+                            bgcolor: "#f0f4ff",
+                            color: "#1565c0",
+                            border: "1px solid #d0deff",
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box display="flex" alignItems="center" gap={1.2}>
+                          <Box
+                            sx={{
+                              width: 28,
+                              height: 28,
+                              borderRadius: 1,
+                              bgcolor: "#f0f0f0",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              border: "1px solid #e0e0e0",
+                              flexShrink: 0,
+                            }}
                           >
-                            <VisibilityIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                            <PersonIcon
+                              sx={{ fontSize: 15, color: "#D20000" }}
+                            />
+                          </Box>
+                          <Typography
+                            fontWeight={600}
+                            fontSize={13}
+                            color="#1a1a1a"
+                          >
+                            {emp.first_name} {emp.last_name}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography fontSize={13} color="text.secondary">
+                          {emp.department_name}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography fontSize={13} color="text.secondary">
+                          {emp.role_name}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography fontSize={13}>{emp.phone}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography fontSize={13} color="text.secondary">
+                          {emp.email}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={emp.status}
+                          size="small"
+                          sx={{
+                            fontWeight: 700,
+                            borderRadius: 1,
+                            fontSize: 11,
+                            ...(STATUS_CHIP[emp.status] ||
+                              STATUS_CHIP.Inactive),
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleViewDetails(emp)}
+                          sx={{
+                            bgcolor: "#f0f4ff",
+                            color: "#1565c0",
+                            "&:hover": { bgcolor: "#d0deff" },
+                            borderRadius: 1,
+                          }}
+                        >
+                          <VisibilityIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {!loading && employees?.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          alignItems="center"
+                          gap={1}
+                        >
+                          <PersonIcon sx={{ fontSize: 40, color: "#e0e0e0" }} />
+                          <Typography color="text.secondary" fontWeight={500}>
+                            No employees found
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -1605,24 +3762,36 @@ const EmployeeManagement = () => {
     );
   }
 
-  // ==================== DETAIL VIEW (VIEW/EDIT/CREATE) ====================
-
+  // ── DETAIL / CREATE / EDIT VIEW ────────────────────────────────────────────
   return (
-    <Box sx={{ height: "100vh", overflow: "auto", bgcolor: "grey.50" }}>
-      {/* Header Section */}
-      <Paper
-        elevation={0}
+    <Box sx={{ bgcolor: "#f8f8f8", minHeight: "100vh" }}>
+      {/* Red gradient header */}
+      <Box
         sx={{
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          p: 3,
+          background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+          px: 3,
+          py: 3,
+          boxShadow: "0 4px 16px rgba(210,0,0,0.25)",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <IconButton onClick={handleBackToList} sx={{ color: "white", mr: 2 }}>
+        <Box
+          display="flex"
+          alignItems="center"
+          mb={viewMode === "create" ? 0 : 2.5}
+        >
+          <IconButton
+            onClick={handleBackToList}
+            sx={{ color: "#fff", mr: 1.5 }}
+          >
             <ArrowBackIcon />
           </IconButton>
-          <Typography variant="h5" fontWeight={700} sx={{ flex: 1 }}>
+          <Typography
+            variant="h6"
+            fontWeight={700}
+            color="#fff"
+            letterSpacing={1}
+            flex={1}
+          >
             {viewMode === "create"
               ? "Add New Employee"
               : viewMode === "edit"
@@ -1633,18 +3802,38 @@ const EmployeeManagement = () => {
           {viewMode === "view" && (
             <Stack direction="row" spacing={1}>
               <Button
-                variant="contained"
-                color="warning"
+                variant="outlined"
                 startIcon={<EditIcon />}
                 onClick={handleEditEmployee}
+                sx={{
+                  borderColor: "rgba(255,255,255,0.6)",
+                  color: "#fff",
+                  "&:hover": {
+                    borderColor: "#fff",
+                    bgcolor: "rgba(255,255,255,0.1)",
+                  },
+                  fontWeight: 700,
+                  borderRadius: 1.5,
+                  textTransform: "none",
+                }}
               >
                 Edit
               </Button>
               <Button
-                variant="contained"
-                color="error"
+                variant="outlined"
                 startIcon={<DeleteIcon />}
                 onClick={() => setDeleteDialogOpen(true)}
+                sx={{
+                  borderColor: "rgba(255,255,255,0.6)",
+                  color: "#fff",
+                  "&:hover": {
+                    borderColor: "#fff",
+                    bgcolor: "rgba(255,255,255,0.1)",
+                  },
+                  fontWeight: 700,
+                  borderRadius: 1.5,
+                  textTransform: "none",
+                }}
               >
                 Delete
               </Button>
@@ -1653,19 +3842,36 @@ const EmployeeManagement = () => {
 
           {viewMode === "edit" && (
             <Stack direction="row" spacing={1}>
-              <CommonButton
+              <Button
                 variant="contained"
                 startIcon={<SaveIcon />}
                 onClick={handleSaveEdit}
                 disabled={loading}
+                sx={{
+                  bgcolor: "rgba(255,255,255,0.2)",
+                  "&:hover": { bgcolor: "rgba(255,255,255,0.3)" },
+                  fontWeight: 700,
+                  borderRadius: 1.5,
+                  textTransform: "none",
+                }}
               >
                 Save All
-              </CommonButton>
+              </Button>
               <Button
                 variant="outlined"
                 startIcon={<CancelIcon />}
                 onClick={handleCancelEdit}
-                sx={{ color: "white", borderColor: "white" }}
+                sx={{
+                  borderColor: "rgba(255,255,255,0.6)",
+                  color: "#fff",
+                  "&:hover": {
+                    borderColor: "#fff",
+                    bgcolor: "rgba(255,255,255,0.1)",
+                  },
+                  fontWeight: 700,
+                  borderRadius: 1.5,
+                  textTransform: "none",
+                }}
               >
                 Cancel
               </Button>
@@ -1674,85 +3880,121 @@ const EmployeeManagement = () => {
         </Box>
 
         {viewMode === "view" && selectedEmployee && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Box display="flex" alignItems="center" gap={2.5}>
             {selectedEmployee.profile_photo && (
               <Avatar
                 src={`${BASE_URL}${selectedEmployee.profile_photo}`}
-                sx={{ width: 80, height: 80, border: "3px solid white" }}
+                sx={{
+                  width: 72,
+                  height: 72,
+                  border: "3px solid rgba(255,255,255,0.8)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                }}
               />
             )}
             <Box>
-              <Typography variant="h4" fontWeight={700}>
+              <Typography variant="h5" fontWeight={700} color="#fff">
                 {selectedEmployee.name}
               </Typography>
-              <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+              <Box display="flex" gap={1} mt={0.8}>
                 <Chip
                   label={selectedEmployee.status}
                   size="small"
-                  sx={{ bgcolor: "white", color: "success.main" }}
+                  sx={{
+                    fontWeight: 700,
+                    borderRadius: 1,
+                    fontSize: 11,
+                    ...(STATUS_CHIP[selectedEmployee.status] ||
+                      STATUS_CHIP.Inactive),
+                  }}
                 />
                 <Chip
                   label={selectedEmployee.employee_code}
                   size="small"
-                  sx={{ bgcolor: "white", color: "primary.main" }}
+                  sx={{
+                    fontWeight: 700,
+                    borderRadius: 1,
+                    fontSize: 11,
+                    bgcolor: "#f0f4ff",
+                    color: "#1565c0",
+                    border: "1px solid #d0deff",
+                  }}
                 />
               </Box>
-              <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+              <Typography
+                variant="body2"
+                sx={{ mt: 0.8, color: "rgba(255,255,255,0.85)" }}
+              >
                 {selectedEmployee.designation} • {selectedEmployee.department}
               </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "rgba(255,255,255,0.75)" }}
+              >
                 {selectedEmployee.email} • {selectedEmployee.phone}
               </Typography>
             </Box>
           </Box>
         )}
-      </Paper>
+      </Box>
 
-      {/* Validation Alert */}
+      {/* Validation alert */}
       {validationAlert && viewMode === "create" && (
-        <Box sx={{ p: 3, pb: 0 }}>
-          <Alert severity="error" onClose={() => setValidationAlert(null)}>
+        <Box sx={{ px: 3, pt: 2 }}>
+          <Alert
+            severity="error"
+            onClose={() => setValidationAlert(null)}
+            sx={{ borderRadius: 2 }}
+          >
             {validationAlert}
           </Alert>
         </Box>
       )}
 
-      {/* Tabs Section */}
-      <Box sx={{ bgcolor: "white", borderBottom: 1, borderColor: "divider" }}>
+      {/* Tabs */}
+      <Box sx={{ bgcolor: "#fff", borderBottom: "1px solid #ebebeb" }}>
         <Tabs
           value={activeTab}
-          onChange={(e, v) => setActiveTab(v)}
+          onChange={(_, v) => setActiveTab(v)}
           variant="scrollable"
           scrollButtons="auto"
-          sx={{ px: 3 }}
+          sx={{
+            px: 3,
+            "& .MuiTabs-indicator": { bgcolor: "#D20000", height: 3 },
+            "& .MuiTab-root.Mui-selected": {
+              color: "#D20000",
+              fontWeight: 700,
+            },
+            "& .MuiTab-root": { fontSize: 12, minHeight: 56 },
+          }}
         >
           <Tab
-            icon={<PersonIcon />}
+            icon={<PersonIcon sx={{ fontSize: 16 }} />}
             iconPosition="start"
             label="Employee Profile"
           />
           {viewMode !== "create" && [
             <Tab
-              key="documents"
-              icon={<FolderIcon />}
+              key="docs"
+              icon={<FolderIcon sx={{ fontSize: 16 }} />}
               iconPosition="start"
-              label="Employee Documents"
+              label="Documents"
             />,
             <Tab
               key="personal"
-              icon={<DescriptionIcon />}
+              icon={<DescriptionIcon sx={{ fontSize: 16 }} />}
               iconPosition="start"
               label="Personal Details"
             />,
             <Tab
               key="salary"
-              icon={<AccountBalanceIcon />}
+              icon={<AccountBalanceIcon sx={{ fontSize: 16 }} />}
               iconPosition="start"
               label="Salary"
             />,
             <Tab
               key="users"
-              icon={<PersonIcon />}
+              icon={<PersonIcon sx={{ fontSize: 16 }} />}
               iconPosition="start"
               label="Users"
             />,
@@ -1760,337 +4002,227 @@ const EmployeeManagement = () => {
         </Tabs>
       </Box>
 
-      {/* Content Section */}
       <Box sx={{ p: 3 }}>
         {/* TAB 0: EMPLOYEE PROFILE */}
         <TabPanel value={activeTab} index={0}>
-          <Card elevation={2}>
-            <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography variant="h6" fontWeight={700}>
-                  Employee Information
-                </Typography>
-              </Box>
-              <Divider sx={{ mb: 3 }} />
-
-              <Grid container spacing={2}>
+          <Paper
+            elevation={2}
+            sx={{
+              borderRadius: 3,
+              overflow: "hidden",
+              border: "1px solid #f0f0f0",
+            }}
+          >
+            <Box
+              sx={{
+                px: 3,
+                py: 2,
+                bgcolor: "#fafafa",
+                borderBottom: "1px solid #ebebeb",
+              }}
+            >
+              <SectionHeading title="Employee Information" />
+            </Box>
+            <Box px={4} py={3}>
+              <Grid container spacing={2.5}>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("First Name", "first_name")}
+                  <Field
+                    {...fieldProps}
+                    label="First Name"
+                    field="first_name"
+                  />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Last Name", "last_name")}
-                </Grid>
-                {/* <Grid item xs={12} sm={6}>
-                  {renderTextField("Full Name", "name")}
-                </Grid> */}
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Employee Code", "employee_code")}
+                  <Field {...fieldProps} label="Last Name" field="last_name" />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Email", "email", "email")}
+                  <Field
+                    {...fieldProps}
+                    label="Employee Code"
+                    field="employee_code"
+                  />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Phone", "phone", "tel", {
-                    inputProps: {
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
-                      maxLength: 10,
-                    },
-                  })}
+                  <Field
+                    {...fieldProps}
+                    label="Email"
+                    field="email"
+                    type="email"
+                  />
                 </Grid>
-
-                {viewMode === "create" && (
-                  <Grid item xs={12} sm={6}>
-                    {renderTextField("Password", "password", "password")}
-                  </Grid>
-                )}
-
-                {/* <Grid item xs={12} sm={6}>
-                  {renderTextField(
-                    "Emergency Contact Phone",
-                    "emergency_contact_phone",
-                    "tel",
-                    {
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    {...fieldProps}
+                    label="Phone"
+                    field="phone"
+                    type="tel"
+                    options={{
                       inputProps: {
                         inputMode: "numeric",
                         pattern: "[0-9]*",
                         maxLength: 10,
                       },
-                    },
-                  )}
-                </Grid> */}
-
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Date of Joining", "joining_date", "date", {
-                    InputLabelProps: { shrink: true },
-                  })}
+                    }}
+                  />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Date of Birth", "date_of_birth", "date", {
-                    InputLabelProps: { shrink: true },
-                  })}
-                </Grid>
-
-                <Grid sx={{width:200}} item xs={12} sm={6}>
-                  {renderTextField("Gender", "gender", "text", {
-                    select: true,
-                    children: [
-                      <MenuItem key="Male" value="Male">
-                        Male
-                      </MenuItem>,
-                      <MenuItem key="Female" value="Female">
-                        Female
-                      </MenuItem>,
-                      <MenuItem key="Other" value="Other">
-                        Other
-                      </MenuItem>,
-                    ],
-                  })}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {viewMode === "edit" || viewMode === "create" ? (
-                    <Autocomplete
-                    sx={{width:200}}
-                      options={departments}
-                      getOptionLabel={(option) => option.name || ""}
-                      value={
-                        departments.find(
-                          (d) => d.id === formData.department_id,
-                        ) || null
-                      }
-                      onChange={(event, newValue) => {
-                        setFormData({
-                          ...formData,
-                          department_id: newValue ? newValue.id : null,
-                          department: newValue ? newValue.name : "",
-                        });
-                        if (formErrors.department_id) {
-                          setFormErrors({
-                            ...formErrors,
-                            department_id: undefined,
-                          });
-                        }
-                      }}
-                      loading={departmentsLoading}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={
-                            viewMode === "create" || viewMode === "edit"
-                              ? "Department *"
-                              : "Department"
-                          }
-                          error={
-                            !!(viewMode === "create" || viewMode === "edit") &&
-                            !!formErrors.department_id
-                          }
-                          helperText={
-                            (viewMode === "create" || viewMode === "edit") &&
-                            formErrors.department_id
-                          }
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <>
-                                {departmentsLoading ? (
-                                  <CircularProgress color="inherit" size={20} />
-                                ) : null}
-                                {params.InputProps.endAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
+                {viewMode === "create" && (
+                  <Grid item xs={12} sm={6}>
+                    <Field
+                      {...fieldProps}
+                      label="Password"
+                      field="password"
+                      type="password"
                     />
-                  ) : (
-                   <Autocomplete
-                                       sx={{width:200}}
-
-                   disabled={true}
-                      options={departments}
-                      getOptionLabel={(option) => option.name || ""}
-                      value={
-                        departments.find(
-                          (d) => d.id === formData.department_id,
-                        ) || null
-                      }
-                      onChange={(event, newValue) => {
-                        setFormData({
-                          ...formData,
-                          department_id: newValue ? newValue.id : null,
-                          department: newValue ? newValue.name : "",
-                        });
-                        if (formErrors.department_id) {
-                          setFormErrors({
-                            ...formErrors,
-                            department_id: undefined,
-                          });
-                        }
-                      }}
-                      loading={departmentsLoading}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={
-                            viewMode === "create" || viewMode === "edit"
-                              ? "Department *"
-                              : "Department"
-                          }
-                          error={
-                            !!(viewMode === "create" || viewMode === "edit") &&
-                            !!formErrors.department_id
-                          }
-                          helperText={
-                            (viewMode === "create" || viewMode === "edit") &&
-                            formErrors.department_id
-                          }
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <>
-                                {departmentsLoading ? (
-                                  <CircularProgress color="inherit" size={20} />
-                                ) : null}
-                                {params.InputProps.endAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
-                    />
-                  )}
+                  </Grid>
+                )}
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    {...fieldProps}
+                    label="Date of Joining"
+                    field="joining_date"
+                    type="date"
+                    options={{ InputLabelProps: { shrink: true } }}
+                  />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {viewMode === "edit" || viewMode === "create" ? (
-                    <Autocomplete
-                                        sx={{width:200}}
-
-                      options={roles}
-                      getOptionLabel={(option) => option.name || ""}
-                      value={
-                        roles.find((r) => r.id === formData.role_id) || null
-                      }
-                      onChange={(event, newValue) => {
-                        setFormData({
-                          ...formData,
-                          role_id: newValue ? newValue.id : null,
-                          role: newValue ? newValue.name : "",
-                        });
-                        if (formErrors.role_id) {
-                          setFormErrors({ ...formErrors, role_id: undefined });
-                        }
-                      }}
-                      loading={rolesLoading}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={
-                            viewMode === "create" || viewMode === "edit"
-                              ? "Role *"
-                              : "Role"
-                          }
-                          error={
-                            !!(viewMode === "create" || viewMode === "edit") &&
-                            !!formErrors.role_id
-                          }
-                          helperText={
-                            (viewMode === "create" || viewMode === "edit") &&
-                            formErrors.role_id
-                          }
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <>
-                                {rolesLoading ? (
-                                  <CircularProgress color="inherit" size={20} />
-                                ) : null}
-                                {params.InputProps.endAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
-                    />
-                  ) : (
-                     <Autocomplete
-                                         sx={{width:200}}
-
-                     disabled={true}
-                      options={roles}
-                      getOptionLabel={(option) => option.name || ""}
-                      value={
-                        roles.find((r) => r.id === formData.role_id) || null
-                      }
-                      onChange={(event, newValue) => {
-                        setFormData({
-                          ...formData,
-                          role_id: newValue ? newValue.id : null,
-                          role: newValue ? newValue.name : "",
-                        });
-                        if (formErrors.role_id) {
-                          setFormErrors({ ...formErrors, role_id: undefined });
-                        }
-                      }}
-                      loading={rolesLoading}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={
-                            viewMode === "create" || viewMode === "edit"
-                              ? "Role *"
-                              : "Role"
-                          }
-                          error={
-                            !!(viewMode === "create" || viewMode === "edit") &&
-                            !!formErrors.role_id
-                          }
-                          helperText={
-                            (viewMode === "create" || viewMode === "edit") &&
-                            formErrors.role_id
-                          }
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <>
-                                {rolesLoading ? (
-                                  <CircularProgress color="inherit" size={20} />
-                                ) : null}
-                                {params.InputProps.endAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
-                    />
-                  )}
+                  <Field
+                    {...fieldProps}
+                    label="Date of Birth"
+                    field="date_of_birth"
+                    type="date"
+                    options={{ InputLabelProps: { shrink: true } }}
+                  />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Status", "status", "text", {
-                    select: true,
-                    children: [
-                      <MenuItem key="Active" value="Active">
-                        Active
-                      </MenuItem>,
-                      <MenuItem key="Inactive" value="Inactive">
-                        Inactive
-                      </MenuItem>,
-                    ],
-                  })}
+                  <Field
+                    {...fieldProps}
+                    label="Gender"
+                    field="gender"
+                    options={{
+                      select: true,
+                      children: [
+                        <MenuItem key="Male" value="Male">
+                          Male
+                        </MenuItem>,
+                        <MenuItem key="Female" value="Female">
+                          Female
+                        </MenuItem>,
+                        <MenuItem key="Other" value="Other">
+                          Other
+                        </MenuItem>,
+                      ],
+                    }}
+                  />
                 </Grid>
-
+                {/* Department Autocomplete */}
                 <Grid item xs={12} sm={6}>
-                  {renderTextField(
-                    "Employment Type",
-                    "employment_type",
-                    "text",
-                    {
+                  <Autocomplete
+                    options={departments}
+                    getOptionLabel={(o) => o.name || ""}
+                    value={
+                      departments.find(
+                        (d) => d.id === formData.department_id,
+                      ) || null
+                    }
+                    disabled={!isEditable}
+                    onChange={(_, v) => {
+                      setFormData((p) => ({
+                        ...p,
+                        department_id: v ? v.id : null,
+                        department: v ? v.name : "",
+                      }));
+                      if (formErrors.department_id)
+                        setFormErrors((p) => ({
+                          ...p,
+                          department_id: undefined,
+                        }));
+                    }}
+                    loading={departmentsLoading}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        label={isEditable ? "Department *" : "Department"}
+                        sx={fieldSx}
+                        error={isEditable && !!formErrors.department_id}
+                        helperText={isEditable && formErrors.department_id}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {departmentsLoading && (
+                                <CircularProgress size={18} />
+                              )}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                {/* Role Autocomplete */}
+                <Grid item xs={12} sm={6}>
+                  <Autocomplete
+                    options={roles}
+                    getOptionLabel={(o) => o.name || ""}
+                    value={roles.find((r) => r.id === formData.role_id) || null}
+                    disabled={!isEditable}
+                    onChange={(_, v) => {
+                      setFormData((p) => ({
+                        ...p,
+                        role_id: v ? v.id : null,
+                        role: v ? v.name : "",
+                      }));
+                      if (formErrors.role_id)
+                        setFormErrors((p) => ({ ...p, role_id: undefined }));
+                    }}
+                    loading={rolesLoading}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        label={isEditable ? "Role *" : "Role"}
+                        sx={fieldSx}
+                        error={isEditable && !!formErrors.role_id}
+                        helperText={isEditable && formErrors.role_id}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {rolesLoading && <CircularProgress size={18} />}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    {...fieldProps}
+                    label="Status"
+                    field="status"
+                    options={{
+                      select: true,
+                      children: [
+                        <MenuItem key="Active" value="Active">
+                          Active
+                        </MenuItem>,
+                        <MenuItem key="Inactive" value="Inactive">
+                          Inactive
+                        </MenuItem>,
+                      ],
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    {...fieldProps}
+                    label="Employment Type"
+                    field="employment_type"
+                    options={{
                       select: true,
                       children: [
                         <MenuItem key="Permanent" value="Permanent">
@@ -2103,539 +4235,482 @@ const EmployeeManagement = () => {
                           Intern
                         </MenuItem>,
                       ],
-                    },
-                  )}
+                    }}
+                  />
                 </Grid>
               </Grid>
-            </CardContent>
-          </Card>
-        </TabPanel>
+            </Box>
+          </Paper>
 
-        <Box sx={{ marginTop: "10px" }}>
           {viewMode === "create" && (
-            <CommonButton
-              variant="contained"
-              size="large"
-              onClick={handleCreateEmployee}
-              disabled={loading || createLoading}
-            >
-              {loading || createLoading ? "Creating..." : "Create Employee"}
-            </CommonButton>
-          )}
-        </Box>
-
-        {/* TAB 1: EMPLOYEE DOCUMENTS */}
-        {/* {viewMode !== "create" && ( */}
-        <TabPanel value={activeTab} index={1}>
-          <Card elevation={2}>
-            <CardContent>
-              {/* ================= HEADER ================= */}
-              <Box
+            <Box mt={3}>
+              <CommonButton
+                variant="contained"
+                size="large"
+                onClick={handleCreateEmployee}
+                disabled={loading || createLoading}
                 sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
+                  bgcolor: "#D20000",
+                  "&:hover": { bgcolor: "#a80000" },
+                  fontWeight: 700,
+                  borderRadius: 1.5,
+                  px: 4,
+                  boxShadow: "0 4px 12px rgba(210,0,0,0.3)",
                 }}
               >
-                <Typography variant="h6" fontWeight={700}>
-                  Employee Documents
-                </Typography>
+                {loading || createLoading ? "Creating..." : "Create Employee"}
+              </CommonButton>
+            </Box>
+          )}
+        </TabPanel>
 
-                {/* {viewMode === "edit" && (
-                  <CommonButton
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleUploadDocument}
-                    size="small"
-                  >
-                    {docsArray.length > 0
-                      ? "Upload More Documents"
-                      : "Add Document"}
-                  </CommonButton>
-                )} */}
-                {viewMode === "edit" && (
-                  <CommonButton
-                    variant="contained"
-                    startIcon={
-                      docsArray.length > 0 ? <SaveIcon /> : <AddIcon />
-                    }
-                    onClick={handleUploadDocument}
-                    size="small"
-                  >
-                    {docsArray.length > 0
-                      ? "Update Documents" // Updated text
-                      : "Add Document"}
-                  </CommonButton>
-                )}
-              </Box>
-
-              <Divider sx={{ mb: 3 }} />
-
-              {/* ================= GRID LAYOUT ================= */}
+        {/* TAB 1: DOCUMENTS */}
+        <TabPanel value={activeTab} index={1}>
+          <Paper
+            elevation={2}
+            sx={{
+              borderRadius: 3,
+              overflow: "hidden",
+              border: "1px solid #f0f0f0",
+            }}
+          >
+            <Box
+              sx={{
+                px: 3,
+                py: 2,
+                bgcolor: "#fafafa",
+                borderBottom: "1px solid #ebebeb",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <SectionHeading title="Employee Documents" />
+              {viewMode === "edit" && (
+                <Button
+                  variant="contained"
+                  startIcon={docsArray.length > 0 ? <SaveIcon /> : <AddIcon />}
+                  onClick={handleUploadDocument}
+                  sx={{
+                    bgcolor: "#D20000",
+                    "&:hover": { bgcolor: "#a80000" },
+                    fontWeight: 700,
+                    borderRadius: 1.5,
+                    textTransform: "none",
+                  }}
+                >
+                  {docsArray.length > 0 ? "Update Documents" : "Add Document"}
+                </Button>
+              )}
+            </Box>
+            <Box px={4} py={3}>
               <Box
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 3,
-                  width: "100%",
+                  gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                  gap: 4,
                   alignItems: "flex-start",
                 }}
               >
-                {/* ========== LEFT : TEXT FIELDS ========== */}
+                {/* Text fields */}
                 <Box>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                  <SectionHeading title="Document Numbers" />
+                  <Stack spacing={2}>
+                    {[
+                      { label: "Aadhaar Number", key: "aadhar_number" },
+                      { label: "PAN Number", key: "pancard_number" },
+                      {
+                        label: "Driving License Number",
+                        key: "driving_license_number",
+                      },
+                    ].map((f) => (
                       <TextField
+                        key={f.key}
                         fullWidth
-                        label="Aadhaar Number"
-                        value={documentFormData.aadhar_number || ""}
+                        label={f.label}
+                        sx={fieldSx}
+                        value={documentFormData[f.key] || ""}
                         InputProps={{ readOnly: viewMode === "view" }}
                         onChange={(e) =>
-                          setDocumentFormData({
-                            ...documentFormData,
-                            aadhar_number: e.target.value,
-                          })
+                          setDocumentFormData((p) => ({
+                            ...p,
+                            [f.key]: e.target.value,
+                          }))
                         }
                       />
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="PAN Number"
-                        value={documentFormData.pancard_number || ""}
-                        InputProps={{ readOnly: viewMode === "view" }}
-                        onChange={(e) =>
-                          setDocumentFormData({
-                            ...documentFormData,
-                            pancard_number: e.target.value,
-                          })
-                        }
-                      />
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Driving License Number"
-                        value={documentFormData.driving_license_number || ""}
-                        InputProps={{ readOnly: viewMode === "view" }}
-                        onChange={(e) =>
-                          setDocumentFormData({
-                            ...documentFormData,
-                            driving_license_number: e.target.value,
-                          })
-                        }
-                      />
-                    </Grid>
-                  </Grid>
+                    ))}
+                  </Stack>
                 </Box>
-
-                {/* ========== RIGHT : DOCUMENT FILES ========== */}
+                {/* File uploads */}
                 <Box>
+                  <SectionHeading title="Document Files" />
                   <Grid container spacing={2}>
                     {[
                       { label: "Aadhaar Front", key: "aadhar_front" },
                       { label: "Aadhaar Back", key: "aadhar_back" },
                       { label: "PAN Card", key: "pan_card" },
                       { label: "Photo", key: "photo" },
-                      {
-                        label: "Driving License Front",
-                        key: "driving_license_front",
-                      },
-                      {
-                        label: "Driving License Back",
-                        key: "driving_license_back",
-                      },
+                      { label: "DL Front", key: "driving_license_front" },
+                      { label: "DL Back", key: "driving_license_back" },
                     ].map((doc) => (
                       <Grid item xs={12} sm={6} key={doc.key}>
-                        {renderDocumentField(
-                          doc.label,
-                          doc.key,
-                          // viewMode === "edit",
-                        )}
+                        <DocumentCard
+                          label={doc.label}
+                          fileKey={doc.key}
+                          src={getDocSrc(doc.key)}
+                          isEditable={viewMode === "edit"}
+                          onFileChange={handleDocFileChange}
+                        />
                       </Grid>
                     ))}
                   </Grid>
                 </Box>
               </Box>
-            </CardContent>
-          </Card>
+            </Box>
+          </Paper>
         </TabPanel>
-        {/* )} */}
 
         {/* TAB 2: PERSONAL DETAILS */}
-        {/* {viewMode !== "create" && ( */}
         <TabPanel value={activeTab} index={2}>
-          <Card elevation={2}>
-            <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography variant="h6" fontWeight={700}>
-                  Personal Details
-                </Typography>
-              </Box>
-              <Divider sx={{ mb: 3 }} />
-
-              <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-                <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
-                  {editingPersonalDetails
-                    ? "Edit Personal Details"
-                    : viewMode === "edit"
-                      ? "Add Personal Details"
-                      : "Personal Details"}
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+          <Paper
+            elevation={2}
+            sx={{
+              borderRadius: 3,
+              overflow: "hidden",
+              border: "1px solid #f0f0f0",
+            }}
+          >
+            <Box
+              sx={{
+                px: 3,
+                py: 2,
+                bgcolor: "#fafafa",
+                borderBottom: "1px solid #ebebeb",
+              }}
+            >
+              <SectionHeading title="Personal Details" />
+            </Box>
+            <Box px={4} py={3}>
+              <Grid container spacing={2.5}>
+                {[
+                  { label: "Father Name", key: "father_name" },
+                  { label: "Mother Name", key: "mother_name" },
+                  { label: "Spouse Name", key: "spouse_name" },
+                ].map((f) => (
+                  <Grid item xs={12} sm={6} key={f.key}>
                     <TextField
                       fullWidth
-                      label="Father Name"
-                      value={personalDetailsFormData.father_name}
+                      label={f.label}
+                      sx={fieldSx}
+                      value={personalDetailsFormData[f.key]}
+                      disabled={viewMode !== "edit"}
                       onChange={(e) => {
-                        setPersonalDetailsFormData({
-                          ...personalDetailsFormData,
-                          father_name: e.target.value,
-                        });
+                        setPersonalDetailsFormData((p) => ({
+                          ...p,
+                          [f.key]: e.target.value,
+                        }));
                         setHasModifiedPersonalDetails(true);
                       }}
-                      disabled={viewMode !== "edit"}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Mother Name"
-                      value={personalDetailsFormData.mother_name}
-                      onChange={(e) => {
-                        setPersonalDetailsFormData({
-                          ...personalDetailsFormData,
-                          mother_name: e.target.value,
-                        });
-                        setHasModifiedPersonalDetails(true);
-                      }}
-                      disabled={viewMode !== "edit"}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                    sx={{width:200}}
-                      // fullWidth
-                      label="Marital Status *"
-                      select
-                      value={personalDetailsFormData.marital_status}
-                      onChange={(e) => {
-                        setPersonalDetailsFormData({
-                          ...personalDetailsFormData,
-                          marital_status: e.target.value,
-                        });
-                        setHasModifiedPersonalDetails(true);
-                      }}
-                      disabled={viewMode !== "edit"}
-                    >
-                      <MenuItem value="single">Single</MenuItem>
-                      <MenuItem value="married">Married</MenuItem>
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Spouse Name"
-                      value={personalDetailsFormData.spouse_name}
-                      onChange={(e) => {
-                        setPersonalDetailsFormData({
-                          ...personalDetailsFormData,
-                          spouse_name: e.target.value,
-                        });
-                        setHasModifiedPersonalDetails(true);
-                      }}
-                      disabled={viewMode !== "edit"}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    {renderTextField(
-                      "Emergency Contact Phone",
-                      "emergency_contact_phone",
-                      "tel",
-                      {
-                        inputProps: {
-                          inputMode: "numeric",
-                          pattern: "[0-9]*",
-                          maxLength: 10,
-                        },
-                        disabled: viewMode !== "edit",
-                      },
-                    )}
-                  </Grid>
+                ))}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    select
+                    label="Marital Status *"
+                    sx={fieldSx}
+                    value={personalDetailsFormData.marital_status}
+                    disabled={viewMode !== "edit"}
+                    onChange={(e) => {
+                      setPersonalDetailsFormData((p) => ({
+                        ...p,
+                        marital_status: e.target.value,
+                      }));
+                      setHasModifiedPersonalDetails(true);
+                    }}
+                  >
+                    <MenuItem value="single">Single</MenuItem>
+                    <MenuItem value="married">Married</MenuItem>
+                  </TextField>
                 </Grid>
-              </Box>
-            </CardContent>
-          </Card>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Emergency Contact Phone"
+                    sx={fieldSx}
+                    value={formData.emergency_contact_phone || ""}
+                    disabled={viewMode !== "edit"}
+                    inputProps={{
+                      inputMode: "numeric",
+                      pattern: "[0-9]*",
+                      maxLength: 10,
+                    }}
+                    onChange={(e) =>
+                      setFormData((p) => ({
+                        ...p,
+                        emergency_contact_phone: e.target.value.replace(
+                          /\D/g,
+                          "",
+                        ),
+                      }))
+                    }
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          </Paper>
         </TabPanel>
-        {/* )} */}
 
         {/* TAB 3: SALARY */}
-        {/* {viewMode !== "create" && ( */}
         <TabPanel value={activeTab} index={3}>
-          <Card elevation={2}>
-            <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography variant="h6" fontWeight={700}>
-                  Salary Information
-                </Typography>
-              </Box>
-              <Divider sx={{ mb: 3 }} />
-
-              <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-                <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
-                  {editingSalary
+          <Paper
+            elevation={2}
+            sx={{
+              borderRadius: 3,
+              overflow: "hidden",
+              border: "1px solid #f0f0f0",
+            }}
+          >
+            <Box
+              sx={{
+                px: 3,
+                py: 2,
+                bgcolor: "#fafafa",
+                borderBottom: "1px solid #ebebeb",
+              }}
+            >
+              <SectionHeading
+                title={
+                  editingSalary
                     ? "Edit Salary Information"
-                    : "Add Salary Information"}
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                    : "Add Salary Information"
+                }
+              />
+            </Box>
+            <Box px={4} py={3}>
+              <Grid container spacing={2.5}>
+                {[
+                  { label: "Gross Salary *", key: "gross_salary" },
+                  { label: "Basic Salary *", key: "basic_salary" },
+                  { label: "Allowances", key: "alloances" },
+                  { label: "Deductions", key: "deductions" },
+                ].map((f) => (
+                  <Grid item xs={12} sm={6} key={f.key}>
                     <TextField
                       fullWidth
-                      label="Gross Salary *"
+                      label={f.label}
                       type="number"
-                      value={salaryFormData.gross_salary}
+                      sx={fieldSx}
+                      value={salaryFormData[f.key]}
+                      disabled={viewMode !== "edit"}
                       onChange={(e) => {
-                        setSalaryFormData({
-                          ...salaryFormData,
-                          gross_salary: e.target.value,
-                        });
+                        setSalaryFormData((p) => ({
+                          ...p,
+                          [f.key]: e.target.value,
+                        }));
                         setHasModifiedSalary(true);
                       }}
-                      disabled={viewMode !== "edit"}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Basic Salary *"
-                      type="number"
-                      value={salaryFormData.basic_salary}
-                      onChange={(e) => {
-                        setSalaryFormData({
-                          ...salaryFormData,
-                          basic_salary: e.target.value,
-                        });
-                        setHasModifiedSalary(true);
-                      }}
-                      disabled={viewMode !== "edit"}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Allowances"
-                      type="number"
-                      value={salaryFormData.alloances}
-                      onChange={(e) => {
-                        setSalaryFormData({
-                          ...salaryFormData,
-                          alloances: e.target.value,
-                        });
-                        setHasModifiedSalary(true);
-                      }}
-                      disabled={viewMode !== "edit"}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Deductions"
-                      type="number"
-                      value={salaryFormData.deductions}
-                      onChange={(e) => {
-                        setSalaryFormData({
-                          ...salaryFormData,
-                          deductions: e.target.value,
-                        });
-                        setHasModifiedSalary(true);
-                      }}
-                      disabled={viewMode !== "edit"}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Effective From *"
-                      type="date"
-                      InputLabelProps={{ shrink: true }}
-                      value={salaryFormData.effective_from}
-                      onChange={(e) => {
-                        setSalaryFormData({
-                          ...salaryFormData,
-                          effective_from: e.target.value,
-                        });
-                        setHasModifiedSalary(true);
-                      }}
-                      disabled={viewMode !== "edit"}
-                    />
-                  </Grid>
+                ))}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Effective From *"
+                    type="date"
+                    sx={fieldSx}
+                    InputLabelProps={{ shrink: true }}
+                    value={salaryFormData.effective_from}
+                    disabled={viewMode !== "edit"}
+                    onChange={(e) => {
+                      setSalaryFormData((p) => ({
+                        ...p,
+                        effective_from: e.target.value,
+                      }));
+                      setHasModifiedSalary(true);
+                    }}
+                  />
                 </Grid>
-              </Box>
-            </CardContent>
-          </Card>
+              </Grid>
+            </Box>
+          </Paper>
         </TabPanel>
-        {/* )} */}
 
         {/* TAB 4: USERS */}
-        {/* {viewMode !== "create" && ( */}
         <TabPanel value={activeTab} index={4}>
-          <Card elevation={2}>
-            <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography variant="h6" fontWeight={700}>
-                  User Accounts
-                </Typography>
-              </Box>
-              <Divider sx={{ mb: 3 }} />
-
-              <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-                <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
-                  {editingUser ? "Edit User Account" : "Add User Account"}
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Username *"
-                      value={userFormData.username}
-                      onChange={(e) => {
-                        setUserFormData({
-                          ...userFormData,
-                          username: e.target.value,
-                        });
-                        setHasModifiedUser(true);
-                      }}
-                      disabled={viewMode !== "edit"}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label={
-                        editingUser
-                          ? "Password (leave blank to keep current)"
-                          : "Password *"
-                      }
-                      // type="password"
-                      value={userFormData.password}
-                      onChange={(e) => {
-                        setUserFormData({
-                          ...userFormData,
-                          password: e.target.value,
-                        });
-                        setHasModifiedUser(true);
-                      }}
-                      disabled={viewMode !== "edit"}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Autocomplete
-                    sx={{width:200}}
-                      disabled={viewMode !== "edit"}
-                      options={roles}
-                      getOptionLabel={(option) => option.name || ""}
-                      value={
-                        roles.find((r) => r.id === userFormData.role_id) || null
-                      }
-                      onChange={(event, newValue) => {
-                        setUserFormData({
-                          ...userFormData,
-                          role_id: newValue ? newValue.id : null,
-                          role: newValue ? newValue.name : "",
-                        });
-                        setHasModifiedUser(true);
-                      }}
-                      loading={rolesLoading}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Role"
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <>
-                                {rolesLoading ? (
-                                  <CircularProgress color="inherit" size={20} />
-                                ) : null}
-                                {params.InputProps.endAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <FormControlLabel
-                      disabled={viewMode !== "edit"}
-                      control={
-                        <Switch
-                          checked={userFormData.is_active}
-                          onChange={(e) => {
-                            setUserFormData({
-                              ...userFormData,
-                              is_active: e.target.checked,
-                            });
-                            setHasModifiedUser(true);
-                          }}
-                        />
-                      }
-                      label="Active"
-                    />
-                  </Grid>
+          <Paper
+            elevation={2}
+            sx={{
+              borderRadius: 3,
+              overflow: "hidden",
+              border: "1px solid #f0f0f0",
+            }}
+          >
+            <Box
+              sx={{
+                px: 3,
+                py: 2,
+                bgcolor: "#fafafa",
+                borderBottom: "1px solid #ebebeb",
+              }}
+            >
+              <SectionHeading
+                title={editingUser ? "Edit User Account" : "Add User Account"}
+              />
+            </Box>
+            <Box px={4} py={3}>
+              <Grid container spacing={2.5}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Username *"
+                    sx={fieldSx}
+                    value={userFormData.username}
+                    disabled={viewMode !== "edit"}
+                    onChange={(e) => {
+                      setUserFormData((p) => ({
+                        ...p,
+                        username: e.target.value,
+                      }));
+                      setHasModifiedUser(true);
+                    }}
+                  />
                 </Grid>
-              </Box>
-            </CardContent>
-          </Card>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label={
+                      editingUser
+                        ? "Password (blank = keep current)"
+                        : "Password *"
+                    }
+                    sx={fieldSx}
+                    value={userFormData.password}
+                    disabled={viewMode !== "edit"}
+                    onChange={(e) => {
+                      setUserFormData((p) => ({
+                        ...p,
+                        password: e.target.value,
+                      }));
+                      setHasModifiedUser(true);
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Autocomplete
+                    options={roles}
+                    getOptionLabel={(o) => o.name || ""}
+                    value={
+                      roles.find((r) => r.id === userFormData.role_id) || null
+                    }
+                    disabled={viewMode !== "edit"}
+                    onChange={(_, v) => {
+                      setUserFormData((p) => ({
+                        ...p,
+                        role_id: v ? v.id : null,
+                        role: v ? v.name : "",
+                      }));
+                      setHasModifiedUser(true);
+                    }}
+                    loading={rolesLoading}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        fullWidth
+                        label="Role"
+                        sx={fieldSx}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {rolesLoading && <CircularProgress size={18} />}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControlLabel
+                    disabled={viewMode !== "edit"}
+                    control={
+                      <Switch
+                        checked={userFormData.is_active}
+                        onChange={(e) => {
+                          setUserFormData((p) => ({
+                            ...p,
+                            is_active: e.target.checked,
+                          }));
+                          setHasModifiedUser(true);
+                        }}
+                        sx={{
+                          "& .MuiSwitch-switchBase.Mui-checked": {
+                            color: "#D20000",
+                          },
+                          "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                            { bgcolor: "#D20000" },
+                        }}
+                      />
+                    }
+                    label="Active"
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          </Paper>
         </TabPanel>
-        {/* )} */}
       </Box>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Dialog */}
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 3, overflow: "hidden" } }}
       >
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          <Typography>
+        <Box
+          sx={{
+            background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+            px: 3,
+            py: 2,
+          }}
+        >
+          <Typography variant="h6" fontWeight={700} color="#fff">
+            Confirm Delete
+          </Typography>
+        </Box>
+        <DialogContent sx={{ pt: 3 }}>
+          <Typography variant="body1" color="text.secondary">
             Are you sure you want to delete{" "}
-            <strong>{selectedEmployee?.name}</strong>? This action cannot be
-            undone.
+            <Typography component="span" fontWeight={700} color="#1a1a1a">
+              {selectedEmployee?.name}
+            </Typography>
+            ? This action cannot be undone.
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" color="error" onClick={handleDelete}>
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
+          <Button
+            onClick={() => setDeleteDialogOpen(false)}
+            sx={{ fontWeight: 600, borderRadius: 1.5, textTransform: "none" }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleDelete}
+            sx={{
+              bgcolor: "#D20000",
+              "&:hover": { bgcolor: "#a80000" },
+              fontWeight: 700,
+              borderRadius: 1.5,
+              textTransform: "none",
+              px: 3,
+            }}
+          >
             Delete
           </Button>
         </DialogActions>
