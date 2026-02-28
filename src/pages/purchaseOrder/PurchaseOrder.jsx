@@ -1562,11 +1562,13 @@ import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
 
 import DownloadIcon from "@mui/icons-material/Download";
+import SearchIcon from "@mui/icons-material/Search";
 
 // ─── Shared style tokens ────────────────────────────────────────────────────
 const CARD_RADIUS = 3;
 const SHADOW = "0 2px 12px 0 rgba(30,41,59,.08)";
-const HEADER_BG = "linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%)";
+// const HEADER_BG = "linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%)";
+const HEADER_BG = "linear-gradient(90deg, #D20000 0%, #8B0000 100%)";
 
 const tableHeadSx = {
   "& .MuiTableCell-head": {
@@ -1686,7 +1688,7 @@ const PurchaseOrder = () => {
   ]);
 
   const [page, setPage] = useState(1);
-  const rowsPerPage = 5;
+  const rowsPerPage = 10;
 
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -3199,7 +3201,7 @@ const PurchaseOrder = () => {
   return (
     <Box>
       {/* ── Page Header ── */}
-      <Box
+      {/* <Box
         sx={{
           background: HEADER_BG,
           borderRadius: 3,
@@ -3231,8 +3233,22 @@ const PurchaseOrder = () => {
             px: 1,
           }}
         />
-      </Box>
-
+      </Box> */}
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
+        <Box display="flex" alignItems="center" gap={1.5}>
+          <Box
+            sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
+          />
+          <Typography variant="h5" fontWeight={800} color="#1a1a1a">
+            Purchase Order
+          </Typography>
+        </Box>
+      </Stack>
       {/* ── Table Card ── */}
       <Paper sx={{ ...sectionPaper }}>
         {/* Search bar */}
@@ -3244,6 +3260,17 @@ const PurchaseOrder = () => {
             bgcolor: "#fafbfc",
           }}
         >
+          <Box display="flex" alignItems="center" gap={1} mb={1.5}>
+            <SearchIcon sx={{ color: "#D20000", fontSize: 18 }} />
+            <Typography
+              variant="caption"
+              fontWeight={700}
+              color="text.secondary"
+              letterSpacing={0.5}
+            >
+              FILTER P/O
+            </Typography>
+          </Box>
           <CommonSearchField
             value={searchQuery}
             placeholder="Search PO number…"
@@ -3253,8 +3280,13 @@ const PurchaseOrder = () => {
 
         <TableContainer>
           <Table>
-            <TableHead sx={tableHeadSx}>
-              <TableRow>
+            <TableHead>
+              <TableRow
+                sx={{
+                  background:
+                    "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+                }}
+              >
                 {[
                   "Sr",
                   "PO Number",
@@ -3267,7 +3299,17 @@ const PurchaseOrder = () => {
                   "Picked PDF",
                   "Packed PDF",
                 ].map((h) => (
-                  <TableCell align="center" key={h}>
+                  <TableCell
+                    key={h}
+                    sx={{
+                      fontWeight: 700,
+                      color: "#fff",
+                      fontSize: 13,
+                      letterSpacing: 0.5,
+                      border: "none",
+                      py: 1.5,
+                    }}
+                  >
                     {h}
                   </TableCell>
                 ))}

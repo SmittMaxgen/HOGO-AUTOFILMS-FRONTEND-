@@ -630,7 +630,7 @@ const ShipmentProducts = () => {
   const deleteLoading = useSelector(selectDeleteShipmentProductLoading);
 
   const [page, setPage] = useState(1);
-  const rowsPerPage = 5;
+  const rowsPerPage = 10;
 
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
