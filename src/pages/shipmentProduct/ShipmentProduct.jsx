@@ -544,6 +544,11 @@ import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
+import { selectWarehouses } from "../../feature/warehouse/warehouseSelector";
+import { getWarehouses } from "../../feature/warehouse/warehouseThunks";
+import { getLocations } from "../../feature/location/locationThunks";
+import { selectLocations } from "../../feature/location/locationSelector";
+import { LocationCityOutlined } from "@mui/icons-material";
 
 // ─── Shared Helpers ────────────────────────────────────────────────────────────
 
@@ -621,6 +626,8 @@ const ShipmentProducts = () => {
   const shipmentProducts = useSelector(selectShipmentProducts);
   const shipments = useSelector(selectShipments);
   const products = useSelector(selectProducts);
+  const warehouses = useSelector(selectWarehouses);
+  const locations = useSelector(selectLocations);
 
   const loading = useSelector(selectShipmentProductLoading);
   const createLoading = useSelector(selectCreateShipmentProductLoading);
@@ -643,6 +650,8 @@ const ShipmentProducts = () => {
   const [form, setForm] = useState({
     shipment_id: null,
     product_id: null,
+    warehouse_id: null,
+    location_id: null,
     batch_data: "",
     quantity: "",
     allocation_basis: "",
@@ -654,6 +663,8 @@ const ShipmentProducts = () => {
   useEffect(() => {
     dispatch(getShipmentProducts());
     dispatch(getShipments());
+    dispatch(getWarehouses());
+    dispatch(getLocations());
     dispatch(getProducts());
   }, [dispatch]);
 
@@ -666,11 +677,22 @@ const ShipmentProducts = () => {
     let tempErrors = {};
     if (!form.shipment_id) tempErrors.shipment_id = "Shipment is required!";
     if (!form.product_id) tempErrors.product_id = "Product is required!";
+    if (!form.warehouse_id) tempErrors.warehouse_id = "Warehouse is required!";
+    if (!form.location_id) tempErrors.location_id = "Location is required!";
     if (!form.batch_data) tempErrors.batch_data = "Batch Data is required!";
+    if (!form.landed_cost_allocated)
+      tempErrors.landed_cost_allocated = "Landed Cost Allocated is required!";
+    if (!form.allocation_basis)
+      tempErrors.allocation_basis = "Allocation Basis is required!";
     if (!form.quantity || form.quantity <= 0)
       tempErrors.quantity = "Quantity must be greater than 0!";
     if (!form.per_unit_cost_inr || form.per_unit_cost_inr <= 0)
       tempErrors.per_unit_cost_inr = "Cost (INR) is required!";
+
+    if (!form.per_unit_cost_inr || form.per_unit_cost_inr <= 0)
+      tempErrors.per_unit_cost_inr = "Cost (INR) is required!";
+    if (!form.per_unit_cost_usd || form.per_unit_cost_usd <= 0)
+      tempErrors.per_unit_cost_usd = "Cost (USD) is required!";
     setErrors(tempErrors);
     if (Object.keys(tempErrors).length > 0) return;
 
@@ -678,6 +700,8 @@ const ShipmentProducts = () => {
       ...form,
       shipment_id: form.shipment_id?.id,
       product_id: form.product_id?.id,
+      location_id: form.location_id?.id,
+      warehouse_id: form.warehouse_id?.id,
     };
 
     const action =
@@ -713,6 +737,8 @@ const ShipmentProducts = () => {
     setForm({
       shipment_id: shipments.find((s) => s.id === item.shipment_id) || null,
       product_id: products.find((p) => p.id === item.product_id) || null,
+      warehouse_id: warehouses.find((p) => p.id === item.warehouse_id) || null,
+      location_id: locations.find((p) => p.id === item.location_id) || null,
       batch_data: item.batch_data,
       quantity: item.quantity,
       allocation_basis: item.allocation_basis,
@@ -728,6 +754,8 @@ const ShipmentProducts = () => {
     setForm({
       shipment_id: shipments.find((s) => s.id === item.shipment_id) || null,
       product_id: products.find((p) => p.id === item.product_id) || null,
+      warehouse_id: warehouses.find((p) => p.id === item.warehouse_id) || null,
+      location_id: locations.find((p) => p.id === item.location_id) || null,
       batch_data: item.batch_data,
       quantity: item.quantity,
       allocation_basis: item.allocation_basis,
@@ -757,6 +785,8 @@ const ShipmentProducts = () => {
     setForm({
       shipment_id: null,
       product_id: null,
+      warehouse_id:null,
+      location_id:null,
       batch_data: "",
       quantity: "",
       allocation_basis: "",
@@ -845,7 +875,7 @@ const ShipmentProducts = () => {
                     {
                       label: "Shipment",
                       value: form.shipment_id
-                        ? `#${form.shipment_id.id} - ${form.shipment_id.supplier_invoice_no}`
+                        ? `${form.shipment_id.id} - ${form.shipment_id.supplier_invoice_no}`
                         : viewData.shipment_id,
                       icon: <LocalShippingIcon fontSize="small" />,
                     },
@@ -865,6 +895,20 @@ const ShipmentProducts = () => {
                       value: viewData.quantity,
                       icon: <ScaleIcon fontSize="small" />,
                     },
+                    {
+                      label: "Warehouse",
+                      value:
+                        form.product_id?.warehouse_name ||
+                        viewData.warehouse_name,
+                      icon: <ShoppingCartIcon fontSize="small" />,
+                    },
+                    {
+                      label: "Location",
+                      value:
+                        form.product_id?.location_name ||
+                        viewData.location_name,
+                      icon: <ShoppingCartIcon fontSize="small" />,
+                    },
                   ].map((item) => (
                     <Grid item xs={12} sm={6} md={3} key={item.label}>
                       <DetailCard
@@ -877,7 +921,7 @@ const ShipmentProducts = () => {
                 </Grid>
 
                 <Divider sx={{ my: 2 }} />
-                <SectionHeading title="Cost Details" />
+                {/* <SectionHeading title="Cost Details" /> */}
                 <Grid container spacing={2}>
                   {[
                     {
@@ -933,6 +977,7 @@ const ShipmentProducts = () => {
                   {/* Shipment Autocomplete */}
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
+                      sx={{ width: "220px" }}
                       options={shipments}
                       getOptionLabel={(o) =>
                         `#${o.id} - ${o.supplier_invoice_no}`
@@ -970,6 +1015,7 @@ const ShipmentProducts = () => {
                   {/* Product Autocomplete */}
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
+                      sx={{ width: "220px" }}
                       options={products}
                       getOptionLabel={(o) => o.product_name}
                       value={form.product_id}
@@ -1049,7 +1095,7 @@ const ShipmentProducts = () => {
                     />
                   </Grid>
 
-                  <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                     <Divider>
                       <Typography
                         variant="caption"
@@ -1060,7 +1106,7 @@ const ShipmentProducts = () => {
                         COST DETAILS
                       </Typography>
                     </Divider>
-                  </Grid>
+                  </Grid> */}
 
                   {/* Allocation Basis */}
                   <Grid item xs={12} sm={6}>
@@ -1165,6 +1211,72 @@ const ShipmentProducts = () => {
                       }}
                     />
                   </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Autocomplete
+                      sx={{ width: "220px" }}
+                      options={warehouses}
+                      getOptionLabel={(o) => o.name}
+                      value={form.warehouse_id} 
+                      onChange={(_, v) => {
+                        setForm((p) => ({ ...p, warehouse_id: v })); 
+                        setErrors((prev) => ({ ...prev, warehouse_id: "" }));
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Warehouse"
+                          error={!!errors.warehouse_id}
+                          helperText={errors.warehouse_id}
+                          sx={fieldSx}
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                <InputAdornment position="start">
+                                  <ShoppingCartIcon sx={{ color: "#D20000" }} />
+                                </InputAdornment>
+                                {params.InputProps.startAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Autocomplete
+                      sx={{ width: "220px" }}
+                      options={locations}
+                      getOptionLabel={(o) => o.name}
+                      value={form.location_id} 
+                      onChange={(_, v) => {
+                        setForm((p) => ({ ...p, location_id: v })); 
+                        setErrors((prev) => ({ ...prev, location_id: "" }));
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Location"
+                          error={!!errors.location_id} 
+                          helperText={errors.location_id}
+                          sx={fieldSx}
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                <InputAdornment position="start">
+                                  <ShoppingCartIcon sx={{ color: "#D20000" }} />
+                                </InputAdornment>
+                                {params.InputProps.startAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
                 </Grid>
 
                 <Divider sx={{ my: 3 }} />
@@ -1254,12 +1366,12 @@ const ShipmentProducts = () => {
               >
                 {[
                   "Sr",
+                  "Product",
                   "Batch",
                   "Landed Cost",
                   "INR / Unit",
                   "USD / Unit",
                   "Allocation Basis",
-                  "Product",
                   "Qty",
                   "Actions",
                 ].map((h) => (
@@ -1317,6 +1429,17 @@ const ShipmentProducts = () => {
                       sx={{ fontWeight: 700, color: "#D20000", width: 50 }}
                     >
                       {(page - 1) * rowsPerPage + index + 1}
+                    </TableCell>
+
+                    {/* Product */}
+                    <TableCell>
+                      <Typography
+                        fontSize={13}
+                        fontWeight={500}
+                        color="#1a1a1a"
+                      >
+                        {item.product_name}
+                      </Typography>
                     </TableCell>
 
                     {/* Batch */}
@@ -1396,17 +1519,6 @@ const ShipmentProducts = () => {
                     <TableCell>
                       <Typography fontSize={13} color="text.secondary">
                         {item.allocation_basis ?? "—"}
-                      </Typography>
-                    </TableCell>
-
-                    {/* Product */}
-                    <TableCell>
-                      <Typography
-                        fontSize={13}
-                        fontWeight={500}
-                        color="#1a1a1a"
-                      >
-                        {item.product_id}
                       </Typography>
                     </TableCell>
 

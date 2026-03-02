@@ -871,8 +871,8 @@ const Location = () => {
                   onChange={handleChange}
                   error={!!errors.warehouse_id}
                   helperText={errors.warehouse_id}
-                  fullWidth
-                  sx={fieldSx}
+                  // sx={fieldSx}
+                  sx={{ width: "220px" }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">

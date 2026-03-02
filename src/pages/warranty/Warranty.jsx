@@ -1250,7 +1250,8 @@ const WarrantyManagement = () => {
       dispatch(
         updateWarranty({
           id: selectedWarranty.id,
-          data: { product_status: "ACTIVATED" },
+
+          data: { product_status: "ACTIVATED", approved_by: 1 },
         }),
       );
     }
