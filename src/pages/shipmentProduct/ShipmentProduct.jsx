@@ -538,6 +538,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import WarehouseIcon from "@mui/icons-material/Warehouse";
+
 import ScaleIcon from "@mui/icons-material/Scale";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
@@ -785,8 +787,8 @@ const ShipmentProducts = () => {
     setForm({
       shipment_id: null,
       product_id: null,
-      warehouse_id:null,
-      location_id:null,
+      warehouse_id: null,
+      location_id: null,
       batch_data: "",
       quantity: "",
       allocation_basis: "",
@@ -900,14 +902,14 @@ const ShipmentProducts = () => {
                       value:
                         form.product_id?.warehouse_name ||
                         viewData.warehouse_name,
-                      icon: <ShoppingCartIcon fontSize="small" />,
+                      icon: <WarehouseIcon fontSize="small" />,
                     },
                     {
                       label: "Location",
                       value:
                         form.product_id?.location_name ||
                         viewData.location_name,
-                      icon: <ShoppingCartIcon fontSize="small" />,
+                      icon: <LocationCityOutlined fontSize="small" />,
                     },
                   ].map((item) => (
                     <Grid item xs={12} sm={6} md={3} key={item.label}>
@@ -1217,9 +1219,9 @@ const ShipmentProducts = () => {
                       sx={{ width: "220px" }}
                       options={warehouses}
                       getOptionLabel={(o) => o.name}
-                      value={form.warehouse_id} 
+                      value={form.warehouse_id}
                       onChange={(_, v) => {
-                        setForm((p) => ({ ...p, warehouse_id: v })); 
+                        setForm((p) => ({ ...p, warehouse_id: v }));
                         setErrors((prev) => ({ ...prev, warehouse_id: "" }));
                       }}
                       renderInput={(params) => (
@@ -1234,7 +1236,7 @@ const ShipmentProducts = () => {
                             startAdornment: (
                               <>
                                 <InputAdornment position="start">
-                                  <ShoppingCartIcon sx={{ color: "#D20000" }} />
+                                  <WarehouseIcon sx={{ color: "#D20000" }} />
                                 </InputAdornment>
                                 {params.InputProps.startAdornment}
                               </>
@@ -1250,16 +1252,16 @@ const ShipmentProducts = () => {
                       sx={{ width: "220px" }}
                       options={locations}
                       getOptionLabel={(o) => o.name}
-                      value={form.location_id} 
+                      value={form.location_id}
                       onChange={(_, v) => {
-                        setForm((p) => ({ ...p, location_id: v })); 
+                        setForm((p) => ({ ...p, location_id: v }));
                         setErrors((prev) => ({ ...prev, location_id: "" }));
                       }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           label="Location"
-                          error={!!errors.location_id} 
+                          error={!!errors.location_id}
                           helperText={errors.location_id}
                           sx={fieldSx}
                           InputProps={{
