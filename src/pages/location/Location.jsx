@@ -439,6 +439,7 @@ import {
   Divider,
   Grid,
   InputAdornment,
+  Select,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -662,7 +663,7 @@ const Location = () => {
   };
 
   const handleStatusToggle = (item) => {
-    const updatedStatus = item.status === "active" ? "deactive" : "active";
+    const updatedStatus = item.status === "active" ? "deactive" : "deactive";
     dispatch(
       updateLocation({ id: item.id, data: { ...item, status: updatedStatus } }),
     )
@@ -1176,7 +1177,7 @@ const Location = () => {
                     </TableCell>
 
                     {/* Status */}
-                    <TableCell>
+                    {/* <TableCell>
                       <Box display="flex" alignItems="center" gap={1}>
                         <Switch
                           checked={item.status === "active"}
@@ -1193,8 +1194,52 @@ const Location = () => {
                         />
                         <StatusChip status={item.status} />
                       </Box>
+                    </TableCell> */}
+                    <TableCell>
+                      <Select
+                        size="small"
+                        value={item.status}
+                        onChange={async (e) => {
+                          await handleStatusToggle({
+                            ...item,
+                            status: e.target.value,
+                          });
+                        }}
+                        sx={{
+                          minWidth: 100,
+                          height: 26,
+                          borderRadius: "999px",
+                          fontWeight: 700,
+                          fontSize: 11,
+                          color:
+                            item.status === "active" ? "#2e7d32" : "#757575",
+                          bgcolor:
+                            item.status === "active" ? "#e8f5e9" : "#f5f5f5",
+                          border:
+                            item.status === "active"
+                              ? "1px solid #c8e6c9"
+                              : "1px solid #e0e0e0",
+                          "& .MuiSelect-select": {
+                            py: 0.5,
+                            pl: 1.5,
+                            display: "flex",
+                            alignItems: "center",
+                          },
+                          "& fieldset": { border: "none" },
+                          "& svg": {
+                            color:
+                              item.status === "active" ? "#2e7d32" : "#757575",
+                          },
+                        }}
+                      >
+                        <MenuItem value="active" sx={{ fontSize: 13 }}>
+                          Active
+                        </MenuItem>
+                        <MenuItem value="deactive" sx={{ fontSize: 13 }}>
+                          Inactive
+                        </MenuItem>
+                      </Select>
                     </TableCell>
-
                     {/* Actions */}
                     <TableCell>
                       <Box display="flex" gap={0.5}>

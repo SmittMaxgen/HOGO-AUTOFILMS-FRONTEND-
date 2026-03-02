@@ -23,6 +23,7 @@ import {
   MenuItem,
   Switch,
   FormControlLabel,
+  Select,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -530,7 +531,7 @@ const OfficeBranch = () => {
                       </TableCell>
 
                       {/* Status */}
-                      <TableCell>
+                      {/* <TableCell>
                         <Chip
                           label={branch.status || "Active"}
                           size="small"
@@ -542,6 +543,60 @@ const OfficeBranch = () => {
                               STATUS_STYLE.Active),
                           }}
                         />
+                      </TableCell> */}
+                      {/* Status */}
+                      <TableCell>
+                        <Select
+                          size="small"
+                          value={branch.status || "Active"}
+                          onChange={async (e) => {
+                            const result = await dispatch(
+                              updateOfficeBranch({
+                                id: branch.id,
+                                data: { status: e.target.value },
+                              }),
+                            );
+                            if (result.type.includes("fulfilled")) {
+                              CommonToast("Status updated", "success");
+                              dispatch(getOfficeBranches());
+                            }
+                          }}
+                          sx={{
+                            minWidth: 100,
+                            height: 26,
+                            borderRadius: "999px",
+                            fontWeight: 700,
+                            fontSize: 11,
+                            color:
+                              STATUS_STYLE[branch.status]?.color ||
+                              STATUS_STYLE.Active.color,
+                            bgcolor:
+                              STATUS_STYLE[branch.status]?.bgcolor ||
+                              STATUS_STYLE.Active.bgcolor,
+                            border:
+                              STATUS_STYLE[branch.status]?.border ||
+                              STATUS_STYLE.Active.border,
+                            "& .MuiSelect-select": {
+                              py: 0.5,
+                              pl: 1.5,
+                              display: "flex",
+                              alignItems: "center",
+                            },
+                            "& fieldset": { border: "none" },
+                            "& svg": {
+                              color:
+                                STATUS_STYLE[branch.status]?.color ||
+                                STATUS_STYLE.Active.color,
+                            },
+                          }}
+                        >
+                          <MenuItem value="Active" sx={{ fontSize: 13 }}>
+                            Active
+                          </MenuItem>
+                          <MenuItem value="Inactive" sx={{ fontSize: 13 }}>
+                            Inactive
+                          </MenuItem>
+                        </Select>
                       </TableCell>
 
                       {/* Actions */}

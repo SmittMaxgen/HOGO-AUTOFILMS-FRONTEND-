@@ -21,6 +21,7 @@ import {
   DialogActions,
   TextField,
   MenuItem,
+  Select,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -439,7 +440,7 @@ const Department = () => {
                       </TableCell>
 
                       {/* Status */}
-                      <TableCell>
+                      {/* <TableCell>
                         <Chip
                           label={dept.status || "Active"}
                           size="small"
@@ -451,6 +452,61 @@ const Department = () => {
                               STATUS_STYLE.Active),
                           }}
                         />
+                      </TableCell> */}
+
+                      {/* Status */}
+                      <TableCell>
+                        <Select
+                          size="small"
+                          value={dept.status || "Active"}
+                          onChange={async (e) => {
+                            const result = await dispatch(
+                              updateDepartment({
+                                id: dept.id,
+                                data: { status: e.target.value },
+                              }),
+                            );
+                            if (result.type.includes("fulfilled")) {
+                              CommonToast("Status updated", "success");
+                              dispatch(getDepartments());
+                            }
+                          }}
+                          sx={{
+                            minWidth: 100,
+                            height: 26,
+                            borderRadius: "999px",
+                            fontWeight: 700,
+                            fontSize: 11,
+                            color:
+                              STATUS_STYLE[dept.status]?.color ||
+                              STATUS_STYLE.Active.color,
+                            bgcolor:
+                              STATUS_STYLE[dept.status]?.bgcolor ||
+                              STATUS_STYLE.Active.bgcolor,
+                            border:
+                              STATUS_STYLE[dept.status]?.border ||
+                              STATUS_STYLE.Active.border,
+                            "& .MuiSelect-select": {
+                              py: 0.5,
+                              pl: 1.5,
+                              display: "flex",
+                              alignItems: "center",
+                            },
+                            "& fieldset": { border: "none" },
+                            "& svg": {
+                              color:
+                                STATUS_STYLE[dept.status]?.color ||
+                                STATUS_STYLE.Active.color,
+                            },
+                          }}
+                        >
+                          <MenuItem value="Active" sx={{ fontSize: 13 }}>
+                            Active
+                          </MenuItem>
+                          <MenuItem value="Inactive" sx={{ fontSize: 13 }}>
+                            Inactive
+                          </MenuItem>
+                        </Select>
                       </TableCell>
 
                       {/* Actions */}

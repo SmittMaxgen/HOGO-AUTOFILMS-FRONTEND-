@@ -21,6 +21,7 @@ import {
   DialogActions,
   TextField,
   MenuItem,
+  Select,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -53,8 +54,8 @@ const fieldSx = {
 };
 
 const STATUS_STYLE = {
-  Active: { bgcolor: "#e8f5e9", color: "#2e7d32", border: "1px solid #c8e6c9" },
-  Inactive: {
+  true: { bgcolor: "#e8f5e9", color: "#2e7d32", border: "1px solid #c8e6c9" },
+  false: {
     bgcolor: "#f5f5f5",
     color: "#757575",
     border: "1px solid #e0e0e0",
@@ -241,7 +242,7 @@ const Role = () => {
       name: role.name || "",
       description: role.description || "",
       permissions: role.permissions || "",
-      status: role.status || "Active",
+      status: role.status || false,
     });
 
   const validate = () => {
@@ -401,7 +402,7 @@ const Role = () => {
                       "Role",
                       "Description",
                       "Permissions",
-                      //   "Status",
+                      "Status",
                       "Actions",
                     ].map((h) => (
                       <TableCell
@@ -504,18 +505,70 @@ const Role = () => {
                       {/* Status */}
                       {/* <TableCell>
                         <Chip
-                          label={role.status || "Active"}
+                          label={role.status || "Inactive"}
                           size="small"
                           sx={{
                             fontWeight: 700,
                             borderRadius: 1,
                             fontSize: 11,
-                            ...(STATUS_STYLE[role.status] ||
-                              STATUS_STYLE.Active),
+                            ...(STATUS_STYLE[role.status] || STATUS_STYLE.true),
                           }}
                         />
                       </TableCell> */}
-
+                      {/* Status */}
+                      <TableCell>
+                        <Select
+                          size="small"
+                          value={role.status ?? false}
+                          onChange={async (e) => {
+                            const result = await dispatch(
+                              updateRole({
+                                id: role.id,
+                                data: { status: e.target.value },
+                              }),
+                            );
+                            if (result.type.includes("fulfilled")) {
+                              CommonToast("Status updated", "success");
+                              dispatch(getRoles());
+                            }
+                          }}
+                          sx={{
+                            minWidth: 100,
+                            height: 26,
+                            borderRadius: "999px",
+                            fontWeight: 700,
+                            fontSize: 11,
+                            color:
+                              STATUS_STYLE[role.status]?.color ||
+                              STATUS_STYLE[false].color,
+                            bgcolor:
+                              STATUS_STYLE[role.status]?.bgcolor ||
+                              STATUS_STYLE[false].bgcolor,
+                            border:
+                              STATUS_STYLE[role.status]?.border ||
+                              STATUS_STYLE[false].border,
+                            "& .MuiSelect-select": {
+                              py: 0.5,
+                              pl: 1.5,
+                              display: "flex",
+                              alignItems: "center",
+                            },
+                            "& fieldset": { border: "none" },
+                            "& svg": {
+                              color:
+                                STATUS_STYLE[role.status]?.color ||
+                                STATUS_STYLE[false].color,
+                            },
+                          }}
+                        >
+                          <MenuItem value={true} sx={{ fontSize: 13 }}>
+                            Active
+                          </MenuItem>
+                          <MenuItem value={false} sx={{ fontSize: 13 }}>
+                            Inactive
+                          </MenuItem>
+                        </Select>
+                      </TableCell>
                       {/* Actions */}
                       <TableCell>
                         <Stack direction="row" spacing={0.8}>
@@ -701,7 +754,7 @@ const Role = () => {
                 {selected.name}
               </Typography>
               <Box display="flex" gap={1} mt={0.8}>
-                <Chip
+                {/* <Chip
                   label={selected.status || "Active"}
                   size="small"
                   sx={{
@@ -709,6 +762,16 @@ const Role = () => {
                     fontSize: 11,
                     borderRadius: 1,
                     ...(STATUS_STYLE[selected.status] || STATUS_STYLE.Active),
+                  }}
+                /> */}
+                <Chip
+                  label={selected.status === true ? "Active" : "Inactive"}
+                  size="small"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: 11,
+                    borderRadius: 1,
+                    ...(STATUS_STYLE[selected.status] || STATUS_STYLE[false]),
                   }}
                 />
               </Box>
@@ -748,10 +811,15 @@ const Role = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <DetailCard
+                  {/* <DetailCard
                     icon={<AdminPanelSettingsIcon fontSize="small" />}
                     label="Status"
                     value={selected.status || "Active"}
+                  /> */}
+                  <DetailCard
+                    icon={<AdminPanelSettingsIcon fontSize="small" />}
+                    label="Status"
+                    value={selected.status === true ? "Active" : "Inactive"}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -796,7 +864,7 @@ const Role = () => {
                   <Field {...fieldProps} label="Role Name" field="name" />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Field
+                  {/* <Field
                     {...fieldProps}
                     label="Status"
                     field="status"
@@ -808,6 +876,23 @@ const Role = () => {
                           Active
                         </MenuItem>,
                         <MenuItem key="Inactive" value={false}>
+                          Inactive
+                        </MenuItem>,
+                      ],
+                    }}
+                  /> */}
+                  <Field
+                    {...fieldProps}
+                    label="Status"
+                    field="status"
+                    options={{
+                      fullWidth: true,
+                      select: true,
+                      children: [
+                        <MenuItem key="true" value={true}>
+                          Active
+                        </MenuItem>,
+                        <MenuItem key="false" value={false}>
                           Inactive
                         </MenuItem>,
                       ],
