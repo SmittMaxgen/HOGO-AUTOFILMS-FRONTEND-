@@ -2042,11 +2042,11 @@ const PurchaseOrder = () => {
             >
               {editId ? "Edit Purchase Order" : "Create Purchase Order"}
             </Typography>
-            {editId && (
+            {/* {editId && (
               <Typography variant="caption" color="text.secondary">
                 ID: {editId}
               </Typography>
-            )}
+            )} */}
           </Box>
           {poStatus && <StatusBadge status={poStatus} />}
         </Stack>
@@ -2488,6 +2488,7 @@ const PurchaseOrder = () => {
                             <>
                               <TableCell align="center">Qty Picked</TableCell>
                               <TableCell align="center">Short Pick</TableCell>
+                              <TableCell align="center">Remarks</TableCell>
                             </>
                           )}
                           {(poStatus === "PACKED" ||
@@ -2501,7 +2502,6 @@ const PurchaseOrder = () => {
                                 Gross Wt (KG)
                               </TableCell>
                               <TableCell align="center">Net Wt (KG)</TableCell>
-                              <TableCell align="center">Remarks</TableCell>
                             </>
                           )}
                           <TableCell align="center">Action</TableCell>
@@ -2691,6 +2691,29 @@ const PurchaseOrder = () => {
                                       }}
                                     />
                                   </TableCell>
+                                  <TableCell align="center">
+                                    <TextField
+                                      value={item.remarks || ""}
+                                      onChange={(e) =>
+                                        handleUpdateProductItem(
+                                          index,
+                                          "remarks",
+                                          e.target.value,
+                                        )
+                                      }
+                                      size="small"
+                                      type="text"
+                                      inputProps={{
+                                        style: { textAlign: "center" },
+                                      }}
+                                      sx={{
+                                        width: 120,
+                                        "& .MuiOutlinedInput-root": {
+                                          borderRadius: 1.5,
+                                        },
+                                      }}
+                                    />
+                                  </TableCell>
                                   {(poStatus === "PACKED" ||
                                     poStatus === "DELIVERED") && (
                                     <>
@@ -2794,7 +2817,7 @@ const PurchaseOrder = () => {
                                           }}
                                         />
                                       </TableCell>
-                                      <TableCell align="center">
+                                      {/* <TableCell align="center">
                                         <TextField
                                           value={item.remarks || ""}
                                           onChange={(e) =>
@@ -2816,7 +2839,7 @@ const PurchaseOrder = () => {
                                             },
                                           }}
                                         />
-                                      </TableCell>
+                                      </TableCell> */}
                                     </>
                                   )}
                                 </>
