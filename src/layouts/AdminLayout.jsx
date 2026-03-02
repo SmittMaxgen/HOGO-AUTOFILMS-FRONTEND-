@@ -1623,7 +1623,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
             </Box>
           </>
         )}
-        {/* <Box
+        <Box
           className={`${classes.sidebarItem} ${
             isActive("/leads") ? classes.activeItem : ""
           }`}
@@ -1633,7 +1633,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           {!collapsed && "Leads"}
         </Box>
 
-        <Box
+        {/* <Box
           className={`${classes.sidebarItem} ${
             isActive("/warehouse") ? classes.activeItem : ""
           }`}
