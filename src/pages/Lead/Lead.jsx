@@ -984,13 +984,12 @@ const Lead = () => {
 
   const handleShowVisits = (lead) => {
     setSelectedLeadForVisits(lead);
-    setSelectedLeadVisits([]); 
+    setSelectedLeadVisits([]);
     setIsViewingVisits(true);
 
     dispatch(getVisits({ lead_id: lead.id }))
       .unwrap()
-      .then(() => {
-      })
+      .then(() => {})
       .catch(() => {
         CommonToast("Failed to load visits", "error");
       });
@@ -1032,6 +1031,20 @@ const Lead = () => {
     page * rowsPerPage,
   );
 
+  
+  const [visitPage, setVisitPage] = useState(1);
+  const visitsPerPage = 10;
+
+  useEffect(() => {
+    setVisitPage(1);
+  }, [selectedLeadForVisits?.id]);
+
+  useEffect(() => {
+    if (!isViewingVisits) {
+      setVisitPage(1);
+    }
+  }, [isViewingVisits]);
+  
   // ── Create / Edit View ───────────────────────────────────────────────────────
   if (isEditing) {
     return (
@@ -1512,18 +1525,6 @@ const Lead = () => {
 
   // --- Visit Viwe
 
-  const [visitPage, setVisitPage] = useState(1);
-  const visitsPerPage = 10;
-
-  useEffect(() => {
-    setVisitPage(1);
-  }, [selectedLeadForVisits?.id]);
-
-  useEffect(() => {
-    if (!isViewingVisits) {
-      setVisitPage(1);
-    }
-  }, [isViewingVisits]);
 
   if (isViewingVisits && selectedLeadForVisits) {
     const totalVisits = selectedLeadVisits.length;
