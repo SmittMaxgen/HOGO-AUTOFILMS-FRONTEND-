@@ -14,6 +14,9 @@ import Warranty from "../pages/warranty/Warranty";
 import EmployeeManagement from "../pages/EmployeeManagement/EmployeeManagement";
 import PurchaseOrder from "../pages/purchaseOrder/PurchaseOrder";
 import Leads from "../pages/Lead/Lead";
+import OfficeBranches from "../pages/officeBranches/OfficeBranches";
+import Departments from "../pages/Department/Department";
+import Roles from "../pages/role/Role";
 import Warehouse from "../pages/warehouse/Warehouse";
 import Location from "../pages/location/Location";
 import EditProfile from "../pages/auth/EditProfile";
@@ -53,6 +56,9 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/employee_management" element={<EmployeeManagement />} />
           <Route path="/purchase_order" element={<PurchaseOrder />} />
           <Route path="/leads" element={<Leads />} />
+          <Route path="/office_branches" element={<OfficeBranches />} />
+          <Route path="/departments" element={<Departments />} />
+          <Route path="/roles" element={<Roles />} />
           <Route path="/warehouse" element={<Warehouse />} />
           <Route path="/location" element={<Location />} />
         </Route>

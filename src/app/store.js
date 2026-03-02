@@ -25,6 +25,7 @@ import employeePersonalDetailsReducer from "../feature/employeePersonalDetails/e
 import warehouseReducer from "../feature/warehouse/warehouseSlice";
 import locationReducer from "../feature/location/locationSlice";
 import visitReducer from "../feature/visit/visitSlice";
+import officeBranchReducer from "../feature/officeBranches/officeBranchesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -55,5 +56,6 @@ export const store = configureStore({
     warehouse: warehouseReducer,
     location: locationReducer,
     visit: visitReducer,
+    officeBranch: officeBranchReducer,
   },
 });

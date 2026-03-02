@@ -1276,6 +1276,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
   const [expandedMenus, setExpandedMenus] = useState({
     products: true,
     shipping: false,
+    office: false,
   });
   const [activePath, setActivePath] = useState(
     localStorage.getItem("activeTab") || location.pathname,
@@ -1550,6 +1551,71 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         </Box>
 
         <Box
+          className={classes.sidebarItem}
+          onClick={() => !collapsed && toggleMenu("office")}
+          sx={{ justifyContent: "space-between" }}
+        >
+          <Box display="flex" alignItems="center" gap={1.5}>
+            <BusinessIcon />
+            {!collapsed && "Office"}
+          </Box>
+          {!collapsed &&
+            (expandedMenus.office ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+        </Box>
+
+        {!collapsed && expandedMenus.office && (
+          <>
+            <Box
+              className={`${classes.submenuItem} ${
+                isActive("/office_branches") ? classes.activeItem : ""
+              }`}
+              onClick={() => handleNavigate("/office_branches")}
+            >
+              <BusinessIcon fontSize="small" />
+              Office Branches
+            </Box>
+
+            <Box
+              className={`${classes.submenuItem} ${
+                isActive("/departments") ? classes.activeItem : ""
+              }`}
+              onClick={() => handleNavigate("/departments")}
+            >
+              <BusinessIcon fontSize="small" />
+              Departments
+            </Box>
+            <Box
+              className={`${classes.submenuItem} ${
+                isActive("/roles") ? classes.activeItem : ""
+              }`}
+              onClick={() => handleNavigate("/roles")}
+            >
+              <BusinessIcon fontSize="small" />
+              Roles
+            </Box>
+
+            <Box
+              className={`${classes.submenuItem} ${
+                isActive("/location") ? classes.activeItem : ""
+              }`}
+              onClick={() => handleNavigate("/location")}
+            >
+              <BusinessIcon fontSize="small" />
+              Locations
+            </Box>
+
+            <Box
+              className={`${classes.submenuItem} ${
+                isActive("/warehouse") ? classes.activeItem : ""
+              }`}
+              onClick={() => handleNavigate("/warehouse")}
+            >
+              <BusinessIcon fontSize="small" />
+              Warehouse
+            </Box>
+          </>
+        )}
+        {/* <Box
           className={`${classes.sidebarItem} ${
             isActive("/leads") ? classes.activeItem : ""
           }`}
@@ -1567,9 +1633,9 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <BusinessIcon />
           {!collapsed && "Warehouse"}
-        </Box>
+        </Box> */}
 
-        <Box
+        {/* <Box
           className={`${classes.sidebarItem} ${
             isActive("/location") ? classes.activeItem : ""
           }`}
@@ -1577,7 +1643,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <BusinessIcon />
           {!collapsed && "Location"}
-        </Box>
+        </Box> */}
 
         <Box className={classes.spacer} />
       </Box>
