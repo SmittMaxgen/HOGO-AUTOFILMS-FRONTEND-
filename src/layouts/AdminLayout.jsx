@@ -1035,7 +1035,15 @@ import BusinessIcon from "@mui/icons-material/Business";
 import ImageIcon from "@mui/icons-material/Image";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-
+import QrCodeIcon from "@mui/icons-material/QrCode";
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import CorporateFareIcon from "@mui/icons-material/CorporateFare";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import WarehouseIcon from "@mui/icons-material/Warehouse";
 import HogoLogo from "../../public/hogoAFM.png";
 import { AdminUser } from "../feature/Admin/adminThunks";
 import { selectAdminList } from "../feature/Admin/adminSelector";
@@ -1516,7 +1524,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/inventory_serials")}
         >
-          <BusinessIcon />
+          <QrCodeIcon />
           {!collapsed && "Inventory Serials"}
         </Box>
 
@@ -1526,7 +1534,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/warranty")}
         >
-          <BusinessIcon />
+          <VerifiedUserIcon />
           {!collapsed && "Warranty"}
         </Box>
 
@@ -1536,7 +1544,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/employee_management")}
         >
-          <BusinessIcon />
+          <ManageAccountsIcon />
           {!collapsed && "Employee Management"}
         </Box>
 
@@ -1546,7 +1554,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/purchase_order")}
         >
-          <BusinessIcon />
+          <ReceiptLongIcon />
           {!collapsed && "Purchase Order"}
         </Box>
 
@@ -1556,7 +1564,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           sx={{ justifyContent: "space-between" }}
         >
           <Box display="flex" alignItems="center" gap={1.5}>
-            <BusinessIcon />
+            <CorporateFareIcon />
             {!collapsed && "Office"}
           </Box>
           {!collapsed &&
@@ -1581,7 +1589,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
               }`}
               onClick={() => handleNavigate("/departments")}
             >
-              <BusinessIcon fontSize="small" />
+              <AccountTreeIcon fontSize="small" />
               Departments
             </Box>
             <Box
@@ -1590,7 +1598,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
               }`}
               onClick={() => handleNavigate("/roles")}
             >
-              <BusinessIcon fontSize="small" />
+              <AdminPanelSettingsIcon fontSize="small" />
               Roles
             </Box>
 
@@ -1600,7 +1608,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
               }`}
               onClick={() => handleNavigate("/location")}
             >
-              <BusinessIcon fontSize="small" />
+              <LocationOnIcon fontSize="small" />
               Locations
             </Box>
 
@@ -1610,7 +1618,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
               }`}
               onClick={() => handleNavigate("/warehouse")}
             >
-              <BusinessIcon fontSize="small" />
+              <WarehouseIcon fontSize="small" />
               Warehouse
             </Box>
           </>
