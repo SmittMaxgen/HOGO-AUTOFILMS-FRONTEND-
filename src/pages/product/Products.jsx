@@ -2339,6 +2339,8 @@ const Product = () => {
     product_name: "",
     product_codes: "",
     sku: "",
+    mou: "",
+    hsn_code: "",
     category_name: "",
     category_id: null,
     material_id: null,
@@ -2426,6 +2428,8 @@ const Product = () => {
       "product_name",
       "product_codes",
       "sku",
+      "hsn_code",
+      "mou",
       "category_id",
       "material_id",
       "colour_id",
@@ -2467,6 +2471,8 @@ const Product = () => {
       "product_name",
       "product_codes",
       "sku",
+      "hsn_code",
+      "mou",
       "category_id",
       "material_id",
       "colour_id",
@@ -2525,6 +2531,8 @@ const Product = () => {
     setForm({
       product_name: item.product_name || "",
       product_codes: item.product_codes || "",
+      hsn_code: item.hsn_code || "",
+      mou: item.mou || "",
       sku: item.sku || "",
       category_id: item.category_id || "",
       material_id: item.material_id || "",
@@ -2572,8 +2580,9 @@ const Product = () => {
   const handleReset = () => {
     setForm({
       product_name: "",
-      product_codes: "",
       sku: "",
+      hsn_code: "",
+      mou: "",
       category_name: "",
       category_id: null,
       material_id: null,
@@ -2686,6 +2695,30 @@ const Product = () => {
                   onChange={handleChange}
                   error={!!errors.sku}
                   helperText={errors.sku}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="HSN"
+                  name="hsn_code"
+                  fullWidth
+                  value={form.hsn_code}
+                  onChange={handleChange}
+                  error={!!errors.hsn_code}
+                  helperText={errors.hsn_code}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="MOU"
+                  name="mou"
+                  fullWidth
+                  value={form.mou}
+                  onChange={handleChange}
+                  error={!!errors.mou}
+                  helperText={errors.mou}
                   sx={fieldSx}
                 />
               </Grid>
@@ -3353,6 +3386,8 @@ const Product = () => {
                 <Stack direction="row" flexWrap="wrap" gap={1} mb={2}>
                   {[
                     { label: "SKU", value: viewItem.sku },
+                    { label: "UOM", value: viewItem.mou },
+                    { label: "HSN Code", value: viewItem.hsn_code },
                     { label: "Category", value: viewItem.category_name },
                     { label: "Material", value: viewItem.material_name },
                     { label: "Colour", value: viewItem.colour_name },
