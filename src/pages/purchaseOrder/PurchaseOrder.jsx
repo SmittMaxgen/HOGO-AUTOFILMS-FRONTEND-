@@ -2491,7 +2491,8 @@ const PurchaseOrder = () => {
                               <TableCell align="center">Remarks</TableCell>
                             </>
                           )}
-                          {(poStatus === "PACKED" ||
+                          {(poStatus === "PICKED" ||
+                            poStatus === "PACKED" ||
                             poStatus === "DELIVERED") && (
                             <>
                               <TableCell align="center">HSN Code</TableCell>
@@ -2714,7 +2715,8 @@ const PurchaseOrder = () => {
                                       }}
                                     />
                                   </TableCell>
-                                  {(poStatus === "PACKED" ||
+                                  {(poStatus === "PICKED" ||
+                                    poStatus === "PACKED" ||
                                     poStatus === "DELIVERED") && (
                                     <>
                                       <TableCell align="center">
@@ -2744,7 +2746,13 @@ const PurchaseOrder = () => {
                                       </TableCell>
                                       <TableCell align="center">
                                         <TextField
-                                          disabled={poStatus !== "PACKED"}
+                                          disabled={
+                                            !(
+                                              poStatus === "PACKED" ||
+                                              poStatus === "PICKED"
+                                            )
+                                          }
+                                          // disabled={(poStatus !== "PACKED")}
                                           value={item.cartons || ""}
                                           onChange={(e) =>
                                             handleUpdateProductItem(
@@ -2769,7 +2777,13 @@ const PurchaseOrder = () => {
                                       </TableCell>
                                       <TableCell align="center">
                                         <TextField
-                                          disabled={poStatus !== "PACKED"}
+                                          // disabled={poStatus !== "PACKED"}                                        disabled={!(poStatus === "PACKED" || poStatus === "PICKED")}
+                                          disabled={
+                                            !(
+                                              poStatus === "PACKED" ||
+                                              poStatus === "PICKED"
+                                            )
+                                          }
                                           value={item.gross_weight || ""}
                                           onChange={(e) =>
                                             handleUpdateProductItem(
@@ -2794,7 +2808,13 @@ const PurchaseOrder = () => {
                                       </TableCell>
                                       <TableCell align="center">
                                         <TextField
-                                          disabled={poStatus !== "PACKED"}
+                                          // disabled={poStatus !== "PACKED"}
+                                          disabled={
+                                            !(
+                                              poStatus === "PACKED" ||
+                                              poStatus === "PICKED"
+                                            )
+                                          }
                                           value={item.net_weight || ""}
                                           onChange={(e) =>
                                             handleUpdateProductItem(
@@ -3559,7 +3579,8 @@ const PurchaseOrder = () => {
 
                       {/* Packed PDF */}
                       <TableCell align="center">
-                        {po?.status === "PACKED" && (
+                        {(po?.status === "PICKED" ||
+                          po?.status === "PACKED") && (
                           <Tooltip title="Download Packed PDF">
                             <IconButton
                               size="small"
