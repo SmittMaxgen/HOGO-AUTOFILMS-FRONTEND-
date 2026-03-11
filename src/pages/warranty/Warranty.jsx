@@ -1054,6 +1054,7 @@ import {
   CardActions,
   Grid,
   Select,
+  Pagination,
 } from "@mui/material";
 import {
   CheckCircle,
@@ -1207,6 +1208,8 @@ const WarrantyManagement = () => {
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 10;
 
   const [searchQuery, setSearchQuery] = useState({
     serial_id: "",
@@ -1221,6 +1224,7 @@ const WarrantyManagement = () => {
   // }, [dispatch]);
 
   useEffect(() => {
+    setPage(1);
     dispatch(
       getWarranties({
         serial_id: searchQuery.serial_id,
@@ -1330,6 +1334,19 @@ const WarrantyManagement = () => {
   const getImageUrl = (path) => (path ? `${BASE_URL}/${path}` : "");
 
   // ── Loading ──────────────────────────────────────────────────────────────────
+  // const filteredWarranties = warranties.filter((w) => {
+  //   const mobileMatch = w.detailer_mobile
+  //     ?.toString()
+  //     .toLowerCase()
+  //     .includes(searchQuery.detailer_mobile.toLowerCase());
+
+  //   const dateMatch = searchQuery.installation_date
+  //     ? w.installation_date?.startsWith(searchQuery.installation_date)
+  //     : true;
+
+  //   return mobileMatch && dateMatch;
+  // });
+
   const filteredWarranties = warranties.filter((w) => {
     const mobileMatch = w.detailer_mobile
       ?.toString()
@@ -1342,6 +1359,11 @@ const WarrantyManagement = () => {
 
     return mobileMatch && dateMatch;
   });
+
+  const paginatedWarranties = filteredWarranties.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage,
+  );
   // if (loading) {
   //   return (
   //     <Box
@@ -1880,7 +1902,7 @@ const WarrantyManagement = () => {
                 </TableRow>
               ) : (
                 !loading &&
-                filteredWarranties.map((warranty) => (
+                paginatedWarranties.map((warranty) => (
                   <TableRow
                     key={warranty.id}
                     hover
@@ -2045,6 +2067,29 @@ const WarrantyManagement = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <Box
+          sx={{
+            px: 3,
+            py: 2,
+            borderTop: "1px solid #f0f0f0",
+            bgcolor: "#fafafa",
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          <Pagination
+            count={Math.ceil((filteredWarranties?.length || 0) / rowsPerPage)}
+            page={page}
+            onChange={(_, v) => setPage(v)}
+            sx={{
+              "& .MuiPaginationItem-root.Mui-selected": {
+                bgcolor: "#D20000",
+                color: "#fff",
+                "&:hover": { bgcolor: "#a80000" },
+              },
+            }}
+          />
+        </Box>
       </Paper>
 
       {/* Reject Dialog */}
