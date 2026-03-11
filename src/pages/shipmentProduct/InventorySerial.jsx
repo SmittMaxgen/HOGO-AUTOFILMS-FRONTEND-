@@ -761,7 +761,7 @@ const InventorySerial = () => {
             <TableBody>
               {loading && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
+                  <TableCell colSpan={8} align="center" sx={{ py: 5 }}>
                     <Box
                       display="flex"
                       flexDirection="column"
