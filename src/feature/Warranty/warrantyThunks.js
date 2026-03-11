@@ -11,7 +11,13 @@ import axiosInstance from "../../api/axiosInstance";
 export const getWarranties = createAsyncThunk(
   "warranty/getWarranties",
   async (
-    { serial_id = "", warranty_status = "", product_status = "" } = {},
+    {
+      serial_id = "",
+      warranty_status = "",
+      product_status = "",
+      detailer_mobile = "",
+      installation_date = "",
+    } = {},
     { rejectWithValue },
   ) => {
     try {
@@ -20,6 +26,8 @@ export const getWarranties = createAsyncThunk(
           serial_id,
           warranty_status,
           product_status,
+          detailer_mobile,
+          installation_date,
         },
       });
       return response.data;
@@ -62,21 +70,17 @@ export const updateWarranty = createAsyncThunk(
         }
       });
 
-      const response = await axiosInstance.patch(
-        `/warranty/${id}/`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axiosInstance.patch(`/warranty/${id}/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to update warranty!"
+        error.response?.data?.message || "Failed to update warranty!",
       );
     }
-  }
+  },
 );

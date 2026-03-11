@@ -1226,6 +1226,8 @@ const WarrantyManagement = () => {
         serial_id: searchQuery.serial_id,
         warranty_status: searchQuery.warranty_status,
         product_status: searchQuery.product_status,
+        installation_date: searchQuery.installation_date,
+        detailer_mobile: searchQuery.installation_datdetailer_mobile,
       }),
     );
   }, [
@@ -1233,6 +1235,8 @@ const WarrantyManagement = () => {
     searchQuery.serial_id,
     searchQuery.warranty_status,
     searchQuery.product_status,
+    searchQuery.detailer_mobile,
+    searchQuery.installation_date,
   ]);
 
   useEffect(() => {
@@ -1338,23 +1342,23 @@ const WarrantyManagement = () => {
 
     return mobileMatch && dateMatch;
   });
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        minHeight="60vh"
-        gap={2}
-      >
-        <CircularProgress size={40} sx={{ color: "#D20000" }} />
-        <Typography variant="body2" color="text.secondary">
-          Loading warranties...
-        </Typography>
-      </Box>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <Box
+  //       display="flex"
+  //       flexDirection="column"
+  //       alignItems="center"
+  //       justifyContent="center"
+  //       minHeight="60vh"
+  //       gap={2}
+  //     >
+  //       <CircularProgress size={40} sx={{ color: "#D20000" }} />
+  //       <Typography variant="body2" color="text.secondary">
+  //         Loading warranties...
+  //       </Typography>
+  //     </Box>
+  //   );
+  // }
 
   // ── View Detail ──────────────────────────────────────────────────────────────
   if (showViewDialog && selectedWarranty) {
@@ -1841,7 +1845,24 @@ const WarrantyManagement = () => {
             </TableHead>
 
             <TableBody>
-              {filteredWarranties.length === 0 ? (
+              {loading && (
+                <TableRow>
+                  <TableCell colSpan={9} align="center" sx={{ py: 5 }}>
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      gap={1}
+                    >
+                      <CircularProgress size={28} sx={{ color: "#D20000" }} />
+                      <Typography variant="body2" color="text.secondary">
+                        Loading inventory serials...
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!loading && filteredWarranties.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
                     <Box
@@ -1858,6 +1879,7 @@ const WarrantyManagement = () => {
                   </TableCell>
                 </TableRow>
               ) : (
+                !loading &&
                 filteredWarranties.map((warranty) => (
                   <TableRow
                     key={warranty.id}
