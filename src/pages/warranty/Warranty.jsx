@@ -1053,6 +1053,7 @@ import {
   CardContent,
   CardActions,
   Grid,
+  Select,
 } from "@mui/material";
 import {
   CheckCircle,
@@ -1080,9 +1081,11 @@ import {
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import GppGoodIcon from "@mui/icons-material/GppGood";
+import SearchIcon from "@mui/icons-material/Search";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
+import CommonSearchField from "../../components/commonComponents/CommonSearchField";
 
 const BASE_URL = "http://hogofilm.pythonanywhere.com";
 
@@ -1205,9 +1208,32 @@ const WarrantyManagement = () => {
   const [rejectionReason, setRejectionReason] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
 
+  const [searchQuery, setSearchQuery] = useState({
+    serial_id: "",
+    detailer_mobile: "",
+    installation_date: "",
+    warranty_status: "",
+    product_status: "",
+  });
+
+  // useEffect(() => {
+  //   dispatch(getWarranties());
+  // }, [dispatch]);
+
   useEffect(() => {
-    dispatch(getWarranties());
-  }, [dispatch]);
+    dispatch(
+      getWarranties({
+        serial_id: searchQuery.serial_id,
+        warranty_status: searchQuery.warranty_status,
+        product_status: searchQuery.product_status,
+      }),
+    );
+  }, [
+    dispatch,
+    searchQuery.serial_id,
+    searchQuery.warranty_status,
+    searchQuery.product_status,
+  ]);
 
   useEffect(() => {
     if (updateSuccess) {
@@ -1300,6 +1326,18 @@ const WarrantyManagement = () => {
   const getImageUrl = (path) => (path ? `${BASE_URL}/${path}` : "");
 
   // ── Loading ──────────────────────────────────────────────────────────────────
+  const filteredWarranties = warranties.filter((w) => {
+    const mobileMatch = w.detailer_mobile
+      ?.toString()
+      .toLowerCase()
+      .includes(searchQuery.detailer_mobile.toLowerCase());
+
+    const dateMatch = searchQuery.installation_date
+      ? w.installation_date?.startsWith(searchQuery.installation_date)
+      : true;
+
+    return mobileMatch && dateMatch;
+  });
   if (loading) {
     return (
       <Box
@@ -1641,6 +1679,131 @@ const WarrantyManagement = () => {
           border: "1px solid #f0f0f0",
         }}
       >
+        {/* Search Filters */}
+        <Box
+          sx={{
+            px: 2,
+            py: 2,
+            mb: 2,
+            bgcolor: "#fafafa",
+            border: "1px solid #ebebeb",
+            borderRadius: 2,
+          }}
+        >
+          <Box display="flex" alignItems="center" gap={1} mb={1.5}>
+            <SearchIcon sx={{ color: "#D20000", fontSize: 18 }} />
+            <Typography
+              variant="caption"
+              fontWeight={700}
+              color="text.secondary"
+              letterSpacing={0.5}
+            >
+              FILTER WARRANTIES
+            </Typography>
+          </Box>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={1.5}
+            flexWrap="wrap"
+          >
+            <CommonSearchField
+              value={searchQuery.serial_id}
+              placeholder="Search by Serial ID..."
+              onChange={(value) =>
+                setSearchQuery((prev) => ({ ...prev, serial_id: value }))
+              }
+            />
+            <CommonSearchField
+              value={searchQuery.detailer_mobile}
+              placeholder="Search by Mobile..."
+              onChange={(value) =>
+                setSearchQuery((prev) => ({ ...prev, detailer_mobile: value }))
+              }
+            />
+            <CommonSearchField
+              type="date"
+              value={searchQuery.installation_date}
+              onChange={(value) =>
+                setSearchQuery((prev) => ({
+                  ...prev,
+                  installation_date: value,
+                }))
+              }
+            />
+            <Box>
+              <Select
+                value={searchQuery.product_status}
+                onChange={(e) =>
+                  setSearchQuery((prev) => ({
+                    ...prev,
+                    product_status: e.target.value,
+                  }))
+                }
+                displayEmpty
+                size="small"
+                renderValue={(s) =>
+                  !s ? <em>Product Status</em> : PRODUCT_STATUS[s]?.label || s
+                }
+                sx={{
+                  height: 39,
+                  borderRadius: "10px",
+                  fontSize: 13,
+                  color: "grey",
+                  backgroundColor: "#f5f5f5",
+                  "&:hover fieldset": { borderColor: "#D20000" },
+                  "&.Mui-focused fieldset": { borderColor: "#D20000" },
+                }}
+              >
+                <MenuItem value="">
+                  <em>All Statuses</em>
+                </MenuItem>
+                {Object.entries(PRODUCT_STATUS).map(([key, val]) => (
+                  <MenuItem key={key} value={key}>
+                    {val.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+            <Box sx={{ minWidth: 160 }}>
+              <Select
+                value={searchQuery.warranty_status}
+                onChange={(e) =>
+                  setSearchQuery((prev) => ({
+                    ...prev,
+                    warranty_status: e.target.value,
+                  }))
+                }
+                displayEmpty
+                size="small"
+                renderValue={(s) =>
+                  !s ? (
+                    <em>Warranty Status</em>
+                  ) : (
+                    STATUS_CHIP_CONFIG[s]?.label || s
+                  )
+                }
+                sx={{
+                  height: 39,
+                  borderRadius: "10px",
+                  fontSize: 13,
+                  color: "grey",
+                  backgroundColor: "#f5f5f5",
+                  "&:hover fieldset": { borderColor: "#D20000" },
+                  "&.Mui-focused fieldset": { borderColor: "#D20000" },
+                }}
+              >
+                <MenuItem value="">
+                  <em>All</em>
+                </MenuItem>
+                {Object.entries(STATUS_CHIP_CONFIG).map(([key, val]) => (
+                  <MenuItem key={key} value={key}>
+                    {val.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+          </Stack>
+        </Box>
         <TableContainer>
           <Table>
             <TableHead>
@@ -1678,7 +1841,7 @@ const WarrantyManagement = () => {
             </TableHead>
 
             <TableBody>
-              {warranties.length === 0 ? (
+              {filteredWarranties.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
                     <Box
@@ -1695,7 +1858,7 @@ const WarrantyManagement = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                warranties.map((warranty) => (
+                filteredWarranties.map((warranty) => (
                   <TableRow
                     key={warranty.id}
                     hover
