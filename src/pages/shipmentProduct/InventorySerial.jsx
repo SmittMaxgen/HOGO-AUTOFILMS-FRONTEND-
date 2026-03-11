@@ -567,6 +567,16 @@ const InventorySerial = () => {
                   icon: <QrCodeIcon fontSize="small" />,
                 },
                 {
+                  label: "Location",
+                  value: viewSerial?.location?.name,
+                  icon: <QrCodeIcon fontSize="small" />,
+                },
+                {
+                  label: "Warehouse",
+                  value: viewSerial?.warehouse?.name,
+                  icon: <QrCodeIcon fontSize="small" />,
+                },
+                {
                   label: "Status",
                   value: viewSerial.status,
                   icon: null,
@@ -726,6 +736,8 @@ const InventorySerial = () => {
                   "Product SKU",
                   "Batch",
                   "Serial Number",
+                  "Location",
+                  "Warehouse",
                   "Status",
                   "Actions",
                 ].map((h) => (
@@ -843,6 +855,33 @@ const InventorySerial = () => {
                       </Box>
                     </TableCell>
 
+                    <TableCell>
+                      <Box display="flex" alignItems="center" gap={0.8}>
+                        <QrCodeIcon sx={{ fontSize: 15, color: "#D20000" }} />
+                        <Typography
+                          fontSize={13}
+                          fontWeight={500}
+                          color="#1a1a1a"
+                          fontFamily="monospace"
+                        >
+                          {item?.location?.name}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+
+                    <TableCell>
+                      <Box display="flex" alignItems="center" gap={0.8}>
+                        <QrCodeIcon sx={{ fontSize: 15, color: "#D20000" }} />
+                        <Typography
+                          fontSize={13}
+                          fontWeight={500}
+                          color="#1a1a1a"
+                          fontFamily="monospace"
+                        >
+                          {item?.warehouse?.name}
+                        </Typography>
+                      </Box>
+                    </TableCell>
                     {/* Status */}
                     <TableCell>
                       <StatusChip status={item.status} />
