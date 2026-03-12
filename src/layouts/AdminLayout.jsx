@@ -1235,17 +1235,60 @@ const useStyles = makeStyles(() => ({
     zIndex: 1100,
   },
 
+  // searchBox: {
+  //   position: "relative",
+  //   left: "12px",
+  //   display: "flex",
+  //   justifyContent: "space-between",
+  //   alignItems: "center",
+  //   backgroundColor: "#f1f3f4",
+  //   padding: "6px 12px",
+  //   borderRadius: 10,
+  //   width: 360,
+  //   gap: 8,
+  // },
+  // Updated styles
   searchBox: {
     position: "relative",
     left: "12px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#f1f3f4",
-    padding: "6px 12px",
+    backgroundColor: "#f8f9fc",
+    padding: "6px 14px",
     borderRadius: 10,
     width: 360,
     gap: 8,
+    border: "1px solid #e2e5ef",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+    transition: "box-shadow 0.2s ease, border-color 0.2s ease",
+    "&:focus-within": {
+      borderColor: "#4f6ef7",
+      boxShadow: "0 0 0 3px rgba(79,110,247,0.1), 0 1px 4px rgba(0,0,0,0.08)",
+      backgroundColor: "#fff",
+    },
+  },
+  searchInput: {
+    fontSize: "13.5px",
+    fontWeight: 400,
+    letterSpacing: "0.01em",
+    color: "#1a1d27",
+    "& input::placeholder": {
+      color: "#9da3b8",
+      fontStyle: "italic",
+    },
+  },
+  suggestionBox: {
+    position: "absolute",
+    top: "calc(100% + 6px)",
+    left: 0,
+    right: 0,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    border: "1px solid #e2e5ef",
+    boxShadow: "0 8px 24px rgba(0,0,0,0.10)",
+    overflow: "hidden",
+    zIndex: 999,
   },
   headerLeft: {
     display: "flex",
@@ -1686,7 +1729,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
             >
               {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
             </IconButton>
-            <Box className={classes.searchBox}>
+            {/* <Box className={classes.searchBox}>
               <SearchIcon fontSize="small" style={{ color: "grey" }} />
               <InputBase
                 style={{ color: "grey", height: "2px" }}
@@ -1721,6 +1764,89 @@ const AdminLayout = ({ toggleTheme, mode }) => {
                         sx={{ p: 1 }}
                       >
                         No results found
+                      </Typography>
+                    </ListItem>
+                  )}
+                </Box>
+              )}
+            </Box> */}
+
+            <Box className={classes.searchBox}>
+              <SearchIcon
+                fontSize="small"
+                style={{ color: "#9da3b8", flexShrink: 0 }}
+              />
+              <InputBase
+                style={{
+                  flex: 1,
+                  fontSize: "13.5px",
+                  color: "#1a1d27",
+                  height: "24px",
+                }}
+                placeholder="Search or type…"
+                className={classes.searchInput}
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+              />
+
+              {showSuggestions && query && (
+                <Box className={classes.suggestionBox}>
+                  {filteredPages.length > 0 ? (
+                    filteredPages.map((p) => (
+                      <ListItem key={p.path} disablePadding>
+                        <ListItemButton
+                          onClick={(e) => handleSelect(e, p.path)}
+                          sx={{
+                            px: 2,
+                            py: 0.9,
+                            gap: 1.5,
+                            "&:hover": { backgroundColor: "#f4f6ff" },
+                            "&:hover .label": { color: "#4f6ef7" },
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: "50%",
+                              backgroundColor: "#d0d4e8",
+                              flexShrink: 0,
+                              ".MuiListItemButton-root:hover &": {
+                                backgroundColor: "#4f6ef7",
+                              },
+                            }}
+                          />
+                          <Typography
+                            className="label"
+                            sx={{
+                              fontSize: "13px",
+                              fontWeight: 450,
+                              color: "#4b5068",
+                              flex: 1,
+                              transition: "color 0.15s",
+                            }}
+                          >
+                            {p.label}
+                          </Typography>
+                        </ListItemButton>
+                      </ListItem>
+                    ))
+                  ) : (
+                    <ListItem sx={{ py: 1.5 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: "12.5px",
+                          color: "#9da3b8",
+                          fontStyle: "italic",
+                          px: 0.5,
+                        }}
+                      >
+                        No results for "{query}"
                       </Typography>
                     </ListItem>
                   )}
