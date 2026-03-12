@@ -1719,6 +1719,10 @@ const PurchaseOrder = () => {
 
   const [errors, setErrors] = useState({});
 
+  const hasStockError = form.product_items.some(
+    (item) => item.quantity > item.stock_available,
+  );
+
   // ================= FETCH DATA =================
   useEffect(() => {
     const delay = setTimeout(() => {
@@ -2239,7 +2243,7 @@ const PurchaseOrder = () => {
                     <Button
                       variant="contained"
                       onClick={handleSubmit}
-                      disabled={createLoading || updateLoading}
+                      disabled={createLoading || updateLoading || hasStockError}
                       fullWidth
                       sx={{
                         borderRadius: 2,
@@ -2464,6 +2468,7 @@ const PurchaseOrder = () => {
                           {[
                             "Sr",
                             "Product",
+                            "Available Stock",
                             "Qty",
                             "Dist. Price",
                             "MRP",
@@ -2541,11 +2546,12 @@ const PurchaseOrder = () => {
                               </TableCell>
                               <TableCell align="center">
                                 <TextField
-                                  value={item.quantity}
+                                  disabled={true}
+                                  value={item.stock_available}
                                   onChange={(e) =>
                                     handleUpdateProductItem(
                                       index,
-                                      "quantity",
+                                      "stock_available",
                                       Number(e.target.value),
                                     )
                                   }
@@ -2563,6 +2569,37 @@ const PurchaseOrder = () => {
                                   }}
                                 />
                               </TableCell>
+                              <TableCell align="center">
+                                <TextField
+                                  value={item.quantity}
+                                  onChange={(e) =>
+                                    handleUpdateProductItem(
+                                      index,
+                                      "quantity",
+                                      Number(e.target.value),
+                                    )
+                                  }
+                                  error={item.quantity > item.stock_available}
+                                  helperText={
+                                    item.quantity > item.stock_available
+                                      ? `Exceeds stock (${item.stock_available})`
+                                      : ""
+                                  }
+                                  size="small"
+                                  type="number"
+                                  inputProps={{
+                                    min: 1,
+                                    style: { textAlign: "center" },
+                                  }}
+                                  sx={{
+                                    width: 70,
+                                    "& .MuiOutlinedInput-root": {
+                                      borderRadius: 1.5,
+                                    },
+                                  }}
+                                />
+                              </TableCell>
+
                               <TableCell align="center">
                                 <TextField
                                   value={item.unit_distributor_price}
