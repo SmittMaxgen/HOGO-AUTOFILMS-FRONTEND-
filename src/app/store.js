@@ -26,6 +26,8 @@ import warehouseReducer from "../feature/warehouse/warehouseSlice";
 import locationReducer from "../feature/location/locationSlice";
 import visitReducer from "../feature/visit/visitSlice";
 import officeBranchReducer from "../feature/officeBranches/officeBranchesSlice";
+import dailyPlanReducer from "../feature/dailyPlans/dailyPlanSlice";
+import travelPlanReducer from "../feature/tavelPlans/travelPlanSlice";
 
 export const store = configureStore({
   reducer: {
@@ -57,5 +59,7 @@ export const store = configureStore({
     location: locationReducer,
     visit: visitReducer,
     officeBranch: officeBranchReducer,
+    dailyPlan: dailyPlanReducer,
+    travelPlan: travelPlanReducer,
   },
 });

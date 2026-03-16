@@ -19,6 +19,7 @@ import Departments from "../pages/Department/Department";
 import Roles from "../pages/role/Role";
 import Warehouse from "../pages/warehouse/Warehouse";
 import Location from "../pages/location/Location";
+import Plans from "../pages/plan/Plans";
 import EditProfile from "../pages/auth/EditProfile";
 import AccountSettings from "../pages/auth/AccountSettings";
 import Distributors from "../pages/distributor/Distributor";
@@ -61,6 +62,7 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/roles" element={<Roles />} />
           <Route path="/warehouse" element={<Warehouse />} />
           <Route path="/location" element={<Location />} />
+          <Route path="/plans" element={<Plans />} />
         </Route>
       </Route>
     </Routes>
