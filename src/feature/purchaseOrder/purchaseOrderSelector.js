@@ -4,8 +4,7 @@ export const selectPurchaseOrders = (state) =>
 export const selectPurchaseOrderLoading = (state) =>
   state.purchaseOrder.loading;
 
-export const selectPurchaseOrderError = (state) =>
-  state.purchaseOrder.error;
+export const selectPurchaseOrderError = (state) => state.purchaseOrder.error;
 
 export const selectCreatePurchaseOrderLoading = (state) =>
   state.purchaseOrder.createLoading;
@@ -24,3 +23,8 @@ export const selectDeletePurchaseOrderLoading = (state) =>
 
 export const selectDeletePurchaseOrderSuccess = (state) =>
   state.purchaseOrder.deleteSuccess;
+
+// FOR PAYMENTS
+export const selectPOPayments = (state) => state.purchaseOrder.poPayments;
+export const selectPOPaymentsLoading = (state) =>
+  state.purchaseOrder.paymentsLoading;

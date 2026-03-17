@@ -4,10 +4,13 @@ import {
   createPurchaseOrder,
   updatePurchaseOrder,
   deletePurchaseOrder,
+  getPOPayments,
+  updatePaymentStatus,
 } from "./purchaseOrderThunks";
 
 const initialState = {
   purchaseOrders: [],
+  poPayments: [], // ← ADD these two
   loading: false,
   error: null,
 
@@ -19,6 +22,8 @@ const initialState = {
 
   deleteLoading: false,
   deleteSuccess: false,
+
+  paymentsLoading: false,
 };
 
 const purchaseOrderSlice = createSlice({
@@ -119,6 +124,37 @@ const purchaseOrderSlice = createSlice({
         state.deleteLoading = false;
         state.deleteSuccess = false;
         state.error = action.payload;
+      })
+
+      // ================= PAYMENTS =================
+      .addCase(getPOPayments.pending, (state) => {
+        state.paymentsLoading = true;
+      })
+      .addCase(getPOPayments.fulfilled, (state, action) => {
+        state.paymentsLoading = false;
+        state.poPayments = action.payload?.data || [];
+      })
+      .addCase(getPOPayments.rejected, (state) => {
+        state.paymentsLoading = false;
+      })
+      // ================= UPDATE PAYMENT STATUS =================
+      .addCase(updatePaymentStatus.pending, (state) => {
+        state.paymentsLoading = true;
+      })
+      .addCase(updatePaymentStatus.fulfilled, (state, action) => {
+        state.paymentsLoading = false;
+        // update the payment status inside poPayments in place
+        if (state.poPayments?.payments) {
+          const idx = state.poPayments.payments.findIndex(
+            (p) => p.id === action.payload?.data?.id,
+          );
+          if (idx !== -1) {
+            state.poPayments.payments[idx] = action.payload.data;
+          }
+        }
+      })
+      .addCase(updatePaymentStatus.rejected, (state) => {
+        state.paymentsLoading = false;
       });
   },
 });

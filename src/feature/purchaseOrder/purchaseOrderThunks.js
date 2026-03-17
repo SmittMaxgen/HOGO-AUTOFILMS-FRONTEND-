@@ -21,6 +21,36 @@ export const getPurchaseOrders = createAsyncThunk(
   },
 );
 
+export const getPOPayments = createAsyncThunk(
+  "purchaseOrder/getPOPayments",
+  async (id, { rejectWithValue }) => {
+    // ← accept id
+    try {
+      const response = await axiosInstance.get(`/po-payments/${id}/`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch payments!",
+      );
+    }
+  },
+);
+
+export const updatePaymentStatus = createAsyncThunk(
+  "purchaseOrder/updatePaymentStatus",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.patch(`/po-payments/${id}/`, {
+        status,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to update payment status!",
+      );
+    }
+  },
+);
 /**
  * CREATE purchase order
  */
@@ -28,10 +58,7 @@ export const createPurchaseOrder = createAsyncThunk(
   "purchaseOrder/createPurchaseOrder",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(
-        "/purchase-orders/",
-        payload,
-      );
+      const response = await axiosInstance.post("/purchase-orders/", payload);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -68,9 +95,7 @@ export const deletePurchaseOrder = createAsyncThunk(
   "purchaseOrder/deletePurchaseOrder",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(
-        `/purchase-orders/${id}/`,
-      );
+      const response = await axiosInstance.delete(`/purchase-orders/${id}/`);
       return response.data;
     } catch (error) {
       return rejectWithValue(

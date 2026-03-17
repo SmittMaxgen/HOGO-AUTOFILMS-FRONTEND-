@@ -1500,6 +1500,8 @@ import {
   createPurchaseOrder,
   updatePurchaseOrder,
   deletePurchaseOrder,
+  getPOPayments,
+  updatePaymentStatus,
 } from "../../feature/purchaseOrder/purchaseOrderThunks";
 
 import {
@@ -1511,6 +1513,8 @@ import {
   selectUpdatePurchaseOrderSuccess,
   selectPurchaseOrderError,
   selectDeletePurchaseOrderLoading,
+  selectPOPayments,
+  selectPOPaymentsLoading,
 } from "../../feature/purchaseOrder/purchaseOrderSelector";
 
 // TODO: Import your product and distributor selectors
@@ -1555,6 +1559,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import PaymentsIcon from "@mui/icons-material/Payments";
 
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
@@ -1636,6 +1641,297 @@ const StatusBadge = ({ status }) => {
 };
 
 // ────────────────────────────────────────────────────────────────────────────
+
+const PaymentsPanel = ({
+  poPayments,
+  paymentsLoading,
+  BASE_URL,
+  dispatch,
+  getPOPayments,
+  updatePaymentStatus,
+}) => {
+  console.log("poPayments:::>>>>????", poPayments);
+  const PAYMENT_STATUS_OPTIONS = ["Pending", "Approved", "Rejected"];
+  const poData = poPayments?.[0];
+
+  const handlePaymentStatusChange = (paymentId, newStatus) => {
+    dispatch(updatePaymentStatus({ id: paymentId, status: newStatus }))
+      .unwrap()
+      .then(() => {
+        CommonToast("Payment status updated", "success");
+        dispatch(getPOPayments(poData?.purchase_order));
+      })
+      .catch(() => CommonToast("Failed to update status", "error"));
+  };
+
+  return (
+    <Paper sx={{ ...sectionPaper, p: 0, mt: 3 }}>
+      <Box
+        sx={{
+          background: HEADER_BG,
+          px: 3,
+          py: 2,
+          borderRadius: "12px 12px 0 0",
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
+        <PaymentsIcon sx={{ color: "white", fontSize: 20 }} />
+        <Box>
+          <Typography variant="subtitle1" fontWeight={700} color="white">
+            Payment Records
+          </Typography>
+          <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.7)" }}>
+            {poData?.payments?.length || 0} payment
+            {poData?.payments?.length !== 1 ? "s" : ""}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Summary strip */}
+      {poData && (
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{ px: 3, pt: 2.5 }}
+          flexWrap="wrap"
+        >
+          {[
+            { label: "PO Number", value: poData.po_number },
+            { label: "Distributor", value: poData.distributor_name },
+            { label: "Total Payments", value: poData.payments?.length || 0 },
+            {
+              label: "Total Paid",
+              value: `₹ ${(poData.payments || []).reduce((s, p) => s + Number(p.amount), 0).toFixed(2)}`,
+            },
+          ].map((item) => (
+            <Box
+              key={item.label}
+              sx={{
+                bgcolor: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: 2,
+                px: 2,
+                py: 1.5,
+                minWidth: 130,
+              }}
+            >
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontWeight={600}
+                letterSpacing="0.06em"
+              >
+                {item.label.toUpperCase()}
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight={700}
+                color="#1e293b"
+                mt={0.3}
+              >
+                {item.value}
+              </Typography>
+            </Box>
+          ))}
+        </Stack>
+      )}
+
+      <Box sx={{ p: 3 }}>
+        {paymentsLoading ? (
+          <Stack alignItems="center" py={5} spacing={1.5}>
+            <CircularProgress size={28} thickness={4} />
+            <Typography variant="body2" color="text.secondary">
+              Loading payments…
+            </Typography>
+          </Stack>
+        ) : !poData || !poData.payments || poData.payments.length === 0 ? (
+          <Box
+            sx={{
+              textAlign: "center",
+              py: 5,
+              bgcolor: "#f8fafc",
+              borderRadius: 2,
+              border: "1px dashed #cbd5e1",
+            }}
+          >
+            <PaymentsIcon sx={{ fontSize: 36, color: "#cbd5e1", mb: 1 }} />
+            <Typography color="text.secondary" fontSize="0.9rem">
+              No payments recorded for this PO
+            </Typography>
+          </Box>
+        ) : (
+          <TableContainer sx={{ borderRadius: 2, border: "1px solid #e2e8f0" }}>
+            <Table size="small">
+              <TableHead sx={tableHeadSx}>
+                <TableRow>
+                  {[
+                    "#",
+                    "Amount",
+                    "Payment Date",
+                    "Approved By",
+                    "Status",
+                    "Images",
+                  ].map((h) => (
+                    <TableCell key={h} align={h === "#" ? "left" : "center"}>
+                      {h}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {poData.payments.map((payment, idx) => {
+                  const sc =
+                    payment.status === "Approved"
+                      ? { bg: "#ecfdf5", text: "#065f46", border: "#10b98133" }
+                      : payment.status === "Rejected"
+                        ? {
+                            bg: "#fef2f2",
+                            text: "#991b1b",
+                            border: "#ef444433",
+                          }
+                        : {
+                            bg: "#fffbeb",
+                            text: "#92400e",
+                            border: "#f59e0b33",
+                          };
+
+                  return (
+                    <TableRow key={payment.id} sx={tableRowHoverSx}>
+                      <TableCell>
+                        <Chip
+                          label={idx + 1}
+                          size="small"
+                          sx={{
+                            height: 20,
+                            fontSize: "0.7rem",
+                            bgcolor: "#f1f5f9",
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography
+                          variant="body2"
+                          fontWeight={700}
+                          color="#1d4ed8"
+                        >
+                          ₹ {Number(payment.amount).toFixed(2)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography variant="body2" color="#475569">
+                          {new Date(payment.payment_date).toLocaleDateString(
+                            "en-IN",
+                            { day: "2-digit", month: "short", year: "numeric" },
+                          )}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography
+                          variant="body2"
+                          fontWeight={600}
+                          color="#1e293b"
+                        >
+                          {payment.admin_name}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Select
+                          size="small"
+                          value={payment.status}
+                          onChange={(e) =>
+                            handlePaymentStatusChange(
+                              payment.id,
+                              e.target.value,
+                            )
+                          }
+                          sx={{
+                            minWidth: 120,
+                            height: 28,
+                            borderRadius: "999px",
+                            fontWeight: 700,
+                            fontSize: "0.72rem",
+                            letterSpacing: "0.04em",
+                            bgcolor: sc.bg,
+                            color: sc.text,
+                            "& .MuiSelect-select": { py: 0.5, pl: 2 },
+                            "& fieldset": {
+                              border: `1.5px solid ${sc.border}`,
+                            },
+                            "& svg": { color: sc.text },
+                          }}
+                        >
+                          {PAYMENT_STATUS_OPTIONS.map((opt) => (
+                            <MenuItem
+                              key={opt}
+                              value={opt}
+                              sx={{ fontSize: "0.82rem", fontWeight: 600 }}
+                            >
+                              {opt}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          justifyContent="center"
+                          flexWrap="wrap"
+                        >
+                          {payment.images?.length > 0 ? (
+                            payment.images.map((img, i) => (
+                              <Box
+                                key={i}
+                                component="a"
+                                href={`${BASE_URL}${img}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                sx={{
+                                  display: "block",
+                                  width: 48,
+                                  height: 48,
+                                  borderRadius: 1.5,
+                                  overflow: "hidden",
+                                  border: "2px solid #e2e8f0",
+                                  "&:hover": { borderColor: "#D20000" },
+                                  transition: "border-color 0.15s",
+                                }}
+                              >
+                                <Box
+                                  component="img"
+                                  src={`${BASE_URL}${img}`}
+                                  alt={`img-${i + 1}`}
+                                  sx={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              </Box>
+                            ))
+                          ) : (
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              —
+                            </Typography>
+                          )}
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </Box>
+    </Paper>
+  );
+};
 
 const PurchaseOrder = () => {
   const dispatch = useDispatch();
@@ -1722,6 +2018,22 @@ const PurchaseOrder = () => {
   const hasStockError = form.product_items.some(
     (item) => item.quantity > item.stock_available,
   );
+
+  const poPayments = useSelector(selectPOPayments);
+  console.log("poPayments:::>>>", poPayments);
+  const paymentsLoading = useSelector(selectPOPaymentsLoading);
+
+  const BASE_URL = "http://hogofilm.pythonanywhere.com";
+
+  const [isViewingPayments, setIsViewingPayments] = useState(false);
+  const [viewPaymentPO, setViewPaymentPO] = useState(null);
+  console.log("viewPaymentPO:::>>>", viewPaymentPO);
+  console.log("isViewingPayments:::>>>", isViewingPayments);
+  const handleViewPayments = (po) => {
+    dispatch(getPOPayments(po.id));
+    // setViewPaymentPO(po);
+    // setIsViewingPayments(true);
+  };
 
   // ================= FETCH DATA =================
   useEffect(() => {
@@ -1963,12 +2275,19 @@ const PurchaseOrder = () => {
   const handleView = (po) => {
     setViewPO(po);
     setIsViewing(true);
+    dispatch(getPOPayments(po.id)); // fetch payments alongside
+
+    // setIsViewingPayments(true);
+    handleViewPayments(po);
   };
 
   const handleEdit = (po) => {
     setPoStatus(po?.status);
     setIsEditing(true);
     setEditId(po.id);
+    dispatch(getPOPayments(po.id));
+    // setIsViewingPayments(true);
+    handleViewPayments(po);
     setForm({
       po_number: po.po_number,
       distributor_id: po.distributor_id,
@@ -1997,6 +2316,8 @@ const PurchaseOrder = () => {
     setEditId(null);
     setIsViewing(false);
     setViewPO(null);
+    // setIsViewingPayments(false);
+    // setViewPaymentPO(null);
     setForm({
       po_number: "",
       distributor_id: "",
@@ -2927,6 +3248,14 @@ const PurchaseOrder = () => {
             </Paper>
           </Grid>
         </Grid>
+        <PaymentsPanel
+          poPayments={poPayments}
+          paymentsLoading={paymentsLoading}
+          BASE_URL={BASE_URL}
+          dispatch={dispatch}
+          getPOPayments={getPOPayments}
+          updatePaymentStatus={updatePaymentStatus}
+        />
       </Box>
     );
   }
@@ -3273,11 +3602,24 @@ const PurchaseOrder = () => {
             </Paper>
           </Grid>
         </Grid>
+        <PaymentsPanel
+          poPayments={poPayments}
+          paymentsLoading={paymentsLoading}
+          BASE_URL={BASE_URL}
+          dispatch={dispatch}
+          getPOPayments={getPOPayments}
+          updatePaymentStatus={updatePaymentStatus}
+        />
       </Box>
     );
   }
 
+  // ================= PAYMENTS VIEW =================
+
+  // ================= PAYMENTS VIEW =================
+
   // ================= LIST VIEW =================
+
   return (
     <Box>
       {/* ── Page Header ── */}
@@ -3285,7 +3627,7 @@ const PurchaseOrder = () => {
         sx={{
           background: HEADER_BG,
           borderRadius: 3,
-          px: 3.5,
+        px: 3.5,
           py: 2.5,
           mb: 3,
           display: "flex",
