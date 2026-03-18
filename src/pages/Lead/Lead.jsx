@@ -709,7 +709,7 @@ import CommonSearchField from "../../components/commonComponents/CommonSearchFie
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const LEAD_TYPE_OPTIONS = ["Distributor", "Retailer", "Direct"];
-const INTEREST_LEVEL_OPTIONS = ["Low", "Medium", "High"];
+const INTEREST_LEVEL_OPTIONS = ["Warm", "Hot", "Cold"];
 const LEAD_STATUS_OPTIONS = ["Lead", "Prospect", "Converted", "Lost"];
 
 const LEAD_TYPE_COLORS = {
@@ -719,9 +719,9 @@ const LEAD_TYPE_COLORS = {
 };
 
 const INTEREST_COLORS = {
-  High: { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7" },
-  Medium: { bg: "#fff8e1", color: "#f57c00", border: "#ffe082" },
-  Low: { bg: "#fce4ec", color: "#c62828", border: "#ef9a9a" },
+  Warm: { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7" },
+  Cold: { bg: "#fff8e1", color: "#f57c00", border: "#ffe082" },
+  Hot: { bg: "#fce4ec", color: "#c62828", border: "#ef9a9a" },
 };
 
 const STATUS_COLORS = {
