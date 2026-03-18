@@ -1031,7 +1031,6 @@ const Lead = () => {
     page * rowsPerPage,
   );
 
-  
   const [visitPage, setVisitPage] = useState(1);
   const visitsPerPage = 10;
 
@@ -1044,7 +1043,7 @@ const Lead = () => {
       setVisitPage(1);
     }
   }, [isViewingVisits]);
-  
+
   // ── Create / Edit View ───────────────────────────────────────────────────────
   if (isEditing) {
     return (
@@ -1235,6 +1234,7 @@ const Lead = () => {
             <Grid container spacing={2.5}>
               <Grid item xs={12} sm={4}>
                 <Autocomplete
+                  sx={{ width: "250px" }}
                   options={INTEREST_LEVEL_OPTIONS}
                   value={form.interest_level}
                   onChange={(_, v) =>
@@ -1253,6 +1253,7 @@ const Lead = () => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Autocomplete
+                  sx={{ width: "250px" }}
                   options={LEAD_STATUS_OPTIONS}
                   value={form.lead_status}
                   onChange={(_, v) =>
@@ -1271,6 +1272,7 @@ const Lead = () => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Autocomplete
+                  sx={{ width: "250px" }}
                   options={employees || []}
                   getOptionLabel={(o) =>
                     `${o.first_name || "User"} ${o.last_name || ""}`.trim()
@@ -1524,7 +1526,6 @@ const Lead = () => {
   }
 
   // --- Visit Viwe
-
 
   if (isViewingVisits && selectedLeadForVisits) {
     const totalVisits = selectedLeadVisits.length;
