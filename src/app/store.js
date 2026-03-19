@@ -28,6 +28,8 @@ import visitReducer from "../feature/visit/visitSlice";
 import officeBranchReducer from "../feature/officeBranches/officeBranchesSlice";
 import dailyPlanReducer from "../feature/dailyPlans/dailyPlanSlice";
 import travelPlanReducer from "../feature/tavelPlans/travelPlanSlice";
+import leaveBalanceReducer from "../feature/leaveBalance/leaveBalanceSlice";
+import employeeAttendanceReducer from "../feature/employeeAttendance/employeeAttendanceSlice";
 
 export const store = configureStore({
   reducer: {
@@ -61,5 +63,7 @@ export const store = configureStore({
     officeBranch: officeBranchReducer,
     dailyPlan: dailyPlanReducer,
     travelPlan: travelPlanReducer,
+    leaveBalance: leaveBalanceReducer,
+    employeeAttendance: employeeAttendanceReducer,
   },
 });

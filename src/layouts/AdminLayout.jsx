@@ -1686,6 +1686,26 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           {!collapsed && "Plans"}
         </Box>
 
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/leave-balance") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/leave-balance")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Leave Balance"}
+        </Box>
+        
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/employee-attendance") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/employee-attendance")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Employee Attendance"}
+        </Box>
+
         {/* <Box
           className={`${classes.sidebarItem} ${
             isActive("/warehouse") ? classes.activeItem : ""

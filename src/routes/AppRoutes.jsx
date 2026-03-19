@@ -20,6 +20,8 @@ import Roles from "../pages/role/Role";
 import Warehouse from "../pages/warehouse/Warehouse";
 import Location from "../pages/location/Location";
 import Plans from "../pages/plan/Plans";
+import LeaveBalance from "../pages/Leavebalance/Leavebalance";
+import EmployeeAttendance from "../pages/EmployeeAttendance/EmployeeAttendance";
 import EditProfile from "../pages/auth/EditProfile";
 import AccountSettings from "../pages/auth/AccountSettings";
 import Distributors from "../pages/distributor/Distributor";
@@ -63,6 +65,8 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/warehouse" element={<Warehouse />} />
           <Route path="/location" element={<Location />} />
           <Route path="/plans" element={<Plans />} />
+          <Route path="/leave-balance" element={<LeaveBalance />} />
+          <Route path="/employee-attendance" element={<EmployeeAttendance />} />
         </Route>
       </Route>
     </Routes>
