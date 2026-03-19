@@ -7,6 +7,7 @@ import {
   selectEmployeeAttendanceCount,
   selectEmployeeAttendanceError,
 } from "../../feature/employeeAttendance/employeeAttendanceSelector";
+import { Box, Typography } from "@mui/material";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function todayStr() {
@@ -308,7 +309,7 @@ export default function AttendanceModule({ employee_id, title }) {
 
       {/* ── Header ───────────────────────────────────────────────────────── */}
       <div style={{ marginBottom: "20px" }}>
-        <h2
+        {/* <h2
           style={{
             margin: 0,
             fontSize: "22px",
@@ -317,8 +318,17 @@ export default function AttendanceModule({ employee_id, title }) {
           }}
         >
           {title ||
-            (employee_id ? "Employee Attendance" : "All Attendance Records")}
-        </h2>
+            (employee_id ? "Employee Attendance" : "Attendance Records")}
+        </h2> */}
+        <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+          <Box
+            sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
+          />
+          <Typography variant="h5" fontWeight={800} color="#1a1a1a">
+            {title ||
+              (employee_id ? "Employee Attendance" : "Attendance Records")}
+          </Typography>
+        </Box>
         {employee_id && (
           <p style={{ margin: "4px 0 0", fontSize: "13px", color: "#64748b" }}>
             Employee ID: <b>#{employee_id}</b>

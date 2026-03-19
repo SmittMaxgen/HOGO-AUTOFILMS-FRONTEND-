@@ -968,6 +968,7 @@ import {
   selectLeaveBalanceLoading,
   selectLeaveBalanceError,
 } from "../../feature/leaveBalance/leaveBalanceSelector";
+import { Box, Typography } from "@mui/material";
 
 // ─── Leave type columns ───────────────────────────────────────────────────────
 const LEAVE_FIELDS = [
@@ -1198,7 +1199,7 @@ export default function LeaveBalanceModule({
         }}
       >
         <div>
-          <h2
+          {/* <h2
             style={{
               margin: 0,
               fontSize: "22px",
@@ -1207,8 +1208,18 @@ export default function LeaveBalanceModule({
             }}
           >
             {title ||
-              (employee_id ? "Employee Leave Balance" : "All Leave Balances")}
-          </h2>
+              (employee_id ? "Employee Leave Balance" : "Leave Balances")}
+          </h2> */}
+
+          <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+            <Box
+              sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
+            />
+            <Typography variant="h5" fontWeight={800} color="#1a1a1a">
+              {title ||
+                (employee_id ? "Employee Leave Balance" : "Leave Balances")}
+            </Typography>
+          </Box>
           <p style={{ margin: "4px 0 0", fontSize: "13px", color: "#94a3b8" }}>
             {loading
               ? "Loading…"
@@ -1297,16 +1308,6 @@ export default function LeaveBalanceModule({
             flexWrap: "wrap",
           }}
         >
-          <p
-            style={{
-              margin: 0,
-              fontSize: "14px",
-              fontWeight: 700,
-              color: "#1e293b",
-            }}
-          >
-            Leave Balance Breakdown
-          </p>
           <div style={{ position: "relative" }}>
             <span
               style={{
