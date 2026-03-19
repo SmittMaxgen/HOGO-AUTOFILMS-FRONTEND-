@@ -1158,6 +1158,8 @@ export default function LeaveBalanceModule({
 
   const [search, setSearch] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(""); // "" = All
+  const [selectedYear, setSelectedYear] = useState("");
+
   useEffect(() => {
     dispatch(getLeaveBalances(employee_id ? { employee_id } : {}));
   }, [employee_id, dispatch]);
@@ -1341,38 +1343,88 @@ export default function LeaveBalanceModule({
               onBlur={(e) => (e.target.style.border = "1px solid #e2e8f0")}
             />
           </div>
-          {/* Month Filter */}
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            style={{
-              padding: "7px 12px",
-              fontSize: "13px",
-              border: "1px solid #e2e8f0",
-              borderRadius: "8px",
-              outline: "none",
-              color: "#374151",
-              background: "#f8fafc",
-              cursor: "pointer",
-              fontWeight: 600,
-            }}
-            onFocus={(e) => (e.target.style.border = "1px solid #6366f1")}
-            onBlur={(e) => (e.target.style.border = "1px solid #e2e8f0")}
-          >
-            <option value="">All Months</option>
-            <option value="1">January</option>
-            <option value="2">February</option>
-            <option value="3">March</option>
-            <option value="4">April</option>
-            <option value="5">May</option>
-            <option value="6">June</option>
-            <option value="7">July</option>
-            <option value="8">August</option>
-            <option value="9">September</option>
-            <option value="10">October</option>
-            <option value="11">November</option>
-            <option value="12">December</option>
-          </select>
+          {/* ── Month + Year Filters ── */}
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            {/* Year */}
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              style={{
+                padding: "7px 12px",
+                fontSize: "13px",
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+                outline: "none",
+                color: "#374151",
+                background: "#f8fafc",
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+              onFocus={(e) => (e.target.style.border = "1px solid #6366f1")}
+              onBlur={(e) => (e.target.style.border = "1px solid #e2e8f0")}
+            >
+              <option value="">All Years</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+            </select>
+
+            {/* Month */}
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              style={{
+                padding: "7px 12px",
+                fontSize: "13px",
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+                outline: "none",
+                color: "#374151",
+                background: "#f8fafc",
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+              onFocus={(e) => (e.target.style.border = "1px solid #6366f1")}
+              onBlur={(e) => (e.target.style.border = "1px solid #e2e8f0")}
+            >
+              <option value="">All Months</option>
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+
+            {/* Clear button — only show if any filter active */}
+            {(selectedMonth || selectedYear) && (
+              <button
+                onClick={() => {
+                  setSelectedMonth("");
+                  setSelectedYear("");
+                }}
+                style={{
+                  padding: "7px 12px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  border: "1px solid #fecaca",
+                  borderRadius: "8px",
+                  background: "#fef2f2",
+                  color: "#ef4444",
+                  cursor: "pointer",
+                }}
+              >
+                ✕ Clear
+              </button>
+            )}
+          </div>
         </div>
 
         <div style={{ overflowX: "auto" }}>
