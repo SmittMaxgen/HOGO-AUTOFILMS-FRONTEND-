@@ -50,6 +50,9 @@ import {
   clearDailyPlanDeleteState,
 } from "../../feature/dailyPlans/dailyPlanSlice";
 
+import { getEmployees } from "../../feature/employee/employeeThunks";
+import { selectEmployees } from "../../feature/employee/employeeSelector";
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const MONTHS = [
   "January",
@@ -155,6 +158,9 @@ export default function Plan() {
   const dpUpdateSuccess = useSelector(selectDailyPlanUpdateSuccess);
   const dpDeleteLoading = useSelector(selectDailyPlanDeleteLoading);
 
+  //Employee state
+  const employees = useSelector(selectEmployees);
+
   // Selected travel plan & calendar month
   const [selectedTPId, setSelectedTPId] = useState(null);
   const [calYear, setCalYear] = useState(new Date().getFullYear());
@@ -166,6 +172,9 @@ export default function Plan() {
   const [editingTP, setEditingTP] = useState(null);
   const [editingDP, setEditingDP] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+
+  const [employeeSearch, setEmployeeSearch] = useState("");
+  const [showEmployeeDropdown, setShowEmployeeDropdown] = useState(false);
 
   // Travel plan form
   const [tpForm, setTpForm] = useState({
@@ -187,6 +196,12 @@ export default function Plan() {
     dispatch(getTravelPlans());
     dispatch(getDailyPlans());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (showTPModal && !editingTP) {
+      dispatch(getEmployees());
+    }
+  }, [showTPModal]);
 
   // Auto-select first travel plan
   useEffect(() => {
@@ -269,6 +284,14 @@ export default function Plan() {
       rm: tp.rm,
       tsm: tp.tsm,
     });
+    const emp = employees.find((e) => e.id === tp.employee_id);
+    if (emp) {
+      setEmployeeSearch(
+        `${emp.first_name} ${emp.last_name} (${emp.employee_code})`,
+      );
+    } else {
+      setEmployeeSearch("");
+    }
     setShowTPModal(true);
   }
 
@@ -421,14 +444,14 @@ export default function Plan() {
                 style={styles.editBtn}
                 onClick={() => openEditTP(selectedTP)}
               >
-                ✏ Edit
+                Edit
               </button>
               <button
                 style={styles.deleteBtn}
                 onClick={() => handleDeleteTP(selectedTP.id)}
                 disabled={tpDeleteLoading}
               >
-                🗑 Delete
+                Delete
               </button>
             </div>
           </div>
@@ -537,7 +560,7 @@ export default function Plan() {
           title={editingTP ? "Edit Travel Plan" : "New Travel Plan"}
           onClose={() => setShowTPModal(false)}
         >
-          <Field label="Employee ID">
+          {/* <Field label="Employee ID">
             <input
               style={styles.input}
               type="number"
@@ -546,6 +569,125 @@ export default function Plan() {
                 setTpForm((f) => ({ ...f, employee_id: e.target.value }))
               }
             />
+          </Field> */}
+          <Field label="Employee">
+            <div style={{ position: "relative" }}>
+              <input
+                style={styles.input}
+                type="text"
+                placeholder="Search employee..."
+                value={employeeSearch}
+                onChange={(e) => {
+                  setEmployeeSearch(e.target.value);
+                  setShowEmployeeDropdown(true);
+                  // Clear selected employee if user edits the text
+                  setTpForm((f) => ({ ...f, employee_id: "" }));
+                }}
+                // onFocus={() => setShowEmployeeDropdown(true)}
+                onFocus={() => {
+                  setEmployeeSearch("");
+                  setShowEmployeeDropdown(true);
+                  setTpForm((f) => ({ ...f, employee_id: "" }));
+                }}
+                // onBlur={() =>
+                //   setTimeout(() => setShowEmployeeDropdown(false), 150)
+                // }
+                onBlur={() => {
+                  setTimeout(() => {
+                    setShowEmployeeDropdown(false);
+                    if (!tpForm.employee_id) {
+                      const emp = employees.find(
+                        (e) => e.id === editingTP?.employee_id,
+                      );
+                      if (emp) {
+                        setEmployeeSearch(
+                          `${emp.first_name} ${emp.last_name} (${emp.employee_code})`,
+                        );
+                        setTpForm((f) => ({
+                          ...f,
+                          employee_id: editingTP.employee_id,
+                        }));
+                      }
+                    }
+                  }, 150);
+                }}
+              />
+
+              {showEmployeeDropdown && (
+                <ul
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    right: 0,
+                    background: "#fff",
+                    border: "1px solid #ccc",
+                    borderRadius: 4,
+                    maxHeight: 200,
+                    overflowY: "auto",
+                    zIndex: 1000,
+                    margin: 0,
+                    padding: 0,
+                    listStyle: "none",
+                    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  {employees
+                    .filter((emp) => {
+                      const q = employeeSearch.toLowerCase();
+                      return (
+                        emp.first_name.toLowerCase().includes(q) ||
+                        emp.last_name.toLowerCase().includes(q) ||
+                        emp.employee_code.toLowerCase().includes(q)
+                      );
+                    })
+                    .map((emp) => (
+                      <li
+                        key={emp.id}
+                        onMouseDown={() => {
+                          setTpForm((f) => ({ ...f, employee_id: emp.id }));
+                          setEmployeeSearch(
+                            `${emp.first_name} ${emp.last_name} (${emp.employee_code})`,
+                          );
+                          setShowEmployeeDropdown(false);
+                        }}
+                        style={{
+                          padding: "8px 12px",
+                          cursor: "pointer",
+                          borderBottom: "1px solid #f0f0f0",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.background = "#f5f5f5")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.background = "#fff")
+                        }
+                      >
+                        <strong>
+                          {emp.first_name} {emp.last_name}
+                        </strong>{" "}
+                        &nbsp;
+                        <span style={{ color: "#888", fontSize: 12 }}>
+                          {emp.employee_code}
+                        </span>
+                      </li>
+                    ))}
+
+                  {employees.filter((emp) => {
+                    const q = employeeSearch.toLowerCase();
+                    return (
+                      emp.first_name.toLowerCase().includes(q) ||
+                      emp.last_name.toLowerCase().includes(q) ||
+                      emp.employee_code.toLowerCase().includes(q)
+                    );
+                  }).length === 0 && (
+                    <li style={{ padding: "8px 12px", color: "#aaa" }}>
+                      No employees found
+                    </li>
+                  )}
+                </ul>
+              )}
+            </div>
           </Field>
           <Field label="Month">
             <select
