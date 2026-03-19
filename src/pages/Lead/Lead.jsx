@@ -706,12 +706,22 @@ import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
 
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const LEAD_TYPE_OPTIONS = ["Distributor", "Retailer", "Direct"];
 const INTEREST_LEVEL_OPTIONS = ["Warm", "Hot", "Cold"];
 const LEAD_STATUS_OPTIONS = ["Lead", "Prospect", "Converted", "Lost"];
-
+const LEAD_SOURCE_OPTIONS = [
+  "WHATSAPP",
+  "FACEBOOK",
+  "INSTAGRAM",
+  "REFERENCE",
+  "COLD_CALL",
+  "WEBSITE",
+  "OTHER",
+];
 const LEAD_TYPE_COLORS = {
   Distributor: { bg: "#e3f2fd", color: "#1565c0", border: "#90caf9" },
   Retailer: { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7" },
@@ -875,18 +885,37 @@ const Lead = () => {
     address: "",
     city: "",
     state: "",
+    location: "",
     interest_level: "",
     lead_status: "Lead",
+    lead_source: "",
     remarks: "",
     created_by: null,
+    assigned_to: null,
+    brand_dealing: "",
+    outlet_age: "",
+    past_distributor_name: "",
+    cars_per_month: "",
+    dealer_landing_cost: "",
+    demo: false,
+    ppf_installers: false,
+    price_feedback: "",
+    quality_feedback: "",
+    date: "",
   });
 
   const [errors, setErrors] = useState({});
 
+  // useEffect(() => {
+  //   dispatch(getLeads());
+  //   setPage(1);
+  // }, [dispatch]);
+
   useEffect(() => {
-    dispatch(getLeads());
-    setPage(1);
-  }, [dispatch]);
+  dispatch(getLeads());
+  dispatch(getEmployees());
+  setPage(1);
+}, [dispatch]);
 
   useEffect(() => {
     if (createSuccess || updateSuccess) {
@@ -958,18 +987,31 @@ const Lead = () => {
     setIsEditing(true);
     setEditId(lead.id);
     setForm({
-      lead_type: lead.lead_type,
-      business_name: lead.business_name,
-      contact_person: lead.contact_person,
-      phone: lead.phone,
-      email: lead.email,
-      address: lead.address,
-      city: lead.city,
-      state: lead.state,
-      interest_level: lead.interest_level,
-      lead_status: lead.lead_status,
+      lead_type: lead.lead_type || "",
+      business_name: lead.business_name || "",
+      contact_person: lead.contact_person || "",
+      phone: lead.phone || "",
+      email: lead.email || "",
+      address: lead.address || "",
+      city: lead.city || "",
+      state: lead.state || "",
+      location: lead.location || "",
+      interest_level: lead.interest_level || "",
+      lead_status: lead.lead_status || "Lead",
+      lead_source: lead.lead_source || "",
       remarks: lead.remarks || "",
-      created_by: lead.created_by,
+      created_by: lead.created_by || null,
+      assigned_to: lead.assigned_to || null,
+      brand_dealing: lead.brand_dealing || "",
+      outlet_age: lead.outlet_age || "",
+      past_distributor_name: lead.past_distributor_name || "",
+      cars_per_month: lead.cars_per_month || "",
+      dealer_landing_cost: lead.dealer_landing_cost || "",
+      demo: lead.demo || false,
+      ppf_installers: lead.ppf_installers || false,
+      price_feedback: lead.price_feedback || "",
+      quality_feedback: lead.quality_feedback || "",
+      date: lead.date || "",
     });
   };
 
@@ -1014,10 +1056,23 @@ const Lead = () => {
       address: "",
       city: "",
       state: "",
+      location: "",
       interest_level: "",
       lead_status: "Lead",
+      lead_source: "",
       remarks: "",
       created_by: null,
+      assigned_to: null,
+      brand_dealing: "",
+      outlet_age: "",
+      past_distributor_name: "",
+      cars_per_month: "",
+      dealer_landing_cost: "",
+      demo: false,
+      ppf_installers: false,
+      price_feedback: "",
+      quality_feedback: "",
+      date: "",
     });
     setErrors({});
   };
@@ -1076,6 +1131,7 @@ const Lead = () => {
             <Grid container spacing={2.5}>
               <Grid item xs={12} sm={6}>
                 <Autocomplete
+                  sx={{ width: "250px" }}
                   options={LEAD_TYPE_OPTIONS}
                   value={form.lead_type}
                   onChange={(_, v) => setForm({ ...form, lead_type: v || "" })}
@@ -1215,6 +1271,24 @@ const Lead = () => {
                   onChange={(e) => setForm({ ...form, state: e.target.value })}
                 />
               </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Location / Area"
+                  value={form.location}
+                  fullWidth
+                  sx={fieldSx}
+                  onChange={(e) =>
+                    setForm({ ...form, location: e.target.value })
+                  }
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LocationOnIcon sx={{ color: "#D20000" }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
             </Grid>
           </Box>
 
@@ -1316,6 +1390,193 @@ const Lead = () => {
                   onChange={(e) =>
                     setForm({ ...form, remarks: e.target.value })
                   }
+                />
+              </Grid>
+            </Grid>
+          </Box>
+
+          {/* Section 3: Business Details */}
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              bgcolor: "#fafafa",
+              borderTop: "1px solid #ebebeb",
+              borderBottom: "1px solid #ebebeb",
+            }}
+          >
+            <SectionHeading title="Business Details" />
+          </Box>
+          <Box px={4} py={3}>
+            <Grid container spacing={2.5}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Brand Dealing"
+                  value={form.brand_dealing}
+                  fullWidth
+                  sx={fieldSx}
+                  onChange={(e) =>
+                    setForm({ ...form, brand_dealing: e.target.value })
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Outlet Age"
+                  value={form.outlet_age}
+                  fullWidth
+                  sx={fieldSx}
+                  onChange={(e) =>
+                    setForm({ ...form, outlet_age: e.target.value })
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Past Distributor Name"
+                  value={form.past_distributor_name}
+                  fullWidth
+                  sx={fieldSx}
+                  onChange={(e) =>
+                    setForm({ ...form, past_distributor_name: e.target.value })
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Cars Per Month"
+                  value={form.cars_per_month}
+                  type="number"
+                  fullWidth
+                  sx={fieldSx}
+                  onChange={(e) =>
+                    setForm({ ...form, cars_per_month: e.target.value })
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Dealer Landing Cost"
+                  value={form.dealer_landing_cost}
+                  type="number"
+                  fullWidth
+                  sx={fieldSx}
+                  onChange={(e) =>
+                    setForm({ ...form, dealer_landing_cost: e.target.value })
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Autocomplete
+                  sx={{ width: "250px" }}
+                  options={LEAD_SOURCE_OPTIONS}
+                  value={form.lead_source}
+                  onChange={(_, v) =>
+                    setForm({ ...form, lead_source: v || "" })
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} label="Lead Source" sx={fieldSx} />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Date"
+                  value={form.date}
+                  type="date"
+                  fullWidth
+                  sx={fieldSx}
+                  InputLabelProps={{ shrink: true }}
+                  onChange={(e) => setForm({ ...form, date: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Autocomplete
+                  sx={{ width: "250px" }}
+                  options={employees || []}
+                  getOptionLabel={(o) =>
+                    `${o.first_name || "User"} ${o.last_name || ""}`.trim()
+                  }
+                  value={
+                    employees?.find((e) => e.id === form.assigned_to) || null
+                  }
+                  onChange={(_, v) =>
+                    setForm({ ...form, assigned_to: v ? v.id : null })
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Assigned To"
+                      sx={fieldSx}
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <>
+                            <InputAdornment position="start">
+                              <PersonIcon sx={{ color: "#D20000" }} />
+                            </InputAdornment>
+                            {params.InputProps.startAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Price Feedback"
+                  value={form.price_feedback}
+                  fullWidth
+                  sx={fieldSx}
+                  onChange={(e) =>
+                    setForm({ ...form, price_feedback: e.target.value })
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Quality Feedback"
+                  value={form.quality_feedback}
+                  fullWidth
+                  sx={fieldSx}
+                  onChange={(e) =>
+                    setForm({ ...form, quality_feedback: e.target.value })
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={form.demo}
+                      onChange={(e) =>
+                        setForm({ ...form, demo: e.target.checked })
+                      }
+                      sx={{
+                        color: "#D20000",
+                        "&.Mui-checked": { color: "#D20000" },
+                      }}
+                    />
+                  }
+                  label="Demo"
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={form.ppf_installers}
+                      onChange={(e) =>
+                        setForm({ ...form, ppf_installers: e.target.checked })
+                      }
+                      sx={{
+                        color: "#D20000",
+                        "&.Mui-checked": { color: "#D20000" },
+                      }}
+                    />
+                  }
+                  label="PPF Installers"
                 />
               </Grid>
             </Grid>
@@ -1493,7 +1754,48 @@ const Lead = () => {
                 { label: "Lead Type", value: viewLead.lead_type },
                 { label: "Interest Level", value: viewLead.interest_level },
                 { label: "Lead Status", value: viewLead.lead_status },
-                { label: "Created By", value: viewLead.created_by },
+                { label: "Lead Source", value: viewLead.lead_source },
+                {
+                  label: "Created By",
+                  value: viewLead.created_by_name || viewLead.created_by,
+                },
+                {
+                  label: "Assigned To",
+                  value: viewLead.assigned_to_name || viewLead.assigned_to,
+                },
+                { label: "Date", value: viewLead.date },
+              ].map((item) => (
+                <Grid item xs={12} sm={6} md={3} key={item.label}>
+                  <DetailCard label={item.label} value={item.value} />
+                </Grid>
+              ))}
+            </Grid>
+
+            <Divider sx={{ my: 2 }} />
+            <SectionHeading title="Business Details" />
+            <Grid container spacing={2} mb={3}>
+              {[
+                { label: "Brand Dealing", value: viewLead.brand_dealing },
+                { label: "Outlet Age", value: viewLead.outlet_age },
+                {
+                  label: "Past Distributor",
+                  value: viewLead.past_distributor_name,
+                },
+                { label: "Cars Per Month", value: viewLead.cars_per_month },
+                {
+                  label: "Dealer Landing Cost",
+                  value: viewLead.dealer_landing_cost
+                    ? `₹${viewLead.dealer_landing_cost}`
+                    : null,
+                },
+                { label: "Location / Area", value: viewLead.location },
+                { label: "Price Feedback", value: viewLead.price_feedback },
+                { label: "Quality Feedback", value: viewLead.quality_feedback },
+                { label: "Demo", value: viewLead.demo ? "Yes" : "No" },
+                {
+                  label: "PPF Installers",
+                  value: viewLead.ppf_installers ? "Yes" : "No",
+                },
               ].map((item) => (
                 <Grid item xs={12} sm={6} md={3} key={item.label}>
                   <DetailCard label={item.label} value={item.value} />
