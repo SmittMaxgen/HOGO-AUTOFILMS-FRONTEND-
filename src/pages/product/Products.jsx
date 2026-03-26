@@ -2908,41 +2908,46 @@ const Product = () => {
                   }}
                 />
               </Grid> */}
-              <Grid item xs={12} sm={4}>
-                <Box
-                  sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 0.5,
+                  width: "100%",
+                }}
+              >
+                <label
+                  style={{ fontSize: "14px", color: "#555", fontWeight: 500 }}
                 >
-                  <label
-                    style={{ fontSize: "14px", color: "#555", fontWeight: 500 }}
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    name="description"
-                    value={form.description}
-                    onChange={handleChange}
-                    rows={4}
-                    style={{
-                      width: "100%",
-                      padding: "10px 12px",
-                      fontSize: "14px",
-                      borderRadius: "4px",
-                      border: errors.description
-                        ? "1px solid #D20000"
-                        : "1px solid #ccc",
-                      outline: "none",
-                      resize: "vertical",
-                      fontFamily: "inherit",
-                      boxSizing: "border-box",
-                    }}
-                  />
-                  {errors.description && (
-                    <span style={{ fontSize: "12px", color: "#D20000" }}>
-                      {errors.description}
-                    </span>
-                  )}
-                </Box>
-              </Grid>
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  rows={4}
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    fontSize: "14px",
+                    borderRadius: "4px",
+                    border: errors.description
+                      ? "1px solid #D20000"
+                      : "1px solid #ccc",
+                    outline: "none",
+                    resize: "vertical",
+                    fontFamily: "inherit",
+                    boxSizing: "border-box",
+                  }}
+                />
+                {errors.description && (
+                  <span style={{ fontSize: "12px", color: "#D20000" }}>
+                    {errors.description}
+                  </span>
+                )}
+              </Box>
             </Grid>
           </Box>
 
