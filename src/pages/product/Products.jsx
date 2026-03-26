@@ -2340,6 +2340,8 @@ const Product = () => {
     product_codes: "",
     sku: "",
     mou: "",
+    GST: "",
+    description: "",
     hsn_code: "",
     category_name: "",
     category_id: null,
@@ -2430,6 +2432,8 @@ const Product = () => {
       "sku",
       "hsn_code",
       "mou",
+      "GST",
+      "description",
       "category_id",
       "material_id",
       "colour_id",
@@ -2473,6 +2477,9 @@ const Product = () => {
       "sku",
       "hsn_code",
       "mou",
+      "GST",
+      "description",
+
       "category_id",
       "material_id",
       "colour_id",
@@ -2533,6 +2540,8 @@ const Product = () => {
       product_codes: item.product_codes || "",
       hsn_code: item.hsn_code || "",
       mou: item.mou || "",
+      GST: item.GST || "",
+      description: item.description || "",
       sku: item.sku || "",
       category_id: item.category_id || "",
       material_id: item.material_id || "",
@@ -2583,6 +2592,8 @@ const Product = () => {
       sku: "",
       hsn_code: "",
       mou: "",
+      GST: "",
+      description: "",
       category_name: "",
       category_id: null,
       material_id: null,
@@ -2719,6 +2730,18 @@ const Product = () => {
                   onChange={handleChange}
                   error={!!errors.mou}
                   helperText={errors.mou}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="GST No"
+                  name="GST"
+                  fullWidth
+                  value={form.GST}
+                  onChange={handleChange}
+                  error={!!errors.GST}
+                  helperText={errors.GST}
                   sx={fieldSx}
                 />
               </Grid>
@@ -2865,6 +2888,60 @@ const Product = () => {
                     ),
                   }}
                 />
+              </Grid>
+              {/* <Grid item xs={12} sm={4}>
+                <TextField
+                  label="Description"
+                  name="description"
+                  fullWidth
+                  value={form.description}
+                  onChange={handleChange}
+                  error={!!errors.description}
+                  helperText={errors.description}
+                  sx={fieldSx}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <CurrencyRupeeIcon sx={{ color: "#D20000" }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid> */}
+              <Grid item xs={12} sm={4}>
+                <Box
+                  sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
+                >
+                  <label
+                    style={{ fontSize: "14px", color: "#555", fontWeight: 500 }}
+                  >
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    value={form.description}
+                    onChange={handleChange}
+                    rows={4}
+                    style={{
+                      width: "100%",
+                      padding: "10px 12px",
+                      fontSize: "14px",
+                      borderRadius: "4px",
+                      border: errors.description
+                        ? "1px solid #D20000"
+                        : "1px solid #ccc",
+                      outline: "none",
+                      resize: "vertical",
+                      fontFamily: "inherit",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                  {errors.description && (
+                    <span style={{ fontSize: "12px", color: "#D20000" }}>
+                      {errors.description}
+                    </span>
+                  )}
+                </Box>
               </Grid>
             </Grid>
           </Box>
@@ -3388,9 +3465,14 @@ const Product = () => {
                     { label: "SKU", value: viewItem.sku },
                     { label: "UOM", value: viewItem.mou },
                     { label: "HSN Code", value: viewItem.hsn_code },
+                    { label: "GST No", value: viewItem.GST },
                     { label: "Category", value: viewItem.category_name },
                     { label: "Material", value: viewItem.material_name },
                     { label: "Colour", value: viewItem.colour_name },
+                    {
+                      label: "Description",
+                      value: viewItem.description || "N/A",
+                    },
                   ].map((item) => (
                     <Box
                       key={item.label}
