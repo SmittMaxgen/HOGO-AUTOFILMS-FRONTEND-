@@ -9,6 +9,7 @@ import categoryReducer from "../feature/category/categorySlice";
 import costReducer from "../feature/cost/costSlice";
 import purchaseOrderReducer from "../feature/purchaseOrder/purchaseOrderSlice";
 import shipmentReducer from "../feature/shipments/shipmentSlice";
+import shipmentFormReducer from "../feature/shipment/shipmentFormSlice";
 import shipmentProductReducer from "../feature/shipmentProducts/shipmentProductSlice";
 import inventorySerialReducer from "../feature/inventorySerials/inventorySerialsSlice";
 import forgotPasswordReducer from "../feature/profileSettings/profileSettingsSlice";
@@ -42,6 +43,7 @@ export const store = configureStore({
     category: categoryReducer,
     cost: costReducer,
     shipment: shipmentReducer,
+    shipmentForm: shipmentFormReducer,
     shipmentProduct: shipmentProductReducer,
     inventorySerial: inventorySerialReducer,
     forgotPassword: forgotPasswordReducer,

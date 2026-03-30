@@ -1569,6 +1569,24 @@ import CommonSearchField from "../../components/commonComponents/CommonSearchFie
 import DownloadIcon from "@mui/icons-material/Download";
 import SearchIcon from "@mui/icons-material/Search";
 
+import {
+  createShipment,
+  getShipments,
+  updateShipment,
+} from "../../feature/shipment/shipmentFormThunks";
+import {
+  selectCreateShipmentFormLoading,
+  selectUpdateShipmentFormLoading,
+} from "../../feature/shipment/shipmentFormSelector";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import ReceiptIcon from "@mui/icons-material/Receipt";
+
 // ─── Shared style tokens ────────────────────────────────────────────────────
 const CARD_RADIUS = 3;
 const SHADOW = "0 2px 12px 0 rgba(30,41,59,.08)";
@@ -1641,6 +1659,467 @@ const StatusBadge = ({ status }) => {
 };
 
 // ────────────────────────────────────────────────────────────────────────────
+const ShipmentFormDialog = ({
+  open,
+  onClose,
+  poId,
+  dispatch,
+  createLoading,
+  updateLoading,
+}) => {
+  const SHIPMENT_STATUS_OPTIONS = [
+    { value: "created", label: "Created" },
+    { value: "picked", label: "Picked By Courier" },
+    { value: "in_transit", label: "In Transit" },
+    { value: "out_for_delivery", label: "Out For Delivery" },
+    { value: "delivered", label: "Delivered" },
+    { value: "failed", label: "Failed" },
+  ];
+
+  const [shipmentForm, setShipmentForm] = useState({
+    tracking_number: "",
+    shipment_status: "created",
+    shipped_at: "",
+    estimated_delivery: "",
+    name: "",
+    contact_number: "",
+    email: "",
+    service_type: "",
+    image: null,
+  });
+  const [existingShipmentId, setExistingShipmentId] = useState(null); // if set → edit mode
+  const [fetchingShipment, setFetchingShipment] = useState(false);
+  const [existingImageUrl, setExistingImageUrl] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  const BASE_URL = "http://hogofilm.pythonanywhere.com";
+
+  const emptyForm = {
+    tracking_number: "",
+    shipment_status: "created",
+    shipped_at: "",
+    estimated_delivery: "",
+    name: "",
+    contact_number: "",
+    email: "",
+    service_type: "",
+    image: null,
+  };
+
+  // Fetch existing shipment when dialog opens
+  useEffect(() => {
+    if (!open || !poId) return;
+
+    const fetchExisting = async () => {
+      setFetchingShipment(true);
+      setExistingShipmentId(null);
+      setExistingImageUrl(null);
+      setShipmentForm(emptyForm);
+      try {
+        const res = await fetch(
+          `https://hogofilm.pythonanywhere.com/shipment/?order_id=${poId}`,
+        );
+        const data = await res.json();
+        // API returns list — grab first match
+        const shipment = Array.isArray(data)
+          ? data.find((s) => s.order_id === poId) || data[0]
+          : data?.data?.find((s) => s.order_id === poId) || data?.data?.[0];
+
+        if (shipment) {
+          setExistingShipmentId(shipment.id);
+          setExistingImageUrl(shipment.image || null);
+          setShipmentForm({
+            tracking_number: shipment.tracking_number || "",
+            shipment_status: shipment.shipment_status || "created",
+            shipped_at: shipment.shipped_at
+              ? shipment.shipped_at.slice(0, 16) // format for datetime-local
+              : "",
+            estimated_delivery: shipment.estimated_delivery || "",
+            name: shipment.name || "",
+            contact_number: shipment.contact_number || "",
+            email: shipment.email || "",
+            service_type: shipment.service_type || "",
+            image: null, // file input always starts empty
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch shipment", err);
+      } finally {
+        setFetchingShipment(false);
+      }
+    };
+
+    fetchExisting();
+  }, [open, poId]);
+
+  const handleChange = (field, value) => {
+    setShipmentForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const buildFormData = () => {
+    const formData = new FormData();
+    formData.append("order_id", poId);
+    formData.append("tracking_number", shipmentForm.tracking_number);
+    formData.append("shipment_status", shipmentForm.shipment_status);
+    if (shipmentForm.shipped_at)
+      formData.append("shipped_at", shipmentForm.shipped_at);
+    if (shipmentForm.estimated_delivery)
+      formData.append("estimated_delivery", shipmentForm.estimated_delivery);
+    formData.append("name", shipmentForm.name);
+    formData.append("contact_number", shipmentForm.contact_number);
+    formData.append("email", shipmentForm.email);
+    formData.append("service_type", shipmentForm.service_type);
+    if (shipmentForm.image) formData.append("image", shipmentForm.image);
+    return formData;
+  };
+
+  // const handleSubmit = () => {
+  //   const formData = buildFormData();
+  //   const isEdit = !!existingShipmentId;
+
+  //   const action = isEdit
+  //     ? dispatch(updateShipment({ id: existingShipmentId, data: formData }))
+  //     : dispatch(createShipment(formData));
+
+  //   action
+  //     .unwrap()
+  //     .then(() => {
+  //       CommonToast(
+  //         isEdit
+  //           ? "Shipment updated successfully"
+  //           : "Shipment created successfully",
+  //         "success",
+  //       );
+  //       onClose();
+  //     })
+  //     .catch(() =>
+  //       CommonToast(
+  //         isEdit ? "Failed to update shipment" : "Failed to create shipment",
+  //         "error",
+  //       ),
+  //     );
+  // };
+
+  const handleSubmit = () => {
+    // ── Validation ──
+    const newErrors = {};
+    if (
+      shipmentForm.email &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(shipmentForm.email)
+    ) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
+
+    const formData = buildFormData();
+    const isEdit = !!existingShipmentId;
+
+    const action = isEdit
+      ? dispatch(updateShipment({ id: existingShipmentId, data: formData }))
+      : dispatch(createShipment(formData));
+
+    action
+      .unwrap()
+      .then(() => {
+        CommonToast(
+          isEdit
+            ? "Shipment updated successfully"
+            : "Shipment created successfully",
+          "success",
+        );
+        onClose();
+      })
+      .catch(() =>
+        CommonToast(
+          isEdit ? "Failed to update shipment" : "Failed to create shipment",
+          "error",
+        ),
+      );
+  };
+  const isEdit = !!existingShipmentId;
+  const isLoading = isEdit ? updateLoading : createLoading;
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{ sx: { borderRadius: 3, overflow: "hidden" } }}
+    >
+      {/* Header */}
+      <Box
+        sx={{
+          background: HEADER_BG,
+          px: 3,
+          py: 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box display="flex" alignItems="center" gap={1}>
+          <LocalShippingIcon sx={{ color: "white", fontSize: 22 }} />
+          <Box>
+            <Typography variant="subtitle1" fontWeight={700} color="white">
+              {isEdit ? "Edit Shipment" : "Create Shipment"}
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: "rgba(255,255,255,0.7)" }}
+            >
+              PO ID: {poId}
+            </Typography>
+          </Box>
+        </Box>
+        {isEdit && (
+          <Box
+            sx={{
+              bgcolor: "rgba(255,255,255,0.2)",
+              borderRadius: "999px",
+              px: 1.5,
+              py: 0.4,
+            }}
+          >
+            <Typography variant="caption" fontWeight={700} color="white">
+              EDIT MODE
+            </Typography>
+          </Box>
+        )}
+      </Box>
+
+      <DialogContent sx={{ pt: 3 }}>
+        {fetchingShipment ? (
+          <Stack alignItems="center" py={5} spacing={1.5}>
+            <CircularProgress size={28} thickness={4} />
+            <Typography variant="body2" color="text.secondary">
+              Loading shipment data…
+            </Typography>
+          </Stack>
+        ) : (
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Tracking Number"
+                value={shipmentForm.tracking_number}
+                onChange={(e) =>
+                  handleChange("tracking_number", e.target.value)
+                }
+                fullWidth
+                size="small"
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Shipment Status"
+                value={shipmentForm.shipment_status}
+                onChange={(e) =>
+                  handleChange("shipment_status", e.target.value)
+                }
+                select
+                fullWidth
+                size="small"
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+              >
+                {SHIPMENT_STATUS_OPTIONS.map((s) => (
+                  <MenuItem key={s.value} value={s.value}>
+                    {s.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Shipped At"
+                type="datetime-local"
+                value={shipmentForm.shipped_at}
+                onChange={(e) => handleChange("shipped_at", e.target.value)}
+                fullWidth
+                size="small"
+                InputLabelProps={{ shrink: true }}
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Estimated Delivery"
+                type="date"
+                value={shipmentForm.estimated_delivery}
+                onChange={(e) =>
+                  handleChange("estimated_delivery", e.target.value)
+                }
+                fullWidth
+                size="small"
+                InputLabelProps={{ shrink: true }}
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Courier Name"
+                value={shipmentForm.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                fullWidth
+                size="small"
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Contact Number"
+                value={shipmentForm.contact_number}
+                onChange={(e) => handleChange("contact_number", e.target.value)}
+                fullWidth
+                size="small"
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Email"
+                value={shipmentForm.email}
+                onChange={(e) => {
+                  handleChange("email", e.target.value);
+                  if (errors.email)
+                    setErrors((prev) => ({ ...prev, email: "" }));
+                }}
+                fullWidth
+                size="small"
+                type="email"
+                error={!!errors.email}
+                helperText={errors.email}
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Service Type"
+                value={shipmentForm.service_type}
+                onChange={(e) => handleChange("service_type", e.target.value)}
+                fullWidth
+                size="small"
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+              />
+            </Grid>
+
+            {/* Image */}
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  border: "1.5px dashed #cbd5e1",
+                  borderRadius: 2,
+                  p: 2,
+                  bgcolor: "#f8fafc",
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  fontWeight={700}
+                  color="#64748b"
+                  letterSpacing="0.06em"
+                  display="block"
+                  mb={1}
+                >
+                  COURIER IMAGE
+                </Typography>
+
+                {/* Show existing image in edit mode */}
+                {isEdit && existingImageUrl && !shipmentForm.image && (
+                  <Box mb={1.5}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      mb={0.5}
+                    >
+                      Current image:
+                    </Typography>
+                    <Box
+                      component="img"
+                      src={`${BASE_URL}${existingImageUrl}`}
+                      alt="courier"
+                      sx={{
+                        width: 80,
+                        height: 80,
+                        objectFit: "cover",
+                        borderRadius: 1.5,
+                        border: "2px solid #e2e8f0",
+                      }}
+                    />
+                  </Box>
+                )}
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleChange("image", e.target.files[0])}
+                  style={{ fontSize: "0.85rem" }}
+                />
+                {shipmentForm.image && (
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    mt={0.5}
+                    display="block"
+                  >
+                    New file: {shipmentForm.image.name}
+                  </Typography>
+                )}
+                {isEdit && (
+                  <Typography
+                    variant="caption"
+                    color="#94a3b8"
+                    mt={0.5}
+                    display="block"
+                  >
+                    Leave empty to keep current image
+                  </Typography>
+                )}
+              </Box>
+            </Grid>
+          </Grid>
+        )}
+      </DialogContent>
+
+      <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          disabled={isLoading || fetchingShipment}
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            fontWeight: 700,
+            background: HEADER_BG,
+          }}
+        >
+          {isLoading ? (
+            <Stack direction="row" spacing={1} alignItems="center">
+              <CircularProgress size={14} sx={{ color: "white" }} />
+              <span>{isEdit ? "Updating…" : "Creating…"}</span>
+            </Stack>
+          ) : isEdit ? (
+            "Update Shipment"
+          ) : (
+            "Create Shipment"
+          )}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 const PaymentsPanel = ({
   poPayments,
@@ -2013,6 +2492,34 @@ const PurchaseOrder = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedDistributor, setSelectedDistributor] = useState(null);
 
+  // Shipment
+  const shipmentCreateLoading = useSelector(selectCreateShipmentFormLoading);
+  const shipmentUpdateLoading = useSelector(selectUpdateShipmentFormLoading); // add this
+  const [shipmentDialogOpen, setShipmentDialogOpen] = useState(false);
+  const [shipmentPOId, setShipmentPOId] = useState(null);
+
+  const handleOpenShipmentForm = (po) => {
+    setShipmentPOId(po.id);
+    setShipmentDialogOpen(true);
+  };
+
+  // Invoice PDF download
+  const handleDownloadInvoice = async (poId) => {
+    try {
+      const response = await fetch(
+        `https://hogofilm.pythonanywhere.com/purchase-orders/${poId}/invoice-pdf/`,
+      );
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Invoice-PO-${poId}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      CommonToast("Failed to download invoice", "error");
+    }
+  };
   const [errors, setErrors] = useState({});
 
   const hasStockError = form.product_items.some(
@@ -3720,6 +4227,8 @@ const PurchaseOrder = () => {
                   "Actions",
                   "Picked PDF",
                   "Packed PDF",
+                  "Shipment",
+                  "Invoice",
                 ].map((h) => (
                   <TableCell
                     key={h}
@@ -3741,7 +4250,7 @@ const PurchaseOrder = () => {
             <TableBody>
               {loading && (
                 <TableRow>
-                  <TableCell colSpan={10} align="center" sx={{ py: 6 }}>
+                  <TableCell colSpan={13} align="center" sx={{ py: 6 }}>
                     <Stack alignItems="center" spacing={1.5}>
                       <CircularProgress size={32} thickness={4} />
                       <Typography variant="body2" color="text.secondary">
@@ -3986,6 +4495,44 @@ const PurchaseOrder = () => {
                           </Tooltip>
                         )}
                       </TableCell>
+
+                      {/* Shipment Form — visible when PACKED */}
+                      <TableCell align="center">
+                        {po?.status === "PACKED" && (
+                          <Tooltip title="Create Shipment">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleOpenShipmentForm(po)}
+                              sx={{
+                                bgcolor: "#f0fdf4",
+                                color: "#16a34a",
+                                "&:hover": { bgcolor: "#dcfce7" },
+                              }}
+                            >
+                              <LocalShippingIcon sx={{ fontSize: 16 }} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </TableCell>
+
+                      {/* Invoice PDF — visible when DELIVERED */}
+                      <TableCell align="center">
+                        {po?.status === "DELIVERED" && (
+                          <Tooltip title="Download Invoice">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleDownloadInvoice(po.id)}
+                              sx={{
+                                bgcolor: "#fdf4ff",
+                                color: "#9333ea",
+                                "&:hover": { bgcolor: "#f3e8ff" },
+                              }}
+                            >
+                              <ReceiptIcon sx={{ fontSize: 16 }} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -4031,6 +4578,15 @@ const PurchaseOrder = () => {
             size="small"
           />
         </Box>
+        {/* Shipment Form Dialog */}
+        <ShipmentFormDialog
+          open={shipmentDialogOpen}
+          onClose={() => setShipmentDialogOpen(false)}
+          poId={shipmentPOId}
+          dispatch={dispatch}
+          createLoading={shipmentCreateLoading}
+          updateLoading={shipmentUpdateLoading}
+        />
       </Paper>
     </Box>
   );
