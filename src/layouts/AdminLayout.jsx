@@ -1695,7 +1695,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           <BusinessIcon />
           {!collapsed && "Leave Balance"}
         </Box>
-        
+
         <Box
           className={`${classes.sidebarItem} ${
             isActive("/employee-attendance") ? classes.activeItem : ""
@@ -1704,6 +1704,16 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <BusinessIcon />
           {!collapsed && "Employee Attendance"}
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/target") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/target")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Targets"}
         </Box>
 
         {/* <Box

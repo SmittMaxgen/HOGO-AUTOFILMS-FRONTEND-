@@ -31,6 +31,8 @@ import dailyPlanReducer from "../feature/dailyPlans/dailyPlanSlice";
 import travelPlanReducer from "../feature/tavelPlans/travelPlanSlice";
 import leaveBalanceReducer from "../feature/leaveBalance/leaveBalanceSlice";
 import employeeAttendanceReducer from "../feature/employeeAttendance/employeeAttendanceSlice";
+import targetReducers from "../feature/target/targetSlice";
+import regionReducers from "../feature/region/regionSlice";
 
 export const store = configureStore({
   reducer: {
@@ -67,5 +69,7 @@ export const store = configureStore({
     travelPlan: travelPlanReducer,
     leaveBalance: leaveBalanceReducer,
     employeeAttendance: employeeAttendanceReducer,
+    target: targetReducers,
+    region: regionReducers,
   },
 });

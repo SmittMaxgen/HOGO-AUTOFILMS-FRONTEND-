@@ -22,6 +22,7 @@ import Location from "../pages/location/Location";
 import Plans from "../pages/plan/Plans";
 import LeaveBalance from "../pages/Leavebalance/Leavebalance";
 import EmployeeAttendance from "../pages/EmployeeAttendance/EmployeeAttendance";
+import Target from "../pages/target/Target";
 import EditProfile from "../pages/auth/EditProfile";
 import AccountSettings from "../pages/auth/AccountSettings";
 import Distributors from "../pages/distributor/Distributor";
@@ -67,6 +68,7 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/plans" element={<Plans />} />
           <Route path="/leave-balance" element={<LeaveBalance />} />
           <Route path="/employee-attendance" element={<EmployeeAttendance />} />
+          <Route path="/target" element={<Target />} />
         </Route>
       </Route>
     </Routes>
