@@ -1492,7 +1492,7 @@
 // };
 
 // export default PurchaseOrder;
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -1676,24 +1676,6 @@ const ShipmentFormDialog = ({
     { value: "failed", label: "Failed" },
   ];
 
-  const [shipmentForm, setShipmentForm] = useState({
-    tracking_number: "",
-    shipment_status: "created",
-    shipped_at: "",
-    estimated_delivery: "",
-    name: "",
-    contact_number: "",
-    email: "",
-    service_type: "",
-    image: null,
-  });
-  const [existingShipmentId, setExistingShipmentId] = useState(null); // if set → edit mode
-  const [fetchingShipment, setFetchingShipment] = useState(false);
-  const [existingImageUrl, setExistingImageUrl] = useState(null);
-  const [errors, setErrors] = useState({});
-
-  const BASE_URL = "http://hogofilm.pythonanywhere.com";
-
   const emptyForm = {
     tracking_number: "",
     shipment_status: "created",
@@ -1706,21 +1688,30 @@ const ShipmentFormDialog = ({
     image: null,
   };
 
-  // Fetch existing shipment when dialog opens
+  const [shipmentForm, setShipmentForm] = useState(emptyForm);
+  const [existingShipmentId, setExistingShipmentId] = useState(null);
+  const [fetchingShipment, setFetchingShipment] = useState(false);
+  const [existingImageUrl, setExistingImageUrl] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [errors, setErrors] = useState({});
+  const fileInputRef = useRef(null);
+
+  const BASE_URL = "http://hogofilm.pythonanywhere.com";
+
   useEffect(() => {
     if (!open || !poId) return;
-
     const fetchExisting = async () => {
       setFetchingShipment(true);
       setExistingShipmentId(null);
       setExistingImageUrl(null);
+      setImagePreview(null);
+      setErrors({});
       setShipmentForm(emptyForm);
       try {
         const res = await fetch(
-          `https://hogofilm.pythonanywhere.com/shipment/?order_id=${poId}`,
+          `https://hogofilm.pythonanywhere.com/shipment/?order_id=${poId}`
         );
         const data = await res.json();
-        // API returns list — grab first match
         const shipment = Array.isArray(data)
           ? data.find((s) => s.order_id === poId) || data[0]
           : data?.data?.find((s) => s.order_id === poId) || data?.data?.[0];
@@ -1731,15 +1722,13 @@ const ShipmentFormDialog = ({
           setShipmentForm({
             tracking_number: shipment.tracking_number || "",
             shipment_status: shipment.shipment_status || "created",
-            shipped_at: shipment.shipped_at
-              ? shipment.shipped_at.slice(0, 16) // format for datetime-local
-              : "",
+            shipped_at: shipment.shipped_at ? shipment.shipped_at.slice(0, 16) : "",
             estimated_delivery: shipment.estimated_delivery || "",
             name: shipment.name || "",
             contact_number: shipment.contact_number || "",
             email: shipment.email || "",
             service_type: shipment.service_type || "",
-            image: null, // file input always starts empty
+            image: null,
           });
         }
       } catch (err) {
@@ -1748,12 +1737,28 @@ const ShipmentFormDialog = ({
         setFetchingShipment(false);
       }
     };
-
     fetchExisting();
   }, [open, poId]);
 
+  // cleanup preview URL on unmount
+  useEffect(() => {
+    return () => { if (imagePreview) URL.revokeObjectURL(imagePreview); };
+  }, [imagePreview]);
+
   const handleChange = (field, value) => {
     setShipmentForm((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const handleImageChange = (file) => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+      handleChange("image", file);
+    } else {
+      setImagePreview(null);
+      handleChange("image", null);
+    }
   };
 
   const buildFormData = () => {
@@ -1761,10 +1766,8 @@ const ShipmentFormDialog = ({
     formData.append("order_id", poId);
     formData.append("tracking_number", shipmentForm.tracking_number);
     formData.append("shipment_status", shipmentForm.shipment_status);
-    if (shipmentForm.shipped_at)
-      formData.append("shipped_at", shipmentForm.shipped_at);
-    if (shipmentForm.estimated_delivery)
-      formData.append("estimated_delivery", shipmentForm.estimated_delivery);
+    if (shipmentForm.shipped_at) formData.append("shipped_at", shipmentForm.shipped_at);
+    if (shipmentForm.estimated_delivery) formData.append("estimated_delivery", shipmentForm.estimated_delivery);
     formData.append("name", shipmentForm.name);
     formData.append("contact_number", shipmentForm.contact_number);
     formData.append("email", shipmentForm.email);
@@ -1773,35 +1776,7 @@ const ShipmentFormDialog = ({
     return formData;
   };
 
-  // const handleSubmit = () => {
-  //   const formData = buildFormData();
-  //   const isEdit = !!existingShipmentId;
-
-  //   const action = isEdit
-  //     ? dispatch(updateShipment({ id: existingShipmentId, data: formData }))
-  //     : dispatch(createShipment(formData));
-
-  //   action
-  //     .unwrap()
-  //     .then(() => {
-  //       CommonToast(
-  //         isEdit
-  //           ? "Shipment updated successfully"
-  //           : "Shipment created successfully",
-  //         "success",
-  //       );
-  //       onClose();
-  //     })
-  //     .catch(() =>
-  //       CommonToast(
-  //         isEdit ? "Failed to update shipment" : "Failed to create shipment",
-  //         "error",
-  //       ),
-  //     );
-  // };
-
   const handleSubmit = () => {
-    // ── Validation ──
     const newErrors = {};
     if (
       shipmentForm.email &&
@@ -1817,7 +1792,6 @@ const ShipmentFormDialog = ({
 
     const formData = buildFormData();
     const isEdit = !!existingShipmentId;
-
     const action = isEdit
       ? dispatch(updateShipment({ id: existingShipmentId, data: formData }))
       : dispatch(createShipment(formData));
@@ -1826,271 +1800,421 @@ const ShipmentFormDialog = ({
       .unwrap()
       .then(() => {
         CommonToast(
-          isEdit
-            ? "Shipment updated successfully"
-            : "Shipment created successfully",
-          "success",
+          isEdit ? "Shipment updated successfully" : "Shipment created successfully",
+          "success"
         );
         onClose();
       })
       .catch(() =>
         CommonToast(
           isEdit ? "Failed to update shipment" : "Failed to create shipment",
-          "error",
-        ),
+          "error"
+        )
       );
   };
+
   const isEdit = !!existingShipmentId;
   const isLoading = isEdit ? updateLoading : createLoading;
+
+  // active preview = new file preview OR existing URL
+  const activeImageSrc = imagePreview
+    ? imagePreview
+    : existingImageUrl
+    ? `${BASE_URL}${existingImageUrl}`
+    : null;
+
+  const inputSx = {
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "10px",
+      height: 44,
+      fontSize: "0.875rem",
+      bgcolor: "#fff",
+      "& fieldset": { borderColor: "#e2e8f0" },
+      "&:hover fieldset": { borderColor: "#94a3b8" },
+      "&.Mui-focused fieldset": { borderColor: "#D20000" },
+    },
+    "& .MuiInputLabel-root": { fontSize: "0.875rem" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#D20000" },
+  };
+
+  const sectionLabel = (text) => (
+    <Typography
+      variant="caption"
+      fontWeight={700}
+      color="#94a3b8"
+      letterSpacing="0.08em"
+      display="block"
+      mb={1.5}
+      sx={{ textTransform: "uppercase", fontSize: "0.68rem" }}
+    >
+      {text}
+    </Typography>
+  );
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
-      PaperProps={{ sx: { borderRadius: 3, overflow: "hidden" } }}
+      PaperProps={{
+        sx: {
+          borderRadius: "16px",
+          overflow: "hidden",
+          boxShadow: "0 25px 60px rgba(0,0,0,0.18)",
+        },
+      }}
     >
-      {/* Header */}
+      {/* ── Header ── */}
       <Box
         sx={{
           background: HEADER_BG,
-          px: 3,
-          py: 2,
+          px: 3.5,
+          py: 2.5,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        <Box display="flex" alignItems="center" gap={1}>
-          <LocalShippingIcon sx={{ color: "white", fontSize: 22 }} />
+        <Box display="flex" alignItems="center" gap={1.5}>
+          <Box
+            sx={{
+              width: 38,
+              height: 38,
+              borderRadius: "10px",
+              bgcolor: "rgba(255,255,255,0.15)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <LocalShippingIcon sx={{ color: "white", fontSize: 20 }} />
+          </Box>
           <Box>
-            <Typography variant="subtitle1" fontWeight={700} color="white">
+            <Typography variant="subtitle1" fontWeight={700} color="white" lineHeight={1.2}>
               {isEdit ? "Edit Shipment" : "Create Shipment"}
             </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: "rgba(255,255,255,0.7)" }}
-            >
-              PO ID: {poId}
+            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.65)" }}>
+              Purchase Order ID: {poId}
             </Typography>
           </Box>
         </Box>
         {isEdit && (
           <Box
             sx={{
-              bgcolor: "rgba(255,255,255,0.2)",
+              bgcolor: "rgba(255,255,255,0.18)",
+              border: "1px solid rgba(255,255,255,0.3)",
               borderRadius: "999px",
-              px: 1.5,
-              py: 0.4,
+              px: 2,
+              py: 0.5,
             }}
           >
-            <Typography variant="caption" fontWeight={700} color="white">
+            <Typography variant="caption" fontWeight={700} color="white" letterSpacing="0.06em">
               EDIT MODE
             </Typography>
           </Box>
         )}
       </Box>
 
-      <DialogContent sx={{ pt: 3 }}>
+      <DialogContent sx={{ p: 0, bgcolor: "#f8fafc" }}>
         {fetchingShipment ? (
-          <Stack alignItems="center" py={5} spacing={1.5}>
-            <CircularProgress size={28} thickness={4} />
+          <Stack alignItems="center" py={8} spacing={2}>
+            <CircularProgress size={32} thickness={3.5} sx={{ color: "#D20000" }} />
             <Typography variant="body2" color="text.secondary">
               Loading shipment data…
             </Typography>
           </Stack>
         ) : (
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Tracking Number"
-                value={shipmentForm.tracking_number}
-                onChange={(e) =>
-                  handleChange("tracking_number", e.target.value)
-                }
-                fullWidth
-                size="small"
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Shipment Status"
-                value={shipmentForm.shipment_status}
-                onChange={(e) =>
-                  handleChange("shipment_status", e.target.value)
-                }
-                select
-                fullWidth
-                size="small"
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-              >
-                {SHIPMENT_STATUS_OPTIONS.map((s) => (
-                  <MenuItem key={s.value} value={s.value}>
-                    {s.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Shipped At"
-                type="datetime-local"
-                value={shipmentForm.shipped_at}
-                onChange={(e) => handleChange("shipped_at", e.target.value)}
-                fullWidth
-                size="small"
-                InputLabelProps={{ shrink: true }}
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Estimated Delivery"
-                type="date"
-                value={shipmentForm.estimated_delivery}
-                onChange={(e) =>
-                  handleChange("estimated_delivery", e.target.value)
-                }
-                fullWidth
-                size="small"
-                InputLabelProps={{ shrink: true }}
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Courier Name"
-                value={shipmentForm.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-                fullWidth
-                size="small"
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Contact Number"
-                value={shipmentForm.contact_number}
-                onChange={(e) => handleChange("contact_number", e.target.value)}
-                fullWidth
-                size="small"
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Email"
-                value={shipmentForm.email}
-                onChange={(e) => {
-                  handleChange("email", e.target.value);
-                  if (errors.email)
-                    setErrors((prev) => ({ ...prev, email: "" }));
-                }}
-                fullWidth
-                size="small"
-                type="email"
-                error={!!errors.email}
-                helperText={errors.email}
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Service Type"
-                value={shipmentForm.service_type}
-                onChange={(e) => handleChange("service_type", e.target.value)}
-                fullWidth
-                size="small"
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-              />
-            </Grid>
+          <Box sx={{ display: "flex", gap: 0, minHeight: 520 }}>
 
-            {/* Image */}
-            <Grid item xs={12}>
+            {/* ── LEFT: Image Panel ── */}
+            <Box
+              sx={{
+                width: 220,
+                minWidth: 220,
+                bgcolor: "#fff",
+                borderRight: "1px solid #e2e8f0",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                p: 3,
+                gap: 2,
+              }}
+            >
+              {sectionLabel("Courier Image")}
+
+              {/* Image preview box */}
               <Box
+                onClick={() => fileInputRef.current?.click()}
                 sx={{
-                  border: "1.5px dashed #cbd5e1",
-                  borderRadius: 2,
-                  p: 2,
+                  width: 156,
+                  height: 156,
+                  borderRadius: "14px",
+                  border: `2px dashed ${activeImageSrc ? "#D20000" : "#cbd5e1"}`,
+                  overflow: "hidden",
+                  cursor: "pointer",
                   bgcolor: "#f8fafc",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.2s",
+                  "&:hover": {
+                    borderColor: "#D20000",
+                    bgcolor: "#fff5f5",
+                  },
+                  position: "relative",
                 }}
               >
-                <Typography
-                  variant="caption"
-                  fontWeight={700}
-                  color="#64748b"
-                  letterSpacing="0.06em"
-                  display="block"
-                  mb={1}
-                >
-                  COURIER IMAGE
-                </Typography>
-
-                {/* Show existing image in edit mode */}
-                {isEdit && existingImageUrl && !shipmentForm.image && (
-                  <Box mb={1.5}>
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      display="block"
-                      mb={0.5}
-                    >
-                      Current image:
-                    </Typography>
+                {activeImageSrc ? (
+                  <>
                     <Box
                       component="img"
-                      src={`${BASE_URL}${existingImageUrl}`}
+                      src={activeImageSrc}
                       alt="courier"
-                      sx={{
-                        width: 80,
-                        height: 80,
-                        objectFit: "cover",
-                        borderRadius: 1.5,
-                        border: "2px solid #e2e8f0",
-                      }}
+                      sx={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />
-                  </Box>
+                    {/* overlay on hover */}
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        inset: 0,
+                        bgcolor: "rgba(210,0,0,0.55)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        opacity: 0,
+                        transition: "opacity 0.2s",
+                        "&:hover": { opacity: 1 },
+                      }}
+                    >
+                      <Typography variant="caption" fontWeight={700} color="white">
+                        Click to change
+                      </Typography>
+                    </Box>
+                  </>
+                ) : (
+                  <>
+                    <LocalShippingIcon sx={{ fontSize: 36, color: "#cbd5e1", mb: 1 }} />
+                    <Typography variant="caption" color="#94a3b8" textAlign="center" px={1}>
+                      Click to upload image
+                    </Typography>
+                  </>
                 )}
+              </Box>
 
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleChange("image", e.target.files[0])}
-                  style={{ fontSize: "0.85rem" }}
-                />
-                {shipmentForm.image && (
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={(e) => handleImageChange(e.target.files[0] || null)}
+              />
+
+              {/* File info */}
+              {shipmentForm.image ? (
+                <Box textAlign="center">
+                  <Typography variant="caption" color="#10b981" fontWeight={600} display="block">
+                    ✓ New image selected
+                  </Typography>
                   <Typography
                     variant="caption"
                     color="text.secondary"
-                    mt={0.5}
-                    display="block"
+                    sx={{
+                      display: "block",
+                      maxWidth: 160,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
                   >
-                    New file: {shipmentForm.image.name}
+                    {shipmentForm.image.name}
                   </Typography>
-                )}
-                {isEdit && (
-                  <Typography
-                    variant="caption"
-                    color="#94a3b8"
-                    mt={0.5}
-                    display="block"
+                </Box>
+              ) : isEdit && existingImageUrl ? (
+                <Typography variant="caption" color="#94a3b8" textAlign="center">
+                  Showing current image.
+                  <br />
+                  Click to replace.
+                </Typography>
+              ) : null}
+
+              {/* Remove button */}
+              {activeImageSrc && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="error"
+                  onClick={() => {
+                    handleImageChange(null);
+                    setExistingImageUrl(null);
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  }}
+                  sx={{
+                    borderRadius: "8px",
+                    textTransform: "none",
+                    fontSize: "0.75rem",
+                    py: 0.5,
+                    mt: "auto",
+                  }}
+                >
+                  Remove Image
+                </Button>
+              )}
+            </Box>
+
+            {/* ── RIGHT: Form Fields ── */}
+            <Box sx={{ flex: 1, p: 3, overflow: "auto" }}>
+              {/* Row 1: Tracking Info */}
+              {sectionLabel("Tracking Info")}
+              <Grid container spacing={2} mb={2.5}>
+                <Grid item xs={12} sm={8}>
+                  <TextField
+                    label="Tracking Number"
+                    value={shipmentForm.tracking_number}
+                    onChange={(e) => handleChange("tracking_number", e.target.value)}
+                    fullWidth
+                    size="small"
+                    sx={inputSx}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Shipment Status"
+                    value={shipmentForm.shipment_status}
+                    onChange={(e) => handleChange("shipment_status", e.target.value)}
+                    select
+                    fullWidth
+                    size="small"
+                    sx={{
+                      ...inputSx,
+                      "& .MuiOutlinedInput-root": {
+                        ...inputSx["& .MuiOutlinedInput-root"],
+                        height: 44,
+                      },
+                    }}
                   >
-                    Leave empty to keep current image
-                  </Typography>
-                )}
-              </Box>
-            </Grid>
-          </Grid>
+                    {SHIPMENT_STATUS_OPTIONS.map((s) => (
+                      <MenuItem key={s.value} value={s.value} sx={{ fontSize: "0.875rem" }}>
+                        {s.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+              </Grid>
+
+              {/* Row 2: Dates */}
+              {sectionLabel("Schedule")}
+              <Grid container spacing={2} mb={2.5}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Shipped At"
+                    type="datetime-local"
+                    value={shipmentForm.shipped_at}
+                    onChange={(e) => handleChange("shipped_at", e.target.value)}
+                    fullWidth
+                    size="small"
+                    InputLabelProps={{ shrink: true }}
+                    sx={inputSx}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Estimated Delivery"
+                    type="date"
+                    value={shipmentForm.estimated_delivery}
+                    onChange={(e) => handleChange("estimated_delivery", e.target.value)}
+                    fullWidth
+                    size="small"
+                    InputLabelProps={{ shrink: true }}
+                    sx={inputSx}
+                  />
+                </Grid>
+              </Grid>
+
+              {/* Row 3: Courier Details */}
+              {sectionLabel("Courier Details")}
+              <Grid container spacing={2} mb={2.5}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Courier Name"
+                    value={shipmentForm.name}
+                    onChange={(e) => handleChange("name", e.target.value)}
+                    fullWidth
+                    size="small"
+                    sx={inputSx}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Service Type"
+                    value={shipmentForm.service_type}
+                    onChange={(e) => handleChange("service_type", e.target.value)}
+                    fullWidth
+                    size="small"
+                    sx={inputSx}
+                  />
+                </Grid>
+              </Grid>
+
+              {/* Row 4: Contact */}
+              {sectionLabel("Contact")}
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Contact Number"
+                    value={shipmentForm.contact_number}
+                    onChange={(e) => handleChange("contact_number", e.target.value)}
+                    fullWidth
+                    size="small"
+                    sx={inputSx}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Email"
+                    value={shipmentForm.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    fullWidth
+                    size="small"
+                    type="email"
+                    error={!!errors.email}
+                    helperText={errors.email}
+                    sx={inputSx}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          </Box>
         )}
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
+      {/* ── Footer ── */}
+      <Box
+        sx={{
+          px: 3,
+          py: 2,
+          bgcolor: "#fff",
+          borderTop: "1px solid #e2e8f0",
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: 1.5,
+        }}
+      >
         <Button
           onClick={onClose}
           variant="outlined"
-          sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
+          sx={{
+            borderRadius: "10px",
+            textTransform: "none",
+            fontWeight: 600,
+            px: 3,
+            height: 40,
+            borderColor: "#e2e8f0",
+            color: "#64748b",
+            "&:hover": { borderColor: "#94a3b8", bgcolor: "#f8fafc" },
+          }}
         >
           Cancel
         </Button>
@@ -2099,10 +2223,15 @@ const ShipmentFormDialog = ({
           variant="contained"
           disabled={isLoading || fetchingShipment}
           sx={{
-            borderRadius: 2,
+            borderRadius: "10px",
             textTransform: "none",
             fontWeight: 700,
+            px: 3.5,
+            height: 40,
             background: HEADER_BG,
+            boxShadow: "0 4px 14px rgba(210,0,0,0.3)",
+            "&:hover": { boxShadow: "0 6px 20px rgba(210,0,0,0.4)" },
+            "&.Mui-disabled": { opacity: 0.6 },
           }}
         >
           {isLoading ? (
@@ -2116,7 +2245,7 @@ const ShipmentFormDialog = ({
             "Create Shipment"
           )}
         </Button>
-      </DialogActions>
+      </Box>
     </Dialog>
   );
 };
