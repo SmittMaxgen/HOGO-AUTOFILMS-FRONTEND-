@@ -305,10 +305,15 @@ const Target = () => {
   }, [activeTab, entityList.length]); // eslint-disable-line
 
   // ── Fetch targets when entity or year changes ────────────
+  //   useEffect(() => {
+  //     if (!selectedEntityId) return;
+  //     dispatch(cfg.getThunk({ [cfg.entityKey]: selectedEntityId }));
+  //   }, [activeTab, selectedEntityId, year, dispatch]); // eslint-disable-line
   useEffect(() => {
     if (!selectedEntityId) return;
+
     dispatch(cfg.getThunk({ [cfg.entityKey]: selectedEntityId }));
-  }, [activeTab, selectedEntityId, year, dispatch]); // eslint-disable-line
+  }, [selectedEntityId, year, dispatch]);
 
   // ── Grid & totals ────────────────────────────────────────
   const monthGrid = buildMonthGrid(year, targetList);
@@ -392,7 +397,7 @@ const Target = () => {
             {tab.label}
           </button>
         ))}
-      </div>   
+      </div>
 
       {/* ── Table ── */}
       <div style={s.tableCard}>
