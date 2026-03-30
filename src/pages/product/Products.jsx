@@ -2341,6 +2341,7 @@ const Product = () => {
     sku: "",
     mou: "",
     GST: "",
+    product_sequence: "",
     description: "",
     hsn_code: "",
     category_name: "",
@@ -2433,6 +2434,7 @@ const Product = () => {
       "hsn_code",
       "mou",
       "GST",
+      "product_sequence",
       "description",
       "category_id",
       "material_id",
@@ -2478,8 +2480,8 @@ const Product = () => {
       "hsn_code",
       "mou",
       "GST",
+      "product_sequence",
       "description",
-
       "category_id",
       "material_id",
       "colour_id",
@@ -2541,6 +2543,7 @@ const Product = () => {
       hsn_code: item.hsn_code || "",
       mou: item.mou || "",
       GST: item.GST || "",
+      product_sequence: item.product_sequence || "",
       description: item.description || "",
       sku: item.sku || "",
       category_id: item.category_id || "",
@@ -2593,6 +2596,7 @@ const Product = () => {
       hsn_code: "",
       mou: "",
       GST: "",
+      product_sequence: "",
       description: "",
       category_name: "",
       category_id: null,
@@ -2746,7 +2750,20 @@ const Product = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
+                <TextField
+                  label="Product Sequence"
+                  name="product_sequence"
+                  fullWidth
+                  value={form.product_sequence}
+                  onChange={handleChange}
+                  error={!!errors.product_sequence}
+                  helperText={errors.product_sequence}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
                 <Autocomplete
+                  sx={{ width: "200px" }}
                   options={categoryList?.data || []}
                   loading={categoryLoading}
                   getOptionLabel={(o) => o?.name || ""}
@@ -2790,6 +2807,7 @@ const Product = () => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Autocomplete
+                  sx={{ width: "200px" }}
                   options={materialList || []}
                   loading={materialLoading}
                   getOptionLabel={(o) => o.title || ""}
@@ -2831,6 +2849,7 @@ const Product = () => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Autocomplete
+                  sx={{ width: "200px" }}
                   options={colorList || []}
                   loading={colorLoading}
                   getOptionLabel={(o) => o.colour_name || ""}
@@ -2909,10 +2928,11 @@ const Product = () => {
                 />
               </Grid> */}
             </Grid>
-            <Grid item xs={12} sm={4}>
+            {/* <Grid item xs={12} sm={4}>
               <Box
                 sx={{
                   display: "flex",
+                  marginTop: 2,
                   flexDirection: "column",
                   gap: 0.5,
                   width: "100%",
@@ -2940,6 +2960,50 @@ const Product = () => {
                     resize: "vertical",
                     fontFamily: "inherit",
                     boxSizing: "border-box",
+                  }}
+                />
+                {errors.description && (
+                  <span style={{ fontSize: "12px", color: "#D20000" }}>
+                    {errors.description}
+                  </span>
+                )}
+              </Box>
+            </Grid> */}
+            <Grid item xs={12} sm={4}>
+              <Box
+                sx={{
+                  display: "flex",
+                  marginTop: 2,
+                  flexDirection: "column",
+                  gap: 0.5,
+                  width: "100%",
+                  minWidth: 0, // ← prevents grid item overflow
+                }}
+              >
+                <label
+                  style={{ fontSize: "14px", color: "#555", fontWeight: 500 }}
+                >
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  rows={4}
+                  style={{
+                    width: "100%",
+                    maxWidth: "100%", // ← prevents overflow beyond parent
+                    padding: "10px 12px",
+                    fontSize: "14px",
+                    borderRadius: "4px",
+                    border: errors.description
+                      ? "1px solid #D20000"
+                      : "1px solid #ccc",
+                    outline: "none",
+                    resize: "vertical",
+                    fontFamily: "inherit",
+                    boxSizing: "border-box",
+                    overflow: "auto", // ← keeps text inside bounds
                   }}
                 />
                 {errors.description && (
@@ -3471,6 +3535,10 @@ const Product = () => {
                     { label: "UOM", value: viewItem.mou },
                     { label: "HSN Code", value: viewItem.hsn_code },
                     { label: "GST No", value: viewItem.GST },
+                    {
+                      label: "Product Sequence",
+                      value: viewItem.product_sequence,
+                    },
                     { label: "Category", value: viewItem.category_name },
                     { label: "Material", value: viewItem.material_name },
                     { label: "Colour", value: viewItem.colour_name },
