@@ -1709,7 +1709,7 @@ const ShipmentFormDialog = ({
       setShipmentForm(emptyForm);
       try {
         const res = await fetch(
-          `https://hogofilm.pythonanywhere.com/shipment/?order_id=${poId}`
+          `https://hogofilm.pythonanywhere.com/shipment/?order_id=${poId}`,
         );
         const data = await res.json();
         const shipment = Array.isArray(data)
@@ -1722,7 +1722,9 @@ const ShipmentFormDialog = ({
           setShipmentForm({
             tracking_number: shipment.tracking_number || "",
             shipment_status: shipment.shipment_status || "created",
-            shipped_at: shipment.shipped_at ? shipment.shipped_at.slice(0, 16) : "",
+            shipped_at: shipment.shipped_at
+              ? shipment.shipped_at.slice(0, 16)
+              : "",
             estimated_delivery: shipment.estimated_delivery || "",
             name: shipment.name || "",
             contact_number: shipment.contact_number || "",
@@ -1742,7 +1744,9 @@ const ShipmentFormDialog = ({
 
   // cleanup preview URL on unmount
   useEffect(() => {
-    return () => { if (imagePreview) URL.revokeObjectURL(imagePreview); };
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
   }, [imagePreview]);
 
   const handleChange = (field, value) => {
@@ -1766,8 +1770,10 @@ const ShipmentFormDialog = ({
     formData.append("order_id", poId);
     formData.append("tracking_number", shipmentForm.tracking_number);
     formData.append("shipment_status", shipmentForm.shipment_status);
-    if (shipmentForm.shipped_at) formData.append("shipped_at", shipmentForm.shipped_at);
-    if (shipmentForm.estimated_delivery) formData.append("estimated_delivery", shipmentForm.estimated_delivery);
+    if (shipmentForm.shipped_at)
+      formData.append("shipped_at", shipmentForm.shipped_at);
+    if (shipmentForm.estimated_delivery)
+      formData.append("estimated_delivery", shipmentForm.estimated_delivery);
     formData.append("name", shipmentForm.name);
     formData.append("contact_number", shipmentForm.contact_number);
     formData.append("email", shipmentForm.email);
@@ -1800,16 +1806,18 @@ const ShipmentFormDialog = ({
       .unwrap()
       .then(() => {
         CommonToast(
-          isEdit ? "Shipment updated successfully" : "Shipment created successfully",
-          "success"
+          isEdit
+            ? "Shipment updated successfully"
+            : "Shipment created successfully",
+          "success",
         );
         onClose();
       })
       .catch(() =>
         CommonToast(
           isEdit ? "Failed to update shipment" : "Failed to create shipment",
-          "error"
-        )
+          "error",
+        ),
       );
   };
 
@@ -1820,8 +1828,8 @@ const ShipmentFormDialog = ({
   const activeImageSrc = imagePreview
     ? imagePreview
     : existingImageUrl
-    ? `${BASE_URL}${existingImageUrl}`
-    : null;
+      ? `${BASE_URL}${existingImageUrl}`
+      : null;
 
   const inputSx = {
     "& .MuiOutlinedInput-root": {
@@ -1891,10 +1899,18 @@ const ShipmentFormDialog = ({
             <LocalShippingIcon sx={{ color: "white", fontSize: 20 }} />
           </Box>
           <Box>
-            <Typography variant="subtitle1" fontWeight={700} color="white" lineHeight={1.2}>
+            <Typography
+              variant="subtitle1"
+              fontWeight={700}
+              color="white"
+              lineHeight={1.2}
+            >
               {isEdit ? "Edit Shipment" : "Create Shipment"}
             </Typography>
-            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.65)" }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "rgba(255,255,255,0.65)" }}
+            >
               Purchase Order ID: {poId}
             </Typography>
           </Box>
@@ -1909,7 +1925,12 @@ const ShipmentFormDialog = ({
               py: 0.5,
             }}
           >
-            <Typography variant="caption" fontWeight={700} color="white" letterSpacing="0.06em">
+            <Typography
+              variant="caption"
+              fontWeight={700}
+              color="white"
+              letterSpacing="0.06em"
+            >
               EDIT MODE
             </Typography>
           </Box>
@@ -1919,14 +1940,17 @@ const ShipmentFormDialog = ({
       <DialogContent sx={{ p: 0, bgcolor: "#f8fafc" }}>
         {fetchingShipment ? (
           <Stack alignItems="center" py={8} spacing={2}>
-            <CircularProgress size={32} thickness={3.5} sx={{ color: "#D20000" }} />
+            <CircularProgress
+              size={32}
+              thickness={3.5}
+              sx={{ color: "#D20000" }}
+            />
             <Typography variant="body2" color="text.secondary">
               Loading shipment data…
             </Typography>
           </Stack>
         ) : (
           <Box sx={{ display: "flex", gap: 0, minHeight: 520 }}>
-
             {/* ── LEFT: Image Panel ── */}
             <Box
               sx={{
@@ -1989,15 +2013,26 @@ const ShipmentFormDialog = ({
                         "&:hover": { opacity: 1 },
                       }}
                     >
-                      <Typography variant="caption" fontWeight={700} color="white">
+                      <Typography
+                        variant="caption"
+                        fontWeight={700}
+                        color="white"
+                      >
                         Click to change
                       </Typography>
                     </Box>
                   </>
                 ) : (
                   <>
-                    <LocalShippingIcon sx={{ fontSize: 36, color: "#cbd5e1", mb: 1 }} />
-                    <Typography variant="caption" color="#94a3b8" textAlign="center" px={1}>
+                    <LocalShippingIcon
+                      sx={{ fontSize: 36, color: "#cbd5e1", mb: 1 }}
+                    />
+                    <Typography
+                      variant="caption"
+                      color="#94a3b8"
+                      textAlign="center"
+                      px={1}
+                    >
                       Click to upload image
                     </Typography>
                   </>
@@ -2015,7 +2050,12 @@ const ShipmentFormDialog = ({
               {/* File info */}
               {shipmentForm.image ? (
                 <Box textAlign="center">
-                  <Typography variant="caption" color="#10b981" fontWeight={600} display="block">
+                  <Typography
+                    variant="caption"
+                    color="#10b981"
+                    fontWeight={600}
+                    display="block"
+                  >
                     ✓ New image selected
                   </Typography>
                   <Typography
@@ -2033,7 +2073,11 @@ const ShipmentFormDialog = ({
                   </Typography>
                 </Box>
               ) : isEdit && existingImageUrl ? (
-                <Typography variant="caption" color="#94a3b8" textAlign="center">
+                <Typography
+                  variant="caption"
+                  color="#94a3b8"
+                  textAlign="center"
+                >
                   Showing current image.
                   <br />
                   Click to replace.
@@ -2073,7 +2117,9 @@ const ShipmentFormDialog = ({
                   <TextField
                     label="Tracking Number"
                     value={shipmentForm.tracking_number}
-                    onChange={(e) => handleChange("tracking_number", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("tracking_number", e.target.value)
+                    }
                     fullWidth
                     size="small"
                     sx={inputSx}
@@ -2083,7 +2129,9 @@ const ShipmentFormDialog = ({
                   <TextField
                     label="Shipment Status"
                     value={shipmentForm.shipment_status}
-                    onChange={(e) => handleChange("shipment_status", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("shipment_status", e.target.value)
+                    }
                     select
                     fullWidth
                     size="small"
@@ -2096,7 +2144,11 @@ const ShipmentFormDialog = ({
                     }}
                   >
                     {SHIPMENT_STATUS_OPTIONS.map((s) => (
-                      <MenuItem key={s.value} value={s.value} sx={{ fontSize: "0.875rem" }}>
+                      <MenuItem
+                        key={s.value}
+                        value={s.value}
+                        sx={{ fontSize: "0.875rem" }}
+                      >
                         {s.label}
                       </MenuItem>
                     ))}
@@ -2124,7 +2176,9 @@ const ShipmentFormDialog = ({
                     label="Estimated Delivery"
                     type="date"
                     value={shipmentForm.estimated_delivery}
-                    onChange={(e) => handleChange("estimated_delivery", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("estimated_delivery", e.target.value)
+                    }
                     fullWidth
                     size="small"
                     InputLabelProps={{ shrink: true }}
@@ -2150,7 +2204,9 @@ const ShipmentFormDialog = ({
                   <TextField
                     label="Service Type"
                     value={shipmentForm.service_type}
-                    onChange={(e) => handleChange("service_type", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("service_type", e.target.value)
+                    }
                     fullWidth
                     size="small"
                     sx={inputSx}
@@ -2165,7 +2221,9 @@ const ShipmentFormDialog = ({
                   <TextField
                     label="Contact Number"
                     value={shipmentForm.contact_number}
-                    onChange={(e) => handleChange("contact_number", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("contact_number", e.target.value)
+                    }
                     fullWidth
                     size="small"
                     sx={inputSx}
@@ -2605,6 +2663,7 @@ const PurchaseOrder = () => {
   const [form, setForm] = useState({
     po_number: "",
     distributor_id: "",
+    company_id: "",
     product_items: [],
     remarks: "",
   });
@@ -2620,6 +2679,9 @@ const PurchaseOrder = () => {
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedDistributor, setSelectedDistributor] = useState(null);
+
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null);
 
   // Shipment
   const shipmentCreateLoading = useSelector(selectCreateShipmentFormLoading);
@@ -2693,6 +2755,16 @@ const PurchaseOrder = () => {
       handleReset();
     }
   }, [createSuccess, updateSuccess, dispatch]);
+
+  // ADD this new useEffect
+  useEffect(() => {
+    fetch("https://hogofilm.pythonanywhere.com/company_profile/")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success) setCompanies(data.data);
+      })
+      .catch((err) => console.error("Failed to fetch companies", err));
+  }, []);
 
   // ================= PRODUCT CALCULATIONS =================
   const calculateProductTotals = (item) => {
@@ -2859,6 +2931,7 @@ const PurchaseOrder = () => {
     const submitData = {
       po_number: form.po_number,
       distributor_id: Number(form.distributor_id),
+      company_id: Number(form.company_id),
       product_items: form.product_items.map((item) => ({
         product_id: Number(item.product_id),
         product_name: item.product_name,
@@ -2934,6 +3007,10 @@ const PurchaseOrder = () => {
       (d) => d.distributor_id === po.distributor_id,
     );
     setSelectedDistributor(dist || null);
+
+    const comp = companies.find((c) => c.id === po.company_id);
+    setSelectedCompany(comp || null);
+    setForm((prev) => ({ ...prev, company_id: po.company_id || "" }));
   };
 
   const handleDelete = (id) => {
@@ -2969,6 +3046,7 @@ const PurchaseOrder = () => {
     });
     setSelectedProduct(null);
     setSelectedDistributor(null);
+    setSelectedCompany(null);
     setErrors({});
   };
 
@@ -3050,7 +3128,39 @@ const PurchaseOrder = () => {
                     size="small"
                     sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                   />
-
+                  <Autocomplete
+                    options={companies}
+                    getOptionLabel={(option) => option.company_name}
+                    value={selectedCompany}
+                    onChange={(event, value) => {
+                      setSelectedCompany(value);
+                      setForm({ ...form, company_id: value ? value.id : "" });
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Select Company"
+                        size="small"
+                        sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                      />
+                    )}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id}>
+                        <Box sx={{ py: 0.5 }}>
+                          <Typography variant="body2" fontWeight={600}>
+                            {option.company_name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {option.email}
+                          </Typography>
+                        </Box>
+                      </li>
+                    )}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    fullWidth
+                  />
                   <Autocomplete
                     options={distributors}
                     getOptionLabel={(option) =>
@@ -3910,6 +4020,7 @@ const PurchaseOrder = () => {
     const distributorInfo = distributors.find(
       (d) => d.distributor_id === viewPO.distributor_id,
     );
+    const companyInfo = companies.find((c) => c.id === viewPO.company_id);
 
     return (
       <Box mt={3}>
@@ -3975,6 +4086,25 @@ const PurchaseOrder = () => {
                     </Typography>
                   </Box>
 
+                  <Box sx={{ bgcolor: "#f8fafc", borderRadius: 2, p: 1.5 }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      fontWeight={600}
+                      letterSpacing="0.06em"
+                    >
+                      COMPANY
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      fontWeight={700}
+                      color="#1e293b"
+                      mt={0.3}
+                    >
+                      {companyInfo?.company_name || "N/A"}
+                    </Typography>
+                  </Box>
+
                   {/* Distributor */}
                   <Box sx={{ bgcolor: "#f8fafc", borderRadius: 2, p: 1.5 }}>
                     <Typography
@@ -3992,9 +4122,6 @@ const PurchaseOrder = () => {
                       mt={0.3}
                     >
                       {distributorInfo?.distributor_name || "N/A"}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      ID: {viewPO.distributor_id}
                     </Typography>
                   </Box>
 
@@ -4427,9 +4554,9 @@ const PurchaseOrder = () => {
                         >
                           {distributorInfo?.distributor_name || "N/A"}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        {/* <Typography variant="caption" color="text.secondary">
                           ID: {po?.distributor_id}
-                        </Typography>
+                        </Typography> */}
                       </TableCell>
 
                       <TableCell align="center">
