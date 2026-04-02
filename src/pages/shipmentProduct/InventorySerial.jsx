@@ -298,10 +298,17 @@ import {
   deleteInventorySerial,
 } from "../../feature/inventorySerials/inventorySerialsThunks";
 
+// import {
+//   selectInventorySerials,
+//   selectInventorySerialLoading,
+//   selectDeleteInventorySerialLoading,
+// } from "../../feature/inventorySerials/inventorySerialsSelector";
+
 import {
   selectInventorySerials,
   selectInventorySerialLoading,
   selectDeleteInventorySerialLoading,
+  selectInventorySerialTotalPages,
 } from "../../feature/inventorySerials/inventorySerialsSelector";
 
 import {
@@ -429,9 +436,13 @@ const StatusChip = ({ status }) => {
 const InventorySerial = () => {
   const dispatch = useDispatch();
 
+  // const serials = useSelector(selectInventorySerials);
+  // const loading = useSelector(selectInventorySerialLoading);
+  // const deleteLoading = useSelector(selectDeleteInventorySerialLoading);
   const serials = useSelector(selectInventorySerials);
   const loading = useSelector(selectInventorySerialLoading);
   const deleteLoading = useSelector(selectDeleteInventorySerialLoading);
+  const totalPages = useSelector(selectInventorySerialTotalPages);
 
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
@@ -445,9 +456,26 @@ const InventorySerial = () => {
   const [isViewing, setIsViewing] = useState(false);
   const [viewSerial, setViewSerial] = useState(null);
 
+  // useEffect(() => {
+  //   const timeoutId = setTimeout(() => {
+  //     const payload = {};
+  //     if (searchQuery.serial_number)
+  //       payload.serial_number = searchQuery.serial_number;
+  //     if (searchQuery.batch_id) payload.batch_id = searchQuery.batch_id;
+  //     if (searchQuery.status) payload.status = searchQuery.status;
+  //     dispatch(getInventorySerials(payload));
+  //   }, 500);
+  //   return () => clearTimeout(timeoutId);
+  // }, [
+  //   dispatch,
+  //   searchQuery.serial_number,
+  //   searchQuery.batch_id,
+  //   searchQuery.status,
+  // ]);
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      const payload = {};
+      const payload = { page };
       if (searchQuery.serial_number)
         payload.serial_number = searchQuery.serial_number;
       if (searchQuery.batch_id) payload.batch_id = searchQuery.batch_id;
@@ -457,11 +485,15 @@ const InventorySerial = () => {
     return () => clearTimeout(timeoutId);
   }, [
     dispatch,
+    page,
     searchQuery.serial_number,
     searchQuery.batch_id,
     searchQuery.status,
   ]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery.serial_number, searchQuery.batch_id, searchQuery.status]);
   const handleView = (item) => {
     setViewSerial(item);
     setIsViewing(true);
@@ -471,18 +503,24 @@ const InventorySerial = () => {
     if (window.confirm("Are you sure you want to delete this serial?")) {
       dispatch(deleteInventorySerial(id))
         .unwrap()
+        // .then(() => {
+        //   dispatch(getInventorySerials());
+        //   CommonToast("Inventory serial deleted successfully", "success");
+        // })
         .then(() => {
-          dispatch(getInventorySerials());
+          dispatch(getInventorySerials({ page }));
           CommonToast("Inventory serial deleted successfully", "success");
         })
         .catch(() => CommonToast("Failed to delete inventory serial", "error"));
     }
   };
 
-  const paginatedData = serials?.slice(
-    (page - 1) * rowsPerPage,
-    page * rowsPerPage,
-  );
+  // const paginatedData = serials?.slice(
+  //   (page - 1) * rowsPerPage,
+  //   page * rowsPerPage,
+  // );
+
+  const paginatedData = serials;
 
   // ── View Detail ──────────────────────────────────────────────────────────────
   if (isViewing && viewSerial) {
@@ -819,7 +857,7 @@ const InventorySerial = () => {
                           fontSize={13}
                           color="#1a1a1a"
                         >
-                          {item.product_sku}
+                          {item.sku}
                         </Typography>
                       </Box>
                     </TableCell>
@@ -952,8 +990,12 @@ const InventorySerial = () => {
             justifyContent: "flex-end",
           }}
         >
-          <Pagination
+          {/* <Pagination
             count={Math.ceil((serials?.length || 0) / rowsPerPage)}
+            page={page}
+            onChange={(_, v) => setPage(v)} */}
+          <Pagination
+            count={totalPages || 1}
             page={page}
             onChange={(_, v) => setPage(v)}
             sx={{

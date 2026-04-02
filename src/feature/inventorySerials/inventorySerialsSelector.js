@@ -1,5 +1,4 @@
-export const selectInventorySerials = (state) =>
-  state.inventorySerial.list;
+export const selectInventorySerials = (state) => state.inventorySerial.list;
 
 export const selectInventorySerialLoading = (state) =>
   state.inventorySerial.loading;
@@ -18,3 +17,6 @@ export const selectInventorySerialError = (state) =>
 
 export const selectInventorySerialSuccess = (state) =>
   state.inventorySerial.success;
+
+export const selectInventorySerialTotalPages = (state) =>
+  state.inventorySerial.totalPages;

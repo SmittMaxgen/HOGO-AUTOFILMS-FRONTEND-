@@ -6,8 +6,21 @@ import {
   deleteInventorySerial,
 } from "./inventorySerialsThunks";
 
+// const initialState = {
+//   list: [],
+//   loading: false,
+//   createLoading: false,
+//   updateLoading: false,
+//   deleteLoading: false,
+//   success: false,
+//   error: null,
+// };
+
 const initialState = {
   list: [],
+  totalPages: 1,
+  currentPage: 1,
+  count: 0,
   loading: false,
   createLoading: false,
   updateLoading: false,
@@ -20,8 +33,20 @@ const inventorySerialSlice = createSlice({
   name: "inventorySerial",
   initialState,
   reducers: {
+    // clearInventorySerialState: (state) => {
+    //   state.list = [];
+    //   state.loading = false;
+    //   state.createLoading = false;
+    //   state.updateLoading = false;
+    //   state.deleteLoading = false;
+    //   state.success = false;
+    //   state.error = null;
+    // },
     clearInventorySerialState: (state) => {
       state.list = [];
+      state.totalPages = 1;
+      state.currentPage = 1;
+      state.count = 0;
       state.loading = false;
       state.createLoading = false;
       state.updateLoading = false;
@@ -37,9 +62,16 @@ const inventorySerialSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
+      // .addCase(getInventorySerials.fulfilled, (state, action) => {
+      //   state.loading = false;
+      //   state.list = action.payload?.data || [];
+      // })
       .addCase(getInventorySerials.fulfilled, (state, action) => {
         state.loading = false;
         state.list = action.payload?.data || [];
+        state.totalPages = action.payload?.total_pages || 1;
+        state.currentPage = action.payload?.current_page || 1;
+        state.count = action.payload?.count || 0;
       })
       .addCase(getInventorySerials.rejected, (state, action) => {
         state.loading = false;
