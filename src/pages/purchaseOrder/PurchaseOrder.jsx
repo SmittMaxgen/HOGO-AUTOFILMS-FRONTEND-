@@ -3310,7 +3310,7 @@ const PurchaseOrder = () => {
                     <Button
                       variant="contained"
                       onClick={handleSubmit}
-                      disabled={createLoading || updateLoading || hasStockError}
+                      disabled={createLoading || updateLoading}
                       fullWidth
                       sx={{
                         borderRadius: 2,
