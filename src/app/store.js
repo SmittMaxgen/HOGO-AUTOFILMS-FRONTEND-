@@ -33,6 +33,8 @@ import leaveBalanceReducer from "../feature/leaveBalance/leaveBalanceSlice";
 import employeeAttendanceReducer from "../feature/employeeAttendance/employeeAttendanceSlice";
 import targetReducers from "../feature/target/targetSlice";
 import regionReducers from "../feature/region/regionSlice";
+import contactsReducers from "../feature/contacts/contactsSlice";
+import quotesReducers from "../feature/quotes/quotesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -71,5 +73,7 @@ export const store = configureStore({
     employeeAttendance: employeeAttendanceReducer,
     target: targetReducers,
     region: regionReducers,
+    contacts: contactsReducers,
+    quotes: quotesReducers,
   },
 });

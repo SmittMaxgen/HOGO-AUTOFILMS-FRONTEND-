@@ -26,6 +26,8 @@ import Target from "../pages/target/Target";
 import EditProfile from "../pages/auth/EditProfile";
 import AccountSettings from "../pages/auth/AccountSettings";
 import Distributors from "../pages/distributor/Distributor";
+import Contacts from "../pages/contacts/Contacts";
+import Quotes from "../pages/quotes/Quotes";
 
 import ProtectedRoute from "./ProtectedRoutes";
 
@@ -69,6 +71,8 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/leave-balance" element={<LeaveBalance />} />
           <Route path="/employee-attendance" element={<EmployeeAttendance />} />
           <Route path="/target" element={<Target />} />
+          <Route path="/contacts" element={<Contacts />} />
+          <Route path="/quotes" element={<Quotes />} />
         </Route>
       </Route>
     </Routes>
