@@ -2888,7 +2888,7 @@ const Product = () => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <TextField
-                  label="MOU"
+                  label="UOM"
                   name="mou"
                   fullWidth
                   value={form.mou}
@@ -2900,7 +2900,7 @@ const Product = () => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <TextField
-                  label="GST No"
+                  label="GST"
                   name="GST"
                   fullWidth
                   value={form.GST}
@@ -3695,7 +3695,7 @@ const Product = () => {
                     { label: "SKU", value: viewItem.sku },
                     { label: "UOM", value: viewItem.mou },
                     { label: "HSN Code", value: viewItem.hsn_code },
-                    { label: "GST No", value: viewItem.GST },
+                    { label: "GST", value: viewItem.GST },
                     {
                       label: "Product Sequence",
                       value: viewItem.product_sequence,
