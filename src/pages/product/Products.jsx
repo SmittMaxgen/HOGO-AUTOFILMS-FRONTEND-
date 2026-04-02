@@ -2470,9 +2470,68 @@ const Product = () => {
       .catch(console.error);
   };
 
+  // const handleSubmit = () => {
+  //   if (!validate()) return;
+  //   const formData = new FormData();
+  //   const fields = [
+  //     "product_name",
+  //     "product_codes",
+  //     "sku",
+  //     "hsn_code",
+  //     "mou",
+  //     "GST",
+  //     "product_sequence",
+  //     "description",
+  //     "category_id",
+  //     "material_id",
+  //     "colour_id",
+  //     "application_area",
+  //     "film_type",
+  //     "finish",
+  //     "specification",
+  //     "thickness",
+  //     "warranty",
+  //     "hydrophobic",
+  //     "stain_resistant",
+  //     "elongation",
+  //     "tear_strength",
+  //     "mrp",
+  //     "status",
+  //     "adhesive",
+  //     "anti_yellowing",
+  //     "scratch_resistant",
+  //     "uv_resistance",
+  //     "installation_video_url",
+  //     "tempeerature_resistance",
+  //     "peel_adhesion",
+  //     "anti_rockclip",
+  //     "elongation_rate_tpu",
+  //     "elongation_rate_hard",
+  //   ];
+  //   fields.forEach((f) => formData.append(f, form[f]));
+  //   ["thumbnail_image", "image1", "image2", "image3", "image4"].forEach((f) => {
+  //     if (form[f] instanceof File) formData.append(f, form[f]);
+  //   });
+
+  //   if (isEditing && editId) {
+  //     dispatch(updateProducts({ id: editId, data: formData }))
+  //       .unwrap()
+  //       .then(() => dispatch(getProducts()).unwrap())
+  //       .then(() => CommonToast("Product updated successfully", "success"))
+  //       .catch(() => CommonToast("Failed to update product", "error"));
+  //   } else {
+  //     dispatch(createProducts(formData))
+  //       .unwrap()
+  //       .then(() => dispatch(getProducts()).unwrap())
+  //       .then(() => CommonToast("Product created successfully", "success"))
+  //       .catch(() => CommonToast("Failed to create product", "error"));
+  //   }
+  //   handleReset();
+  // };
+
   const handleSubmit = () => {
     if (!validate()) return;
-    const formData = new FormData();
+
     const fields = [
       "product_name",
       "product_codes",
@@ -2508,24 +2567,76 @@ const Product = () => {
       "elongation_rate_tpu",
       "elongation_rate_hard",
     ];
-    fields.forEach((f) => formData.append(f, form[f]));
-    ["thumbnail_image", "image1", "image2", "image3", "image4"].forEach((f) => {
-      if (form[f] instanceof File) formData.append(f, form[f]);
-    });
+
+    const imageFields = [
+      "thumbnail_image",
+      "image1",
+      "image2",
+      "image3",
+      "image4",
+    ];
+
+    const formData = new FormData();
 
     if (isEditing && editId) {
+      const hasChanges =
+        fields.some((f) => String(form[f]) !== String(originalForm?.[f])) ||
+        imageFields.some((f) => form[f] instanceof File);
+
+      if (!hasChanges) {
+        CommonToast("No changes to save", "info");
+        return;
+      }
+      // Only send fields that actually changed
+      // fields.forEach((f) => {
+      //   if (String(form[f]) !== String(originalForm?.[f])) {
+      //     formData.append(f, form[f]);
+      //   }
+      // });
+
+      // Replace the fields.forEach comparison with:
+      fields.forEach((f) => {
+        const original = originalForm?.[f] ?? "";
+        const current = form[f] ?? "";
+        if (String(current) !== String(original)) {
+          formData.append(f, form[f]);
+        }
+      });
+      // Only send images if a new File was selected
+      imageFields.forEach((f) => {
+        if (form[f] instanceof File) formData.append(f, form[f]);
+      });
+
+      // dispatch(updateProducts({ id: editId, data: formData }))
+      //   .unwrap()
+      //   .then(() => dispatch(getProducts()).unwrap())
+      //   .then(() => CommonToast("Product updated successfully", "success"))
+      //   .catch(() => CommonToast("Failed to update product", "error"));
+      // Move handleReset() INSIDE .then(), not after dispatch:
+
       dispatch(updateProducts({ id: editId, data: formData }))
         .unwrap()
         .then(() => dispatch(getProducts()).unwrap())
-        .then(() => CommonToast("Product updated successfully", "success"))
+        .then(() => {
+          CommonToast("Product updated successfully", "success");
+          handleReset(); // ← moved here
+        })
         .catch(() => CommonToast("Failed to update product", "error"));
+      // No handleReset() here — user keeps their data to retry
     } else {
+      // Create: send everything
+      fields.forEach((f) => formData.append(f, form[f]));
+      imageFields.forEach((f) => {
+        if (form[f] instanceof File) formData.append(f, form[f]);
+      });
+
       dispatch(createProducts(formData))
         .unwrap()
         .then(() => dispatch(getProducts()).unwrap())
         .then(() => CommonToast("Product created successfully", "success"))
         .catch(() => CommonToast("Failed to create product", "error"));
     }
+
     handleReset();
   };
 
@@ -2533,11 +2644,58 @@ const Product = () => {
     setViewItem(item);
     setIsViewing(true);
   };
+  const [originalForm, setOriginalForm] = useState(null);
+
+  // const handleEdit = (item) => {
+  //   setIsEditing(true);
+  //   setEditId(item.id);
+  //   setForm({
+  //     product_name: item.product_name || "",
+  //     product_codes: item.product_codes || "",
+  //     hsn_code: item.hsn_code || "",
+  //     mou: item.mou || "",
+  //     GST: item.GST || "",
+  //     product_sequence: item.product_sequence || "",
+  //     description: item.description || "",
+  //     sku: item.sku || "",
+  //     category_id: item.category_id || "",
+  //     material_id: item.material_id || "",
+  //     colour_id: item.colour_id || "",
+  //     film_type: item.film_type || "",
+  //     finish: item.finish || "",
+  //     application_area: item.application_area || "",
+  //     thickness: item.thickness || "",
+  //     specification: item.specification || "",
+  //     warranty: item.warranty || "",
+  //     hydrophobic: item.hydrophobic || "",
+  //     stain_resistant: item.stain_resistant || "",
+  //     elongation: item.elongation || "",
+  //     tear_strength: item.tear_strength || "",
+  //     mrp: item.mrp || "",
+  //     thumbnail_image: item.thumbnail_image || null,
+  //     image1: item.image1 || null,
+  //     image2: item.image2 || null,
+  //     image3: item.image3 || null,
+  //     image4: item.image4 || null,
+  //     installation_video_url: item.installation_video_url || "",
+  //     status: item.status ?? true,
+  //     adhesive: item.adhesive || "",
+  //     anti_yellowing: item.anti_yellowing || "",
+  //     scratch_resistant: item.scratch_resistant || "",
+  //     uv_resistance: item.uv_resistance || false,
+  //     tempeerature_resistance: item.tempeerature_resistance || "",
+  //     peel_adhesion: item.peel_adhesion || "",
+  //     anti_rockclip: item.anti_rockclip || "",
+  //     elongation_rate_tpu: item.elongation_rate_tpu || "",
+  //     elongation_rate_hard: item.elongation_rate_hard || "",
+  //   });
+
+  // };
 
   const handleEdit = (item) => {
     setIsEditing(true);
     setEditId(item.id);
-    setForm({
+    const values = {
       product_name: item.product_name || "",
       product_codes: item.product_codes || "",
       hsn_code: item.hsn_code || "",
@@ -2576,9 +2734,10 @@ const Product = () => {
       anti_rockclip: item.anti_rockclip || "",
       elongation_rate_tpu: item.elongation_rate_tpu || "",
       elongation_rate_hard: item.elongation_rate_hard || "",
-    });
+    };
+    setForm(values);
+    setOriginalForm(values); // ← save original snapshot
   };
-
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       dispatch(deleteProducts(id))
@@ -2593,6 +2752,7 @@ const Product = () => {
     setForm({
       product_name: "",
       sku: "",
+      product_codes: "",
       hsn_code: "",
       mou: "",
       GST: "",
@@ -2633,6 +2793,7 @@ const Product = () => {
     setErrors({});
     setEditId(null);
     setIsEditing(false);
+    setOriginalForm(null); // ← add this line
   };
 
   const paginatedData = list.slice(
