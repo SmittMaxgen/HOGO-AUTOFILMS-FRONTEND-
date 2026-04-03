@@ -3747,6 +3747,7 @@ export default function AttendanceModule({
               <option disabled>Loading…</option>
             ) : (
               employees &&
+              employees.length > 0 &&
               employees?.map((emp) => (
                 <option key={emp.id} value={emp.id}>
                   {emp.name ||
