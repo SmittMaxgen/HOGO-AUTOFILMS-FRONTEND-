@@ -149,9 +149,17 @@ const SalaryPayment = () => {
         alignItems="center"
         mb={3}
       >
-        <Typography variant="h5" fontWeight={800}>
+        {/* <Typography variant="h5" fontWeight={800}>
           Salary Payments
-        </Typography>
+        </Typography> */}
+        <Box display="flex" alignItems="center" gap={1.5}>
+          <Box
+            sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
+          />
+          <Typography variant="h5" fontWeight={800} color="#1a1a1a">
+            Salary Payments
+          </Typography>
+        </Box>
       </Stack>
 
       <Paper sx={{ borderRadius: 3, overflow: "hidden" }}>
