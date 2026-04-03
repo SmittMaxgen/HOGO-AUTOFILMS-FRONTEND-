@@ -63,6 +63,7 @@ const FilterSelect = ({ value, onChange, placeholder, options }) => {
           return found ? found.label : selected;
         }}
         sx={{
+          width: 250,
           height: 39,
           borderRadius: "10px",
           fontSize: 13,
@@ -245,9 +246,24 @@ const SalaryPayment = () => {
 
             <TableBody>
               {loading && (
+                // <TableRow>
+                //   <TableCell colSpan={9} align="center">
+                //     <CircularProgress />
+                //   </TableCell>
+                // </TableRow>
                 <TableRow>
-                  <TableCell colSpan={9} align="center">
-                    <CircularProgress />
+                  <TableCell colSpan={10} align="center" sx={{ py: 5 }}>
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      gap={1}
+                    >
+                      <CircularProgress size={28} sx={{ color: "#D20000" }} />
+                      <Typography variant="body2" color="text.secondary">
+                        Loading Salary Payments...
+                      </Typography>
+                    </Box>
                   </TableCell>
                 </TableRow>
               )}
