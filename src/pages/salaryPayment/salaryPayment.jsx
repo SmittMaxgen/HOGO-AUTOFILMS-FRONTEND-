@@ -219,7 +219,12 @@ const SalaryPayment = () => {
         <TableContainer>
           <Table>
             <TableHead>
-              <TableRow sx={{ bgcolor: "#D20000" }}>
+              <TableRow
+                sx={{
+                  background:
+                    "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+                }}
+              >
                 {[
                   "Sr",
                   "Employee",
@@ -250,11 +255,21 @@ const SalaryPayment = () => {
               {!loading &&
                 paginatedData?.map((row, index) => (
                   <TableRow key={row.id}>
-                    <TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 700, color: "#D20000", width: 60 }}
+                    >
                       {(page - 1) * rowsPerPage + index + 1}
                     </TableCell>
 
-                    <TableCell>{getEmployeeName(row.employee)}</TableCell>
+                    <TableCell>
+                      <Typography
+                        fontWeight={600}
+                        color="#1a1a1a"
+                        fontSize={14}
+                      >
+                        {getEmployeeName(row.employee)}
+                      </Typography>
+                    </TableCell>
 
                     <TableCell>
                       {MONTHS.find((m) => m.value === row.month)?.label}
