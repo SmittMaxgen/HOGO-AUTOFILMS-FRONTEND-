@@ -28,6 +28,8 @@ import AccountSettings from "../pages/auth/AccountSettings";
 import Distributors from "../pages/distributor/Distributor";
 import Contacts from "../pages/contacts/Contacts";
 import Quotes from "../pages/quotes/Quotes";
+import Reports from "../pages/reports/Reports";
+import EmployeeSalary from "../pages/employeeSalary/EmployeeSalary";
 
 import ProtectedRoute from "./ProtectedRoutes";
 
@@ -73,6 +75,8 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/target" element={<Target />} />
           <Route path="/contacts" element={<Contacts />} />
           <Route path="/quotes" element={<Quotes />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/employee-salaries" element={<EmployeeSalary />} />
         </Route>
       </Route>
     </Routes>

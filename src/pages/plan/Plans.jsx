@@ -673,18 +673,20 @@ export default function Plan() {
                       </li>
                     ))}
 
-                  {employees.filter((emp) => {
-                    const q = employeeSearch.toLowerCase();
-                    return (
-                      emp.first_name.toLowerCase().includes(q) ||
-                      emp.last_name.toLowerCase().includes(q) ||
-                      emp.employee_code.toLowerCase().includes(q)
-                    );
-                  }).length === 0 && (
-                    <li style={{ padding: "8px 12px", color: "#aaa" }}>
-                      No employees found
-                    </li>
-                  )}
+                  {employees &&
+                    employees?.length > 0 &&
+                    employees?.filter((emp) => {
+                      const q = employeeSearch.toLowerCase();
+                      return (
+                        emp.first_name.toLowerCase().includes(q) ||
+                        emp.last_name.toLowerCase().includes(q) ||
+                        emp.employee_code.toLowerCase().includes(q)
+                      );
+                    }).length === 0 && (
+                      <li style={{ padding: "8px 12px", color: "#aaa" }}>
+                        No employees found
+                      </li>
+                    )}
                 </ul>
               )}
             </div>

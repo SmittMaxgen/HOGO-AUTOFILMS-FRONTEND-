@@ -1593,6 +1593,16 @@ const AdminLayout = ({ toggleTheme, mode }) => {
 
         <Box
           className={`${classes.sidebarItem} ${
+            isActive("/employee-salaries") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/employee-salaries")}
+        >
+          <ManageAccountsIcon />
+          {!collapsed && "Employee Salary"}
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${
             isActive("/purchase_order") ? classes.activeItem : ""
           }`}
           onClick={() => handleNavigate("/purchase_order")}
@@ -1714,6 +1724,16 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <BusinessIcon />
           {!collapsed && "Targets"}
+        </Box>
+
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/reports") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/reports")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Reports"}
         </Box>
 
         <Box
