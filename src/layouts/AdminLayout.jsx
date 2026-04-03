@@ -1600,6 +1600,15 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           <ManageAccountsIcon />
           {!collapsed && "Employee Salary"}
         </Box>
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/salary-payment") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/salary-payment")}
+        >
+          <ManageAccountsIcon />
+          {!collapsed && "Salary Payment"}
+        </Box>
 
         <Box
           className={`${classes.sidebarItem} ${

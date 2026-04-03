@@ -30,6 +30,7 @@ import Contacts from "../pages/contacts/Contacts";
 import Quotes from "../pages/quotes/Quotes";
 import Reports from "../pages/reports/Reports";
 import EmployeeSalary from "../pages/employeeSalary/EmployeeSalary";
+import SalaryPayment from "../pages/salaryPayment/salaryPayment";
 
 import ProtectedRoute from "./ProtectedRoutes";
 
@@ -77,6 +78,7 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/quotes" element={<Quotes />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/employee-salaries" element={<EmployeeSalary />} />
+          <Route path="/salary-payment" element={<SalaryPayment />} />
         </Route>
       </Route>
     </Routes>
