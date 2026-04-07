@@ -1079,6 +1079,8 @@ import {
   selectWarrantyError,
 } from "../../feature/Warranty/warrantySelector";
 
+import { selectAdminList } from "../../feature/Admin/adminSelector";
+
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import GppGoodIcon from "@mui/icons-material/GppGood";
@@ -1087,6 +1089,8 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
+
+import { UpdateAdminUser, AdminUser } from "../../feature/Admin/adminThunks";
 
 const BASE_URL = "http://hogofilm.pythonanywhere.com";
 
@@ -1202,6 +1206,9 @@ const WarrantyManagement = () => {
   const updateSuccess = useSelector(selectWarrantyUpdateSuccess);
   const error = useSelector(selectWarrantyError);
 
+  const adminList = useSelector(selectAdminList);
+  console.log("adminList:::>>>>", adminList);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedWarranty, setSelectedWarranty] = useState(null);
   const [showViewDialog, setShowViewDialog] = useState(false);
@@ -1244,6 +1251,10 @@ const WarrantyManagement = () => {
   ]);
 
   useEffect(() => {
+    dispatch(AdminUser());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (updateSuccess) {
       CommonToast("Warranty updated successfully", "success");
       setShowViewDialog(false);
@@ -1273,7 +1284,10 @@ const WarrantyManagement = () => {
     dispatch(
       updateWarranty({
         id: selectedWarranty.id,
-        data: { product_status: status },
+        data: {
+          product_status: status,
+          approved_by: (adminList && adminList?.id) || null,
+        },
       }),
     );
     handleCloseMenu();
@@ -1285,7 +1299,10 @@ const WarrantyManagement = () => {
         updateWarranty({
           id: selectedWarranty.id,
 
-          data: { product_status: "ACTIVATED", approved_by: 1 },
+          data: {
+            product_status: "ACTIVATED",
+            approved_by: (adminList && adminList?.id) || null,
+          },
         }),
       );
     }
@@ -1304,7 +1321,11 @@ const WarrantyManagement = () => {
     dispatch(
       updateWarranty({
         id: selectedWarranty.id,
-        data: { warranty_status: "REJECT", rejection_reason: rejectionReason },
+        data: {
+          warranty_status: "REJECT",
+          rejection_reason: rejectionReason,
+          approved_by: (adminList && adminList?.id) || null,
+        },
       }),
     );
   };
