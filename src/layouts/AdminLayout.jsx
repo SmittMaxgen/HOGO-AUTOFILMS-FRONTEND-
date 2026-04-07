@@ -1328,6 +1328,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
     products: true,
     shipping: false,
     office: false,
+    employeeManagement: false,
   });
   const [activePath, setActivePath] = useState(
     localStorage.getItem("activeTab") || location.pathname,
@@ -1501,6 +1502,16 @@ const AdminLayout = ({ toggleTheme, mode }) => {
               <ShoppingBagIcon fontSize="small" />
               Materials
             </Box>
+
+            <Box
+              className={`${classes.submenuItem} ${
+                isActive("/warranty") ? classes.activeItem : ""
+              }`}
+              onClick={() => handleNavigate("/warranty")}
+            >
+              <VerifiedUserIcon fontSize="small" />
+              Warranty
+            </Box>
           </>
         )}
 
@@ -1570,7 +1581,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           <QrCodeIcon />
           {!collapsed && "Inventory Serials"}
         </Box>
-
+        {/* 
         <Box
           className={`${classes.sidebarItem} ${
             isActive("/warranty") ? classes.activeItem : ""
@@ -1579,9 +1590,82 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <VerifiedUserIcon />
           {!collapsed && "Warranty"}
-        </Box>
+        </Box> */}
+
+        {/* REPLACE the 3 standalone sidebarItem boxes for Employee Management, Employee Salary, Salary Payment */}
 
         <Box
+          className={classes.sidebarItem}
+          onClick={() => !collapsed && toggleMenu("employeeManagement")}
+          sx={{ justifyContent: "space-between" }}
+        >
+          <Box display="flex" alignItems="center" gap={1.5}>
+            <ManageAccountsIcon />
+            {!collapsed && "Employee Management"}
+          </Box>
+          {!collapsed &&
+            (expandedMenus.employeeManagement ? (
+              <ExpandLessIcon />
+            ) : (
+              <ExpandMoreIcon />
+            ))}
+        </Box>
+
+        {!collapsed && expandedMenus.employeeManagement && (
+          <>
+            <Box
+              className={`${classes.submenuItem} ${
+                isActive("/employee_management") ? classes.activeItem : ""
+              }`}
+              onClick={() => handleNavigate("/employee_management")}
+            >
+              <ManageAccountsIcon fontSize="small" />
+              Employee Management
+            </Box>
+
+            <Box
+              className={`${classes.submenuItem} ${
+                isActive("/employee-salaries") ? classes.activeItem : ""
+              }`}
+              onClick={() => handleNavigate("/employee-salaries")}
+            >
+              <CurrencyRupeeIcon fontSize="small" />
+              Employee Salary
+            </Box>
+
+            <Box
+              className={`${classes.submenuItem} ${
+                isActive("/salary-payment") ? classes.activeItem : ""
+              }`}
+              onClick={() => handleNavigate("/salary-payment")}
+            >
+              <ReceiptLongIcon fontSize="small" />
+              Salary Payment
+            </Box>
+
+            <Box
+              className={`${classes.submenuItem} ${
+                isActive("/employee-attendance") ? classes.activeItem : ""
+              }`}
+              onClick={() => handleNavigate("/employee-attendance")}
+            >
+              <BusinessIcon fontSize="small" />
+              Employee Attendance
+            </Box>
+
+            <Box
+              className={`${classes.submenuItem} ${
+                isActive("/leave-balance") ? classes.activeItem : ""
+              }`}
+              onClick={() => handleNavigate("/leave-balance")}
+            >
+              <BusinessIcon fontSize="small" />
+              Leave Balance
+            </Box>
+          </>
+        )}
+
+        {/* <Box
           className={`${classes.sidebarItem} ${
             isActive("/employee_management") ? classes.activeItem : ""
           }`}
@@ -1589,8 +1673,8 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <ManageAccountsIcon />
           {!collapsed && "Employee Management"}
-        </Box>
-
+        </Box> */}
+{/* 
         <Box
           className={`${classes.sidebarItem} ${
             isActive("/employee-salaries") ? classes.activeItem : ""
@@ -1599,8 +1683,8 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <ManageAccountsIcon />
           {!collapsed && "Employee Salary"}
-        </Box>
-        <Box
+        </Box> */}
+        {/* <Box
           className={`${classes.sidebarItem} ${
             isActive("/salary-payment") ? classes.activeItem : ""
           }`}
@@ -1608,7 +1692,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <ManageAccountsIcon />
           {!collapsed && "Salary Payment"}
-        </Box>
+        </Box> */}
 
         <Box
           className={`${classes.sidebarItem} ${
@@ -1705,7 +1789,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           {!collapsed && "Plans"}
         </Box>
 
-        <Box
+        {/* <Box
           className={`${classes.sidebarItem} ${
             isActive("/leave-balance") ? classes.activeItem : ""
           }`}
@@ -1713,9 +1797,9 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <BusinessIcon />
           {!collapsed && "Leave Balance"}
-        </Box>
+        </Box> */}
 
-        <Box
+        {/* <Box
           className={`${classes.sidebarItem} ${
             isActive("/employee-attendance") ? classes.activeItem : ""
           }`}
@@ -1723,7 +1807,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <BusinessIcon />
           {!collapsed && "Employee Attendance"}
-        </Box>
+        </Box> */}
 
         <Box
           className={`${classes.sidebarItem} ${
