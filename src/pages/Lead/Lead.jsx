@@ -658,6 +658,7 @@ import {
   selectUpdateLeadLoading,
   selectUpdateLeadSuccess,
   selectDeleteLeadLoading,
+  selectLeadError,
 } from "../../feature/leads/leadSelector";
 import { selectVisitList } from "../../feature/visit/visitSelector";
 import { selectEmployees } from "../../feature/employee/employeeSelector";
@@ -861,6 +862,8 @@ const Lead = () => {
   const updateLoading = useSelector(selectUpdateLeadLoading);
   const updateSuccess = useSelector(selectUpdateLeadSuccess);
   const deleteLoading = useSelector(selectDeleteLeadLoading);
+  const leadError = useSelector(selectLeadError);
+  console.log("leadError", leadError);
   const employees = useSelector(selectEmployees);
 
   const [page, setPage] = useState(1);
@@ -878,6 +881,8 @@ const Lead = () => {
 
   const [form, setForm] = useState({
     lead_type: "",
+    week: "",
+    month: "",
     business_name: "",
     contact_person: "",
     phone: "",
@@ -912,10 +917,10 @@ const Lead = () => {
   // }, [dispatch]);
 
   useEffect(() => {
-  dispatch(getLeads());
-  dispatch(getEmployees());
-  setPage(1);
-}, [dispatch]);
+    dispatch(getLeads());
+    dispatch(getEmployees());
+    setPage(1);
+  }, [dispatch]);
 
   useEffect(() => {
     if (createSuccess || updateSuccess) {
@@ -937,6 +942,9 @@ const Lead = () => {
     const temp = {};
     [
       "lead_type",
+      "cars_per_month",
+      "date",
+      "month",
       "business_name",
       "contact_person",
       "phone",
@@ -965,6 +973,7 @@ const Lead = () => {
 
   const handleSubmit = () => {
     if (!validate()) return;
+    console.log("comes????");
     if (isEditing && editId) {
       dispatch(updateLead({ id: editId, data: form }))
         .unwrap()
@@ -974,7 +983,9 @@ const Lead = () => {
       dispatch(createLead(form))
         .unwrap()
         .then(() => CommonToast("Lead created successfully", "success"))
-        .catch(() => CommonToast("Failed to create lead", "error"));
+        .catch(() =>
+          CommonToast(leadError || "Failed to create lead", "error"),
+        );
     }
   };
 
@@ -1012,6 +1023,8 @@ const Lead = () => {
       price_feedback: lead.price_feedback || "",
       quality_feedback: lead.quality_feedback || "",
       date: lead.date || "",
+      week: lead.week || "",
+      month: lead.month || "",
     });
   };
 
@@ -1411,6 +1424,30 @@ const Lead = () => {
             <Grid container spacing={2.5}>
               <Grid item xs={12} sm={6}>
                 <TextField
+                  label="Week"
+                  value={form.week}
+                  fullWidth
+                  sx={fieldSx}
+                  error={!!errors.week}
+                  helperText={errors.week}
+                  // sx={fieldSx}
+                  onChange={(e) => setForm({ ...form, week: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Month"
+                  value={form.month}
+                  fullWidth
+                  sx={fieldSx}
+                  error={!!errors.month}
+                  helperText={errors.month}
+                  // sx={fieldSx}
+                  onChange={(e) => setForm({ ...form, month: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
                   label="Brand Dealing"
                   value={form.brand_dealing}
                   fullWidth
@@ -1449,6 +1486,9 @@ const Lead = () => {
                   type="number"
                   fullWidth
                   sx={fieldSx}
+                  error={!!errors.cars_per_month}
+                  helperText={errors.cars_per_month}
+                  // sx={fieldSx}
                   onChange={(e) =>
                     setForm({ ...form, cars_per_month: e.target.value })
                   }
@@ -1485,6 +1525,8 @@ const Lead = () => {
                   value={form.date}
                   type="date"
                   fullWidth
+                  error={!!errors.date}
+                  helperText={errors.date}
                   sx={fieldSx}
                   InputLabelProps={{ shrink: true }}
                   onChange={(e) => setForm({ ...form, date: e.target.value })}
@@ -1775,6 +1817,8 @@ const Lead = () => {
             <SectionHeading title="Business Details" />
             <Grid container spacing={2} mb={3}>
               {[
+                { label: "Week", value: viewLead.week },
+                { label: "Month", value: viewLead.month },
                 { label: "Brand Dealing", value: viewLead.brand_dealing },
                 { label: "Outlet Age", value: viewLead.outlet_age },
                 {
