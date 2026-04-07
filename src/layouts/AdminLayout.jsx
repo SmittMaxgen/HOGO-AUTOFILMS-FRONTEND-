@@ -1674,7 +1674,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           <ManageAccountsIcon />
           {!collapsed && "Employee Management"}
         </Box> */}
-{/* 
+        {/* 
         <Box
           className={`${classes.sidebarItem} ${
             isActive("/employee-salaries") ? classes.activeItem : ""
@@ -1693,16 +1693,6 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           <ManageAccountsIcon />
           {!collapsed && "Salary Payment"}
         </Box> */}
-
-        <Box
-          className={`${classes.sidebarItem} ${
-            isActive("/purchase_order") ? classes.activeItem : ""
-          }`}
-          onClick={() => handleNavigate("/purchase_order")}
-        >
-          <ReceiptLongIcon />
-          {!collapsed && "Purchase Order"}
-        </Box>
 
         <Box
           className={classes.sidebarItem}
@@ -1769,6 +1759,16 @@ const AdminLayout = ({ toggleTheme, mode }) => {
             </Box>
           </>
         )}
+
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/purchase_order") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/purchase_order")}
+        >
+          <ReceiptLongIcon />
+          {!collapsed && "Purchase Order"}
+        </Box>
         <Box
           className={`${classes.sidebarItem} ${
             isActive("/leads") ? classes.activeItem : ""
