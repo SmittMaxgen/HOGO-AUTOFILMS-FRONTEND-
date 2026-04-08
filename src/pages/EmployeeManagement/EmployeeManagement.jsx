@@ -4694,6 +4694,8 @@ const EmployeeManagement = () => {
         {/* TAB 5: LEAVE BALANCE */}
         <TabPanel value={activeTab} index={5}>
           <LeaveBalanceModule
+                    disabled={true}
+
             employee_id={selectedEmployee?.id}
             employees={employees}
           />

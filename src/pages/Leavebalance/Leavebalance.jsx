@@ -189,6 +189,7 @@ export default function LeaveBalanceModule({
   employee_id,
   employees = [],
   title,
+  disabled = false,
 }) {
   const dispatch = useDispatch();
   const list = useSelector(selectLeaveBalances);
@@ -248,21 +249,35 @@ export default function LeaveBalanceModule({
             {title ||
               (employee_id ? "Employee Leave Balance" : "Leave Balances")}
           </h2> */}
-
-          <Box display="flex" alignItems="center" gap={1.5} mb={3}>
-            <Box
-              sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
-            />
-            <Typography variant="h5" fontWeight={800} color="#0d0e36">
-              {title ||
-                (employee_id ? "Employee Leave Balance" : "Leave Balances")}
-            </Typography>
-          </Box>
-          <p style={{ margin: "4px 0 0", fontSize: "13px", color: "#94a3b8" }}>
-            {loading
-              ? "Loading…"
-              : `${grouped.length} employee${grouped.length !== 1 ? "s" : ""}`}
-          </p>
+          {disabled === false && (
+            <>
+              <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+                <Box
+                  sx={{
+                    width: 5,
+                    height: 32,
+                    bgcolor: "#D20000",
+                    borderRadius: 1,
+                  }}
+                />
+                <Typography variant="h5" fontWeight={800} color="#0d0e36">
+                  {title ||
+                    (employee_id ? "Employee Leave Balance" : "Leave Balances")}
+                </Typography>
+              </Box>
+              <p
+                style={{
+                  margin: "4px 0 0",
+                  fontSize: "13px",
+                  color: "#94a3b8",
+                }}
+              >
+                {loading
+                  ? "Loading…"
+                  : `${grouped.length} employee${grouped.length !== 1 ? "s" : ""}`}
+              </p>
+            </>
+          )}
         </div>
         {!loading && list.length > 0 && (
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>

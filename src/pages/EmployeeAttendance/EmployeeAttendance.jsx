@@ -608,6 +608,7 @@ export default function AttendanceModule({
   const allList = useSelector(selectEmployeeAttendances);
   const loading = useSelector(selectEmployeeAttendanceLoading);
   const error = useSelector(selectEmployeeAttendanceError);
+  const btnRef = useRef(null);
 
   const [mode, setMode] = useState("today");
   const [customDate, setCustomDate] = useState(todayStr());
@@ -906,7 +907,7 @@ export default function AttendanceModule({
         </div>
       )} */}
       {/* Range: single button that opens the unified range calendar */}
-      {mode === "range" && (
+      {/* {mode === "range" && (
         <div style={{ position: "relative" }}>
           <button
             onClick={() => setShowCal((v) => !v)}
@@ -949,7 +950,10 @@ export default function AttendanceModule({
             </div>
           )}
         </div>
-      )}
+      )} */}
+
+      {/* Range: single button that opens the unified range calendar */}
+
       {/* ── Error ────────────────────────────────────────────────────────── */}
       {error && (
         <div
@@ -973,7 +977,7 @@ export default function AttendanceModule({
           background: "#fff",
           border: "1px solid #e2e8f0",
           borderRadius: "12px",
-          overflow: "hidden",
+          overflow: "visible",
           boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
         }}
       >
@@ -1043,6 +1047,8 @@ export default function AttendanceModule({
             marginBottom: "20px",
             // width: "fit-content",
             flexWrap: "wrap",
+            overflow: "visible",
+            position: "relative",
           }}
         >
           <div>
@@ -1067,8 +1073,62 @@ export default function AttendanceModule({
               onClick={() => handleModeChange("range")}
             />
           </div>
-          <div>
+
+          <div style={{ display: "flex", gap: 5 }}>
             {/* ── Employee Dropdown ─────────────────────────────────────────────── */}
+            {mode === "range" && (
+              <div style={{ position: "relative" }}>
+                <button
+                  ref={btnRef}
+                  onClick={() => setShowCal((v) => !v)}
+                  style={{
+                    ...inputStyle,
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    color: startDate && endDate ? "#D20000" : "#94a3b8",
+                    background: showCal ? "#D2000008" : "#fff",
+                    border: `1px solid ${showCal ? "#D20000" : "#cbd5e1"}`,
+                    minWidth: "200px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
+                >
+                  📅{" "}
+                  {startDate && endDate
+                    ? `${fmtDate(startDate)} → ${fmtDate(endDate)}`
+                    : startDate
+                      ? `${fmtDate(startDate)} → pick end`
+                      : "Select date range"}
+                </button>
+
+                {showCal && (
+                  <div
+                    ref={calRef}
+                    style={{
+                      position: "fixed",
+                      top: btnRef.current
+                        ? btnRef.current.getBoundingClientRect().bottom +
+                          6 +
+                          "px"
+                        : "auto",
+                      right: btnRef.current
+                        ? window.innerWidth -
+                          btnRef.current.getBoundingClientRect().right +
+                          "px"
+                        : "20px",
+                      zIndex: 9999,
+                    }}
+                  >
+                    <RangeCalendar
+                      startDate={startDate}
+                      endDate={endDate}
+                      onChange={handleRangeChange}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
             {!propEmployeeId && (
               <div>
                 <select
@@ -1095,20 +1155,20 @@ export default function AttendanceModule({
                 </select>
               </div>
             )}
+            {/* Single date picker */}
+            {mode === "date" && (
+              <input
+                type="date"
+                value={customDate}
+                max={todayStr()}
+                onChange={(e) => setCustomDate(e.target.value || todayStr())}
+                style={inputStyle}
+              />
+            )}
           </div>
-          {/* Single date picker */}
-          {mode === "date" && (
-            <input
-              type="date"
-              value={customDate}
-              max={todayStr()}
-              onChange={(e) => setCustomDate(e.target.value || todayStr())}
-              style={inputStyle}
-            />
-          )}
 
           {/* Range: single button that opens the unified range calendar */}
-          {mode === "range" && (
+          {/* {mode === "range" && (
             <button
               onClick={() => setShowCal((v) => !v)}
               style={{
@@ -1131,7 +1191,7 @@ export default function AttendanceModule({
                   ? `${fmtDate(startDate)} → pick end`
                   : "Select date range"}
             </button>
-          )}
+          )} */}
         </div>
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
