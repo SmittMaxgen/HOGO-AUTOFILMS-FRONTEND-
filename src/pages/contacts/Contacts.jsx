@@ -1120,7 +1120,7 @@ const Contacts = () => {
             color={THEME.white}
             lineHeight={1.2}
           >
-            Contacts
+            Contact Us
           </Typography>
           <Typography
             variant="body2"

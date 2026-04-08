@@ -1836,7 +1836,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           onClick={() => handleNavigate("/contacts")}
         >
           <BusinessIcon />
-          {!collapsed && "Contacts"}
+          {!collapsed && "Contact Us"}
         </Box>
 
         <Box
