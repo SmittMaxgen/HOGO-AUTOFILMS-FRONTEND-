@@ -1176,12 +1176,12 @@ const STATUS_CHIP_CONFIG = {
     icon: <CheckCircle fontSize="small" />,
     label: "Accepted",
   },
-  ACCEPT: {
-    color: "success",
-    icon: <CheckCircle fontSize="small" />,
-    label: "Accepted",
-  },
-  REJECT: {
+  // ACCEPT: {
+  //   color: "success",
+  //   icon: <CheckCircle fontSize="small" />,
+  //   label: "Accepted",
+  // },
+  REJECTED: {
     color: "error",
     icon: <Cancel fontSize="small" />,
     label: "Rejected",
@@ -1191,7 +1191,7 @@ const STATUS_CHIP_CONFIG = {
     icon: <HourglassEmpty fontSize="small" />,
     label: "Expired",
   },
-  VOID: { color: "default", icon: <Cancel fontSize="small" />, label: "Void" },
+  // VOID: { color: "default", icon: <Cancel fontSize="small" />, label: "Void" },
 };
 
 // ─── Main Component ────────────────────────────────────────────────────────────
@@ -1322,7 +1322,7 @@ const WarrantyManagement = () => {
       updateWarranty({
         id: selectedWarranty.id,
         data: {
-          warranty_status: "REJECT",
+          warranty_status: "REJECTED",
           rejection_reason: rejectionReason,
           approved_by: (adminList && adminList?.id) || null,
         },
@@ -1478,7 +1478,7 @@ const WarrantyManagement = () => {
         )}
 
         {/* Rejection Reason Alert */}
-        {selectedWarranty.warranty_status === "REJECT" &&
+        {selectedWarranty.warranty_status === "REJECTED" &&
           selectedWarranty.rejection_reason && (
             <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
               <Typography variant="subtitle2" fontWeight={700} gutterBottom>
@@ -1811,7 +1811,7 @@ const WarrantyManagement = () => {
                 ))}
               </Select>
             </Box>
-            <Box sx={{ minWidth: 160 }}>
+            {/* <Box sx={{ minWidth: 160 }}>
               <Select
                 value={searchQuery.warranty_status}
                 onChange={(e) =>
@@ -1848,7 +1848,7 @@ const WarrantyManagement = () => {
                   </MenuItem>
                 ))}
               </Select>
-            </Box>
+            </Box> */}
           </Stack>
         </Box>
         <TableContainer>
@@ -1899,7 +1899,7 @@ const WarrantyManagement = () => {
                     >
                       <CircularProgress size={28} sx={{ color: "#D20000" }} />
                       <Typography variant="body2" color="text.secondary">
-                        Loading inventory serials...
+                        Loading Warranties...
                       </Typography>
                     </Box>
                   </TableCell>

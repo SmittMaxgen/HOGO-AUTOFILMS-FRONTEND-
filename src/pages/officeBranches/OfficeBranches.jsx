@@ -72,7 +72,7 @@ const STATUS_STYLE = {
 
 // ─── Initial state ────────────────────────────────────────────────────────────
 const EMPTY_FORM = {
-  branch_name: "",
+  name: "",
   branch_code: "",
   manager_name: "",
   phone: "",
@@ -88,7 +88,7 @@ const EMPTY_FORM = {
 };
 
 const REQUIRED = new Set([
-  "branch_name",
+  "name",
   "branch_code",
   "phone",
   "email",
@@ -217,7 +217,7 @@ const OfficeBranch = () => {
 
   const loadForm = (branch) =>
     setFormData({
-      branch_name: branch.branch_name || "",
+      name: branch.name || "",
       branch_code: branch.branch_code || "",
       manager_name: branch.manager_name || "",
       phone: branch.phone || "",
@@ -235,22 +235,21 @@ const OfficeBranch = () => {
   // ── Validation ─────────────────────────────────────────────────────────────
   const validate = () => {
     const errors = {};
-    if (!formData.branch_name?.trim())
-      errors.branch_name = "Branch name is required";
-    if (!formData.branch_code?.trim())
-      errors.branch_code = "Branch code is required";
-    if (!formData.phone?.trim()) errors.phone = "Phone is required";
-    else if (!/^\d{10}$/.test(formData.phone))
-      errors.phone = "Phone must be 10 digits";
-    if (!formData.email?.trim()) errors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email))
-      errors.email = "Email is invalid";
+    if (!formData.name?.trim()) errors.name = "Branch name is required";
+    // if (!formData.branch_code?.trim())
+    //   errors.branch_code = "Branch code is required";
+    // if (!formData.phone?.trim()) errors.phone = "Phone is required";
+    // else if (!/^\d{10}$/.test(formData.phone))
+    //   errors.phone = "Phone must be 10 digits";
+    // if (!formData.email?.trim()) errors.email = "Email is required";
+    // else if (!/\S+@\S+\.\S+/.test(formData.email))
+    //   errors.email = "Email is invalid";
     if (!formData.address?.trim()) errors.address = "Address is required";
     if (!formData.city?.trim()) errors.city = "City is required";
     if (!formData.state?.trim()) errors.state = "State is required";
-    if (!formData.pincode?.trim()) errors.pincode = "Pincode is required";
-    else if (!/^\d{6}$/.test(formData.pincode))
-      errors.pincode = "Pincode must be 6 digits";
+    // if (!formData.pincode?.trim()) errors.pincode = "Pincode is required";
+    // else if (!/^\d{6}$/.test(formData.pincode))
+    //   errors.pincode = "Pincode must be 6 digits";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -398,11 +397,11 @@ const OfficeBranch = () => {
                     {[
                       "Sr",
                       "Branch",
-                      "Code",
+                      // "Code",
                       "City",
                       "State",
-                      "Phone",
-                      "Manager",
+                      // "Phone",
+                      // "Manager",
                       "Status",
                       "Actions",
                     ].map((h) => (
@@ -467,7 +466,7 @@ const OfficeBranch = () => {
                               fontSize={13}
                               color="#1a1a1a"
                             >
-                              {branch.branch_name}
+                              {branch.name}
                             </Typography>
                             {branch.is_headquarters && (
                               <Chip
@@ -489,7 +488,7 @@ const OfficeBranch = () => {
                       </TableCell>
 
                       {/* Code */}
-                      <TableCell>
+                      {/* <TableCell>
                         <Chip
                           label={branch.branch_code || "N/A"}
                           size="small"
@@ -502,7 +501,7 @@ const OfficeBranch = () => {
                             border: "1px solid #d0deff",
                           }}
                         />
-                      </TableCell>
+                      </TableCell> */}
 
                       {/* City */}
                       <TableCell>
@@ -519,16 +518,16 @@ const OfficeBranch = () => {
                       </TableCell>
 
                       {/* Phone */}
-                      <TableCell>
+                      {/* <TableCell>
                         <Typography fontSize={13}>{branch.phone}</Typography>
-                      </TableCell>
+                      </TableCell> */}
 
                       {/* Manager */}
-                      <TableCell>
+                      {/* <TableCell>
                         <Typography fontSize={12} color="text.secondary">
                           {branch.manager_name || "—"}
                         </Typography>
-                      </TableCell>
+                      </TableCell> */}
 
                       {/* Status */}
                       {/* <TableCell>
@@ -800,7 +799,7 @@ const OfficeBranch = () => {
         </Box>
 
         {/* Identity strip (view mode only) */}
-        {mode === "view" && selected?.branch_name && (
+        {mode === "view" && selected?.name && (
           <Box display="flex" alignItems="center" gap={2}>
             <Box
               sx={{
@@ -819,7 +818,7 @@ const OfficeBranch = () => {
             <Box>
               <Box display="flex" alignItems="center" gap={1}>
                 <Typography variant="h5" fontWeight={700} color="#fff">
-                  {selected.branch_name}
+                  {selected.name}
                 </Typography>
                 {selected.is_headquarters && (
                   <Chip
@@ -900,37 +899,37 @@ const OfficeBranch = () => {
                     <DetailCard
                       icon={<BusinessIcon fontSize="small" />}
                       label="Branch Name"
-                      value={selected.branch_name}
+                      value={selected.name}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
+                  {/* <Grid item xs={12} sm={6} md={4}>
                     <DetailCard
                       icon={<ApartmentIcon fontSize="small" />}
                       label="Branch Code"
                       value={selected.branch_code}
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
+                  </Grid> */}
+                  {/* <Grid item xs={12} sm={6} md={4}>
                     <DetailCard
                       icon={<PersonIcon fontSize="small" />}
                       label="Manager"
                       value={selected.manager_name}
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
+                  </Grid> */}
+                  {/* <Grid item xs={12} sm={6} md={4}>
                     <DetailCard
                       icon={<PhoneIcon fontSize="small" />}
                       label="Phone"
                       value={selected.phone}
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={4}>
+                  </Grid> */}
+                  {/* <Grid item xs={12} sm={6} md={4}>
                     <DetailCard
                       icon={<EmailIcon fontSize="small" />}
                       label="Email"
                       value={selected.email}
                     />
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </Box>
             </Paper>
@@ -1052,13 +1051,9 @@ const OfficeBranch = () => {
               <Box px={4} py={3}>
                 <Grid container spacing={2.5}>
                   <Grid item xs={12} sm={6}>
-                    <Field
-                      {...fieldProps}
-                      label="Branch Name"
-                      field="branch_name"
-                    />
+                    <Field {...fieldProps} label="Branch Name" field="name" />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  {/* <Grid item xs={12} sm={6}>
                     <Field
                       {...fieldProps}
                       label="Branch Code"
@@ -1094,7 +1089,7 @@ const OfficeBranch = () => {
                       field="email"
                       type="email"
                     />
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12} sm={6}>
                     <Field
                       {...fieldProps}
@@ -1183,7 +1178,7 @@ const OfficeBranch = () => {
                   <Grid item xs={12} sm={4}>
                     <Field {...fieldProps} label="State" field="state" />
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  {/* <Grid item xs={12} sm={4}>
                     <Field
                       {...fieldProps}
                       label="Pincode"
@@ -1197,7 +1192,7 @@ const OfficeBranch = () => {
                         },
                       }}
                     />
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12} sm={6}>
                     <Field {...fieldProps} label="Country" field="country" />
                   </Grid>
@@ -1282,7 +1277,7 @@ const OfficeBranch = () => {
           <Typography variant="body1" color="text.secondary">
             Are you sure you want to delete{" "}
             <Typography component="span" fontWeight={700} color="#1a1a1a">
-              {selected?.branch_name}
+              {selected?.name}
             </Typography>
             ? This action cannot be undone.
           </Typography>

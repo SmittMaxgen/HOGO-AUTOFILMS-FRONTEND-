@@ -382,9 +382,9 @@ export default function Plan() {
       {/* ── Top Bar ─────────────────────────────────────────────────── */}
       <div style={styles.topBar}>
         <span style={styles.pageTitle}>Travel Plan Manager</span>
-        <button style={styles.primaryBtn} onClick={openCreateTP}>
+        {/* <button style={styles.primaryBtn} onClick={openCreateTP}>
           + New Travel Plan
-        </button>
+        </button> */}
       </div>
 
       {/* ── Travel Plan Tabs ─────────────────────────────────────────── */}
@@ -439,7 +439,7 @@ export default function Plan() {
                 ))}
               </tbody>
             </table>
-            <div style={styles.infoActions}>
+            {/* <div style={styles.infoActions}>
               <button
                 style={styles.editBtn}
                 onClick={() => openEditTP(selectedTP)}
@@ -453,7 +453,7 @@ export default function Plan() {
               >
                 Delete
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* ── Calendar ─────────────────────────────────────────────── */}
@@ -862,7 +862,7 @@ const BORDER = "#c8c8c8";
 const styles = {
   page: {
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    maxWidth: 1100,
+    // maxWidth: 1100,
     margin: "0 auto",
     padding: "16px 12px 40px",
     background: "#f4f6fb",
@@ -871,7 +871,7 @@ const styles = {
   topBar: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     marginBottom: 16,
     flexWrap: "wrap",
     gap: 8,
@@ -951,8 +951,9 @@ const styles = {
     overflow: "hidden",
   },
   calHeader: {
-    background: YELLOW,
+    background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
     display: "flex",
+    color: "#fff",
     alignItems: "center",
     justifyContent: "center",
     padding: "10px 16px",
@@ -962,7 +963,7 @@ const styles = {
   calTitle: {
     fontWeight: 700,
     fontSize: 18,
-    color: "#222",
+    // color: "#222",
     minWidth: 90,
     textAlign: "center",
     letterSpacing: 1,
@@ -972,7 +973,8 @@ const styles = {
     border: "none",
     fontSize: 22,
     cursor: "pointer",
-    color: "#444",
+    // color: "#444",
+    color: "#fff",
     lineHeight: 1,
     padding: "0 4px",
   },

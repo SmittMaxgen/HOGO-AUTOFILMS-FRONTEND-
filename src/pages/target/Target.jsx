@@ -372,7 +372,7 @@ const Target = () => {
             sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
           />
           <Typography variant="h5" fontWeight={800} color="#1a1a1a">
-            Warranty Management
+            Target
           </Typography>
         </Box>
         <div style={s.yearPicker}>
@@ -418,17 +418,22 @@ const Target = () => {
         )}
 
         <table style={s.table}>
-          <thead>
+          <thead
+            style={{
+              ...s.th,
+              padding: "12px 16px",
+            }}
+          >
             {/* <tr>
               <th colSpan={2} style={s.thGroup} />
               <th style={{ ...s.thGroup, ...s.thHighlight }}>Target</th>
             </tr> */}
             <tr>
-              <th style={{ ...s.th, width: 70 }}>S No</th>
-              <th style={{ ...s.th, width: 160 }}>Month</th>
+              <th style={{ width: 70, padding: "12px 16px" }}>S No</th>
+              <th style={{ width: 160, padding: "12px 16px" }}>Month</th>
               <th
                 style={{
-                  ...s.th,
+                  padding: "12px 16px",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
@@ -692,15 +697,15 @@ const s = {
   },
   thHighlight: {
     background: "#fecaca",
-    color: "#3f0000",
+    color: "white",
     fontWeight: 700,
     fontSize: 13,
     textAlign: "center",
   },
   th: {
-    padding: "12px 16px",
-    background: "#fee2e2",
-    color: "#3f0000",
+    // padding: "12px 16px",
+    background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+    color: "white",
     fontSize: 13,
     fontWeight: 700,
     textAlign: "left",
@@ -771,9 +776,9 @@ const s = {
   },
   totalValue: {
     padding: "13px 16px",
-    background: "#f5e642",
-    color: "#1a1a2e",
-    fontWeight: 800,
+    background: "rgb(26, 26, 46)",
+    color: "white",
+    fontWeight: 500,
     fontSize: 15,
   },
 

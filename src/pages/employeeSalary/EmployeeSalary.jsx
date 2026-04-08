@@ -57,6 +57,7 @@ const computeGross = (basic, allowances, deductions) => {
 
 // Get employee display name from list
 const getEmployeeName = (employees, employeeId) => {
+  console.log("employees::::??????", employees);
   if (!Array.isArray(employees)) {
     return `Emp #${employeeId}`;
   }
@@ -64,7 +65,11 @@ const getEmployeeName = (employees, employeeId) => {
   const emp = employees.find((e) => String(e.id) === String(employeeId));
 
   return emp
-    ? emp.name || emp.full_name || emp.employee_name || `Emp #${emp.id}`
+    ? `${emp.first_name || ""} ${emp.last_name || ""}` ||
+        emp.name ||
+        emp.full_name ||
+        emp.employee_name ||
+        `Emp #${emp.id}`
     : `Emp #${employeeId}`;
 };
 
@@ -498,7 +503,8 @@ const EmployeeSalary = () => {
             employees?.length > 0 &&
             employees?.map((emp) => (
               <option key={emp.id} value={emp.id}>
-                {emp.name ||
+                {`${emp.first_name || ""} ${emp.last_name || ""}` ||
+                  emp.name ||
                   emp.full_name ||
                   emp.employee_name ||
                   `Employee #${emp.id}`}
@@ -581,9 +587,9 @@ const EmployeeSalary = () => {
                           >
                             {getEmployeeName(employees, record.employee_id)}
                           </div>
-                          <div style={{ fontSize: 11, color: "#94a3b8" }}>
+                          {/* <div style={{ fontSize: 11, color: "#94a3b8" }}>
                             ID #{record.employee_id}
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </td>
@@ -837,7 +843,7 @@ const s = {
   th: {
     padding: "12px 14px",
     background: "#fee2e2",
-    color: "#3f0000",
+    color: "white",
     fontSize: 13,
     fontWeight: 700,
     textAlign: "left",

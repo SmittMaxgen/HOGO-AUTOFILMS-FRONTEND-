@@ -692,7 +692,7 @@
 
 // export default Quotes;
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getQuotes } from "../../feature/quotes/quotesThunks";
 import {
@@ -791,7 +791,7 @@ const filterFieldSx = {
   "& .MuiOutlinedInput-root": {
     borderRadius: 2,
     fontSize: 13,
-    width:250,
+    width: 250,
     "&:hover fieldset": { borderColor: THEME.primary },
     "&.Mui-focused fieldset": { borderColor: THEME.primary },
   },
@@ -904,7 +904,7 @@ const Quotes = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // ── Debounce ref ──
-  const debounceRef = useState(null);
+  const debounceRef = useRef(null);
 
   // ── Initial load ──
   useEffect(() => {
@@ -917,9 +917,8 @@ const Quotes = () => {
       const newFilters = { ...filters, [field]: e.target.value };
       setFilters(newFilters);
       setPage(0); // reset to page 1 on new filter
-
-      clearTimeout(debounceRef[0]);
-      debounceRef[0] = setTimeout(() => {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
         const active = Object.fromEntries(
           Object.entries(newFilters).filter(([, v]) => v !== ""),
         );

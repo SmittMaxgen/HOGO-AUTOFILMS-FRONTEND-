@@ -4093,7 +4093,7 @@ const EmployeeManagement = () => {
                     options={{ InputLabelProps: { shrink: true } }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid sx={{ width: 200 }} item xs={12} sm={6}>
                   <Field
                     {...fieldProps}
                     label="Gender"
@@ -4117,6 +4117,7 @@ const EmployeeManagement = () => {
                 {/* Department Autocomplete */}
                 <Grid item xs={12} sm={6}>
                   <Autocomplete
+                    sx={{ width: 200 }}
                     options={departments}
                     getOptionLabel={(o) => o.name || ""}
                     value={
@@ -4164,6 +4165,7 @@ const EmployeeManagement = () => {
                 {/* Role Autocomplete */}
                 <Grid item xs={12} sm={6}>
                   <Autocomplete
+                    sx={{ width: 200 }}
                     options={roles}
                     getOptionLabel={(o) => o.name || ""}
                     value={roles.find((r) => r.id === formData.role_id) || null}
@@ -4199,7 +4201,7 @@ const EmployeeManagement = () => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid style={{ width: 200 }} item xs={12} sm={6}>
                   <Field
                     {...fieldProps}
                     label="Status"
@@ -4217,7 +4219,7 @@ const EmployeeManagement = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid sx={{ width: 200 }} item xs={12} sm={6}>
                   <Field
                     {...fieldProps}
                     label="Employment Type"

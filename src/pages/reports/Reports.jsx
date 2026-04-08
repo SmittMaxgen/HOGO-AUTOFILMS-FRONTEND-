@@ -592,7 +592,7 @@ const Reports = () => {
               <td colSpan={2} style={s.totalLabel}>
                 Total
               </td>
-              <td style={{ ...s.totalValue, background: "#fef08a" }}>
+              <td style={{ ...s.totalValue, background: "rgb(26, 26, 46)" }}>
                 {hasTotals ? totalTarget.toLocaleString() : "—"}
               </td>
               <td style={s.totalValue}>
@@ -668,7 +668,7 @@ const s = {
     display: "flex",
     alignItems: "center",
     background: "#fff",
-    border: "1.5px solid #cbd5e1",
+    border: "1.5px solid #020202",
     borderRadius: 10,
     overflow: "hidden",
     boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
@@ -747,11 +747,16 @@ const s = {
     borderRadius: 3,
   },
 
-  table: { width: "100%", borderCollapse: "collapse" },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    background:
+      "linear-gradient(90deg, rgb(210, 0, 0) 0%, rgb(139, 0, 0) 100%)",
+  },
 
   thGroup: {
     padding: "12px 16px",
-    background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+    // background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
     color: "#fff",
     fontSize: 13,
     fontWeight: 700,
@@ -760,8 +765,8 @@ const s = {
   },
   th: {
     padding: "12px 16px",
-    background: "#fee2e2",
-    color: "#3f0000",
+    // background: "#fee2e2",
+    color: "white",
     fontSize: 13,
     fontWeight: 700,
     textAlign: "left",
@@ -795,8 +800,8 @@ const s = {
   },
   totalValue: {
     padding: "13px 16px",
-    background: "#f5e642",
-    color: "#1a1a2e",
+    background: "rgb(26, 26, 46)",
+    color: "white",
     fontWeight: 800,
     fontSize: 14,
   },
@@ -816,7 +821,7 @@ const s = {
 
   viewBtn: {
     padding: "5px 14px",
-    background: "linear-gradient(90deg, #1e40af 0%, #2563eb 100%)",
+    background: "rgb(26, 26, 46)",
     color: "#fff",
     border: "none",
     borderRadius: 6,
@@ -899,8 +904,8 @@ const s = {
   },
   mTh: {
     padding: "10px 14px",
-    background: "#fee2e2",
-    color: "#3f0000",
+    // background: "#fee2e2",
+    color: "white",
     fontSize: 12,
     fontWeight: 700,
     textAlign: "left",

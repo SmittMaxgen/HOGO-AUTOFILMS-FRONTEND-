@@ -401,7 +401,7 @@ const Role = () => {
                       "Sr",
                       "Role",
                       "Description",
-                      "Permissions",
+                      // "Permissions",
                       "Status",
                       "Actions",
                     ].map((h) => (
@@ -487,7 +487,7 @@ const Role = () => {
                       </TableCell>
 
                       {/* Permissions */}
-                      <TableCell>
+                      {/* <TableCell>
                         <Typography
                           fontSize={12}
                           color="text.secondary"
@@ -500,7 +500,7 @@ const Role = () => {
                         >
                           {role.permissions || "—"}
                         </Typography>
-                      </TableCell>
+                      </TableCell> */}
 
                       {/* Status */}
                       {/* <TableCell>
@@ -822,13 +822,13 @@ const Role = () => {
                     value={selected.status === true ? "Active" : "Inactive"}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <DetailCard
                     icon={<LockIcon fontSize="small" />}
                     label="Permissions"
                     value={selected.permissions}
                   />
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12}>
                   <DetailCard
                     icon={<DescriptionIcon fontSize="small" />}
@@ -899,13 +899,13 @@ const Role = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <Field
                     {...fieldProps}
                     label="Permissions"
                     field="permissions"
                   />
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12}>
                   <Field
                     {...fieldProps}
