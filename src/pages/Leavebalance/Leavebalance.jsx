@@ -362,40 +362,45 @@ export default function LeaveBalanceModule({
             flexWrap: "wrap",
           }}
         >
-          <div style={{ position: "relative" }}>
-            <span
-              style={{
-                position: "absolute",
-                left: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                fontSize: "13px",
-                color: "#94a3b8",
-                pointerEvents: "none",
-              }}
-            ></span>
-            <input
-              type="text"
-              placeholder="Search employee…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{
-                paddingLeft: "32px",
-                paddingRight: "12px",
-                paddingTop: "7px",
-                paddingBottom: "7px",
-                fontSize: "13px",
-                border: "1px solid #e2e8f0",
-                borderRadius: "8px",
-                outline: "none",
-                color: "#374151",
-                background: "#f8fafc",
-                width: "200px",
-              }}
-              onFocus={(e) => (e.target.style.border = "1px solid #D20000")}
-              onBlur={(e) => (e.target.style.border = "1px solid #e2e8f0")}
-            />
-          </div>
+          {disabled === false ? (
+            <div style={{ position: "relative" }}>
+              <span
+                style={{
+                  position: "absolute",
+                  left: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  fontSize: "13px",
+                  color: "#94a3b8",
+                  pointerEvents: "none",
+                }}
+              ></span>
+              <input
+                type="text"
+                placeholder="Search employee…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{
+                  paddingLeft: "32px",
+                  paddingRight: "12px",
+                  paddingTop: "7px",
+                  paddingBottom: "7px",
+                  fontSize: "13px",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "8px",
+                  outline: "none",
+                  color: "#374151",
+                  background: "#f8fafc",
+                  width: "200px",
+                }}
+                onFocus={(e) => (e.target.style.border = "1px solid #D20000")}
+                onBlur={(e) => (e.target.style.border = "1px solid #e2e8f0")}
+              />
+            </div>
+          ) : (
+            <></>
+          )}
+
           {/* ── Month + Year Filters ── */}
           <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
             {/* Year */}
