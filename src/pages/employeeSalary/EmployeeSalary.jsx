@@ -348,11 +348,14 @@ const SalaryFormModal = ({
 // ─────────────────────────────────────────────────────────────
 // Main EmployeeSalary Component
 // ─────────────────────────────────────────────────────────────
-const EmployeeSalary = () => {
+// const EmployeeSalary = () => {
+const EmployeeSalary = ({ employee_id = "", disabled = false }) => {
   const dispatch = useDispatch();
 
   // ── State ──────────────────────────────────────────────────
-  const [filterEmployeeId, setFilterEmployeeId] = useState("");
+  // const [filterEmployeeId, setFilterEmployeeId] = useState("");
+  const [filterEmployeeId, setFilterEmployeeId] = useState(employee_id);
+
   const [modalMode, setModalMode] = useState(null); // "add" | "edit" | null
   const [editRecord, setEditRecord] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
@@ -451,75 +454,85 @@ const EmployeeSalary = () => {
   return (
     <div style={s.page}>
       {/* ── Page Header ── */}
-      <div style={s.pageHeader}>
-        <Box display="flex" alignItems="center" gap={1.5}>
-          <Box
-            sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
-          />
-          <Typography variant="h5" fontWeight={800} color="#1a1a1a">
-            Employee Salary
-          </Typography>
-        </Box>
+      {disabled === false && (
+        <div style={s.pageHeader}>
+          <Box display="flex" alignItems="center" gap={1.5}>
+            <Box
+              sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
+            />
+            <Typography variant="h5" fontWeight={800} color="#1a1a1a">
+              Employee Salary
+            </Typography>
+          </Box>
 
-        <button style={s.addBtn} onClick={openAdd}>
-          + Add Salary
-        </button>
-      </div>
+          <button style={s.addBtn} onClick={openAdd}>
+            + Add Salary
+          </button>
+        </div>
+      )}
 
       {/* ── Stats Cards ── */}
-      <div style={s.statsRow}>
-        <div style={s.statCard}>
-          <div style={s.statLabel}>Total Records</div>
-          <div style={s.statValue}>{displayed.length}</div>
-        </div>
-        <div style={{ ...s.statCard, borderTop: "3px solid #16a34a" }}>
-          <div style={s.statLabel}>Active Salaries</div>
-          <div style={{ ...s.statValue, color: "#16a34a" }}>{activeCount}</div>
-        </div>
-        <div style={{ ...s.statCard, borderTop: "3px solid #f59e0b" }}>
-          <div style={s.statLabel}>Inactive</div>
-          <div style={{ ...s.statValue, color: "#d97706" }}>
-            {displayed.length - activeCount}
+      {disabled === false && (
+        <div style={s.statsRow}>
+          <div style={s.statCard}>
+            <div style={s.statLabel}>Total Records</div>
+            <div style={s.statValue}>{displayed.length}</div>
+          </div>
+          <div style={{ ...s.statCard, borderTop: "3px solid #16a34a" }}>
+            <div style={s.statLabel}>Active Salaries</div>
+            <div style={{ ...s.statValue, color: "#16a34a" }}>
+              {activeCount}
+            </div>
+          </div>
+          <div style={{ ...s.statCard, borderTop: "3px solid #f59e0b" }}>
+            <div style={s.statLabel}>Inactive</div>
+            <div style={{ ...s.statValue, color: "#d97706" }}>
+              {displayed.length - activeCount}
+            </div>
+          </div>
+          <div style={{ ...s.statCard, borderTop: "3px solid #2563eb" }}>
+            <div style={s.statLabel}>Total Gross (filtered)</div>
+            <div style={{ ...s.statValue, color: "#1e40af" }}>
+              ₹{fmt(totalGross)}
+            </div>
           </div>
         </div>
-        <div style={{ ...s.statCard, borderTop: "3px solid #2563eb" }}>
-          <div style={s.statLabel}>Total Gross (filtered)</div>
-          <div style={{ ...s.statValue, color: "#1e40af" }}>
-            ₹{fmt(totalGross)}
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* ── Filter Bar ── */}
-      <div style={s.filterBar}>
-        <span style={s.filterLabel}>Filter by Employee</span>
-        <select
-          style={s.filterSelect}
-          value={filterEmployeeId}
-          onChange={(e) => setFilterEmployeeId(e.target.value)}
-        >
-          <option value="">All Employees</option>
-          {employees &&
-            employees?.length > 0 &&
-            employees?.map((emp) => (
-              <option key={emp.id} value={emp.id}>
-                {`${emp.first_name || ""} ${emp.last_name || ""}` ||
-                  emp.name ||
-                  emp.full_name ||
-                  emp.employee_name ||
-                  `Employee #${emp.id}`}
-              </option>
-            ))}
-        </select>
-        {filterEmployeeId && (
-          <button
-            style={s.clearFilterBtn}
-            onClick={() => setFilterEmployeeId("")}
-          >
-            ✕ Clear
-          </button>
-        )}
-      </div>
+      {disabled === false && (
+        <>
+          <div style={s.filterBar}>
+            <span style={s.filterLabel}>Filter by Employee</span>
+            <select
+              style={s.filterSelect}
+              value={filterEmployeeId}
+              onChange={(e) => setFilterEmployeeId(e.target.value)}
+            >
+              <option value="">All Employees</option>
+              {employees &&
+                employees?.length > 0 &&
+                employees?.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {`${emp.first_name || ""} ${emp.last_name || ""}` ||
+                      emp.name ||
+                      emp.full_name ||
+                      emp.employee_name ||
+                      `Employee #${emp.id}`}
+                  </option>
+                ))}
+            </select>
+            {filterEmployeeId && (
+              <button
+                style={s.clearFilterBtn}
+                onClick={() => setFilterEmployeeId("")}
+              >
+                ✕ Clear
+              </button>
+            )}
+          </div>
+        </>
+      )}
 
       {/* ── Table ── */}
       <div style={s.tableCard}>
@@ -683,24 +696,26 @@ const EmployeeSalary = () => {
       </div>
 
       {/* ── Legend ── */}
-      <div style={s.legend}>
-        <span style={s.li}>
-          <span style={{ ...s.dot, background: "#16a34a" }} />
-          Active salary
-        </span>
-        <span style={s.li}>
-          <span style={{ ...s.dot, background: "#dc2626" }} />
-          Inactive salary
-        </span>
-        <span style={s.li}>
-          <span style={{ ...s.dot, background: "#16a34a", opacity: 0.4 }} />
-          Allowances added to gross
-        </span>
-        <span style={s.li}>
-          <span style={{ ...s.dot, background: "#dc2626", opacity: 0.4 }} />
-          Deductions subtracted from gross
-        </span>
-      </div>
+      {disabled === false && (
+        <div style={s.legend}>
+          <span style={s.li}>
+            <span style={{ ...s.dot, background: "#16a34a" }} />
+            Active salary
+          </span>
+          <span style={s.li}>
+            <span style={{ ...s.dot, background: "#dc2626" }} />
+            Inactive salary
+          </span>
+          <span style={s.li}>
+            <span style={{ ...s.dot, background: "#16a34a", opacity: 0.4 }} />
+            Allowances added to gross
+          </span>
+          <span style={s.li}>
+            <span style={{ ...s.dot, background: "#dc2626", opacity: 0.4 }} />
+            Deductions subtracted from gross
+          </span>
+        </div>
+      )}
 
       {/* ── Add / Edit Modal ── */}
       {modalMode && (
@@ -726,7 +741,7 @@ const EmployeeSalary = () => {
 const s = {
   page: {
     fontFamily: "'Segoe UI','Inter',sans-serif",
-    padding: "28px 32px",
+    // padding: "28px 32px",
     minHeight: "100vh",
   },
 

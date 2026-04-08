@@ -602,6 +602,7 @@ export default function AttendanceModule({
   employee_id: propEmployeeId,
   title,
   employees: propEmployees,
+  disabled = false,
 }) {
   const dispatch = useDispatch();
   const allList = useSelector(selectEmployeeAttendances);
@@ -749,76 +750,81 @@ export default function AttendanceModule({
       />
 
       {/* ── Header ───────────────────────────────────────────────────────── */}
-      <Box display="flex" alignItems="center" gap={1.5} mb={3}>
-        <Box
-          sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
-        />
-        <Typography variant="h5" fontWeight={800} color="#1a1a1a">
-          {title ||
-            (propEmployeeId ? "Employee Attendance" : "Attendance Records")}
-        </Typography>
-      </Box>
+      {disabled === false && (
+        <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+          <Box
+            sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
+          />
+          <Typography variant="h5" fontWeight={800} color="#1a1a1a">
+            {title ||
+              (propEmployeeId ? "Employee Attendance" : "Attendance Records")}
+          </Typography>
+        </Box>
+      )}
 
       {/* ── Stat Cards ───────────────────────────────────────────────────── */}
-      <div
-        style={{
-          display: "flex",
-          gap: "12px",
-          flexWrap: "wrap",
-          marginBottom: "8px",
-        }}
-      >
-        <StatCard
-          label="Present"
-          value={present}
-          icon="✅"
-          color="#10b981"
-          loading={loading}
-          active={statusFilter === "present"}
-          onClick={() =>
-            setStatusFilter((f) => (f === "present" ? "all" : "present"))
-          }
-        />
-        <StatCard
-          label="Full Leave"
-          value={fullCount}
-          icon="🏖️"
-          color="#ef4444"
-          loading={loading}
-          active={statusFilter === "full"}
-          onClick={() =>
-            setStatusFilter((f) => (f === "full" ? "all" : "full"))
-          }
-        />
-        <StatCard
-          label="Half Leave"
-          value={halfCount}
-          icon="⏰"
-          color="#f59e0b"
-          loading={loading}
-          active={statusFilter === "half"}
-          onClick={() =>
-            setStatusFilter((f) => (f === "half" ? "all" : "half"))
-          }
-        />
-        <StatCard
-          label="Absent"
-          value={absent}
-          icon="❌"
-          color="#6b7280"
-          loading={loading}
-          active={statusFilter === "absent"}
-          onClick={() =>
-            setStatusFilter((f) => (f === "absent" ? "all" : "absent"))
-          }
-        />
-        <StatCard
-          label="Avg Hours"
-          value={`${avgHours}h`}
-          icon="⏱️"
-          color="#D20000"
-        />
-      </div>
+      {disabled === false && (
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            flexWrap: "wrap",
+            marginBottom: "8px",
+          }}
+        >
+          <StatCard
+            label="Present"
+            value={present}
+            icon="✅"
+            color="#10b981"
+            loading={loading}
+            active={statusFilter === "present"}
+            onClick={() =>
+              setStatusFilter((f) => (f === "present" ? "all" : "present"))
+            }
+          />
+          <StatCard
+            label="Full Leave"
+            value={fullCount}
+            icon="🏖️"
+            color="#ef4444"
+            loading={loading}
+            active={statusFilter === "full"}
+            onClick={() =>
+              setStatusFilter((f) => (f === "full" ? "all" : "full"))
+            }
+          />
+          <StatCard
+            label="Half Leave"
+            value={halfCount}
+            icon="⏰"
+            color="#f59e0b"
+            loading={loading}
+            active={statusFilter === "half"}
+            onClick={() =>
+              setStatusFilter((f) => (f === "half" ? "all" : "half"))
+            }
+          />
+          <StatCard
+            label="Absent"
+            value={absent}
+            icon="❌"
+            color="#6b7280"
+            loading={loading}
+            active={statusFilter === "absent"}
+            onClick={() =>
+              setStatusFilter((f) => (f === "absent" ? "all" : "absent"))
+            }
+          />
+          <StatCard
+            label="Avg Hours"
+            value={`${avgHours}h`}
+            icon="⏱️"
+            color="#D20000"
+          />
+        </div>
+      )}
+
       <p
         style={{
           fontSize: "11px",
@@ -880,85 +886,28 @@ export default function AttendanceModule({
       )} */}
 
       {/* ── Date Tabs ─────────────────────────────────────────────────────── */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          // gap: "6px",
-          background: "#1a1a2e",
-          // background: "#f1f5f9",
-          borderRadius: "10px",
-          padding: "7px",
-          marginBottom: "20px",
-          // width: "fit-content",
-          flexWrap: "wrap",
-        }}
-      >
-        <div>
-          <Tab
-            label="Today"
-            active={mode === "today"}
-            onClick={() => handleModeChange("today")}
-          />
-          <Tab
-            label="This Month"
-            active={mode === "month"}
-            onClick={() => handleModeChange("month")}
-          />
-          <Tab
-            label="By Date"
-            active={mode === "date"}
-            onClick={() => handleModeChange("date")}
-          />
-          <Tab
-            label="Date Range"
-            active={mode === "range"}
-            onClick={() => handleModeChange("range")}
-          />
-        </div>
-        <div>
-          {/* ── Employee Dropdown ─────────────────────────────────────────────── */}
-          {!propEmployeeId && (
-            <div>
-              <select
-                value={selectedEmpId}
-                onChange={(e) => handleEmpChange(e.target.value)}
-                style={{ ...inputStyle, minWidth: "220px" }}
-              >
-                <option value="">All Employees</option>
-                {empLoading ? (
-                  <option disabled>Loading…</option>
-                ) : (
-                  employees &&
-                  employees.length > 0 &&
-                  employees?.map((emp) => (
-                    <option key={emp.id} value={emp.id}>
-                      {`${emp.first_name || ""} ${emp.last_name || ""}` ||
-                        emp.name ||
-                        emp.employee_name ||
-                        emp.full_name ||
-                        `Employee #${emp.id}`}
-                    </option>
-                  ))
-                )}
-              </select>
-            </div>
-          )}
-        </div>
-        {/* Single date picker */}
-        {mode === "date" && (
-          <input
-            type="date"
-            value={customDate}
-            max={todayStr()}
-            onChange={(e) => setCustomDate(e.target.value || todayStr())}
-            style={inputStyle}
-          />
-        )}
 
-        {/* Range: single button that opens the unified range calendar */}
-        {mode === "range" && (
+      {/* ── Range Calendar dropdown ───────────────────────────────────────── */}
+      {/* {mode === "range" && showCal && (
+        <div
+          ref={calRef}
+          style={{
+            position: "relative",
+            zIndex: 100,
+            marginTop: "-14px",
+            marginBottom: "16px",
+          }}
+        >
+          <RangeCalendar
+            startDate={startDate}
+            endDate={endDate}
+            onChange={handleRangeChange}
+          />
+        </div>
+      )} */}
+      {/* Range: single button that opens the unified range calendar */}
+      {mode === "range" && (
+        <div style={{ position: "relative" }}>
           <button
             onClick={() => setShowCal((v) => !v)}
             style={{
@@ -981,28 +930,26 @@ export default function AttendanceModule({
                 ? `${fmtDate(startDate)} → pick end`
                 : "Select date range"}
           </button>
-        )}
-      </div>
 
-      {/* ── Range Calendar dropdown ───────────────────────────────────────── */}
-      {mode === "range" && showCal && (
-        <div
-          ref={calRef}
-          style={{
-            position: "relative",
-            zIndex: 100,
-            marginTop: "-14px",
-            marginBottom: "16px",
-          }}
-        >
-          <RangeCalendar
-            startDate={startDate}
-            endDate={endDate}
-            onChange={handleRangeChange}
-          />
+          {showCal && (
+            <div
+              ref={calRef}
+              style={{
+                position: "absolute",
+                top: "calc(100% + 6px)",
+                right: 0,
+                zIndex: 999,
+              }}
+            >
+              <RangeCalendar
+                startDate={startDate}
+                endDate={endDate}
+                onChange={handleRangeChange}
+              />
+            </div>
+          )}
         </div>
       )}
-
       {/* ── Error ────────────────────────────────────────────────────────── */}
       {error && (
         <div
@@ -1030,7 +977,7 @@ export default function AttendanceModule({
           boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
         }}
       >
-        <div
+        {/* <div
           style={{
             padding: "14px 18px",
             background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
@@ -1082,8 +1029,110 @@ export default function AttendanceModule({
               ? "…"
               : `${rawList.length} record${rawList.length !== 1 ? "s" : ""}`}
           </span>
-        </div>
+        </div> */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            // gap: "6px",
+            background: "#1a1a2e",
+            // background: "#f1f5f9",
+            // borderRadius: "10px",
+            padding: "7px",
+            marginBottom: "20px",
+            // width: "fit-content",
+            flexWrap: "wrap",
+          }}
+        >
+          <div>
+            <Tab
+              label="Today"
+              active={mode === "today"}
+              onClick={() => handleModeChange("today")}
+            />
+            <Tab
+              label="This Month"
+              active={mode === "month"}
+              onClick={() => handleModeChange("month")}
+            />
+            <Tab
+              label="By Date"
+              active={mode === "date"}
+              onClick={() => handleModeChange("date")}
+            />
+            <Tab
+              label="Date Range"
+              active={mode === "range"}
+              onClick={() => handleModeChange("range")}
+            />
+          </div>
+          <div>
+            {/* ── Employee Dropdown ─────────────────────────────────────────────── */}
+            {!propEmployeeId && (
+              <div>
+                <select
+                  value={selectedEmpId}
+                  onChange={(e) => handleEmpChange(e.target.value)}
+                  style={{ ...inputStyle, minWidth: "220px" }}
+                >
+                  <option value="">All Employees</option>
+                  {empLoading ? (
+                    <option disabled>Loading…</option>
+                  ) : (
+                    employees &&
+                    employees.length > 0 &&
+                    employees?.map((emp) => (
+                      <option key={emp.id} value={emp.id}>
+                        {`${emp.first_name || ""} ${emp.last_name || ""}` ||
+                          emp.name ||
+                          emp.employee_name ||
+                          emp.full_name ||
+                          `Employee #${emp.id}`}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
+            )}
+          </div>
+          {/* Single date picker */}
+          {mode === "date" && (
+            <input
+              type="date"
+              value={customDate}
+              max={todayStr()}
+              onChange={(e) => setCustomDate(e.target.value || todayStr())}
+              style={inputStyle}
+            />
+          )}
 
+          {/* Range: single button that opens the unified range calendar */}
+          {mode === "range" && (
+            <button
+              onClick={() => setShowCal((v) => !v)}
+              style={{
+                ...inputStyle,
+                cursor: "pointer",
+                fontWeight: 600,
+                color: startDate && endDate ? "#D20000" : "#94a3b8",
+                background: showCal ? "#D2000008" : "#fff",
+                border: `1px solid ${showCal ? "#D20000" : "#cbd5e1"}`,
+                minWidth: "200px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              📅{" "}
+              {startDate && endDate
+                ? `${fmtDate(startDate)} → ${fmtDate(endDate)}`
+                : startDate
+                  ? `${fmtDate(startDate)} → pick end`
+                  : "Select date range"}
+            </button>
+          )}
+        </div>
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>

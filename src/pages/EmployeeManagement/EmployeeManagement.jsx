@@ -2760,6 +2760,13 @@ import {
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 
+import BeachAccessIcon from "@mui/icons-material/BeachAccess";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import LeaveBalanceModule from "../Leavebalance/Leavebalance"; // adjust path
+import AttendanceModule from "../EmployeeAttendance/EmployeeAttendance"; // adjust path
+import EmployeeSalaryModule from "../employeeSalary/EmployeeSalary"; // adjust path
+
 const BASE_URL = "https://hogofilm.pythonanywhere.com";
 
 // ─── Design constants ─────────────────────────────────────────────────────────
@@ -3065,6 +3072,7 @@ const EmployeeManagement = () => {
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  console.log("selectedEmployee", selectedEmployee);
   const [activeTab, setActiveTab] = useState(0);
   const [viewMode, setViewMode] = useState("list");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -3998,6 +4006,24 @@ const EmployeeManagement = () => {
               iconPosition="start"
               label="Users"
             />,
+            <Tab
+              key="leave"
+              icon={<BeachAccessIcon sx={{ fontSize: 16 }} />}
+              iconPosition="start"
+              label="Leave Balance"
+            />,
+            <Tab
+              key="empsalary"
+              icon={<MonetizationOnIcon sx={{ fontSize: 16 }} />}
+              iconPosition="start"
+              label="Employee Salary"
+            />,
+            <Tab
+              key="attendance"
+              icon={<AccessTimeIcon sx={{ fontSize: 16 }} />}
+              iconPosition="start"
+              label="Attendance"
+            />,
           ]}
         </Tabs>
       </Box>
@@ -4663,6 +4689,28 @@ const EmployeeManagement = () => {
               </Grid>
             </Box>
           </Paper>
+        </TabPanel>
+
+        {/* TAB 5: LEAVE BALANCE */}
+        <TabPanel value={activeTab} index={5}>
+          <LeaveBalanceModule
+            employee_id={selectedEmployee?.id}
+            employees={employees}
+          />
+        </TabPanel>
+
+        {/* TAB 6: EMPLOYEE SALARY */}
+        <TabPanel value={activeTab} index={6}>
+          <EmployeeSalaryModule employee_id={selectedEmployee?.id} disabled={true} />
+        </TabPanel>
+
+        {/* TAB 7: ATTENDANCE */}
+        <TabPanel value={activeTab} index={7}>
+          <AttendanceModule
+          disabled={true}
+            employee_id={selectedEmployee?.id}
+            employees={employees}
+          />
         </TabPanel>
       </Box>
 

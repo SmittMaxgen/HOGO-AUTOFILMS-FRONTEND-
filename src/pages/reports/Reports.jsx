@@ -652,7 +652,7 @@ const Reports = () => {
 const s = {
   page: {
     fontFamily: "'Segoe UI','Inter',sans-serif",
-    padding: "28px 32px",
+    // padding: "28px 32px",
     minHeight: "100vh",
   },
   pageHeader: {

@@ -529,7 +529,7 @@ const Target = () => {
 const s = {
   page: {
     fontFamily: "'Segoe UI','Inter',sans-serif",
-    padding: "28px 32px",
+    // padding: "28px 32px",
     // background: "#f0f4f8",
     minHeight: "100vh",
   },
