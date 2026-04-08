@@ -554,9 +554,11 @@ const EmployeeSalary = ({ employee_id = "", disabled = false }) => {
                 <th style={{ ...s.th, textAlign: "right" }}>Gross Salary</th>
                 <th style={s.th}>Effective From</th>
                 <th style={{ ...s.th, textAlign: "center" }}>Status</th>
-                <th style={{ ...s.th, textAlign: "center", width: 110 }}>
-                  Actions
-                </th>
+                {disabled === false && (
+                  <th style={{ ...s.th, textAlign: "center", width: 110 }}>
+                    Actions
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -646,34 +648,36 @@ const EmployeeSalary = ({ employee_id = "", disabled = false }) => {
                     </td>
 
                     {/* Actions */}
-                    <td style={{ ...s.tdC }}>
-                      <div className="row-actions" style={s.actions}>
-                        <button
-                          style={{
-                            ...s.iconBtn,
-                            background: "#e0eaff",
-                            color: "#2563eb",
-                          }}
-                          onClick={() => openEdit(record)}
-                          disabled={isBusy}
-                          title="Edit"
-                        >
-                          ✎
-                        </button>
-                        <button
-                          style={{
-                            ...s.iconBtn,
-                            background: "#fee2e2",
-                            color: "#dc2626",
-                          }}
-                          onClick={() => handleDelete(record)}
-                          disabled={isBusy || deletingId === record.id}
-                          title="Delete"
-                        >
-                          {deletingId === record.id ? "…" : "✕"}
-                        </button>
-                      </div>
-                    </td>
+                    {disabled === false && (
+                      <td style={{ ...s.tdC }}>
+                        <div className="row-actions" style={s.actions}>
+                          <button
+                            style={{
+                              ...s.iconBtn,
+                              background: "#e0eaff",
+                              color: "#2563eb",
+                            }}
+                            onClick={() => openEdit(record)}
+                            disabled={isBusy}
+                            title="Edit"
+                          >
+                            ✎
+                          </button>
+                          <button
+                            style={{
+                              ...s.iconBtn,
+                              background: "#fee2e2",
+                              color: "#dc2626",
+                            }}
+                            onClick={() => handleDelete(record)}
+                            disabled={isBusy || deletingId === record.id}
+                            title="Delete"
+                          >
+                            {deletingId === record.id ? "…" : "✕"}
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
             </tbody>
