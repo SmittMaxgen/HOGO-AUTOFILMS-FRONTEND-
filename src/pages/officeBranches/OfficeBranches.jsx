@@ -976,13 +976,13 @@ const OfficeBranch = () => {
                       value={selected.state}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  {/* <Grid item xs={12} sm={4}>
                     <DetailCard
                       icon={<LocationOnIcon fontSize="small" />}
                       label="Pincode"
                       value={selected.pincode}
                     />
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12} sm={4}>
                     <DetailCard
                       icon={<LocationOnIcon fontSize="small" />}
