@@ -2766,6 +2766,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LeaveBalanceModule from "../Leavebalance/Leavebalance"; // adjust path
 import AttendanceModule from "../EmployeeAttendance/EmployeeAttendance"; // adjust path
 import EmployeeSalaryModule from "../employeeSalary/EmployeeSalary"; // adjust path
+import SalaryPayment from "../salaryPayment/salaryPayment";
 
 const BASE_URL = "https://hogofilm.pythonanywhere.com";
 
@@ -4694,8 +4695,7 @@ const EmployeeManagement = () => {
         {/* TAB 5: LEAVE BALANCE */}
         <TabPanel value={activeTab} index={5}>
           <LeaveBalanceModule
-                    disabled={true}
-
+            disabled={true}
             employee_id={selectedEmployee?.id}
             employees={employees}
           />
@@ -4703,13 +4703,14 @@ const EmployeeManagement = () => {
 
         {/* TAB 6: EMPLOYEE SALARY */}
         <TabPanel value={activeTab} index={6}>
-          <EmployeeSalaryModule employee_id={selectedEmployee?.id} disabled={true} />
+          {/* <EmployeeSalaryModule employee_id={selectedEmployee?.id} disabled={true} /> */}
+          <SalaryPayment employee_id={selectedEmployee?.id} />
         </TabPanel>
 
         {/* TAB 7: ATTENDANCE */}
         <TabPanel value={activeTab} index={7}>
           <AttendanceModule
-          disabled={true}
+            disabled={true}
             employee_id={selectedEmployee?.id}
             employees={employees}
           />

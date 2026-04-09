@@ -87,7 +87,8 @@ const FilterSelect = ({ value, onChange, placeholder, options }) => {
   );
 };
 
-const SalaryPayment = () => {
+// const SalaryPayment = () => {
+const SalaryPayment = ({ employee_id = null }) => {
   const dispatch = useDispatch();
 
   const salaryPayments = useSelector(selectSalaryPayments);
@@ -100,16 +101,23 @@ const SalaryPayment = () => {
   const [search, setSearch] = useState("");
 
   const [filters, setFilters] = useState({
-    employee: "",
+    employee: employee_id || "",
     month: "",
     year: "",
   });
 
   // ─── Initial Load ───────────────────────────────────────
+  // useEffect(() => {
+  //   dispatch(getEmployees());
+  //   dispatch(getSalaryPayments());
+  // }, [dispatch]);
+
   useEffect(() => {
     dispatch(getEmployees());
-    dispatch(getSalaryPayments());
-  }, [dispatch]);
+    const params = {};
+    if (employee_id) params.employee = employee_id;
+    dispatch(getSalaryPayments(params));
+  }, [dispatch, employee_id]);
 
   // ─── Filter Change ──────────────────────────────────────
   useEffect(() => {
@@ -152,14 +160,16 @@ const SalaryPayment = () => {
         {/* <Typography variant="h5" fontWeight={800}>
           Salary Payments
         </Typography> */}
-        <Box display="flex" alignItems="center" gap={1.5}>
-          <Box
-            sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
-          />
-          <Typography variant="h5" fontWeight={800} color="#1a1a1a">
-            Salary Payments
-          </Typography>
-        </Box>
+        {!employee_id && (
+          <Box display="flex" alignItems="center" gap={1.5}>
+            <Box
+              sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
+            />
+            <Typography variant="h5" fontWeight={800} color="#1a1a1a">
+              Salary Payments
+            </Typography>
+          </Box>
+        )}
       </Stack>
 
       <Paper sx={{ borderRadius: 3, overflow: "hidden" }}>
@@ -167,22 +177,23 @@ const SalaryPayment = () => {
         <Box p={2} sx={{ borderBottom: "1px solid #eee" }}>
           <Grid container spacing={2}>
             {/* Employee */}
-            <Grid item xs={12} md={3}>
-              <FilterSelect
-                value={filters.employee}
-                onChange={(e) =>
-                  setFilters({ ...filters, employee: e.target.value })
-                }
-                placeholder="Filter by Employee"
-                options={
-                  employees?.map((e) => ({
-                    value: e.id,
-                    label: `${e.first_name || ""} ${e.last_name || ""}`,
-                  })) || []
-                }
-              />
-            </Grid>
-
+            {!employee_id && (
+              <Grid item xs={12} md={3}>
+                <FilterSelect
+                  value={filters.employee}
+                  onChange={(e) =>
+                    setFilters({ ...filters, employee: e.target.value })
+                  }
+                  placeholder="Filter by Employee"
+                  options={
+                    employees?.map((e) => ({
+                      value: e.id,
+                      label: `${e.first_name || ""} ${e.last_name || ""}`,
+                    })) || []
+                  }
+                />
+              </Grid>
+            )}
             {/* Month */}
             <Grid item xs={12} md={3}>
               <FilterSelect
@@ -214,13 +225,15 @@ const SalaryPayment = () => {
             </Grid>
 
             {/* Search (KEEP SAME) */}
-            <Grid item xs={12} md={3}>
-              <CommonSearchField
-                value={search}
-                placeholder="Search employee..."
-                onChange={(v) => setSearch(v)}
-              />
-            </Grid>
+            {!employee_id && (
+              <Grid item xs={12} md={3}>
+                <CommonSearchField
+                  value={search}
+                  placeholder="Search employee..."
+                  onChange={(v) => setSearch(v)}
+                />
+              </Grid>
+            )}
           </Grid>
         </Box>
 
