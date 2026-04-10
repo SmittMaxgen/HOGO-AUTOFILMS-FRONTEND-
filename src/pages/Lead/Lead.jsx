@@ -943,6 +943,7 @@ const Lead = () => {
     [
       "lead_type",
       "cars_per_month",
+      "dealer_landing_cost",
       "date",
       "month",
       "business_name",
@@ -958,6 +959,12 @@ const Lead = () => {
     ].forEach((f) => {
       if (!form[f]) temp[f] = "Required";
     });
+
+    // Phone: must be exactly 10 digits
+    if (form.phone && !/^\d{10}$/.test(form.phone)) {
+      temp.phone = "Phone must be exactly 10 digits";
+    }
+    
     setErrors(temp);
     return Object.keys(temp).length === 0;
   };
@@ -1501,6 +1508,8 @@ const Lead = () => {
                   type="number"
                   fullWidth
                   sx={fieldSx}
+                  error={!!errors.dealer_landing_cost}
+                  helperText={errors.dealer_landing_cost}
                   onChange={(e) =>
                     setForm({ ...form, dealer_landing_cost: e.target.value })
                   }
