@@ -2420,7 +2420,7 @@ const Product = () => {
 
   useEffect(() => {
     const delay = setTimeout(() => {
-      dispatch(getProducts({ search: searchQuery }));
+      dispatch(getProducts({ product_name: searchQuery }));
     }, 400);
     return () => clearTimeout(delay);
   }, [dispatch, searchQuery]);

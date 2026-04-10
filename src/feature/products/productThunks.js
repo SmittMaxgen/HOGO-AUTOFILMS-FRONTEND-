@@ -3,11 +3,12 @@ import axiosInstance from "../../api/axiosInstance";
 
 export const getProducts = createAsyncThunk(
   "product/getProducts",
-  async ({ search = "" } = {}, { rejectWithValue }) => {
+  async ({ search = "", product_name = "" } = {}, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/products/", {
         params: {
           search, // backend should read ?search=
+          product_name, // backend should read ?product_name=
         },
       });
       return response.data;
