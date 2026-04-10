@@ -437,61 +437,23 @@ const Quotes = () => {
           />
         </Box> */}
         <Divider sx={{ borderColor: "#f0e0e0" }} />
-
         {/* ── Loading ── */}
-        {loading ? (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            py={8}
-          >
-            <CircularProgress sx={{ color: THEME.primary }} />
-          </Box>
-        ) : error ? (
-          /* ── Error ── */
-          <Box p={3}>
-            <Alert severity="error" sx={{ borderRadius: 2 }}>
-              {typeof error === "string"
-                ? error
-                : "Something went wrong. Please try again."}
-            </Alert>
-          </Box>
-        ) : !quotes || quotes.length === 0 ? (
-          /* ── Empty ── */
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            py={8}
-          >
-            <Box textAlign="center">
-              <FormatQuoteIcon sx={{ fontSize: 48, color: "#e0b0b0", mb: 1 }} />
-              <Typography color="text.secondary" variant="body2">
-                No quote requests found.
-              </Typography>
-            </Box>
-          </Box>
-        ) : (
+        <>
           <>
             <TableContainer component={Paper} elevation={0}>
               <Table>
                 <TableHead>
+                  {/* ── Filter Row ── */}
                   <TableRow>
                     <TableCell colSpan={7} sx={{ p: 0, border: 0 }}>
                       <Box
-                        // sx={{ p: 2.5 }}
                         sx={{
                           p: 2.5,
                           width: "100%",
                           display: "flex",
-                          // gap: 1,
                           flexDirection: "row",
-                          // justifyContent: "space-between",
                         }}
                       >
-                        {/* <Grid container spacing={2}> */}
-                        {/* <Grid  xs={12} sm={6} md={4}> */}
                         <TextField
                           label="Full Name"
                           size="small"
@@ -503,15 +465,12 @@ const Quotes = () => {
                             startAdornment: (
                               <InputAdornment position="start">
                                 <PersonIcon
-                                  sx={{ fontSize: 16, color: THEME.primary }}
+                                  sx={{ fontSize: 16, color: THEME.navy }}
                                 />
                               </InputAdornment>
                             ),
                           }}
                         />
-                        {/* </Grid> */}
-
-                        {/* <Grid item xs={12} sm={6} md={4}> */}
                         <TextField
                           label="Email"
                           size="small"
@@ -523,15 +482,12 @@ const Quotes = () => {
                             startAdornment: (
                               <InputAdornment position="start">
                                 <EmailIcon
-                                  sx={{ fontSize: 16, color: THEME.primary }}
+                                  sx={{ fontSize: 16, color: THEME.navy }}
                                 />
                               </InputAdornment>
                             ),
                           }}
                         />
-                        {/* </Grid> */}
-
-                        {/* <Grid item xs={12} sm={6} md={4}> */}
                         <TextField
                           label="Contact"
                           size="small"
@@ -543,15 +499,12 @@ const Quotes = () => {
                             startAdornment: (
                               <InputAdornment position="start">
                                 <PhoneIcon
-                                  sx={{ fontSize: 16, color: THEME.primary }}
+                                  sx={{ fontSize: 16, color: THEME.navy }}
                                 />
                               </InputAdornment>
                             ),
                           }}
                         />
-                        {/* </Grid> */}
-
-                        {/* <Grid item xs={12} sm={6} md={4}> */}
                         <TextField
                           select
                           label="Service"
@@ -564,7 +517,7 @@ const Quotes = () => {
                             startAdornment: (
                               <InputAdornment position="start">
                                 <BuildIcon
-                                  sx={{ fontSize: 16, color: THEME.primary }}
+                                  sx={{ fontSize: 16, color: THEME.navy }}
                                 />
                               </InputAdornment>
                             ),
@@ -591,54 +544,12 @@ const Quotes = () => {
                             </MenuItem>
                           ))}
                         </TextField>
-                        {/* </Grid> */}
-
-                        {/* <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                label="Brand ID"
-                size="small"
-                fullWidth
-                type="number"
-                value={filters.brand_id}
-                onChange={handleFilterChange("brand_id")}
-                sx={filterFieldSx}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <DirectionsCarIcon
-                        sx={{ fontSize: 16, color: THEME.primary }}
-                      />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                label="Model ID"
-                size="small"
-                fullWidth
-                type="number"
-                value={filters.model_id}
-                onChange={handleFilterChange("model_id")}
-                sx={filterFieldSx}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <DirectionsCarIcon
-                        sx={{ fontSize: 16, color: THEME.primary }}
-                      />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid> */}
-                        {/* </Grid> */}
                       </Box>
                     </TableCell>
                   </TableRow>
-                  <TableRow sx={{ bgcolor: "#fff5f5" }}>
+
+                  {/* ── Column Headers ── */}
+                  <TableRow sx={{ background: THEME.gradient }}>
                     {[
                       "Sr",
                       "Customer",
@@ -651,13 +562,14 @@ const Quotes = () => {
                       <TableCell
                         key={h}
                         sx={{
-                          color: THEME.primary,
+                          color: THEME.white,
                           fontWeight: 700,
                           fontSize: 12,
                           textTransform: "uppercase",
                           letterSpacing: 0.5,
-                          borderBottom: "2px solid #f0e0e0",
+                          border: "none",
                           whiteSpace: "nowrap",
+                          py: 1.5,
                         }}
                       >
                         {h}
@@ -667,185 +579,254 @@ const Quotes = () => {
                 </TableHead>
 
                 <TableBody>
-                  {paginatedQuotes.map((quote, index) => {
-                    const serviceStyle = SERVICE_COLORS[quote.service] || {
-                      bg: "#f5f5f5",
-                      color: "#555",
-                    };
-                    const srNo = page * rowsPerPage + index + 1;
-                    return (
-                      <TableRow
-                        key={quote.id}
-                        sx={{
-                          "&:hover": { bgcolor: "#fff5f5" },
-                          transition: "background 0.15s",
-                          "&:last-child td": { border: 0 },
-                        }}
-                      >
-                        <TableCell>
-                          <Typography
-                            variant="body2"
-                            color="text.disabled"
-                            fontWeight={600}
-                          >
-                            {String(srNo).padStart(2, "0")}
+                  {/* ── Loading ── */}
+                  {loading && (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          alignItems="center"
+                          gap={1}
+                        >
+                          <CircularProgress
+                            size={28}
+                            sx={{ color: THEME.primary }}
+                          />
+                          <Typography variant="body2" color="text.secondary">
+                            Loading quotes...
                           </Typography>
-                        </TableCell>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  )}
 
-                        <TableCell>
-                          <Box display="flex" alignItems="center" gap={1.5}>
-                            <Avatar
-                              sx={{
-                                width: 36,
-                                height: 36,
-                                fontSize: 13,
-                                fontWeight: 700,
-                                background: THEME.gradient,
-                                boxShadow: THEME.shadow,
-                                color: THEME.white,
-                                flexShrink: 0,
-                              }}
+                  {/* ── Error ── */}
+                  {!loading && error && (
+                    <TableRow>
+                      <TableCell colSpan={7} sx={{ py: 3, px: 3 }}>
+                        <Alert severity="error" sx={{ borderRadius: 2 }}>
+                          {typeof error === "string"
+                            ? error
+                            : "Something went wrong. Please try again."}
+                        </Alert>
+                      </TableCell>
+                    </TableRow>
+                  )}
+
+                  {/* ── Empty ── */}
+                  {!loading && !error && (!quotes || quotes.length === 0) && (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          alignItems="center"
+                          gap={1}
+                        >
+                          <FormatQuoteIcon
+                            sx={{ fontSize: 40, color: "#e0e0e0" }}
+                          />
+                          <Typography color="text.secondary" fontWeight={500}>
+                            No quote requests found
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  )}
+
+                  {/* ── Rows ── */}
+                  {!loading &&
+                    !error &&
+                    paginatedQuotes.map((quote, index) => {
+                      const serviceStyle = SERVICE_COLORS[quote.service] || {
+                        bg: "#f5f5f5",
+                        color: "#555",
+                      };
+                      const srNo = page * rowsPerPage + index + 1;
+                      return (
+                        <TableRow
+                          key={quote.id}
+                          sx={{
+                            "&:hover": { bgcolor: THEME.light },
+                            transition: "background 0.15s",
+                            "&:last-child td": { border: 0 },
+                            borderBottom: "1px solid #f0f0f8",
+                          }}
+                        >
+                          <TableCell>
+                            <Typography
+                              variant="body2"
+                              color={THEME.navy}
+                              fontWeight={700}
                             >
-                              {getInitials(quote.full_name)}
-                            </Avatar>
-                            <Box>
-                              <Typography
-                                variant="body2"
-                                fontWeight={600}
-                                color="text.primary"
-                                noWrap
+                              {String(srNo).padStart(2, "0")}
+                            </Typography>
+                          </TableCell>
+
+                          <TableCell>
+                            <Box display="flex" alignItems="center" gap={1.5}>
+                              <Avatar
+                                sx={{
+                                  width: 36,
+                                  height: 36,
+                                  fontSize: 13,
+                                  fontWeight: 700,
+                                  background: THEME.navy,
+                                  boxShadow: THEME.navyShadow,
+                                  color: THEME.white,
+                                  flexShrink: 0,
+                                }}
                               >
-                                {quote.full_name}
-                              </Typography>
-                              <Box display="flex" alignItems="center" gap={0.5}>
-                                <EmailIcon
-                                  sx={{ fontSize: 11, color: THEME.primary }}
-                                />
+                                {getInitials(quote.full_name)}
+                              </Avatar>
+                              <Box>
                                 <Typography
-                                  variant="caption"
-                                  color="text.secondary"
+                                  variant="body2"
+                                  fontWeight={600}
+                                  color="text.primary"
                                   noWrap
                                 >
-                                  {quote.email}
+                                  {quote.full_name}
                                 </Typography>
+                                <Box
+                                  display="flex"
+                                  alignItems="center"
+                                  gap={0.5}
+                                >
+                                  <EmailIcon
+                                    sx={{
+                                      fontSize: 11,
+                                      color: THEME.primary,
+                                    }}
+                                  />
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                    noWrap
+                                  >
+                                    {quote.email}
+                                  </Typography>
+                                </Box>
                               </Box>
                             </Box>
-                          </Box>
-                        </TableCell>
+                          </TableCell>
 
-                        <TableCell>
-                          <Box display="flex" alignItems="center" gap={0.8}>
-                            <PhoneIcon
-                              sx={{ fontSize: 14, color: THEME.primary }}
-                            />
-                            <Typography variant="body2" color="text.secondary">
-                              {quote.contact}
-                            </Typography>
-                          </Box>
-                        </TableCell>
+                          <TableCell>
+                            <Box display="flex" alignItems="center" gap={0.8}>
+                              <PhoneIcon
+                                sx={{ fontSize: 14, color: THEME.primary }}
+                              />
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {quote.contact}
+                              </Typography>
+                            </Box>
+                          </TableCell>
 
-                        <TableCell>
-                          <Box display="flex" alignItems="center" gap={0.8}>
-                            <DirectionsCarIcon
-                              sx={{ fontSize: 14, color: THEME.primary }}
-                            />
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              noWrap
-                            >
-                              {quote.brand_name} {quote.model_name}
-                            </Typography>
-                          </Box>
-                        </TableCell>
+                          <TableCell>
+                            <Box display="flex" alignItems="center" gap={0.8}>
+                              <DirectionsCarIcon
+                                sx={{ fontSize: 14, color: THEME.primary }}
+                              />
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                noWrap
+                              >
+                                {quote.brand_name} {quote.model_name}
+                              </Typography>
+                            </Box>
+                          </TableCell>
 
-                        <TableCell>
-                          <Chip
-                            label={quote.service}
-                            size="small"
-                            sx={{
-                              bgcolor: serviceStyle.bg,
-                              color: serviceStyle.color,
-                              fontWeight: 600,
-                              fontSize: 10,
-                              height: 22,
-                              maxWidth: 200,
-                              "& .MuiChip-label": { px: 1 },
-                            }}
-                          />
-                        </TableCell>
-
-                        <TableCell>
-                          <Box display="flex" alignItems="center" gap={0.8}>
-                            <CalendarTodayIcon
-                              sx={{ fontSize: 13, color: THEME.primary }}
-                            />
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              noWrap
-                            >
-                              {formatDate(quote.created_at)}
-                            </Typography>
-                          </Box>
-                        </TableCell>
-
-                        <TableCell>
-                          <Tooltip title="View Full Details" arrow>
-                            <IconButton
+                          <TableCell>
+                            <Chip
+                              label={quote.service}
                               size="small"
-                              onClick={() => handleOpenDetail(quote)}
                               sx={{
-                                background: THEME.gradient,
-                                boxShadow: THEME.shadow,
-                                color: THEME.white,
-                                width: 32,
-                                height: 32,
-                                "&:hover": {
-                                  background: THEME.gradient,
-                                  opacity: 0.85,
-                                },
+                                bgcolor: serviceStyle.bg,
+                                color: serviceStyle.color,
+                                fontWeight: 600,
+                                fontSize: 10,
+                                height: 22,
+                                maxWidth: 200,
+                                "& .MuiChip-label": { px: 1 },
                               }}
-                            >
-                              <InfoOutlinedIcon sx={{ fontSize: 15 }} />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                            />
+                          </TableCell>
+
+                          <TableCell>
+                            <Box display="flex" alignItems="center" gap={0.8}>
+                              <CalendarTodayIcon
+                                sx={{ fontSize: 13, color: THEME.primary }}
+                              />
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                noWrap
+                              >
+                                {formatDate(quote.created_at)}
+                              </Typography>
+                            </Box>
+                          </TableCell>
+
+                          <TableCell>
+                            <Tooltip title="View Full Details" arrow>
+                              <IconButton
+                                size="small"
+                                onClick={() => handleOpenDetail(quote)}
+                                sx={{
+                                  background: THEME.gradient,
+                                  boxShadow: THEME.shadow,
+                                  color: THEME.white,
+                                  width: 32,
+                                  height: 32,
+                                  "&:hover": {
+                                    background: THEME.gradient,
+                                    opacity: 0.85,
+                                  },
+                                }}
+                              >
+                                <InfoOutlinedIcon sx={{ fontSize: 15 }} />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                 </TableBody>
               </Table>
             </TableContainer>
-
-            {/* ── Pagination ── */}
-            <TablePagination
-              component="div"
-              count={quotes.length}
-              page={page}
-              onPageChange={(_, newPage) => setPage(newPage)}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={(e) => {
-                setRowsPerPage(parseInt(e.target.value, 10));
-                setPage(0);
-              }}
-              rowsPerPageOptions={[5, 10, 25, 50]}
-              sx={{
-                borderTop: "1px solid #f0e0e0",
-                "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows":
-                  { color: "text.secondary", fontSize: 13 },
-                "& .MuiTablePagination-select": {
-                  color: THEME.primary,
-                  fontWeight: 600,
-                },
-                "& .MuiIconButton-root": {
-                  color: THEME.primary,
-                  "&.Mui-disabled": { color: "#ccc" },
-                },
-              }}
-            />
           </>
-        )}
+          {/* ── Pagination ── */}
+          <TablePagination
+            component="div"
+            count={quotes.length}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            sx={{
+              borderTop: "1px solid #f0e0e0",
+              "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows":
+                { color: "text.secondary", fontSize: 13 },
+              "& .MuiTablePagination-select": {
+                color: THEME.primary,
+                fontWeight: 600,
+              },
+              "& .MuiIconButton-root": {
+                color: THEME.primary,
+                "&.Mui-disabled": { color: "#ccc" },
+              },
+            }}
+          />
+        </>
       </Card>
 
       {/* ── Detail Dialog ── */}
