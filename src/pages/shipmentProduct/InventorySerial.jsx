@@ -726,17 +726,7 @@ const InventorySerial = () => {
                   borderRadius: "10px",
                   fontSize: 13,
                   color: "grey",
-                  // fontWeight: 600,
-                  backgroundColor: "#f5f5f5",
-                  // bgcolor: searchQuery.status
-                  //   ? STATUS_COLORS[searchQuery.status]?.bg || "#f5f5f5"
-                  //   : "#f5f5f5",
-                  // color: searchQuery.status
-                  //   ? STATUS_COLORS[searchQuery.status]?.color || "#424242"
-                  //   : "#757575",
-                  // "& fieldset": {
-                  //   borderColor: searchQuery.status ? "#D20000" : "#e0e0e0",
-                  // },
+                  backgroundColor: "#f5f5f5",               
                   "&:hover fieldset": { borderColor: "#D20000" },
                   "&.Mui-focused fieldset": { borderColor: "#D20000" },
                 }}

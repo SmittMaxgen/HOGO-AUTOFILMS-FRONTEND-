@@ -39,6 +39,9 @@ import {
   InputAdornment,
 } from "@mui/material";
 
+import CommonSearchField from "../../components/commonComponents/CommonSearchField";
+import CommonSelectField from "../../components/commonComponents/CommonSelectField";
+
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -74,6 +77,11 @@ const SERVICE_OPTIONS = [
   "WINDOW FILM",
   "WINDSCREEN PROTECTION FILM",
 ];
+
+const SERVICE_OPTIONS_DROPDOWN = SERVICE_OPTIONS.map((s) => ({
+  value: s,
+  label: s,
+}));
 
 // ─── Helpers ──────────────────────────────────────────────────────
 const getInitials = (name = "") =>
@@ -202,6 +210,7 @@ const Quotes = () => {
     service: "",
     brand_id: "",
     model_id: "",
+    service: "",
   };
   const [filters, setFilters] = useState(emptyFilters);
 
@@ -218,22 +227,42 @@ const Quotes = () => {
   }, [dispatch]);
 
   // ── Live filter: debounce 500ms on every filter change ──
-  const handleFilterChange = useCallback(
-    (field) => (e) => {
-      const newFilters = { ...filters, [field]: e.target.value };
-      setFilters(newFilters);
-      setPage(0); // reset to page 1 on new filter
-      clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => {
-        const active = Object.fromEntries(
-          Object.entries(newFilters).filter(([, v]) => v !== ""),
-        );
-        dispatch(getQuotes(active));
-      }, 1000);
-    },
-    [filters, dispatch, debounceRef],
-  );
+  // const handleFilterChange = useCallback(
+  //   (field) => (e) => {
+  //     const newFilters = { ...filters, [field]: e.target.value };
+  //     setFilters(newFilters);
+  //     setPage(0); // reset to page 1 on new filter
+  //     clearTimeout(debounceRef.current);
+  //     debounceRef.current = setTimeout(() => {
+  //       const active = Object.fromEntries(
+  //         Object.entries(newFilters).filter(([, v]) => v !== ""),
+  //       );
+  //       dispatch(getQuotes(active));
+  //     }, 1000);
+  //   },
+  //   [filters, dispatch, debounceRef],
+  // );
 
+  const handleFilterChange = useCallback(
+    (field) => (value) => {
+      setFilters((prev) => {
+        const newFilters = { ...prev, [field]: value };
+
+        setPage(0);
+
+        clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+          const active = Object.fromEntries(
+            Object.entries(newFilters).filter(([, v]) => v !== ""),
+          );
+          dispatch(getQuotes(active));
+        }, 1000);
+
+        return newFilters;
+      });
+    },
+    [dispatch],
+  );
   const handleClear = () => {
     setFilters(emptyFilters);
     setPage(0);
@@ -449,12 +478,13 @@ const Quotes = () => {
                       <Box
                         sx={{
                           p: 2.5,
+                          gap: 2,
                           width: "100%",
                           display: "flex",
                           flexDirection: "row",
                         }}
                       >
-                        <TextField
+                        {/* <TextField
                           label="Full Name"
                           size="small"
                           fullWidth
@@ -470,8 +500,24 @@ const Quotes = () => {
                               </InputAdornment>
                             ),
                           }}
+                        /> */}
+                        <CommonSearchField
+                          label="Full Name"
+                          fullWidth
+                          value={filters.full_name}
+                          onChange={handleFilterChange("full_name")}
+                          sx={filterFieldSx}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <PersonIcon
+                                  sx={{ fontSize: 16, color: THEME.navy }}
+                                />
+                              </InputAdornment>
+                            ),
+                          }}
                         />
-                        <TextField
+                        {/* <TextField
                           label="Email"
                           size="small"
                           fullWidth
@@ -487,8 +533,24 @@ const Quotes = () => {
                               </InputAdornment>
                             ),
                           }}
+                        /> */}
+                        <CommonSearchField
+                          label="Email"
+                          fullWidth
+                          value={filters.email}
+                          onChange={handleFilterChange("email")}
+                          sx={filterFieldSx}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <EmailIcon
+                                  sx={{ fontSize: 16, color: THEME.navy }}
+                                />
+                              </InputAdornment>
+                            ),
+                          }}
                         />
-                        <TextField
+                        {/* <TextField
                           label="Contact"
                           size="small"
                           fullWidth
@@ -504,46 +566,31 @@ const Quotes = () => {
                               </InputAdornment>
                             ),
                           }}
-                        />
-                        <TextField
-                          select
-                          label="Service"
-                          size="small"
+                        /> */}
+                        <CommonSearchField
+                          label="Contact"
                           fullWidth
-                          value={filters.service}
-                          onChange={handleFilterChange("service")}
+                          value={filters.contact}
+                          onChange={handleFilterChange("contact")}
                           sx={filterFieldSx}
                           InputProps={{
                             startAdornment: (
                               <InputAdornment position="start">
-                                <BuildIcon
+                                <PhoneIcon
                                   sx={{ fontSize: 16, color: THEME.navy }}
                                 />
                               </InputAdornment>
                             ),
                           }}
-                        >
-                          <MenuItem value="">
-                            <em>All Services</em>
-                          </MenuItem>
-                          {SERVICE_OPTIONS.map((s) => (
-                            <MenuItem key={s} value={s}>
-                              <Box display="flex" alignItems="center" gap={1}>
-                                <Box
-                                  sx={{
-                                    width: 8,
-                                    height: 8,
-                                    borderRadius: "50%",
-                                    bgcolor: SERVICE_COLORS[s]?.color,
-                                  }}
-                                />
-                                <Typography variant="body2" fontSize={12}>
-                                  {s}
-                                </Typography>
-                              </Box>
-                            </MenuItem>
-                          ))}
-                        </TextField>
+                        />
+                        <Box>
+                          <CommonSelectField
+                            value={filters.service}
+                            onChange={handleFilterChange("service")}
+                            options={SERVICE_OPTIONS_DROPDOWN}
+                            placeholder="All services"
+                          />
+                        </Box>
                       </Box>
                     </TableCell>
                   </TableRow>

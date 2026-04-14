@@ -748,6 +748,8 @@ import {
   Grid,
 } from "@mui/material";
 
+import CommonSearchField from "../../components/commonComponents/CommonSearchField";
+
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -857,8 +859,23 @@ const Contacts = () => {
   }, [dispatch]);
 
   // ── Live filter with 500ms debounce ──
-  const handleFilterChange = (field) => (e) => {
-    const newFilters = { ...filters, [field]: e.target.value };
+  // const handleFilterChange = (field) => (e) => {
+  //   const newFilters = { ...filters, [field]: e.target.value };
+  //   setFilters(newFilters);
+  //   setPage(1);
+
+  //   clearTimeout(debounceRef.current);
+  //   debounceRef.current = setTimeout(() => {
+  //     const active = Object.fromEntries(
+  //       Object.entries(newFilters).filter(([, v]) => v !== ""),
+  //     );
+  //     dispatch(getContacts(active));
+  //   }, 500);
+  // };
+
+  const handleFilterChange = (field) => (value) => {
+    const newFilters = { ...filters, [field]: value };
+
     setFilters(newFilters);
     setPage(1);
 
@@ -870,7 +887,6 @@ const Contacts = () => {
       dispatch(getContacts(active));
     }, 500);
   };
-
   const handleClear = () => {
     setFilters(emptyFilters);
     setPage(1);
@@ -996,10 +1012,25 @@ const Contacts = () => {
             <Grid container spacing={2}>
               {/* Name */}
               <Grid item xs={12} sm={4}>
-                <TextField
+                {/* <CommonSearchField
                   label="Name"
                   size="small"
                   fullWidth
+                  value={filters.name}
+                  onChange={handleFilterChange("name")}
+                  sx={filterFieldSx}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PersonIcon sx={{ fontSize: 16 }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                /> */}
+                <CommonSearchField
+                  label="Name"
+                  fullWidth
+                  placeholder="Search by contact name..."
                   value={filters.name}
                   onChange={handleFilterChange("name")}
                   sx={filterFieldSx}
@@ -1015,10 +1046,25 @@ const Contacts = () => {
 
               {/* Email */}
               <Grid item xs={12} sm={4}>
-                <TextField
+                {/* <TextField
                   label="Email"
                   size="small"
                   fullWidth
+                  value={filters.email}
+                  onChange={handleFilterChange("email")}
+                  sx={filterFieldSx}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <EmailIcon sx={{ fontSize: 16 }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                /> */}
+                <CommonSearchField
+                  label="Email"
+                  fullWidth
+                  placeholder="Search by email..."
                   value={filters.email}
                   onChange={handleFilterChange("email")}
                   sx={filterFieldSx}
@@ -1034,10 +1080,26 @@ const Contacts = () => {
 
               {/* Mobile */}
               <Grid item xs={12} sm={4}>
-                <TextField
+                {/* <TextField
                   label="Mobile"
                   size="small"
                   fullWidth
+                  value={filters.mobile}
+                  onChange={handleFilterChange("mobile")}
+                  sx={filterFieldSx}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PhoneIcon sx={{ fontSize: 16 }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                /> */}
+
+                <CommonSearchField
+                  label="Mobile"
+                  fullWidth
+                  placeholder="Search by mobile..."
                   value={filters.mobile}
                   onChange={handleFilterChange("mobile")}
                   sx={filterFieldSx}
