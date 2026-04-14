@@ -4081,6 +4081,8 @@ import {
   updateDistributor,
   deleteDistributor,
 } from "../../feature/distributors/distributorThunks";
+import { getRegions } from "../../feature/region/regionThunks";
+import { selectRegions } from "../../feature/region/regionSelectors";
 import {
   selectDistributors,
   selectDistributorLoading,
@@ -4418,6 +4420,7 @@ const TabCard = ({ title, children, editControlsProps }) => (
 const Distributors = () => {
   const dispatch = useDispatch();
   const distributors = useSelector(selectDistributors);
+  const regions = useSelector(selectRegions);
   const loading = useSelector(selectDistributorLoading);
   const createLoading = useSelector(createDistributorLoading);
 
@@ -4435,6 +4438,7 @@ const Distributors = () => {
 
   useEffect(() => {
     dispatch(getDistributors());
+    dispatch(getRegions());
   }, [dispatch]);
 
   // ── Validation ───────────────────────────────────────────────────────────────
@@ -5523,8 +5527,24 @@ const Distributors = () => {
               <Grid item xs={12} sm={6}>
                 {renderTextField("Owner Name", "owner_name")}
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 {renderTextField("Sales Region", "sales_region")}
+              </Grid> */}
+              <Grid sx={{ width: 200 }} item xs={12}>
+                {renderTextField("Sales Region", "sales_region", "text", {
+                  select: true,
+                  children: regions
+                    .filter((r) => r.status === "enable") // optional: hide disabled regions
+                    .map((region) => (
+                      <MenuItem
+                        sx={{ width: 200 }}
+                        key={region.id}
+                        value={region.name}
+                      >
+                        {region.name}
+                      </MenuItem>
+                    )),
+                })}
               </Grid>
               <Grid item xs={12}>
                 {renderTextField("Authorized Products", "authorized_products")}

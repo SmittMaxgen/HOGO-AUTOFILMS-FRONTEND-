@@ -52,7 +52,8 @@ import {
 
 import { getEmployees } from "../../feature/employee/employeeThunks";
 import { selectEmployees } from "../../feature/employee/employeeSelector";
-
+import { getRegions } from "../../feature/region/regionThunks";
+import { selectRegions } from "../../feature/region/regionSelectors";
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const MONTHS = [
   "January",
@@ -141,6 +142,7 @@ function Field({ label, children }) {
 export default function Plan() {
   const dispatch = useDispatch();
 
+  const regions = useSelector(selectRegions);
   // Travel Plan state
   const travelPlans = useSelector(selectTravelPlanList);
   const travelLoading = useSelector(selectTravelPlanLoading);
