@@ -504,7 +504,7 @@ const Quotes = () => {
                         <CommonSearchField
                           label="Full Name"
                           fullWidth
-                          placeholder="Search by full name..."
+                          placeholder="Search by contact..."
                           value={filters.full_name}
                           onChange={handleFilterChange("full_name")}
                           sx={filterFieldSx}
