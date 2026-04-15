@@ -1564,6 +1564,26 @@ const WarrantyManagement = () => {
                   icon: <GppGoodIcon fontSize="small" />,
                 },
                 {
+                  label: "Color",
+                  value: selectedWarranty.color,
+                  // icon: <GppGoodIcon fontSize="small" />,
+                },
+                {
+                  label: "Owner Name",
+                  value: selectedWarranty.Owner_name,
+                  // icon: <GppGoodIcon fontSize="small" />,
+                },
+                {
+                  label: "Owner Email",
+                  value: selectedWarranty.owner_email,
+                  // icon: <GppGoodIcon fontSize="small" />,
+                },
+                {
+                  label: "Owner Mobile",
+                  value: selectedWarranty.owner_mobile,
+                  // icon: <GppGoodIcon fontSize="small" />,
+                },
+                {
                   label: "Detailer Name",
                   value: selectedWarranty.detailer_name,
                   icon: <Person fontSize="small" />,
@@ -1572,6 +1592,11 @@ const WarrantyManagement = () => {
                   label: "Detailer Mobile",
                   value: selectedWarranty.detailer_mobile,
                 },
+                {
+                  label: "License Plate Number",
+                  value: selectedWarranty.license_plate_no,
+                },
+
                 {
                   label: "Registered By",
                   value: selectedWarranty.registered_by,
@@ -1592,6 +1617,10 @@ const WarrantyManagement = () => {
                 {
                   label: "Warranty End",
                   value: formatDate(selectedWarranty.warranty_end_date),
+                },
+                {
+                  label: "Address",
+                  value: selectedWarranty.address,
                 },
               ].map((item) => (
                 <Grid item xs={12} sm={6} md={3} key={item.label}>
