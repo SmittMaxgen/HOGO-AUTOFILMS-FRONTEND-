@@ -4863,7 +4863,7 @@ const Distributors = () => {
       fullWidth: true,
       label: isRequired && createDistributorFlag ? `${label} *` : label,
       type,
-      value: value ?? "",
+      value: value ?? "N/A",
       InputProps: { readOnly: !isEditable },
       error: createDistributorFlag && !!formErrors[field],
       helperText: createDistributorFlag && formErrors[field],
@@ -5168,7 +5168,7 @@ const Distributors = () => {
                             fontSize={13}
                             color="#1a1a1a"
                           >
-                            {dist.distributor_name}
+                            {dist.distributor_name || "-"}
                           </Typography>
                         </Box>
                       </TableCell>
@@ -5176,28 +5176,28 @@ const Distributors = () => {
                       {/* Type */}
                       <TableCell>
                         <Typography fontSize={12} color="text.secondary">
-                          {dist.distributor_type}
+                          {dist.distributor_type || "-"}
                         </Typography>
                       </TableCell>
 
                       {/* City */}
                       <TableCell>
                         <Typography fontSize={13} color="#1a1a1a">
-                          {dist.city}
+                          {dist.city || "-"}
                         </Typography>
                       </TableCell>
 
                       {/* State */}
                       <TableCell>
                         <Typography fontSize={12} color="text.secondary">
-                          {dist.state}
+                          {dist.state || "-"}
                         </Typography>
                       </TableCell>
 
                       {/* Contact */}
                       <TableCell>
                         <Typography fontSize={13} color="#1a1a1a">
-                          {dist.mobile_number}
+                          {dist.mobile_number || "-"}
                         </Typography>
                       </TableCell>
 
