@@ -37,6 +37,7 @@ import contactsReducers from "../feature/contacts/contactsSlice";
 import quotesReducers from "../feature/quotes/quotesSlice";
 import reportsReducers from "../feature/reports/reportsSlice";
 import salaryPaymentReducer from "../feature/salaryPayment/salaryPaymentSlice";
+import galleryReducer from "../feature/gallery/galleryslice";
 
 export const store = configureStore({
   reducer: {
@@ -79,5 +80,6 @@ export const store = configureStore({
     quotes: quotesReducers,
     report: reportsReducers,
     salaryPayments: salaryPaymentReducer,
+    gallery: galleryReducer,
   },
 });

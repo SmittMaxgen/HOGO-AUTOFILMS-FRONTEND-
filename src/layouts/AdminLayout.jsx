@@ -1849,6 +1849,15 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           {!collapsed && "Quotes"}
         </Box>
 
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/gallery") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/gallery")}
+        >
+          <BusinessIcon />
+          {!collapsed && "Gallery"}
+        </Box>
         {/* <Box
           className={`${classes.sidebarItem} ${
             isActive("/warehouse") ? classes.activeItem : ""

@@ -2898,7 +2898,10 @@ const TabPanel = ({ children, value, index }) =>
 
 // DocumentCard: fully outside component → no remount, no focus loss
 const DocumentCard = ({ label, fileKey, src, isEditable, onFileChange }) => {
+  console.log("label, fileKey, src===>>>>", label, fileKey, src);
   const isImage = src && !src.toLowerCase().endsWith(".pdf");
+  console.log(isImage, "isImage");
+  // console.log(src, "src");
   return (
     <Box
       sx={{
@@ -3047,11 +3050,8 @@ const EmployeeManagement = () => {
   const createLoading = useSelector(selectCreateEmployeeLoading);
 
   const employeeDocuments = useSelector(selectEmployeeDocuments);
-  const docsArray = Array.isArray(employeeDocuments)
-    ? employeeDocuments
-    : employeeDocuments
-      ? [employeeDocuments]
-      : [];
+  const docsArray = Array.isArray(employeeDocuments) ? employeeDocuments : [];
+  console.log("docsArray:::>>>", docsArray);
   const employeePersonalDetails = useSelector(selectEmployeePersonalDetails);
   const personalDetailsArray = Array.isArray(employeePersonalDetails)
     ? employeePersonalDetails
@@ -3091,6 +3091,8 @@ const EmployeeManagement = () => {
 
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [documentFormData, setDocumentFormData] = useState(EMPTY_DOCS);
+
+  console.log("documentFormData", documentFormData);
   const [personalDetailsFormData, setPersonalDetailsFormData] =
     useState(EMPTY_PERSONAL);
   const [salaryFormData, setSalaryFormData] = useState(EMPTY_SALARY);
@@ -3169,7 +3171,9 @@ const EmployeeManagement = () => {
 
     if (docsArray.length > 0) {
       const doc = docsArray[0];
+      // if (selectedEmployee.id !== doc.employee_id) return;
       setDocumentFormData({
+        employee_id: doc.employee_id || null,
         document_type: doc.document_type || "",
         pancard_number: doc.pancard_number || "",
         aadhar_number: doc.aadhar_number || "",
@@ -3261,17 +3265,94 @@ const EmployeeManagement = () => {
       aadhaar_number: emp.aadhaar_number || "",
     });
 
+  // const getDocSrc = (key) => {
+  //   // if (selectedEmployee.id !== doc.employee_id) return;
+
+  //   console.log("key:::>>>>", key);
+  //   console.log(" documentFormData[key]>>>>", documentFormData);
+  //   const doc = docsArray.find((d) => d.employee_id === selectedEmployee.id);
+  //   if (doc) {
+  //     const type = docsArray.find((d) => console.log(d.type));
+  //     console.log("doc:::>>>>", doc);
+  //     const v = documentFormData[key];
+  //     if (!v) return null;
+  //     if (v instanceof File) return URL.createObjectURL(v);
+  //     if (typeof v === "string")
+  //       return v.startsWith("http") ? v : `${BASE_URL}${v}`;
+  //     return null;
+  //   }
+  //   return null;
+  // };
+
+  // const getDocSrc = (key) => {
+  //   console.log(key);
+  //   const doc = docsArray.find((d) => d.type === key);
+  //   console.log("doc:::>>>", doc);
+  //   const Type = docsArray.find((d) => console.log("d.type:::>>>", d.type));
+  //   return doc?.url || "";
+  // };
+
+  // const getDocSrc = (key) => {
+  //   const fileValue = documentFormData[key];
+
+  //   // Guard: Ensure we have a file and the form data matches the active employee
+  //   if (
+  //     !fileValue ||
+  //     !selectedEmployee ||
+  //     documentFormData.employee_id !== selectedEmployee.id
+  //   ) {
+  //     return null;
+  //   }
+
+  //   if (fileValue instanceof File) return URL.createObjectURL(fileValue);
+
+  //   if (typeof fileValue === "string") {
+  //     return fileValue.startsWith("http")
+  //       ? fileValue
+  //       : `${BASE_URL}${fileValue}`;
+  //   }
+  //   return null;
+  // };
+
   const getDocSrc = (key) => {
-    const v = documentFormData[key];
-    if (!v) return null;
-    if (v instanceof File) return URL.createObjectURL(v);
-    if (typeof v === "string")
-      return v.startsWith("http") ? v : `${BASE_URL}${v}`;
+    const fileValue = documentFormData[key];
+
+    // 1. If no value, return null immediately
+    if (!fileValue) return null;
+
+    // 2. PRIORITY: If it's a freshly selected File object, show it immediately.
+    // We bypass the ID check here so the preview works during the upload process.
+    if (fileValue instanceof File) {
+      try {
+        return URL.createObjectURL(fileValue);
+      } catch (err) {
+        console.error("Error creating preview URL", err);
+        return null;
+      }
+    }
+
+    // 3. For existing documents (Strings from server), apply the ID Guard.
+    if (typeof fileValue === "string") {
+      // Check if the data in the form actually belongs to the active employee
+      const isMatchingEmployee =
+        selectedEmployee &&
+        documentFormData.employee_id === selectedEmployee.id;
+
+      if (!isMatchingEmployee) {
+        return null;
+      }
+
+      return fileValue.startsWith("http")
+        ? fileValue
+        : `${BASE_URL}${fileValue}`;
+    }
+
     return null;
   };
-
   const handleDocFileChange = (key, file) => {
+    console.log("key,file ::: >>>>>", key, file);
     if (!file) return;
+    console.log("Coming or not ??????");
     setDocumentFormData((prev) => ({ ...prev, [key]: file }));
   };
 
@@ -4390,6 +4471,7 @@ const EmployeeManagement = () => {
                           isEditable={viewMode === "edit"}
                           onFileChange={handleDocFileChange}
                         />
+                        <>{console.log("doc.key doc.key :::", doc.key)}</>
                       </Grid>
                     ))}
                   </Grid>
