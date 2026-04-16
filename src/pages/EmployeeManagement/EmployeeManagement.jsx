@@ -3055,9 +3055,7 @@ const EmployeeManagement = () => {
   const employeePersonalDetails = useSelector(selectEmployeePersonalDetails);
   const personalDetailsArray = Array.isArray(employeePersonalDetails)
     ? employeePersonalDetails
-    : employeePersonalDetails
-      ? [employeePersonalDetails]
-      : [];
+    : [];
   const employeeSalaries = useSelector(selectEmployeeSalaries);
   const employeeSalary = Array.isArray(employeeSalaries)
     ? employeeSalaries
@@ -3118,10 +3116,18 @@ const EmployeeManagement = () => {
 
   useEffect(() => {
     if (!selectedEmployee || viewMode === "create") return;
+    if (
+      selectedEmployee?.id !== personalDetailsArray[0]?.employee_id &&
+      viewMode === "view"
+    ) {
+      setPersonalDetailsFormData(EMPTY_PERSONAL);
+      return;
+    }
 
     if (personalDetailsArray.length > 0) {
       const pd = personalDetailsArray[0];
       setPersonalDetailsFormData({
+        employee_id: pd.employee_id || null,
         father_name: pd.father_name || "",
         mother_name: pd.mother_name || "",
         marital_status: pd.marital_status || "",
@@ -3398,6 +3404,8 @@ const EmployeeManagement = () => {
     setFormData(EMPTY_FORM);
     setValidationAlert(null);
     setFormErrors({});
+
+    // handleCancelEdit();
   };
 
   const handleSaveEdit = async () => {
