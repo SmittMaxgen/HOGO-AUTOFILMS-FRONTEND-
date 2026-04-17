@@ -504,7 +504,9 @@ const EmployeeManagement = () => {
     // Salary
     if (salaryArray.length > 0) {
       const s = salaryArray[0];
+      if (empId && s.employee_id && s.employee_id !== empId) return;
       setSalaryFormData({
+        employee_id: s.employee_id || empId,
         gross_salary: s.gross_salary || "",
         basic_salary: s.basic_salary || "",
         hra: s.hra || "",
