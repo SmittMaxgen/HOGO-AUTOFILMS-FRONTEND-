@@ -6,7 +6,7 @@ import {
   createGallery,
   updateGallery,
   deleteGallery,
-} from "../../feature/gallery/galleryThunks";
+} from "../../feature/gallery/gallerythunks";
 
 import {
   selectGalleries,
@@ -16,7 +16,7 @@ import {
   selectDeleteGalleryLoading,
   selectGallerySuccess,
   selectGalleryError,
-} from "../../feature/gallery/gallerySelectors";
+} from "../../feature/gallery/galleryselectors";
 
 import {
   Box,
