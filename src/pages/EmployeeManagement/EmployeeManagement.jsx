@@ -833,10 +833,16 @@ const EmployeeManagement = () => {
     try {
       let result;
       if (editingPersonalDetails?.id) {
+        // result = await dispatch(
+        //   updateEmployeePersonalDetails({
+        //     id: editingPersonalDetails.id,
+        //     data,
+        //   }),
+        // );
         result = await dispatch(
           updateEmployeePersonalDetails({
             id: editingPersonalDetails.id,
-            data,
+            data: (({ employee_id, ...rest }) => rest)(personalDetailsFormData),
           }),
         );
       } else {
