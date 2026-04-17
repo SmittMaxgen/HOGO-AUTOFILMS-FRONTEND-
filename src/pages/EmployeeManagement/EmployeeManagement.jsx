@@ -774,9 +774,157 @@ const EmployeeManagement = () => {
   };
 
   // ── Document save (POST or PATCH) ──────────────────────────────────────────
+  // const handleUploadDocument = async () => {
+  //   const fd = new FormData();
+  //   fd.append("employee_id", selectedEmployee.id);
+  //   [
+  //     "document_type",
+  //     "pancard_number",
+  //     "aadhar_number",
+  //     "driving_license_number",
+  //     "remarks",
+  //   ].forEach((k) => {
+  //     if (documentFormData[k]) fd.append(k, documentFormData[k]);
+  //   });
+  //   [
+  //     "aadhar_front",
+  //     "aadhar_back",
+  //     "pan_card",
+  //     "photo",
+  //     "driving_license_front",
+  //     "driving_license_back",
+  //   ].forEach((k) => {
+  //     if (documentFormData[k] instanceof File)
+  //       fd.append(k, documentFormData[k]);
+  //   });
+
+  //   try {
+  //     let result;
+  //     if (editingDoc?.id) {
+  //       result = await dispatch(
+  //         updateEmployeeDocument({ id: editingDoc.id, data: fd }),
+  //       );
+  //       if (result.type.includes("fulfilled")) {
+  //         CommonToast("Document updated successfully", "success");
+  //         dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+  //       }
+  //     } else {
+  //       result = await dispatch(createEmployeeDocument(fd));
+  //       if (result.type.includes("fulfilled")) {
+  //         CommonToast("Document uploaded successfully", "success");
+  //         dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
+  //       }
+  //     }
+  //     if (!result.type.includes("fulfilled"))
+  //       CommonToast("Failed to save document", "error");
+  //   } catch {
+  //     CommonToast("Failed to save document", "error");
+  //   }
+  // };
+
+  const validateDocumentForm = () => {
+    if (!documentFormData.aadhar_number) {
+      return "Aadhar number is required";
+    }
+
+    if (!/^\d{12}$/.test(documentFormData.aadhar_number)) {
+      return "Aadhar number must be 12 digits";
+    }
+
+    if (!documentFormData.pancard_number) {
+      return "PAN number is required";
+    }
+
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(documentFormData.pancard_number)) {
+      return "Invalid PAN format";
+    }
+
+    const requiredFiles = [
+      "aadhar_front",
+      "aadhar_back",
+      "pan_card",
+      "photo",
+      "driving_license_front",
+      "driving_license_back",
+    ];
+
+    for (const key of requiredFiles) {
+      if (!documentFormData[key]) {
+        return `${key.replaceAll("_", " ")} is required`;
+      }
+    }
+
+    return null;
+  };
+
+  const isDocumentFormInvalid =
+    !documentFormData.aadhar_number ||
+    !/^\d{12}$/.test(documentFormData.aadhar_number) ||
+    !documentFormData.pancard_number ||
+    !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(documentFormData.pancard_number) ||
+    !documentFormData.aadhar_front ||
+    !documentFormData.aadhar_back ||
+    !documentFormData.pan_card ||
+    !documentFormData.photo ||
+    !documentFormData.driving_license_front ||
+    !documentFormData.driving_license_back;
+
   const handleUploadDocument = async () => {
+    const errorMsg = validateDocumentForm();
+
+    if (errorMsg) {
+      CommonToast(errorMsg, "error");
+      return;
+    }
+
+    const {
+      aadhar_number,
+      pancard_number,
+      aadhar_front,
+      aadhar_back,
+      pan_card,
+      photo,
+      driving_license_front,
+      driving_license_back,
+    } = documentFormData;
+
+    // Required validations
+    if (!aadhar_number) {
+      CommonToast("Aadhar number is required", "error");
+      return;
+    }
+
+    if (!/^\d{12}$/.test(aadhar_number)) {
+      CommonToast("Aadhar number must be 12 digits", "error");
+      return;
+    }
+
+    if (!pancard_number) {
+      CommonToast("PAN number is required", "error");
+      return;
+    }
+
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(pancard_number)) {
+      CommonToast("Invalid PAN number format", "error");
+      return;
+    }
+
+    // File required validations
+    if (
+      !aadhar_front ||
+      !aadhar_back ||
+      !pan_card ||
+      !photo ||
+      !driving_license_front ||
+      !driving_license_back
+    ) {
+      CommonToast("All document files are required", "error");
+      return;
+    }
+
     const fd = new FormData();
     fd.append("employee_id", selectedEmployee.id);
+
     [
       "document_type",
       "pancard_number",
@@ -786,6 +934,7 @@ const EmployeeManagement = () => {
     ].forEach((k) => {
       if (documentFormData[k]) fd.append(k, documentFormData[k]);
     });
+
     [
       "aadhar_front",
       "aadhar_back",
@@ -794,29 +943,38 @@ const EmployeeManagement = () => {
       "driving_license_front",
       "driving_license_back",
     ].forEach((k) => {
-      if (documentFormData[k] instanceof File)
+      if (documentFormData[k] instanceof File) {
         fd.append(k, documentFormData[k]);
+      }
     });
 
     try {
       let result;
+
       if (editingDoc?.id) {
         result = await dispatch(
-          updateEmployeeDocument({ id: editingDoc.id, data: fd }),
+          updateEmployeeDocument({
+            id: editingDoc.id,
+            data: fd,
+          }),
         );
+
         if (result.type.includes("fulfilled")) {
           CommonToast("Document updated successfully", "success");
           dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
         }
       } else {
         result = await dispatch(createEmployeeDocument(fd));
+
         if (result.type.includes("fulfilled")) {
           CommonToast("Document uploaded successfully", "success");
           dispatch(getEmployeeDocuments({ employee_id: selectedEmployee.id }));
         }
       }
-      if (!result.type.includes("fulfilled"))
+
+      if (!result.type.includes("fulfilled")) {
         CommonToast("Failed to save document", "error");
+      }
     } catch {
       CommonToast("Failed to save document", "error");
     }
@@ -1704,6 +1862,7 @@ const EmployeeManagement = () => {
                   variant="contained"
                   startIcon={editingDoc?.id ? <SaveIcon /> : <AddIcon />}
                   onClick={handleUploadDocument}
+                  // disabled={isDocumentFormInvalid}
                   sx={redBtn}
                 >
                   {editingDoc?.id ? "Update Documents" : "Add Document"}
