@@ -1297,22 +1297,22 @@ const useStyles = makeStyles(() => ({
   headerRight: {
     color: "white",
   },
-  searchInput: {
-    flex: 1,
-    fontSize: "0.9rem",
-  },
-  suggestionBox: {
-    position: "absolute",
-    top: "100%",
-    left: 0,
-    right: 0,
-    backgroundColor: "#fff",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    zIndex: 999,
-    maxHeight: 200,
-    overflowY: "auto",
-  },
+  // searchInput: {
+  //   flex: 1,
+  //   fontSize: "0.9rem",
+  // },
+  // suggestionBox: {
+  //   position: "absolute",
+  //   top: "100%",
+  //   left: 0,
+  //   right: 0,
+  //   backgroundColor: "#fff",
+  //   border: "1px solid #ccc",
+  //   borderRadius: "8px",
+  //   zIndex: 999,
+  //   maxHeight: 200,
+  //   overflowY: "auto",
+  // },
 }));
 
 const AdminLayout = ({ toggleTheme, mode }) => {
