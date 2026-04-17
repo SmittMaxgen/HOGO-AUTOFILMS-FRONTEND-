@@ -210,7 +210,6 @@ const Quotes = () => {
     service: "",
     brand_id: "",
     model_id: "",
-    service: "",
   };
   const [filters, setFilters] = useState(emptyFilters);
 
