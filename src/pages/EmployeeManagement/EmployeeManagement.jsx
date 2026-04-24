@@ -2020,6 +2020,21 @@ const EmployeeManagement = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
+                    label="Emergency Contact Name"
+                    sx={fieldSx}
+                    value={formData.emergency_contact_name || ""}
+                    disabled={viewMode !== "edit"}
+                    onChange={(e) =>
+                      setFormData((p) => ({
+                        ...p,
+                        emergency_contact_name: e.target.value,
+                      }))
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
                     label="Emergency Contact Phone"
                     sx={fieldSx}
                     value={formData.emergency_contact_phone || ""}

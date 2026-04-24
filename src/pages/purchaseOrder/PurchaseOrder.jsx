@@ -2050,7 +2050,7 @@ const PurchaseOrder = () => {
                             "Dist. Price",
                             "MRP",
                             "Total Dist.",
-                            "Total MRP",
+                            // "Total MRP",
                           ].map((h) => (
                             <TableCell
                               key={h}
@@ -2245,11 +2245,11 @@ const PurchaseOrder = () => {
                                   )}
                                 </Typography>
                               </TableCell>
-                              <TableCell align="center">
+                              {/* <TableCell align="center">
                                 <Typography variant="body2" color="#475569">
                                   ₹ {calculated.total_mrp_price.toFixed(2)}
                                 </Typography>
-                              </TableCell>
+                              </TableCell> */}
 
                               {(poStatus === "PICKED" ||
                                 poStatus === "APPROVED" ||
@@ -2794,7 +2794,7 @@ const PurchaseOrder = () => {
                           "Dist. Price",
                           "MRP",
                           "Total Dist.",
-                          "Total MRP",
+                          // "Total MRP",
                         ].map((h) => (
                           <TableCell
                             key={h}
@@ -2861,11 +2861,11 @@ const PurchaseOrder = () => {
                               ₹ {item?.total_distributor_price?.toFixed(2)}
                             </Typography>
                           </TableCell>
-                          <TableCell align="center">
+                          {/* <TableCell align="center">
                             <Typography variant="body2" color="#475569">
                               ₹ {item?.total_mrp_price?.toFixed(2)}
                             </Typography>
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       ))}
                     </TableBody>
