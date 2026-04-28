@@ -451,6 +451,7 @@ const InventorySerial = () => {
     serial_number: "",
     batch_id: "",
     status: "",
+    sku: "",
   });
 
   const [isViewing, setIsViewing] = useState(false);
@@ -480,6 +481,7 @@ const InventorySerial = () => {
         payload.serial_number = searchQuery.serial_number;
       if (searchQuery.batch_id) payload.batch_id = searchQuery.batch_id;
       if (searchQuery.status) payload.status = searchQuery.status;
+      if (searchQuery.sku) payload.sku = searchQuery.sku;
       dispatch(getInventorySerials(payload));
     }, 500);
     return () => clearTimeout(timeoutId);
@@ -489,6 +491,7 @@ const InventorySerial = () => {
     searchQuery.serial_number,
     searchQuery.batch_id,
     searchQuery.status,
+    searchQuery.sku,
   ]);
 
   useEffect(() => {
@@ -686,6 +689,13 @@ const InventorySerial = () => {
           </Box>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
             <CommonSearchField
+              value={searchQuery.sku}
+              placeholder="Search by sku ..."
+              onChange={(value) =>
+                setSearchQuery((prev) => ({ ...prev, sku: value }))
+              }
+            />
+            <CommonSearchField
               value={searchQuery.serial_number}
               placeholder="Search by serial number..."
               onChange={(value) =>
@@ -726,7 +736,7 @@ const InventorySerial = () => {
                   borderRadius: "10px",
                   fontSize: 13,
                   color: "grey",
-                  backgroundColor: "#f5f5f5",               
+                  backgroundColor: "#f5f5f5",
                   "&:hover fieldset": { borderColor: "#D20000" },
                   "&.Mui-focused fieldset": { borderColor: "#D20000" },
                 }}

@@ -14,6 +14,7 @@ export const getInventorySerials = createAsyncThunk(
       const params = {};
 
       if (payload.serial_number) params.serial_number = payload.serial_number;
+      if (payload.sku) params.sku = payload.sku;
       if (payload.batch_id) params.batch_id = payload.batch_id;
       if (payload.status !== undefined) params.status = payload.status;
 
@@ -24,8 +25,7 @@ export const getInventorySerials = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message ||
-          "Failed to fetch inventory serials!",
+        error.response?.data?.message || "Failed to fetch inventory serials!",
       );
     }
   },
@@ -38,15 +38,11 @@ export const createInventorySerial = createAsyncThunk(
   "inventorySerial/createInventorySerial",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(
-        "/inventory_serials/",
-        payload,
-      );
+      const response = await axiosInstance.post("/inventory_serials/", payload);
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message ||
-          "Failed to create inventory serial!",
+        error.response?.data?.message || "Failed to create inventory serial!",
       );
     }
   },
@@ -69,8 +65,7 @@ export const updateInventorySerial = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message ||
-          "Failed to update inventory serial!",
+        error.response?.data?.message || "Failed to update inventory serial!",
       );
     }
   },
@@ -83,14 +78,11 @@ export const deleteInventorySerial = createAsyncThunk(
   "inventorySerial/deleteInventorySerial",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(
-        `/inventory_serials/${id}/`,
-      );
+      const response = await axiosInstance.delete(`/inventory_serials/${id}/`);
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message ||
-          "Failed to delete inventory serial!",
+        error.response?.data?.message || "Failed to delete inventory serial!",
       );
     }
   },
