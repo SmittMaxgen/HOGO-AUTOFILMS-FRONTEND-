@@ -1616,11 +1616,54 @@ export default function Plan() {
   });
 
   // ── Effects ────────────────────────────────────────────────────────────────
+  // useEffect(() => {
+  //   dispatch(getTravelPlans());
+  //   dispatch(getDailyPlans());
+  //   dispatch(getEmployees());
+  // }, [dispatch]);
+
+  const monthYearChips = useMemo(() => {
+    const set = new Set();
+    travelPlans
+      .filter((tp) => {
+        if (
+          filterEmployeeId &&
+          String(tp.employee_id) !== String(filterEmployeeId)
+        )
+          return false;
+        if (filterRegion && tp.region !== filterRegion) return false;
+        return true;
+      })
+      .forEach((tp) => {
+        if (!tp.start_date) return;
+        const d = parseISODate(tp.start_date);
+        if (!d) return;
+        set.add(`${d.getMonth()}-${d.getFullYear()}`);
+      });
+    return Array.from(set).map((key) => {
+      const [m, y] = key.split("-");
+      return {
+        monthIndex: Number(m),
+        year: Number(y),
+        label: `${MONTHS[m]}-${y}`,
+      };
+    });
+  }, [travelPlans, filterEmployeeId, filterRegion]);
   useEffect(() => {
-    dispatch(getTravelPlans());
-    dispatch(getDailyPlans());
     dispatch(getEmployees());
+    dispatch(getDailyPlans());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(
+      getTravelPlans({
+        employee_id: filterEmployeeId || "",
+        region: filterRegion || "",
+        month: MONTHS[calMonth],
+        year: calYear,
+      }),
+    );
+  }, [dispatch, filterEmployeeId, filterRegion, calMonth, calYear]);
 
   useEffect(() => {
     if (showTPModal) dispatch(getEmployees());
@@ -1687,22 +1730,27 @@ export default function Plan() {
       dispatch(clearDailyPlanUpdateState());
     }
   }, [dpCreateSuccess, dpUpdateSuccess]); // eslint-disable-line
-
+  useEffect(() => {
+    if (travelPlans.length > 0) {
+      setSelectedTPId(travelPlans[0].id);
+    }
+  }, [travelPlans]);
   // ── Derived data ───────────────────────────────────────────────────────────
-  const filteredTravelPlans = useMemo(
-    () =>
-      travelPlans.filter((tp) => {
-        if (
-          filterEmployeeId &&
-          String(tp.employee_id) !== String(filterEmployeeId)
-        )
-          return false;
-        if (filterRegion && tp.region !== filterRegion) return false;
-        return true;
-      }),
-    [travelPlans, filterEmployeeId, filterRegion],
-  );
+  // const filteredTravelPlans = useMemo(
+  //   () =>
+  //     travelPlans.filter((tp) => {
+  //       if (
+  //         filterEmployeeId &&
+  //         String(tp.employee_id) !== String(filterEmployeeId)
+  //       )
+  //         return false;
+  //       if (filterRegion && tp.region !== filterRegion) return false;
+  //       return true;
+  //     }),
+  //   [travelPlans, filterEmployeeId, filterRegion],
+  // );
 
+  const filteredTravelPlans = travelPlans;
   const today = useMemo(() => new Date(), []);
 
   // Stats: based on current calendar month across ALL plans (not filtered)
@@ -1742,9 +1790,17 @@ export default function Plan() {
     return m;
   }, [travelPlans]);
 
+  // const employeesWithPlans = useMemo(
+  //   () => employees.filter((e) => empTripCounts[e.id] > 0),
+  //   [employees, empTripCounts],
+  // );
+
   const employeesWithPlans = useMemo(
-    () => employees.filter((e) => empTripCounts[e.id] > 0),
-    [employees, empTripCounts],
+    () =>
+      employees.filter((e) =>
+        travelPlans.some((tp) => String(tp.employee_id) === String(e.id)),
+      ),
+    [employees, travelPlans],
   );
 
   const uniqueRegions = useMemo(
@@ -1827,29 +1883,39 @@ export default function Plan() {
   }
 
   // ── Employee card click ────────────────────────────────────────────────────
+  // function pickEmployee(emp) {
+  //   const eid = String(emp.id);
+  //   setFilterEmployeeId(eid);
+  //   const match = travelPlans.find((tp) => {
+  //     if (String(tp.employee_id) !== eid) return false;
+  //     const s = parseISODate(tp.start_date);
+  //     return s && s.getFullYear() === calYear && s.getMonth() === calMonth;
+  //   });
+  //   if (match) {
+  //     setSelectedTPId(match.id);
+  //     return;
+  //   }
+  //   const any = travelPlans.find((tp) => String(tp.employee_id) === eid);
+  //   if (any) {
+  //     setSelectedTPId(any.id);
+  //     const d = parseISODate(any.start_date);
+  //     if (d) {
+  //       setCalYear(d.getFullYear());
+  //       setCalMonth(d.getMonth());
+  //     }
+  //   }
+  // }
+
   function pickEmployee(emp) {
     const eid = String(emp.id);
     setFilterEmployeeId(eid);
-    const match = travelPlans.find((tp) => {
-      if (String(tp.employee_id) !== eid) return false;
-      const s = parseISODate(tp.start_date);
-      return s && s.getFullYear() === calYear && s.getMonth() === calMonth;
-    });
+
+    const match = travelPlans.find((tp) => String(tp.employee_id) === eid);
+
     if (match) {
       setSelectedTPId(match.id);
-      return;
-    }
-    const any = travelPlans.find((tp) => String(tp.employee_id) === eid);
-    if (any) {
-      setSelectedTPId(any.id);
-      const d = parseISODate(any.start_date);
-      if (d) {
-        setCalYear(d.getFullYear());
-        setCalMonth(d.getMonth());
-      }
     }
   }
-
   // ── Daily Plan CRUD ────────────────────────────────────────────────────────
   function openCellModal(day) {
     if (!selectedTPId || !day) return;
@@ -1939,6 +2005,10 @@ export default function Plan() {
           <span style={S.fl}>Employee</span>
           <SelectBox
             value={filterEmployeeId}
+            // onChange={(e) => {
+            //   setFilterEmployeeId(e.target.value);
+            //   setSelectedTPId(null);
+            // }}
             onChange={(e) => {
               setFilterEmployeeId(e.target.value);
               setSelectedTPId(null);
@@ -1991,7 +2061,12 @@ export default function Plan() {
           <span style={S.fl}>Region</span>
           <SelectBox
             value={filterRegion}
-            onChange={(e) => setFilterRegion(e.target.value)}
+            // onChange={(e) => setFilterRegion(e.target.value)}
+            onChange={(e) => {
+              setFilterRegion(e.target.value);
+              setFilterEmployeeId("");
+              setSelectedTPId(null);
+            }}
             minWidth={100}
           >
             <option value="">All</option>
@@ -2038,6 +2113,44 @@ export default function Plan() {
             <IC.Download /> &nbsp;Export
           </button>
         </div>
+      </div>
+
+      <div style={S.chipContainer}>
+        {monthYearChips.map((chip) => {
+          const isActive =
+            chip.monthIndex === calMonth && chip.year === calYear;
+
+          return (
+            <div
+              key={`${chip.monthIndex}-${chip.year}`}
+              style={{
+                ...S.chip,
+                ...(isActive ? S.chipActive : {}),
+              }}
+              onClick={() => {
+                setCalMonth(chip.monthIndex);
+                setCalYear(chip.year);
+                const match = travelPlans.find((tp) => {
+                  if (
+                    filterEmployeeId &&
+                    String(tp.employee_id) !== String(filterEmployeeId)
+                  )
+                    return false;
+                  if (filterRegion && tp.region !== filterRegion) return false;
+                  const d = parseISODate(tp.start_date);
+                  return (
+                    d &&
+                    d.getMonth() === chip.monthIndex &&
+                    d.getFullYear() === chip.year
+                  );
+                });
+                setSelectedTPId(match ? match.id : null);
+              }}
+            >
+              {chip.label}
+            </div>
+          );
+        })}
       </div>
 
       {/* ── Stats Cards ─────────────────────────────────────────────── */}
@@ -2087,55 +2200,41 @@ export default function Plan() {
 
       {/* ── Employee Travel Plans ────────────────────────────────────── */}
       {employeesWithPlans.length > 0 && (
-        <div style={S.empSection}>
-          <div style={S.empSecHead}>
-            <span style={S.empSecTitle}>Employee Travel Plans</span>
-            <button
-              style={S.viewAllBtn}
-              onClick={() => {
-                setFilterEmployeeId("");
-                setSelectedTPId(null);
-              }}
-            >
-              View All →
-            </button>
+        <div style={S.chipContainer}>
+          <div
+            style={{
+              ...S.chip,
+              ...(filterEmployeeId === "" ? S.chipActive : {}),
+            }}
+            onClick={() => {
+              setFilterEmployeeId("");
+              setSelectedTPId(null);
+            }}
+          >
+            All
           </div>
-          <div style={S.empCards} id="plan-emp-cards">
-            {employeesWithPlans.map((emp, i) => {
-              const isSelected = String(emp.id) === String(filterEmployeeId);
-              const trips = empTripCounts[emp.id] || 0;
-              const avBg = AVATAR_BG[i % AVATAR_BG.length];
-              const bBg = BADGE_BG[i % BADGE_BG.length];
-              const bTxt = BADGE_TEXT[i % BADGE_TEXT.length];
-              return (
-                <div
-                  key={emp.id}
-                  style={{ ...S.empCard, ...(isSelected ? S.empCardSel : {}) }}
-                  onClick={() => pickEmployee(emp)}
+          {employeesWithPlans.map((emp) => {
+            const isSelected = String(emp.id) === String(filterEmployeeId);
+            const trips = empTripCounts[emp.id] || 0;
+            return (
+              <div
+                key={emp.id}
+                style={{ ...S.chip, ...(isSelected ? S.chipActive : {}) }}
+                onClick={() => pickEmployee(emp)}
+              >
+                {emp.first_name} {emp.last_name}
+                <span
+                  style={{
+                    marginLeft: 6,
+                    fontSize: 11,
+                    opacity: 0.75,
+                  }}
                 >
-                  <div style={{ ...S.empAvatar, background: avBg }}>
-                    {getInitials(emp.first_name, emp.last_name)}
-                  </div>
-                  <div style={S.empInfo}>
-                    <span style={S.empName}>
-                      {emp.first_name} {emp.last_name}
-                    </span>
-                    <span style={S.empDesig}>
-                      {emp.designation ||
-                        emp.role ||
-                        emp.employee_code ||
-                        "Employee"}
-                    </span>
-                    <span
-                      style={{ ...S.tripBadge, background: bBg, color: bTxt }}
-                    >
-                      {trips} Trip{trips !== 1 ? "s" : ""}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  ({trips})
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -3175,6 +3274,29 @@ const S = {
     cursor: "pointer",
     fontFamily: "inherit",
     fontWeight: 500,
+  },
+  chipContainer: {
+    display: "flex",
+    gap: 8,
+    flexWrap: "wrap",
+    marginBottom: 16,
+  },
+
+  chip: {
+    padding: "6px 12px",
+    borderRadius: 20,
+    border: "1px solid #e5e7eb",
+    background: "#fff",
+    fontSize: 12,
+    cursor: "pointer",
+    color: "#374151",
+    fontWeight: 500,
+  },
+
+  chipActive: {
+    background: "#0d1a5e",
+    color: "#fff",
+    border: "1px solid #0d1a5e",
   },
 };
 
