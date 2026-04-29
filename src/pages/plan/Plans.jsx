@@ -3654,6 +3654,29 @@ export default function Plan() {
       );
   }, [allPlans, filterEmp, filterRegion]);
 
+  useEffect(() => {
+    if (monthChips.length === 0) return;
+    const hasActive = monthChips.some(
+      (c) => c.monthIndex === calMonth && c.year === calYear,
+    );
+    if (!hasActive) {
+      const first = monthChips[0];
+      setCalMonth(first.monthIndex);
+      setCalYear(first.year);
+      const match = allPlans.find((tp) => {
+        if (filterEmp && String(tp.employee_id) !== String(filterEmp))
+          return false;
+        if (filterRegion && tp.region !== filterRegion) return false;
+        const d = parseDate(tp.start_date);
+        return (
+          d &&
+          d.getMonth() === first.monthIndex &&
+          d.getFullYear() === first.year
+        );
+      });
+      setSelectedTPId(match ? match.id : null);
+    }
+  }, [monthChips]); // eslint-disable-line
   const employeesWithPlans = useMemo(
     () =>
       employees.filter((e) =>
