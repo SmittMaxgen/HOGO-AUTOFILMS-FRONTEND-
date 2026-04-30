@@ -4130,7 +4130,7 @@ export default function Plan() {
               }),
             )}
           </div>
-
+{/* 
           <div style={S.legend}>
             {CATS.map((cat) => (
               <div
@@ -4148,7 +4148,7 @@ export default function Plan() {
                 <span style={{ fontSize: 11, color: "#6b7280" }}>{cat}</span>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       )}
 
@@ -4484,7 +4484,7 @@ export default function Plan() {
               placeholder="e.g. Surat"
             />
           </Field>
-          <Field label="Activity Type">
+          {/* <Field label="Activity Type">
             <select
               style={S.inp}
               value={dpForm.category}
@@ -4498,7 +4498,7 @@ export default function Plan() {
                 </option>
               ))}
             </select>
-          </Field>
+          </Field> */}
           <Field label="Notes">
             <textarea
               style={{ ...S.inp, minHeight: 80, resize: "vertical" }}
