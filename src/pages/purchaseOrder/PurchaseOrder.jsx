@@ -1419,7 +1419,9 @@ const PurchaseOrder = () => {
   };
 
   const handleStatusChange = (id, value) => {
-    dispatch(updatePurchaseOrder({ id, data: { status: value } }));
+    dispatch(
+      updatePurchaseOrder({ id, data: { status: value, approved_by: 1 } }),
+    );
   };
 
   // ================= FORM HELPERS =================
