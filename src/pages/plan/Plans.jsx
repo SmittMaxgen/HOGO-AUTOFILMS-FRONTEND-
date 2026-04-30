@@ -3860,9 +3860,9 @@ export default function Plan() {
           <h1 style={S.title}>Travel Plan Manager</h1>
           <p style={S.sub}>View and manage employee travel plans</p>
         </div>
-        <button style={S.addBtn} onClick={openCreateTP}>
+        {/* <button style={S.addBtn} onClick={openCreateTP}>
           + New Travel Plan
-        </button>
+        </button> */}
       </div>
 
       {/* Filter bar */}
