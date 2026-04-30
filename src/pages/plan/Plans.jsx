@@ -3577,6 +3577,8 @@ export default function Plan() {
       getTravelPlans({
         employee_id: filterEmp || "",
         region: filterRegion || "",
+        month: MONTHS[calMonth],
+        year: calYear,
       }),
     ).then((res) => {
       const d = res?.payload;
@@ -4130,7 +4132,7 @@ export default function Plan() {
               }),
             )}
           </div>
-{/* 
+          {/* 
           <div style={S.legend}>
             {CATS.map((cat) => (
               <div
