@@ -1503,7 +1503,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
               Materials
             </Box>
 
-            <Box
+            {/* <Box
               className={`${classes.submenuItem} ${
                 isActive("/warranty") ? classes.activeItem : ""
               }`}
@@ -1511,7 +1511,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
             >
               <VerifiedUserIcon fontSize="small" />
               Warranty
-            </Box>
+            </Box> */}
           </>
         )}
 
@@ -1580,6 +1580,16 @@ const AdminLayout = ({ toggleTheme, mode }) => {
         >
           <QrCodeIcon />
           {!collapsed && "Inventory Serials"}
+        </Box>
+        {/* ADD Warranty outside Products section (after Inventory Serials or wherever you want) */}
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/warranty") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/warranty")}
+        >
+          <VerifiedUserIcon />
+          {!collapsed && "Warranty"}
         </Box>
         {/* 
         <Box

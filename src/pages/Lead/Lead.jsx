@@ -2124,6 +2124,7 @@ const Lead = () => {
                   "Lead Type",
                   "Interest",
                   "Status",
+                  "Assign To",
                   "Actions",
                 ].map((h) => (
                   <TableCell
@@ -2250,6 +2251,23 @@ const Lead = () => {
                           handleInlineUpdate(lead.id, "lead_status", v)
                         }
                       />
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        fontWeight={600}
+                        fontSize={13}
+                        color="#1a1a1a"
+                      >
+                        {lead?.assigned_to_name || "N/A"}
+                      </Typography>
+                      {/* <ColoredSelect
+                        value={lead.assigned_to_name}
+                        options={LEAD_STATUS_OPTIONS}
+                        colors={STATUS_COLORS}
+                        onChange={(v) =>
+                          handleInlineUpdate(lead.id, "lead_status", v)
+                        }
+                      /> */}
                     </TableCell>
 
                     {/* Actions */}
