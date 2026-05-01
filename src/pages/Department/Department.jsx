@@ -33,6 +33,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import BusinessIcon from "@mui/icons-material/Business";
 import PersonIcon from "@mui/icons-material/Person";
 import DescriptionIcon from "@mui/icons-material/Description";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
 
 import {
   getDepartments,
@@ -402,7 +403,7 @@ const Department = () => {
                               flexShrink: 0,
                             }}
                           >
-                            <BusinessIcon
+                            <AccountTreeIcon
                               sx={{ fontSize: 15, color: "#D20000" }}
                             />
                           </Box>

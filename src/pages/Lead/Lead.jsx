@@ -702,6 +702,7 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ApartmentIcon from "@mui/icons-material/Apartment";
+import SupportAgentOutlinedIcon from "@mui/icons-material/SupportAgentOutlined";
 
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
@@ -2198,7 +2199,7 @@ const Lead = () => {
                             flexShrink: 0,
                           }}
                         >
-                          <BusinessIcon
+                          <SupportAgentOutlinedIcon
                             sx={{ fontSize: 15, color: "#D20000" }}
                           />
                         </Box>

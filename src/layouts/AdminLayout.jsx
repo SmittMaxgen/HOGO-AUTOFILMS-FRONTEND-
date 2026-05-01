@@ -1041,6 +1041,14 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import SupportAgentOutlinedIcon from "@mui/icons-material/SupportAgentOutlined";
+import WorkspacePremiumOutlinedIcon from "@mui/icons-material/WorkspacePremiumOutlined";
+import TrackChangesOutlinedIcon from "@mui/icons-material/TrackChangesOutlined";
+import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
+import ContactPhoneOutlinedIcon from "@mui/icons-material/ContactPhoneOutlined";
+import RequestQuoteOutlinedIcon from "@mui/icons-material/RequestQuoteOutlined";
+import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
+import ApartmentOutlinedIcon from "@mui/icons-material/ApartmentOutlined";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
@@ -1725,7 +1733,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
               }`}
               onClick={() => handleNavigate("/office_branches")}
             >
-              <BusinessIcon fontSize="small" />
+              <ApartmentOutlinedIcon fontSize="small" />
               Office Branches
             </Box>
 
@@ -1785,7 +1793,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/leads")}
         >
-          <BusinessIcon />
+          <SupportAgentOutlinedIcon />
           {!collapsed && "Leads"}
         </Box>
 
@@ -1795,7 +1803,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/plans")}
         >
-          <BusinessIcon />
+          <WorkspacePremiumOutlinedIcon />
           {!collapsed && "Plans"}
         </Box>
 
@@ -1825,7 +1833,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/target")}
         >
-          <BusinessIcon />
+          <TrackChangesOutlinedIcon />
           {!collapsed && "Targets"}
         </Box>
 
@@ -1835,7 +1843,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/reports")}
         >
-          <BusinessIcon />
+          <AssessmentOutlinedIcon />
           {!collapsed && "Reports"}
         </Box>
 
@@ -1845,7 +1853,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/contacts")}
         >
-          <BusinessIcon />
+          <ContactPhoneOutlinedIcon />
           {!collapsed && "Contact Us"}
         </Box>
 
@@ -1855,7 +1863,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/quotes")}
         >
-          <BusinessIcon />
+          <RequestQuoteOutlinedIcon />
           {!collapsed && "Quotes"}
         </Box>
 
@@ -1865,7 +1873,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/gallery")}
         >
-          <BusinessIcon />
+          <CollectionsOutlinedIcon />
           {!collapsed && "Gallery"}
         </Box>
         {/* <Box
