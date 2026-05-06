@@ -750,6 +750,7 @@ const InventorySerial = () => {
                   { value: "PICKED", label: "Picked" },
                   { value: "PACKED", label: "Packed" },
                   { value: "DELIVERED", label: "Delivered" },
+                  { value: "STOCK_OUT", label: "Stock Out" },
                 ].map((opt) => (
                   <MenuItem key={opt.value} value={opt.value}>
                     {opt.label}
