@@ -3,7 +3,8 @@ import axios from "axios";
 const axiosInstance = axios.create({
   // baseURL: "https://hogofilm.pythonanywhere.com/",
   // baseURL: "https://hogofilm.pythonanywhere.com/",
-  baseURL: "https://apidata.hogoautofilms.in/",
+  // baseURL: "https://apidata.hogoautofilms.in/",
+  baseURL: "https://apidata.hogoautofilms.co.in/",
   // headers: {
   //   "Content-Type": "application/json",
   // },
