@@ -202,7 +202,7 @@ const ShipmentFormDialog = ({
   const [errors, setErrors] = useState({});
   const fileInputRef = useRef(null);
 
-  const BASE_URL = "http://hogofilm.pythonanywhere.com";
+  const BASE_URL = "https://apidata.hogoautofilms.co.in";
 
   useEffect(() => {
     if (!open || !poId) return;
@@ -215,7 +215,7 @@ const ShipmentFormDialog = ({
       setShipmentForm(emptyForm);
       try {
         const res = await fetch(
-          `https://hogofilm.pythonanywhere.com/shipment/?order_id=${poId}`,
+          `https://apidata.hogoautofilms.co.in/shipment/?order_id=${poId}`,
         );
         const data = await res.json();
         const shipment = Array.isArray(data)
@@ -1204,7 +1204,7 @@ const PurchaseOrder = () => {
   const handleDownloadInvoice = async (poId) => {
     try {
       const response = await fetch(
-        `https://hogofilm.pythonanywhere.com/purchase-orders/${poId}/invoice-pdf/`,
+        `https://apidata.hogoautofilms.co.in/purchase-orders/${poId}/invoice-pdf/`,
       );
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -1268,7 +1268,7 @@ const PurchaseOrder = () => {
 
   // ADD this new useEffect
   useEffect(() => {
-    fetch("https://hogofilm.pythonanywhere.com/company_profile/")
+    fetch("https://apidata.hogoautofilms.co.in/company_profile/")
       .then((res) => res.json())
       .then((data) => {
         if (data?.success) setCompanies(data.data);
@@ -3216,7 +3216,7 @@ const PurchaseOrder = () => {
                               }}
                               onClick={async () => {
                                 const response = await fetch(
-                                  `https://hogofilm.pythonanywhere.com/purchase-orders/${po?.id}/picked-pdf/`,
+                                  `https://apidata.hogoautofilms.co.in/purchase-orders/${po?.id}/picked-pdf/`,
                                 );
                                 const blob = await response.blob();
                                 const url = window.URL.createObjectURL(blob);
@@ -3247,9 +3247,10 @@ const PurchaseOrder = () => {
                               }}
                               onClick={async () => {
                                 const response = await fetch(
-                                  `https://hogofilm.pythonanywhere.com/purchase-orders/${po?.id}/packing-pdf/`,
+                                  `https://apidata.hogoautofilms.co.in/purchase-orders/${po?.id}/packing-pdf/`,
                                 );
                                 const blob = await response.blob();
+                                ``;
                                 const url = window.URL.createObjectURL(blob);
                                 const a = document.createElement("a");
                                 a.href = url;
