@@ -1048,6 +1048,7 @@ import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
 import ContactPhoneOutlinedIcon from "@mui/icons-material/ContactPhoneOutlined";
 import RequestQuoteOutlinedIcon from "@mui/icons-material/RequestQuoteOutlined";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 import ApartmentOutlinedIcon from "@mui/icons-material/ApartmentOutlined";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -1883,7 +1884,7 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/replacements")}
         >
-          <CollectionsOutlinedIcon />
+          <AutorenewIcon />
           {!collapsed && "Replacements"}
         </Box>
         {/* <Box
