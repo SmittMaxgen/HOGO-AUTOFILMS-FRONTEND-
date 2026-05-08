@@ -524,9 +524,13 @@ const Replacement = () => {
                       {(page - 1) * rowsPerPage + index + 1}
                     </TableCell>
 
-                    <TableCell>{item?.old_serial?.serial_number}</TableCell>
+                    <TableCell>
+                      {item?.old_serial?.serial_number || "N/A"}
+                    </TableCell>
 
-                    <TableCell>{item?.new_serial?.serial_number}</TableCell>
+                    <TableCell>
+                      {item?.new_serial?.serial_number || "N/A"}
+                    </TableCell>
 
                     <TableCell>{item.reason}</TableCell>
                     <TableCell>
