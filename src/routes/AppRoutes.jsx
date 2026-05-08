@@ -32,6 +32,7 @@ import Reports from "../pages/reports/Reports";
 import EmployeeSalary from "../pages/employeeSalary/EmployeeSalary";
 import SalaryPayment from "../pages/salaryPayment/salaryPayment";
 import Gallery from "../pages/gallery/Gallery";
+import Replacement from "../pages/replacement/Replacement";
 
 import ProtectedRoute from "./ProtectedRoutes";
 
@@ -81,6 +82,7 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/employee-salaries" element={<EmployeeSalary />} />
           <Route path="/salary-payment" element={<SalaryPayment />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/replacements" element={<Replacement />} />
         </Route>
       </Route>
     </Routes>
