@@ -1231,7 +1231,7 @@ const PurchaseOrder = () => {
 
   const [isViewingPayments, setIsViewingPayments] = useState(false);
   const [viewPaymentPO, setViewPaymentPO] = useState(null);
-  
+
   const handleViewPayments = (po) => {
     dispatch(getPOPayments(po.id));
     // setViewPaymentPO(po);
@@ -1445,7 +1445,7 @@ const PurchaseOrder = () => {
     const submitData = {
       po_number: form.po_number,
       distributor_id: Number(form.distributor_id),
-      company_id: Number(form.company_id),
+      company_id: form.company_id || null,
       product_items: form.product_items.map((item) => ({
         product_id: Number(item.product_id),
         product_name: item.product_name,
