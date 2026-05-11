@@ -1285,7 +1285,7 @@ const WarrantyManagement = () => {
       updateWarranty({
         id: selectedWarranty.id,
         data: {
-          product_status: status,
+          warranty_status: status,
           approved_by: (adminList && adminList?.id) || null,
         },
       }),
@@ -1300,7 +1300,7 @@ const WarrantyManagement = () => {
           id: selectedWarranty.id,
 
           data: {
-            product_status: "ACTIVATED",
+            warranty_status: "ACTIVE",
             approved_by: (adminList && adminList?.id) || null,
           },
         }),
