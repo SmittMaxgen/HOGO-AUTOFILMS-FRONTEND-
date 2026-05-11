@@ -1158,11 +1158,11 @@ const DetailCard = ({ label, value, icon }) => (
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const PRODUCT_STATUS = {
+const WARRANTY_STATUS = {
   PENDING: { label: "Pending", color: "warning" },
-  ACTIVATED: { label: "Activated", color: "success" },
-  REJECTED: { label: "Rejected", color: "error" },
-  INVALID: { label: "Invalid", color: "default" },
+  ACTIVE: { label: "Active", color: "success" },
+  EXPIRED: { label: "Expired", color: "error" },
+  VOID: { label: "Void", color: "default" },
 };
 
 const STATUS_CHIP_CONFIG = {
@@ -1322,7 +1322,7 @@ const WarrantyManagement = () => {
       updateWarranty({
         id: selectedWarranty.id,
         data: {
-          warranty_status: "REJECTED",
+          warranty_status: "EXPIRED",
           rejection_reason: rejectionReason,
           approved_by: (adminList && adminList?.id) || null,
         },
@@ -1416,7 +1416,7 @@ const WarrantyManagement = () => {
         />
 
         {/* Accept / Reject Actions */}
-        {selectedWarranty.product_status !== "ACTIVATED" && (
+        {selectedWarranty.product_status !== "ACTIVE" && (
           <Paper
             elevation={0}
             sx={{
@@ -1478,7 +1478,7 @@ const WarrantyManagement = () => {
         )}
 
         {/* Rejection Reason Alert */}
-        {selectedWarranty.warranty_status === "REJECTED" &&
+        {selectedWarranty.warranty_status === "EXPIRED" &&
           selectedWarranty.rejection_reason && (
             <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
               <Typography variant="subtitle2" fontWeight={700} gutterBottom>
@@ -1833,7 +1833,7 @@ const WarrantyManagement = () => {
                 <MenuItem value="">
                   <em>All Statuses</em>
                 </MenuItem>
-                {Object.entries(PRODUCT_STATUS).map(([key, val]) => (
+                {Object.entries(WARRANTY_STATUS).map(([key, val]) => (
                   <MenuItem key={key} value={key}>
                     {val.label}
                   </MenuItem>
@@ -2051,15 +2051,15 @@ const WarrantyManagement = () => {
                       />
                     </TableCell>
 
-                    {/* Product Status */}
+                    {/* Warranty Status */}
                     <TableCell>
                       <Chip
                         label={
-                          PRODUCT_STATUS[warranty.product_status]?.label ||
-                          warranty.product_status
+                          WARRANTY_STATUS[warranty.warranty_status]?.label ||
+                          warranty.warranty_status
                         }
                         color={
-                          PRODUCT_STATUS[warranty.product_status]?.color ||
+                          WARRANTY_STATUS[warranty.warranty_status]?.color ||
                           "default"
                         }
                         onClick={(e) => handleOpenMenu(e, warranty)}
@@ -2084,13 +2084,13 @@ const WarrantyManagement = () => {
                           },
                         }}
                       >
-                        {Object.keys(PRODUCT_STATUS).map((status) => (
+                        {Object.keys(WARRANTY_STATUS).map((status) => (
                           <MenuItem
                             key={status}
                             onClick={() => handleWarrantyStatusChange(status)}
                             sx={{ fontSize: 13, fontWeight: 500 }}
                           >
-                            {PRODUCT_STATUS[status].label}
+                            {WARRANTY_STATUS[status].label}
                           </MenuItem>
                         ))}
                       </Menu>
