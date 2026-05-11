@@ -22,7 +22,8 @@ import {
   selectPOPayments,
   selectPOPaymentsLoading,
 } from "../../feature/purchaseOrder/purchaseOrderSelector";
-
+import { getDistributors } from "../../feature/distributors/distributorThunks";
+selectDistributors;
 // TODO: Import your product and distributor selectors
 // import { selectProducts } from "../../feature/product/productSelector";
 // import { selectDistributors } from "../../feature/distributor/distributorSelector";
@@ -92,6 +93,7 @@ import {
 } from "@mui/material";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ReceiptIcon from "@mui/icons-material/Receipt";
+import { selectDistributors } from "../../feature/distributors/distributorSelector";
 
 // ─── Shared style tokens ────────────────────────────────────────────────────
 const CARD_RADIUS = 3;
@@ -822,7 +824,6 @@ const PaymentsPanel = ({
   getPOPayments,
   updatePaymentStatus,
 }) => {
-  console.log("poPayments:::>>>>????", poPayments);
   const PAYMENT_STATUS_OPTIONS = ["Pending", "Approved", "Rejected"];
   const poData = poPayments?.[0];
 
@@ -1119,7 +1120,7 @@ const PurchaseOrder = () => {
 
   // TODO: Replace these with your actual Redux selectors
   // const products = useSelector(selectProducts);
-  // const distributors = useSelector(selectDistributors);
+  const distributors = useSelector(selectDistributors);
 
   // MOCK DATA - Replace with actual API data
   const [products, setProducts] = useState([
@@ -1149,11 +1150,11 @@ const PurchaseOrder = () => {
     },
   ]);
 
-  const [distributors, setDistributors] = useState([
-    { distributor_id: 1, distributor_name: "ABC Distributors" },
-    { distributor_id: 2, distributor_name: "XYZ Suppliers" },
-    { distributor_id: 3, distributor_name: "Global Trading Co." },
-  ]);
+  // const [distributors, setDistributors] = useState([
+  //   { distributor_id: 1, distributor_name: "ABC Distributors" },
+  //   { distributor_id: 2, distributor_name: "XYZ Suppliers" },
+  //   { distributor_id: 3, distributor_name: "Global Trading Co." },
+  // ]);
 
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
@@ -1224,21 +1225,22 @@ const PurchaseOrder = () => {
   );
 
   const poPayments = useSelector(selectPOPayments);
-  console.log("poPayments:::>>>", poPayments);
   const paymentsLoading = useSelector(selectPOPaymentsLoading);
 
   const BASE_URL = "http://hogofilm.pythonanywhere.com";
 
   const [isViewingPayments, setIsViewingPayments] = useState(false);
   const [viewPaymentPO, setViewPaymentPO] = useState(null);
-  console.log("viewPaymentPO:::>>>", viewPaymentPO);
-  console.log("isViewingPayments:::>>>", isViewingPayments);
+  
   const handleViewPayments = (po) => {
     dispatch(getPOPayments(po.id));
     // setViewPaymentPO(po);
     // setIsViewingPayments(true);
   };
 
+  useEffect(() => {
+    dispatch(getDistributors());
+  }, []);
   // ================= FETCH DATA =================
   useEffect(() => {
     const delay = setTimeout(() => {
@@ -1333,7 +1335,7 @@ const PurchaseOrder = () => {
   const handleDistributorSelect = (event, value) => {
     setSelectedDistributor(value);
     if (value) {
-      setForm({ ...form, distributor_id: value.distributor_id });
+      setForm({ ...form, distributor_id: value.id });
       setErrors({ ...errors, distributor_id: "" });
     } else {
       setForm({ ...form, distributor_id: "" });
@@ -1515,9 +1517,7 @@ const PurchaseOrder = () => {
       product_items: po.product_items || [],
       remarks: po.remarks || "",
     });
-    const dist = distributors.find(
-      (d) => d.distributor_id === po.distributor_id,
-    );
+    const dist = distributors.find((d) => d.id === po.distributor_id);
     setSelectedDistributor(dist || null);
 
     const comp = companies.find((c) => c.id === po.company_id);
@@ -1675,9 +1675,7 @@ const PurchaseOrder = () => {
                   />
                   <Autocomplete
                     options={distributors}
-                    getOptionLabel={(option) =>
-                      `${option.distributor_name} (ID: ${option.distributor_id})`
-                    }
+                    getOptionLabel={(option) => `${option.distributor_name}`}
                     value={selectedDistributor}
                     onChange={handleDistributorSelect}
                     renderInput={(params) => (
@@ -2530,7 +2528,7 @@ const PurchaseOrder = () => {
     );
 
     const distributorInfo = distributors.find(
-      (d) => d.distributor_id === viewPO.distributor_id,
+      (d) => d.id === viewPO.distributor_id,
     );
     const companyInfo = companies.find((c) => c.id === viewPO.company_id);
 
@@ -3032,7 +3030,7 @@ const PurchaseOrder = () => {
               {!loading &&
                 paginatedData?.map((po, index) => {
                   const distributorInfo = distributors.find(
-                    (d) => d.distributor_id === po.distributor_id,
+                    (d) => d.id === po.distributor_id,
                   );
                   const p = STATUS_PALETTE[po.status] || STATUS_PALETTE.DRAFT;
                   return (
@@ -3064,7 +3062,7 @@ const PurchaseOrder = () => {
                           fontWeight={600}
                           color="#1e293b"
                         >
-                          {distributorInfo?.distributor_name || "N/A"}
+                          {po?.distributor_name || "N/A"}
                         </Typography>
                         {/* <Typography variant="caption" color="text.secondary">
                           ID: {po?.distributor_id}
