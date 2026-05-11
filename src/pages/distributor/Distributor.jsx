@@ -4092,7 +4092,7 @@ import {
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 
-const BASE_URL = "https://hogofilm.pythonanywhere.com";
+const BASE_URL = "https://apidata.hogoautofilms.co.in";
 
 // ─── Shared Design Helpers ─────────────────────────────────────────────────────
 

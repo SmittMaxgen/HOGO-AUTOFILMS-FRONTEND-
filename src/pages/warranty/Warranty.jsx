@@ -1896,7 +1896,7 @@ const WarrantyManagement = () => {
                   "Mobile",
                   "Install Date",
                   "Warranty",
-                  "Product Status",
+                  "Warranty Status",
                   "Action",
                 ].map((h) => (
                   <TableCell
