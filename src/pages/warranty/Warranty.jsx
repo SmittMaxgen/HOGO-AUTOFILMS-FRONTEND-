@@ -142,7 +142,7 @@
 //     dispatch(
 //       updateWarranty({
 //         id: selectedWarranty.id,
-//         data: { product_status: status },
+//         data: { warranty_status: status },
 //       }),
 //     );
 
@@ -154,7 +154,7 @@
 //       dispatch(
 //         updateWarranty({
 //           id: selectedWarranty.id,
-//           data: { product_status: "ACTIVATED" },
+//           data: { warranty_status: "ACTIVATED" },
 //         }),
 //       );
 //     }
@@ -1539,11 +1539,11 @@ const WarrantyManagement = () => {
                 />
                 <Chip
                   label={
-                    PRODUCT_STATUS[selectedWarranty.product_status]?.label ||
-                    selectedWarranty.product_status
+                    WARRANTY_STATUS[selectedWarranty.warranty_status]?.label ||
+                    selectedWarranty.warranty_status
                   }
                   color={
-                    PRODUCT_STATUS[selectedWarranty.product_status]?.color ||
+                    WARRANTY_STATUS[selectedWarranty.warranty_status]?.color ||
                     "default"
                   }
                   size="small"
@@ -1808,17 +1808,17 @@ const WarrantyManagement = () => {
             />
             <Box>
               <Select
-                value={searchQuery.product_status}
+                value={searchQuery.warranty_status}
                 onChange={(e) =>
                   setSearchQuery((prev) => ({
                     ...prev,
-                    product_status: e.target.value,
+                    warranty_status: e.target.value,
                   }))
                 }
                 displayEmpty
                 size="small"
                 renderValue={(s) =>
-                  !s ? <em>Product Status</em> : PRODUCT_STATUS[s]?.label || s
+                  !s ? <em>Warranty Status</em> : WARRANTY_STATUS[s]?.label || s
                 }
                 sx={{
                   height: 39,
@@ -1855,7 +1855,7 @@ const WarrantyManagement = () => {
                   !s ? (
                     <em>Warranty Status</em>
                   ) : (
-                    STATUS_CHIP_CONFIG[s]?.label || s
+                    WARRANTY_STATUS[s]?.label || s
                   )
                 }
                 sx={{
@@ -1871,7 +1871,7 @@ const WarrantyManagement = () => {
                 <MenuItem value="">
                   <em>All</em>
                 </MenuItem>
-                {Object.entries(STATUS_CHIP_CONFIG).map(([key, val]) => (
+                {Object.entries(WARRANTY_STATUS).map(([key, val]) => (
                   <MenuItem key={key} value={key}>
                     {val.label}
                   </MenuItem>
