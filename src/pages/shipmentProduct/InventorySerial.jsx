@@ -494,9 +494,17 @@ const InventorySerial = () => {
     searchQuery.sku,
   ]);
 
+  // useEffect(() => {
+  //   setPage(1);
+  // }, [searchQuery.serial_number, searchQuery.batch_id, searchQuery.status]);
   useEffect(() => {
     setPage(1);
-  }, [searchQuery.serial_number, searchQuery.batch_id, searchQuery.status]);
+  }, [
+    searchQuery.serial_number,
+    searchQuery.batch_id,
+    searchQuery.status,
+    searchQuery.sku,
+  ]);
   const handleView = (item) => {
     setViewSerial(item);
     setIsViewing(true);
@@ -511,7 +519,16 @@ const InventorySerial = () => {
         //   CommonToast("Inventory serial deleted successfully", "success");
         // })
         .then(() => {
-          dispatch(getInventorySerials({ page }));
+          // dispatch(getInventorySerials({ page }));
+          dispatch(
+            getInventorySerials({
+              page,
+              serial_number: searchQuery.serial_number,
+              batch_id: searchQuery.batch_id,
+              status: searchQuery.status,
+              sku: searchQuery.sku,
+            }),
+          );
           CommonToast("Inventory serial deleted successfully", "success");
         })
         .catch(() => CommonToast("Failed to delete inventory serial", "error"));

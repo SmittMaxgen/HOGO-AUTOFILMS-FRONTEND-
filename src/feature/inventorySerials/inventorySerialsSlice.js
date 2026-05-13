@@ -66,12 +66,21 @@ const inventorySerialSlice = createSlice({
       //   state.loading = false;
       //   state.list = action.payload?.data || [];
       // })
+      // .addCase(getInventorySerials.fulfilled, (state, action) => {
+      //   state.loading = false;
+      //   state.totalPages = action.payload?.total_pages || 1;
+      // })
       .addCase(getInventorySerials.fulfilled, (state, action) => {
         state.loading = false;
         state.list = action.payload?.data || [];
-        state.totalPages = action.payload?.total_pages || 1;
         state.currentPage = action.payload?.current_page || 1;
         state.count = action.payload?.count || 0;
+
+        // MAIN DATA
+        state.serials = action.payload.results || [];
+
+        // TOTAL PAGES
+        state.totalPages = Math.ceil((action.payload.count || 0) / 10);
       })
       .addCase(getInventorySerials.rejected, (state, action) => {
         state.loading = false;

@@ -7,16 +7,49 @@ import axiosInstance from "../../api/axiosInstance";
  *  - serial_no
  *  - status
  */
+// export const getInventorySerials = createAsyncThunk(
+//   "inventorySerial/getInventorySerials",
+//   async (payload = {}, { rejectWithValue }) => {
+//     try {
+//       const params = {};
+
+//       if (payload.serial_number) params.serial_number = payload.serial_number;
+//       if (payload.sku) params.sku = payload.sku;
+//       if (payload.batch_id) params.batch_id = payload.batch_id;
+//       if (payload.status !== undefined) params.status = payload.status;
+
+//       const response = await axiosInstance.get("/inventory_serials/", {
+//         params,
+//       });
+
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(
+//         error.response?.data?.message || "Failed to fetch inventory serials!",
+//       );
+//     }
+//   },
+// );
+
 export const getInventorySerials = createAsyncThunk(
   "inventorySerial/getInventorySerials",
   async (payload = {}, { rejectWithValue }) => {
     try {
       const params = {};
 
+      // Pagination
+      if (payload.page) params.page = payload.page;
+
+      // Filters
       if (payload.serial_number) params.serial_number = payload.serial_number;
+
       if (payload.sku) params.sku = payload.sku;
+
       if (payload.batch_id) params.batch_id = payload.batch_id;
-      if (payload.status !== undefined) params.status = payload.status;
+
+      if (payload.product_id) params.product_id = payload.product_id;
+
+      if (payload.status) params.status = payload.status;
 
       const response = await axiosInstance.get("/inventory_serials/", {
         params,
