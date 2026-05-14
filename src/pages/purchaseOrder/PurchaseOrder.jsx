@@ -67,6 +67,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PaymentsIcon from "@mui/icons-material/Payments";
+import ShieldIcon from "@mui/icons-material/Shield";
 
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
@@ -1216,6 +1217,53 @@ const PurchaseOrder = () => {
       window.URL.revokeObjectURL(url);
     } catch {
       CommonToast("Failed to download invoice", "error");
+    }
+  };
+
+  // Warranty Card Bulk PDF Download
+  // Warranty Card Bulk PDF Download
+  // Warranty Card Bulk PDF Download
+  const handleDownloadWarrantyCard = async (poNumber) => {
+    try {
+      const response = await fetch(
+        `https://apidata.hogoautofilms.co.in/warranty-card/bulk-pdf/?po_number=${poNumber}`,
+      );
+
+      const contentType = response.headers.get("content-type");
+
+      // If it's JSON (error response)
+      if (contentType && contentType.includes("application/json")) {
+        const errorData = await response.json();
+
+        if (!errorData.success) {
+          CommonToast(
+            errorData.message || "Failed to download warranty card",
+            "error",
+          );
+          return;
+        }
+      }
+
+      // If it's PDF (success)
+      if (!response.ok) {
+        CommonToast("Failed to download warranty card", "error");
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Warranty-Card-${poNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      CommonToast("Warranty card downloaded successfully", "success");
+    } catch (err) {
+      console.error("Warranty PDF download error:", err);
+      CommonToast("Failed to download warranty card", "error");
     }
   };
   const [errors, setErrors] = useState({});
@@ -2995,6 +3043,7 @@ const PurchaseOrder = () => {
                   "Packed PDF",
                   "Shipment",
                   "Invoice",
+                  "Warranty Card",
                 ].map((h) => (
                   <TableCell
                     key={h}
@@ -3296,6 +3345,29 @@ const PurchaseOrder = () => {
                               }}
                             >
                               <ReceiptIcon sx={{ fontSize: 16 }} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </TableCell>
+
+                      {/* ── Warranty Card PDF ── */}
+                      <TableCell align="center">
+                        {["PICKED", "PACKED", "DELIVERED"].includes(
+                          po?.status,
+                        ) && (
+                          <Tooltip title="Download Warranty Card">
+                            <IconButton
+                              size="small"
+                              onClick={() =>
+                                handleDownloadWarrantyCard(po.po_number)
+                              }
+                              sx={{
+                                bgcolor: "#f3e8ff",
+                                color: "#7c3aed",
+                                "&:hover": { bgcolor: "#ede9fe" },
+                              }}
+                            >
+                              <ShieldIcon sx={{ fontSize: 16 }} />
                             </IconButton>
                           </Tooltip>
                         )}
