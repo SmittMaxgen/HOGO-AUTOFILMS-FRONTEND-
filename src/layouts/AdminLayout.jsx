@@ -1887,6 +1887,15 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           <AutorenewIcon />
           {!collapsed && "Replacements"}
         </Box>
+        <Box
+          className={`${classes.sidebarItem} ${
+            isActive("/visits-trips") ? classes.activeItem : ""
+          }`}
+          onClick={() => handleNavigate("/visits-trips")}
+        >
+          <AutorenewIcon />
+          {!collapsed && "Visits & Trips"}
+        </Box>
         {/* <Box
           className={`${classes.sidebarItem} ${
             isActive("/warehouse") ? classes.activeItem : ""
