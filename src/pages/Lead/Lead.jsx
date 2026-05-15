@@ -1,645 +1,3 @@
-// import { useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-
-// import {
-//   getLeads,
-//   createLead,
-//   updateLead,
-//   deleteLead,
-// } from "../../feature/leads/leadThunks";
-
-// import {
-//   selectLeads,
-//   selectLeadsLoading,
-//   selectCreateLeadLoading,
-//   selectCreateLeadSuccess,
-//   selectUpdateLeadLoading,
-//   selectUpdateLeadSuccess,
-//   selectDeleteLeadLoading,
-// } from "../../feature/leads/leadSelector";
-// import { selectVisitList } from "../../feature/visit/visitSelector";
-
-// import { selectEmployees } from "../../feature/employee/employeeSelector";
-
-// import { getEmployees } from "../../feature/employee/employeeThunks";
-// import { getVisits } from "../../feature/visit/visitThunks";
-
-// import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-
-// import {
-//   Box,
-//   Paper,
-//   Stack,
-//   Typography,
-//   IconButton,
-//   TextField,
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableContainer,
-//   TableHead,
-//   TableRow,
-//   Chip,
-//   Pagination,
-//   CircularProgress,
-//   Select,
-//   MenuItem,
-// } from "@mui/material";
-
-// import Autocomplete from "@mui/material/Autocomplete";
-
-// import AddIcon from "@mui/icons-material/Add";
-// import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
-// import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-// import VisibilityIcon from "@mui/icons-material/Visibility";
-
-// import CommonButton from "../../components/commonComponents/CommonButton";
-// import CommonLabel from "../../components/commonComponents/CommonLabel";
-// import CommonToast from "../../components/commonComponents/Toster";
-// import CommonSearchField from "../../components/commonComponents/CommonSearchField";
-
-// const LEAD_TYPE_OPTIONS = ["Distributor", "Retailer", "Direct"];
-// const INTEREST_LEVEL_OPTIONS = ["Low", "Medium", "High"];
-// const LEAD_STATUS_OPTIONS = ["Lead", "Prospect", "Converted", "Lost"];
-
-// const Lead = () => {
-//   const dispatch = useDispatch();
-
-//   const leads = useSelector(selectLeads);
-//   const visits = useSelector(selectVisitList);
-//   console.log("visits:::>>>", visits);
-//   const loading = useSelector(selectLeadsLoading);
-
-//   const createLoading = useSelector(selectCreateLeadLoading);
-//   const createSuccess = useSelector(selectCreateLeadSuccess);
-
-//   const updateLoading = useSelector(selectUpdateLeadLoading);
-//   const updateSuccess = useSelector(selectUpdateLeadSuccess);
-
-//   const deleteLoading = useSelector(selectDeleteLeadLoading);
-
-//   const [page, setPage] = useState(1);
-//   const rowsPerPage = 5;
-
-//   const employees = useSelector(selectEmployees);
-//   console.log("employees::::", employees);
-
-//   const [isEditing, setIsEditing] = useState(false);
-//   const [editId, setEditId] = useState(null);
-
-//   const [isViewing, setIsViewing] = useState(false);
-//   const [viewLead, setViewLead] = useState(null);
-
-//   const [searchQuery, setSearchQuery] = useState("");
-
-//   const [form, setForm] = useState({
-//     lead_type: "",
-//     business_name: "",
-//     contact_person: "",
-//     phone: "",
-//     email: "",
-//     address: "",
-//     city: "",
-//     state: "",
-//     interest_level: "",
-//     lead_status: "Lead",
-//     remarks: "",
-//     created_by: null,
-//   });
-
-//   const [errors, setErrors] = useState({});
-//   console.log("errors:::", errors);
-
-//   useEffect(() => {
-//     dispatch(getLeads());
-//     setPage(1);
-//   }, [dispatch]);
-
-//   useEffect(() => {
-//     if (createSuccess || updateSuccess) {
-//       dispatch(getLeads());
-//       handleReset();
-//     }
-//   }, [createSuccess, updateSuccess, dispatch]);
-
-//   const validate = () => {
-//     const temp = {};
-//     [
-//       "lead_type",
-//       "business_name",
-//       "contact_person",
-//       "phone",
-//       "email",
-//       "address",
-//       "city",
-//       "state",
-//       "interest_level",
-//       "lead_status",
-//       "created_by",
-//     ].forEach((field) => {
-//       if (!form[field]) temp[field] = "Required";
-//     });
-//     setErrors(temp);
-//     return Object.keys(temp).length === 0;
-//   };
-
-//   // Add this helper function near the top of your component
-//   const handleInlineUpdate = (leadId, field, value) => {
-//     const leadToUpdate = leads.find((l) => l.id === leadId);
-//     if (!leadToUpdate) return;
-
-//     const updatedData = {
-//       ...leadToUpdate,
-//       [field]: value,
-//     };
-
-//     dispatch(updateLead({ id: leadId, data: updatedData }))
-//       .unwrap()
-//       .then(() => CommonToast(`${field} updated successfully`, "success"))
-//       .catch(() => CommonToast(`Failed to update ${field}`, "error"));
-//   };
-
-//   const handleSubmit = () => {
-//     if (!validate()) return;
-
-//     if (isEditing && editId) {
-//       dispatch(updateLead({ id: editId, data: form }))
-//         .unwrap()
-//         .then(() => CommonToast("Lead updated successfully", "success"))
-//         .catch(() => CommonToast("Failed to update lead", "error"));
-//     } else {
-//       dispatch(createLead(form))
-//         .unwrap()
-//         .then(() => CommonToast("Lead created successfully", "success"))
-//         .catch(() => CommonToast("Failed to create lead", "error"));
-//     }
-//   };
-
-//   const handleView = (lead) => {
-//     setViewLead(lead);
-//     setIsViewing(true);
-//   };
-
-//   const handleEdit = (lead) => {
-//     setIsEditing(true);
-//     setEditId(lead.id);
-//     setForm({
-//       lead_type: lead.lead_type,
-//       business_name: lead.business_name,
-//       contact_person: lead.contact_person,
-//       phone: lead.phone,
-//       email: lead.email,
-//       address: lead.address,
-//       city: lead.city,
-//       state: lead.state,
-//       interest_level: lead.interest_level,
-//       lead_status: lead.lead_status,
-//       remarks: lead.remarks || "",
-//       created_by: lead.created_by,
-//     });
-//   };
-
-//   const handleDelete = (id) => {
-//     if (window.confirm("Are you sure you want to delete this lead?")) {
-//       dispatch(deleteLead(id))
-//         .unwrap()
-//         .then(() => CommonToast("Lead deleted successfully", "success"))
-//         .catch(() => CommonToast("Failed to delete lead", "error"));
-//     }
-//   };
-
-//   const handleVisitsByLead = (id) => {
-//     console.log("id:::>>>", id);
-//     if (id) {
-//       const payload = {
-//         lead_id: id,
-//       };
-//       dispatch(getVisits(payload));
-//     } else {
-//       console.log("ID not found !");
-//     }
-//   };
-
-//   const handleAddLeads = () => {
-//     setIsEditing(true);
-//     dispatch(getEmployees());
-//   };
-//   const handleReset = () => {
-//     setIsEditing(false);
-//     setEditId(null);
-//     setIsViewing(false);
-//     setViewLead(null);
-//     setForm({
-//       lead_type: "",
-//       business_name: "",
-//       contact_person: "",
-//       phone: "",
-//       email: "",
-//       address: "",
-//       city: "",
-//       state: "",
-//       interest_level: "",
-//       lead_status: "Lead",
-//       remarks: "",
-//       created_by: null,
-//     });
-//     setErrors({});
-//   };
-
-//   const filteredLeads = leads?.filter((l) =>
-//     l.business_name?.toLowerCase().includes(searchQuery.toLowerCase()),
-//   );
-
-//   const paginatedData = filteredLeads?.slice(
-//     (page - 1) * rowsPerPage,
-//     page * rowsPerPage,
-//   );
-
-//   /* ================= CREATE / EDIT ================= */
-//   if (isEditing) {
-//     return (
-//       <Box mt={4}>
-//         <Stack direction="row" alignItems="center" spacing={1} mb={3}>
-//           <IconButton onClick={handleReset}>
-//             <ArrowBackIcon />
-//           </IconButton>
-//           <CommonLabel>{editId ? "Edit Lead" : "Create Lead"}</CommonLabel>
-//         </Stack>
-
-//         <Paper sx={{ p: 3 }}>
-//           <Stack spacing={2}>
-//             <Autocomplete
-//               options={LEAD_TYPE_OPTIONS}
-//               value={form.lead_type}
-//               onChange={(_, v) => setForm({ ...form, lead_type: v || "" })}
-//               renderInput={(params) => (
-//                 <TextField {...params} label="Lead Type" />
-//               )}
-//             />
-
-//             <TextField
-//               label="Business Name"
-//               value={form.business_name}
-//               onChange={(e) =>
-//                 setForm({ ...form, business_name: e.target.value })
-//               }
-//             />
-
-//             <TextField
-//               label="Contact Person"
-//               value={form.contact_person}
-//               onChange={(e) =>
-//                 setForm({ ...form, contact_person: e.target.value })
-//               }
-//             />
-
-//             <TextField
-//               label="Phone"
-//               value={form.phone}
-//               onChange={(e) => setForm({ ...form, phone: e.target.value })}
-//             />
-
-//             <TextField
-//               label="Email"
-//               value={form.email}
-//               onChange={(e) => setForm({ ...form, email: e.target.value })}
-//             />
-
-//             <TextField
-//               label="Address"
-//               value={form.address}
-//               onChange={(e) => setForm({ ...form, address: e.target.value })}
-//             />
-
-//             <TextField
-//               label="City"
-//               value={form.city}
-//               onChange={(e) => setForm({ ...form, city: e.target.value })}
-//             />
-
-//             <TextField
-//               label="State"
-//               value={form.state}
-//               onChange={(e) => setForm({ ...form, state: e.target.value })}
-//             />
-
-//             <Autocomplete
-//               options={INTEREST_LEVEL_OPTIONS}
-//               value={form.interest_level}
-//               onChange={(_, v) => setForm({ ...form, interest_level: v || "" })}
-//               renderInput={(params) => (
-//                 <TextField {...params} label="Interest Level" />
-//               )}
-//             />
-
-//             <Autocomplete
-//               options={LEAD_STATUS_OPTIONS}
-//               value={form.lead_status}
-//               onChange={(_, v) => setForm({ ...form, lead_status: v || "" })}
-//               renderInput={(params) => (
-//                 <TextField {...params} label="Lead Status" />
-//               )}
-//             />
-
-//             {/* <TextField
-//               label="Created By"
-//               value={form.created_by}
-//               onChange={(e) => setForm({ ...form, created_by: e.target.value })}
-//             /> */}
-//             <Autocomplete
-//               options={employees || []}
-//               getOptionLabel={(option) =>
-//                 `${option.first_name || "User"} ${option.last_name || ""}` || ""
-//               }
-//               value={
-//                 employees?.find((emp) => emp.id === form.created_by) || null
-//               }
-//               onChange={(event, newValue) =>
-//                 setForm({
-//                   ...form,
-//                   created_by: newValue ? newValue.id : "",
-//                 })
-//               }
-//               renderInput={(params) => (
-//                 <TextField {...params} label="Created By" />
-//               )}
-//             />
-//             <TextField
-//               label="Remarks"
-//               value={form.remarks}
-//               multiline
-//               rows={3}
-//               onChange={(e) => setForm({ ...form, remarks: e.target.value })}
-//             />
-
-//             <Stack direction="row" justifyContent="flex-end" spacing={2}>
-//               <CommonButton variant="outlined" onClick={handleReset}>
-//                 Cancel
-//               </CommonButton>
-//               <CommonButton variant="contained" onClick={handleSubmit}>
-//                 Save
-//               </CommonButton>
-//             </Stack>
-//           </Stack>
-//         </Paper>
-//       </Box>
-//     );
-//   }
-
-//   /* ================= VIEW ================= */
-//   if (isViewing && viewLead) {
-//     return (
-//       <Box mt={4}>
-//         <Stack direction="row" alignItems="center" spacing={1} mb={3}>
-//           <IconButton onClick={handleReset}>
-//             <ArrowBackIcon />
-//           </IconButton>
-//           <CommonLabel>View Lead</CommonLabel>
-//         </Stack>
-
-//         <Paper sx={{ p: 3 }}>
-//           <Stack spacing={2}>
-//             {Object.entries(viewLead).map(([k, v]) => (
-//               <TextField
-//                 key={k}
-//                 label={k}
-//                 value={v ?? "-"}
-//                 InputProps={{ readOnly: true }}
-//               />
-//             ))}
-//           </Stack>
-//         </Paper>
-//       </Box>
-//     );
-//   }
-
-//   /* ================= LIST ================= */
-//   return (
-//     <Box>
-//       <Stack direction="row" justifyContent="space-between" mb={3}>
-//         {/* <Typography variant="h4">Leads</Typography> */}
-//         <Stack
-//           direction="row"
-//           justifyContent=""
-//           alignItems="center"
-//           spacing={1}
-//           mb={3}
-//         >
-//           <Typography
-//             variant="h4"
-//             fontWeight={700}
-//             sx={{ display: "flex", alignItems: "center", color: "#7E7E7E" }}
-//           >
-//             <IconButton onClick={() => setShowViewDialog(false)}>
-//               {/* {showViewDialog && (
-//                 <ArrowBackIcon sx={{ color: "grey", marginRight: "5px" }} />
-//               )} */}
-//             </IconButton>
-//             Leads
-//           </Typography>
-//         </Stack>
-//         <CommonButton startIcon={<AddIcon />} onClick={() => handleAddLeads()}>
-//           Add Lead
-//         </CommonButton>
-//       </Stack>
-
-//       <TableContainer component={Paper}>
-//         <CommonSearchField
-//           value={searchQuery}
-//           onChange={(v) => setSearchQuery(v)}
-//         />
-
-//         <Table>
-//           <TableHead>
-//             <TableRow>
-//               <TableCell>Sr</TableCell>
-//               <TableCell>Business</TableCell>
-//               <TableCell>Lead Type</TableCell>
-//               <TableCell>Interest</TableCell>
-//               <TableCell>Status</TableCell>
-//               <TableCell>Actions</TableCell>
-//             </TableRow>
-//           </TableHead>
-
-//           <TableBody>
-//             {!loading &&
-//               paginatedData?.map((lead, index) => (
-//                 <TableRow key={lead.id}>
-//                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-//                   <TableCell>{lead.business_name}</TableCell>
-//                   {/* <TableCell>{lead.lead_type}</TableCell>
-//                   <TableCell>
-//                     <Chip label={lead.interest_level} size="small" />
-//                   </TableCell>
-//                   <TableCell>{lead.lead_status}</TableCell> */}
-//                   {/* Lead Type - Chip Dropdown */}
-//                   <TableCell>
-//                     <Select
-//                       size="small"
-//                       value={lead.lead_type}
-//                       onChange={(e) =>
-//                         handleInlineUpdate(lead.id, "lead_type", e.target.value)
-//                       }
-//                       sx={{
-//                         minWidth: 100,
-//                         height: 25,
-//                         borderRadius: "999px",
-//                         fontWeight: 500,
-//                         color: "white",
-//                         bgcolor:
-//                           lead.lead_type === "Distributor"
-//                             ? "primary.main"
-//                             : lead.lead_type === "Retailer"
-//                               ? "info.main"
-//                               : "secondary.main",
-//                         "& .MuiSelect-select": {
-//                           py: 0.5,
-//                           pl: 2,
-//                           display: "flex",
-//                           alignItems: "center",
-//                         },
-//                         "& fieldset": {
-//                           border: "none",
-//                         },
-//                         "& svg": {
-//                           color: "white",
-//                         },
-//                       }}
-//                     >
-//                       {LEAD_TYPE_OPTIONS.map((option) => (
-//                         <MenuItem key={option} value={option}>
-//                           {option}
-//                         </MenuItem>
-//                       ))}
-//                     </Select>
-//                   </TableCell>
-
-//                   {/* Interest Level - Pill Style */}
-//                   <TableCell>
-//                     <Select
-//                       size="small"
-//                       value={lead.interest_level}
-//                       onChange={(e) =>
-//                         handleInlineUpdate(
-//                           lead.id,
-//                           "interest_level",
-//                           e.target.value,
-//                         )
-//                       }
-//                       sx={{
-//                         minWidth: 90,
-//                         height: 25,
-//                         borderRadius: "999px",
-//                         fontWeight: 500,
-//                         color: "white",
-//                         bgcolor:
-//                           lead.interest_level === "High"
-//                             ? "success.main"
-//                             : lead.interest_level === "Medium"
-//                               ? "warning.main"
-//                               : "error.main",
-//                         "& .MuiSelect-select": {
-//                           py: 0.5,
-//                           pl: 2,
-//                           display: "flex",
-//                           alignItems: "center",
-//                         },
-//                         "& fieldset": {
-//                           border: "none",
-//                         },
-//                         "& svg": {
-//                           color: "white",
-//                         },
-//                       }}
-//                     >
-//                       {INTEREST_LEVEL_OPTIONS.map((option) => (
-//                         <MenuItem key={option} value={option}>
-//                           {option}
-//                         </MenuItem>
-//                       ))}
-//                     </Select>
-//                   </TableCell>
-
-//                   {/* Lead Status - Pill Style */}
-//                   <TableCell>
-//                     <Select
-//                       size="small"
-//                       value={lead.lead_status}
-//                       onChange={(e) =>
-//                         handleInlineUpdate(
-//                           lead.id,
-//                           "lead_status",
-//                           e.target.value,
-//                         )
-//                       }
-//                       sx={{
-//                         minWidth: 100,
-//                         height: 25,
-//                         borderRadius: "999px",
-//                         fontWeight: 500,
-//                         color: "white",
-//                         bgcolor:
-//                           lead.lead_status === "Converted"
-//                             ? "success.main"
-//                             : lead.lead_status === "Prospect"
-//                               ? "info.main"
-//                               : lead.lead_status === "Lost"
-//                                 ? "error.main"
-//                                 : "warning.main",
-//                         "& .MuiSelect-select": {
-//                           py: 0.5,
-//                           pl: 2,
-//                           display: "flex",
-//                           alignItems: "center",
-//                         },
-//                         "& fieldset": {
-//                           border: "none",
-//                         },
-//                         "& svg": {
-//                           color: "white",
-//                         },
-//                       }}
-//                     >
-//                       {LEAD_STATUS_OPTIONS.map((option) => (
-//                         <MenuItem key={option} value={option}>
-//                           {option}
-//                         </MenuItem>
-//                       ))}
-//                     </Select>
-//                   </TableCell>
-
-//                   <TableCell>
-//                     <IconButton onClick={() => handleView(lead)}>
-//                       <VisibilityIcon />
-//                     </IconButton>
-//                     <IconButton onClick={() => handleEdit(lead)}>
-//                       <EditIcon />
-//                     </IconButton>
-//                     <IconButton onClick={() => handleDelete(lead.id)}>
-//                       <DeleteIcon />
-//                     </IconButton>
-//                     <IconButton onClick={() => handleVisitsByLead(lead.id)}>
-//                       <TrendingUpIcon />
-//                     </IconButton>
-//                   </TableCell>
-//                 </TableRow>
-//               ))}
-//           </TableBody>
-//         </Table>
-//       </TableContainer>
-//       <Stack alignItems="flex-end" mt={3}>
-//         <Pagination
-//           count={Math.ceil((filteredLeads?.length || 0) / rowsPerPage)}
-//           page={page}
-//           onChange={(_, v) => setPage(v)}
-//         />
-//       </Stack>
-//     </Box>
-//   );
-// };
-
-// export default Lead;
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -710,6 +68,9 @@ import CommonSearchField from "../../components/commonComponents/CommonSearchFie
 
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { getTripByVisit } from "../../feature/trip/tripThunks";
+import DemoTripMap from "../OSM/DemoTripMap";
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const LEAD_TYPE_OPTIONS = ["Distributor", "Retailer", "Direct"];
@@ -855,7 +216,11 @@ const fieldSx = {
 const Lead = () => {
   const dispatch = useDispatch();
 
-  const leads = useSelector(selectLeads);
+  const leadsData = useSelector(selectLeads);
+  const leads = leadsData?.data || [];
+  const totalPages = leadsData?.total_pages || 1;
+  const currentPage = leadsData?.current_page || 1;
+
   const visits = useSelector(selectVisitList);
   const loading = useSelector(selectLeadsLoading);
   const createLoading = useSelector(selectCreateLeadLoading);
@@ -864,21 +229,31 @@ const Lead = () => {
   const updateSuccess = useSelector(selectUpdateLeadSuccess);
   const deleteLoading = useSelector(selectDeleteLeadLoading);
   const leadError = useSelector(selectLeadError);
-  console.log("leadError", leadError);
   const employees = useSelector(selectEmployees);
 
   const [page, setPage] = useState(1);
-  const rowsPerPage = 10;
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [filters, setFilters] = useState({
+    lead_type: "",
+    interest_level: "",
+    lead_status: "",
+    created_by: "",
+    assigned_to: "",
+  });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
   const [isViewing, setIsViewing] = useState(false);
   const [viewLead, setViewLead] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedLeadVisits, setSelectedLeadVisits] = useState([]);
   const [isViewingVisits, setIsViewingVisits] = useState(false);
   const [selectedLeadForVisits, setSelectedLeadForVisits] = useState(null);
+
+  // ── Trip states (declared ONCE) ──────────────────────────────────────────────
+  const [selectedTrip, setSelectedTrip] = useState(null);
+  const [isViewingTrip, setIsViewingTrip] = useState(false);
 
   const [form, setForm] = useState({
     lead_type: "",
@@ -912,16 +287,27 @@ const Lead = () => {
 
   const [errors, setErrors] = useState({});
 
-  // useEffect(() => {
-  //   dispatch(getLeads());
-  //   setPage(1);
-  // }, [dispatch]);
+  const fetchLeads = () => {
+    dispatch(
+      getLeads({
+        page,
+        search: searchQuery,
+        ...filters,
+      }),
+    );
+  };
 
   useEffect(() => {
-    dispatch(getLeads());
+    fetchLeads();
+  }, [dispatch, page, searchQuery, filters]);
+
+  useEffect(() => {
     dispatch(getEmployees());
-    setPage(1);
   }, [dispatch]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, filters]);
 
   useEffect(() => {
     if (createSuccess || updateSuccess) {
@@ -938,6 +324,19 @@ const Lead = () => {
       setSelectedLeadVisits(relevantVisits);
     }
   }, [visits, isViewingVisits, selectedLeadForVisits]);
+
+  const [visitPage, setVisitPage] = useState(1);
+  const visitsPerPage = 10;
+
+  useEffect(() => {
+    setVisitPage(1);
+  }, [selectedLeadForVisits?.id]);
+
+  useEffect(() => {
+    if (!isViewingVisits) {
+      setVisitPage(1);
+    }
+  }, [isViewingVisits]);
 
   const validate = () => {
     const temp = {};
@@ -961,11 +360,10 @@ const Lead = () => {
       if (!form[f]) temp[f] = "Required";
     });
 
-    // Phone: must be exactly 10 digits
     if (form.phone && !/^\d{10}$/.test(form.phone)) {
       temp.phone = "Phone must be exactly 10 digits";
     }
-    
+
     setErrors(temp);
     return Object.keys(temp).length === 0;
   };
@@ -981,7 +379,6 @@ const Lead = () => {
 
   const handleSubmit = () => {
     if (!validate()) return;
-    console.log("comes????");
     if (isEditing && editId) {
       dispatch(updateLead({ id: editId, data: form }))
         .unwrap()
@@ -1052,10 +449,29 @@ const Lead = () => {
 
     dispatch(getVisits({ lead_id: lead.id }))
       .unwrap()
-      .then(() => {})
       .catch(() => {
         CommonToast("Failed to load visits", "error");
       });
+  };
+
+  // ── handleShowTrip (declared ONCE) — receives a visit object ─────────────────
+  const handleShowTrip = (visit) => {
+    if (!visit?.id) {
+      CommonToast("Invalid visit", "error");
+      return;
+    }
+
+    dispatch(getTripByVisit(visit.id))
+      .unwrap()
+      .then((res) => {
+        if (res?.data?.length > 0) {
+          setSelectedTrip(res.data[0]);
+          setIsViewingTrip(true);
+        } else {
+          CommonToast("No trip found for this visit", "info");
+        }
+      })
+      .catch(() => CommonToast("Failed to load trip data", "error"));
   };
 
   const handleAddLeads = () => {
@@ -1098,27 +514,34 @@ const Lead = () => {
     setErrors({});
   };
 
-  const filteredLeads = leads?.filter((l) =>
-    l.business_name?.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
 
-  const paginatedData = filteredLeads?.slice(
-    (page - 1) * rowsPerPage,
-    page * rowsPerPage,
-  );
+  const clearFilters = () => {
+    setFilters({
+      lead_type: "",
+      interest_level: "",
+      lead_status: "",
+      created_by: "",
+      assigned_to: "",
+    });
+    setSearchQuery("");
+    setPage(1);
+  };
 
-  const [visitPage, setVisitPage] = useState(1);
-  const visitsPerPage = 10;
-
-  useEffect(() => {
-    setVisitPage(1);
-  }, [selectedLeadForVisits?.id]);
-
-  useEffect(() => {
-    if (!isViewingVisits) {
-      setVisitPage(1);
-    }
-  }, [isViewingVisits]);
+  // ── Trip Map View ────────────────────────────────────────────────────────────
+  if (isViewingTrip && selectedTrip) {
+    return (
+      <DemoTripMap
+        trip={selectedTrip}
+        onBack={() => {
+          setIsViewingTrip(false);
+          setSelectedTrip(null);
+        }}
+      />
+    );
+  }
 
   // ── Create / Edit View ───────────────────────────────────────────────────────
   if (isEditing) {
@@ -1438,7 +861,6 @@ const Lead = () => {
                   sx={fieldSx}
                   error={!!errors.week}
                   helperText={errors.week}
-                  // sx={fieldSx}
                   onChange={(e) => setForm({ ...form, week: e.target.value })}
                 />
               </Grid>
@@ -1450,7 +872,6 @@ const Lead = () => {
                   sx={fieldSx}
                   error={!!errors.month}
                   helperText={errors.month}
-                  // sx={fieldSx}
                   onChange={(e) => setForm({ ...form, month: e.target.value })}
                 />
               </Grid>
@@ -1496,7 +917,6 @@ const Lead = () => {
                   sx={fieldSx}
                   error={!!errors.cars_per_month}
                   helperText={errors.cars_per_month}
-                  // sx={fieldSx}
                   onChange={(e) =>
                     setForm({ ...form, cars_per_month: e.target.value })
                   }
@@ -1881,12 +1301,10 @@ const Lead = () => {
     );
   }
 
-  // --- Visit Viwe
-
+  // ── Visits List View ────────────────────────────────────────────────────────
   if (isViewingVisits && selectedLeadForVisits) {
-    const totalVisits = selectedLeadVisits.length;
-    const totalPages = Math.ceil(totalVisits / visitsPerPage);
-
+    const totalVisitCount = selectedLeadVisits.length;
+    const totalVisitPages = Math.ceil(totalVisitCount / visitsPerPage);
     const startIndex = (visitPage - 1) * visitsPerPage;
     const paginatedVisits = selectedLeadVisits.slice(
       startIndex,
@@ -1912,40 +1330,30 @@ const Lead = () => {
             border: "1px solid #f0f0f0",
           }}
         >
-          {/* Lead quick info */}
           <Box
             sx={{
               px: 4,
               py: 2.5,
               bgcolor: "#f8f8f8",
               borderBottom: "2px solid #D20000",
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
             }}
           >
-            <BusinessIcon sx={{ fontSize: 32, color: "#D20000" }} />
-            <Box>
-              <Typography variant="h6" fontWeight={700}>
-                {selectedLeadForVisits.business_name}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {selectedLeadForVisits.city} • {selectedLeadForVisits.lead_type}{" "}
-                • {totalVisits} visit{totalVisits !== 1 ? "s" : ""}
-              </Typography>
-            </Box>
+            <BusinessIcon sx={{ fontSize: 32, color: "#D20000", mr: 2 }} />
+            <Typography variant="h6" fontWeight={700} display="inline">
+              {selectedLeadForVisits.business_name}
+            </Typography>
           </Box>
 
           <Box p={3}>
-            {totalVisits === 0 ? (
+            {totalVisitCount === 0 ? (
               <Box textAlign="center" py={6}>
-                <Typography color="text.secondary" variant="body1">
-                  No visits recorded for this lead yet.
+                <Typography color="text.secondary">
+                  No visits recorded yet.
                 </Typography>
               </Box>
             ) : (
               <>
-                <TableContainer sx={{ mb: totalPages > 1 ? 2 : 0 }}>
+                <TableContainer>
                   <Table>
                     <TableHead>
                       <TableRow sx={{ bgcolor: "#f0f0f0" }}>
@@ -1958,8 +1366,9 @@ const Lead = () => {
                           "Check-out",
                           "Duration",
                           "Notes",
+                          "Actions",
                         ].map((h) => (
-                          <TableCell key={h} sx={{ fontWeight: 700, py: 1.5 }}>
+                          <TableCell key={h} sx={{ fontWeight: 700 }}>
                             {h}
                           </TableCell>
                         ))}
@@ -1980,13 +1389,7 @@ const Lead = () => {
                             <Chip
                               label={visit.status_display || visit.status}
                               size="small"
-                              color={
-                                visit.status === "COMPLETED"
-                                  ? "success"
-                                  : visit.status === "FOLLOW_UP"
-                                    ? "warning"
-                                    : "default"
-                              }
+                              color="default"
                             />
                           </TableCell>
                           <TableCell>
@@ -2011,14 +1414,21 @@ const Lead = () => {
                           </TableCell>
                           <TableCell>{visit.total_hr || "—"}</TableCell>
                           <TableCell>
-                            <Typography
-                              variant="body2"
-                              noWrap
-                              title={visit.notes}
+                            {visit.notes?.substring(0, 60) || "—"}
+                          </TableCell>
+                          <TableCell>
+                            <CommonButton
+                              size="small"
+                              variant="contained"
+                              startIcon={<TrendingUpIcon />}
+                              onClick={() => handleShowTrip(visit)}
+                              sx={{
+                                bgcolor: "#2e7d32",
+                                "&:hover": { bgcolor: "#1b5e20" },
+                              }}
                             >
-                              {visit.notes?.substring(0, 60) || "—"}
-                              {visit.notes?.length > 60 ? "..." : ""}
-                            </Typography>
+                              View Trip
+                            </CommonButton>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -2026,21 +1436,14 @@ const Lead = () => {
                   </Table>
                 </TableContainer>
 
-                {totalPages > 1 && (
+                {totalVisitPages > 1 && (
                   <Box
                     sx={{ display: "flex", justifyContent: "center", mt: 3 }}
                   >
                     <Pagination
-                      count={totalPages}
+                      count={totalVisitPages}
                       page={visitPage}
-                      onChange={(_, value) => setVisitPage(value)}
-                      sx={{
-                        "& .MuiPaginationItem-root.Mui-selected": {
-                          bgcolor: "#D20000",
-                          color: "#fff",
-                          "&:hover": { bgcolor: "#a80000" },
-                        },
-                      }}
+                      onChange={(_, v) => setVisitPage(v)}
                     />
                   </Box>
                 )}
@@ -2094,20 +1497,113 @@ const Lead = () => {
           border: "1px solid #f0f0f0",
         }}
       >
-        {/* Search */}
+        {/* Search & Filters */}
         <Box
           sx={{
             px: 2,
-            py: 1.5,
+            py: 2,
             bgcolor: "#fafafa",
             borderBottom: "1px solid #ebebeb",
           }}
         >
-          <CommonSearchField
-            value={searchQuery}
-            placeholder="Search by business name..."
-            onChange={(v) => setSearchQuery(v)}
-          />
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            gap={2}
+            flexWrap="wrap"
+            alignItems="center"
+          >
+            <CommonSearchField
+              value={searchQuery}
+              placeholder="Search by business name..."
+              onChange={setSearchQuery}
+            />
+
+            <Autocomplete
+              size="small"
+              options={LEAD_TYPE_OPTIONS}
+              value={filters.lead_type}
+              onChange={(_, v) => handleFilterChange("lead_type", v || "")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Lead Type"
+                  sx={{ minWidth: 150 }}
+                />
+              )}
+            />
+
+            <Autocomplete
+              size="small"
+              options={INTEREST_LEVEL_OPTIONS}
+              value={filters.interest_level}
+              onChange={(_, v) => handleFilterChange("interest_level", v || "")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Interest"
+                  sx={{ minWidth: 130 }}
+                />
+              )}
+            />
+
+            <Autocomplete
+              size="small"
+              options={LEAD_STATUS_OPTIONS}
+              value={filters.lead_status}
+              onChange={(_, v) => handleFilterChange("lead_status", v || "")}
+              renderInput={(params) => (
+                <TextField {...params} label="Status" sx={{ minWidth: 130 }} />
+              )}
+            />
+
+            <Autocomplete
+              size="small"
+              options={employees || []}
+              getOptionLabel={(o) =>
+                `${o.first_name || ""} ${o.last_name || ""}`.trim()
+              }
+              value={
+                employees?.find((e) => e.id === filters.created_by) || null
+              }
+              onChange={(_, v) => handleFilterChange("created_by", v?.id || "")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Created By"
+                  sx={{ minWidth: 160 }}
+                />
+              )}
+            />
+
+            <Autocomplete
+              size="small"
+              options={employees || []}
+              getOptionLabel={(o) =>
+                `${o.first_name || ""} ${o.last_name || ""}`.trim()
+              }
+              value={
+                employees?.find((e) => e.id === filters.assigned_to) || null
+              }
+              onChange={(_, v) =>
+                handleFilterChange("assigned_to", v?.id || "")
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Assigned To"
+                  sx={{ minWidth: 160 }}
+                />
+              )}
+            />
+
+            <CommonButton
+              variant="outlined"
+              color="secondary"
+              onClick={clearFilters}
+            >
+              Clear Filters
+            </CommonButton>
+          </Stack>
         </Box>
 
         <TableContainer>
@@ -2148,7 +1644,7 @@ const Lead = () => {
             <TableBody>
               {loading && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 5 }}>
                     <Box
                       display="flex"
                       flexDirection="column"
@@ -2165,7 +1661,7 @@ const Lead = () => {
               )}
 
               {!loading &&
-                paginatedData?.map((lead, index) => (
+                leads?.map((lead, index) => (
                   <TableRow
                     key={lead.id}
                     hover
@@ -2176,14 +1672,8 @@ const Lead = () => {
                       transition: "background 0.15s",
                     }}
                   >
-                    {/* Sr */}
-                    <TableCell
-                      sx={{ fontWeight: 700, color: "#D20000", width: 50 }}
-                    >
-                      {(page - 1) * rowsPerPage + index + 1}
-                    </TableCell>
+                    <TableCell>{(currentPage - 1) * 10 + index + 1}</TableCell>
 
-                    {/* Business */}
                     <TableCell>
                       <Box display="flex" alignItems="center" gap={1.2}>
                         <Box
@@ -2218,7 +1708,6 @@ const Lead = () => {
                       </Box>
                     </TableCell>
 
-                    {/* Lead Type - inline select */}
                     <TableCell>
                       <ColoredSelect
                         value={lead.lead_type}
@@ -2230,7 +1719,6 @@ const Lead = () => {
                       />
                     </TableCell>
 
-                    {/* Interest - inline select */}
                     <TableCell>
                       <ColoredSelect
                         value={lead.interest_level}
@@ -2242,7 +1730,6 @@ const Lead = () => {
                       />
                     </TableCell>
 
-                    {/* Status - inline select */}
                     <TableCell>
                       <ColoredSelect
                         value={lead.lead_status}
@@ -2253,6 +1740,7 @@ const Lead = () => {
                         }
                       />
                     </TableCell>
+
                     <TableCell>
                       <Typography
                         fontWeight={600}
@@ -2261,17 +1749,8 @@ const Lead = () => {
                       >
                         {lead?.assigned_to_name || "N/A"}
                       </Typography>
-                      {/* <ColoredSelect
-                        value={lead.assigned_to_name}
-                        options={LEAD_STATUS_OPTIONS}
-                        colors={STATUS_COLORS}
-                        onChange={(v) =>
-                          handleInlineUpdate(lead.id, "lead_status", v)
-                        }
-                      /> */}
                     </TableCell>
 
-                    {/* Actions */}
                     <TableCell>
                       <Box display="flex" gap={0.5}>
                         <IconButton
@@ -2327,9 +1806,9 @@ const Lead = () => {
                   </TableRow>
                 ))}
 
-              {!loading && filteredLeads?.length === 0 && (
+              {!loading && leads?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
                     <Box
                       display="flex"
                       flexDirection="column"
@@ -2360,16 +1839,12 @@ const Lead = () => {
           }}
         >
           <Pagination
-            count={Math.ceil((filteredLeads?.length || 0) / rowsPerPage)}
+            count={totalPages}
             page={page}
-            onChange={(_, v) => setPage(v)}
-            sx={{
-              "& .MuiPaginationItem-root.Mui-selected": {
-                bgcolor: "#D20000",
-                color: "#fff",
-                "&:hover": { bgcolor: "#a80000" },
-              },
-            }}
+            onChange={(_, value) => setPage(value)}
+            color="primary"
+            showFirstButton
+            showLastButton
           />
         </Box>
       </Paper>

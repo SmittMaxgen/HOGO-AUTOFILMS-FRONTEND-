@@ -1,4 +1,5 @@
-import React from "react";
+import { Box, Paper, Stack, Typography, IconButton } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   MapContainer,
   TileLayer,
@@ -20,119 +21,96 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-const DemoTripMap = () => {
-  // Sample Data (Static)
-  const trip = {
-    order_id: "HOGO-ORD-7845",
-    driver_id: "DRV-023",
-    status: "Delivered",
-    total_distance: 12450, // in meters
-    start_time: "2026-05-14 09:15 AM",
-    end_time: "2026-05-14 10:45 AM",
-    pickup_lat: 28.6139,
-    pickup_lng: 77.209,
-    delivery_lat: 28.5355,
-    delivery_lng: 77.391,
-  };
+// ─── PageHeader (local copy so DemoTripMap is self-contained) ─────────────────
+const PageHeader = ({ title, onBack }) => (
+  <Box
+    display="flex"
+    alignItems="center"
+    mb={3}
+    px={2}
+    py={1.5}
+    sx={{
+      background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+      borderRadius: 2,
+      boxShadow: "0 4px 12px rgba(210,0,0,0.25)",
+    }}
+  >
+    {onBack && (
+      <IconButton onClick={onBack} sx={{ color: "#fff", mr: 1.5 }}>
+        <ArrowBackIcon />
+      </IconButton>
+    )}
+    <Typography variant="h6" fontWeight={700} color="#fff" letterSpacing={1}>
+      {title}
+    </Typography>
+  </Box>
+);
 
-  // Sample Route Points (Actual path taken by driver)
-  const routePoints = [
-    [28.6139, 77.209],
-    [28.625, 77.22],
-    [28.618, 77.25],
-    [28.59, 77.28],
-    [28.565, 77.32],
-    [28.54, 77.36],
-    [28.5355, 77.391],
-  ];
+// ─── Main Component ───────────────────────────────────────────────────────────
+const DemoTripMap = ({ trip, onBack }) => {
+  if (!trip) return <div>Loading Trip...</div>;
 
-  const center = [
-    (trip.pickup_lat + trip.delivery_lat) / 2,
-    (trip.pickup_lng + trip.delivery_lng) / 2,
-  ];
+  const routePoints = trip.trip_locations
+    ? trip.trip_locations.map((loc) => [loc.latitude, loc.longitude])
+    : [];
+
+  const center =
+    routePoints.length > 0
+      ? routePoints[Math.floor(routePoints.length / 2)]
+      : [23.0225, 72.5714]; // Default: Ahmedabad
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1 style={{ textAlign: "center", color: "#333" }}>
-        HogoAutoFilms - Delivery Trip Demo
-      </h1>
+    <Box mt={4}>
+      <PageHeader title="Trip Route" onBack={onBack} />
 
-      <div
-        style={{
-          background: "#f8f9fa",
-          padding: "20px",
-          borderRadius: "10px",
-          marginBottom: "20px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-        }}
-      >
-        <h2>Order Details</h2>
-        <p>
-          <strong>Order ID:</strong> {trip.order_id}
-        </p>
-        <p>
-          <strong>Driver ID:</strong> {trip.driver_id}
-        </p>
-        <p>
-          <strong>Status:</strong>{" "}
-          <span style={{ color: "green", fontWeight: "bold" }}>
-            {trip.status}
-          </span>
-        </p>
-        <p>
-          <strong>Total Distance Suffered:</strong>{" "}
-          {(trip.total_distance / 1000).toFixed(2)} KM
-        </p>
-        <p>
-          <strong>Start Time:</strong> {trip.start_time}
-        </p>
-        <p>
-          <strong>End Time:</strong> {trip.end_time}
-        </p>
-      </div>
+      <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
+        <Stack spacing={2} mb={3}>
+          <Typography variant="h6" fontWeight={700}>
+            Trip Details
+          </Typography>
+          <Typography>
+            <strong>Status:</strong> {trip.status}
+          </Typography>
+          <Typography>
+            <strong>Total Distance:</strong>{" "}
+            {(trip.total_distance / 1000).toFixed(2)} KM
+          </Typography>
+          <Typography>
+            <strong>Start Time:</strong>{" "}
+            {new Date(trip.start_time).toLocaleString()}
+          </Typography>
+          {trip.end_time && (
+            <Typography>
+              <strong>End Time:</strong>{" "}
+              {new Date(trip.end_time).toLocaleString()}
+            </Typography>
+          )}
+        </Stack>
 
-      {/* OpenStreetMap */}
-      <MapContainer
-        center={center}
-        zoom={12}
-        style={{ height: "600px", width: "100%", borderRadius: "10px" }}
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="&copy; OpenStreetMap contributors"
-        />
+        <MapContainer
+          center={center}
+          zoom={13}
+          style={{ height: "600px", width: "100%", borderRadius: "12px" }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution="&copy; OpenStreetMap contributors"
+          />
 
-        {/* Pickup Marker */}
-        <Marker position={[trip.pickup_lat, trip.pickup_lng]}>
-          <Popup>
-            <strong>Pickup Location</strong>
-            <br />
-            Order: {trip.order_id}
-          </Popup>
-        </Marker>
-
-        {/* Delivery Marker */}
-        <Marker position={[trip.delivery_lat, trip.delivery_lng]}>
-          <Popup>
-            <strong>Delivery Location</strong>
-            <br />
-            Order Completed
-          </Popup>
-        </Marker>
-
-        {/* Route Path */}
-        <Polyline
-          positions={routePoints}
-          color="#007bff"
-          weight={6}
-          opacity={0.85}
-        />
-      </MapContainer>
-
-      <p style={{ textAlign: "center", marginTop: "10px", color: "#666" }}>
-        Blue line shows the actual path taken by driver (Suffered Distance)
-      </p>
-    </div>
+          {routePoints.length > 0 && (
+            <>
+              <Marker position={routePoints[0]}>
+                <Popup>Start Point</Popup>
+              </Marker>
+              <Marker position={routePoints[routePoints.length - 1]}>
+                <Popup>End Point</Popup>
+              </Marker>
+              <Polyline positions={routePoints} color="#d20000" weight={6} />
+            </>
+          )}
+        </MapContainer>
+      </Paper>
+    </Box>
   );
 };
 
