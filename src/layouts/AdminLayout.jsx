@@ -1052,6 +1052,9 @@ import AutorenewIcon from "@mui/icons-material/Autorenew";
 import ApartmentOutlinedIcon from "@mui/icons-material/ApartmentOutlined";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import ShieldIcon from "@mui/icons-material/Shield";
+
+
 import WarehouseIcon from "@mui/icons-material/Warehouse";
 import HogoLogo from "../../public/hogoAFM.png";
 import { AdminUser } from "../feature/Admin/adminThunks";
@@ -1884,8 +1887,10 @@ const AdminLayout = ({ toggleTheme, mode }) => {
           }`}
           onClick={() => handleNavigate("/replacements")}
         >
-          <AutorenewIcon />
-          {!collapsed && "Replacements"}
+          {/* import ShieldIcon from "@mui/icons-material/Shield"; */}
+
+          <ShieldIcon />
+          {!collapsed && "Claim Warranty"}
         </Box>
         <Box
           className={`${classes.sidebarItem} ${
