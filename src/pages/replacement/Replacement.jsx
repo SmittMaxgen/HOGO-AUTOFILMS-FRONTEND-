@@ -433,7 +433,7 @@ const Replacement = () => {
           />
 
           <Typography variant="h5" fontWeight={800}>
-            Replacement Requests
+            Warranty Claim Requests
           </Typography>
         </Box>
 
@@ -448,7 +448,7 @@ const Replacement = () => {
             },
           }}
         >
-          Add Replacement
+          Add Warranty Claim
         </CommonButton>
       </Stack>
 
