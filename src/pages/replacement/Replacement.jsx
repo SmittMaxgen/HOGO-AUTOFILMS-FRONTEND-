@@ -175,11 +175,11 @@ const Replacement = () => {
         .unwrap()
         .then(() => {
           dispatch(getReplacements());
-          CommonToast("Replacement updated successfully", "success");
+          CommonToast("Warranty claim updated successfully", "success");
           handleReset();
         })
         .catch(() => {
-          CommonToast("Failed to update replacement", "error");
+          CommonToast("Failed to update warranty claim", "error");
         });
     } else {
       dispatch(createReplacement(form))
@@ -187,13 +187,13 @@ const Replacement = () => {
         .then(() => {
           dispatch(getReplacements());
 
-          CommonToast("Replacement created successfully", "success");
+          CommonToast("Warranty claim created successfully", "success");
 
           handleReset();
         })
         .catch((error) => {
           CommonToast(
-            getErrorMessage(error, "Failed to update replacement"),
+            getErrorMessage(error, "Failed to create warranty claim"),
             "error",
           );
         });
@@ -203,16 +203,18 @@ const Replacement = () => {
   // ───────────────────────────────────────────────────────────
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this replacement?")) {
+    if (
+      window.confirm("Are you sure you want to delete this warranty claim?")
+    ) {
       dispatch(deleteReplacement(id))
         .unwrap()
         .then(() => {
           dispatch(getReplacements());
 
-          CommonToast("Replacement deleted successfully", "success");
+          CommonToast("Warranty claim deleted successfully", "success");
         })
         .catch(() => {
-          CommonToast("Failed to delete replacement", "error");
+          CommonToast("Failed to delete warranty claim", "error");
         });
     }
   };
@@ -271,12 +273,12 @@ const Replacement = () => {
     return (
       <Box mt={4}>
         <PageHeader
-          title={editId ? "Edit Replacement" : "Create Replacement"}
+          title={editId ? "Edit Warranty Claim" : "Create Warranty Claim"}
           onBack={handleReset}
         />
 
         <Paper sx={{ p: 4, borderRadius: 3 }}>
-          <SectionHeading title="Replacement Information" />
+          <SectionHeading title="Warranty Claim Information" />
 
           <Stack spacing={3}>
             <TextField
@@ -322,8 +324,8 @@ const Replacement = () => {
                 {createLoading || updateLoading
                   ? "Saving..."
                   : editId
-                    ? "Update Replacement"
-                    : "Save Replacement"}
+                    ? "Update Warranty Claim"
+                    : "Save Warranty Claim"}
               </CommonButton>
             </Stack>
           </Stack>
@@ -340,7 +342,7 @@ const Replacement = () => {
     return (
       <Box mt={4}>
         <PageHeader
-          title="Replacement Details"
+          title="Warranty Claim Details"
           onBack={() => {
             setIsViewing(false);
             setViewData(null);
@@ -348,7 +350,7 @@ const Replacement = () => {
         />
 
         <Paper sx={{ p: 4, borderRadius: 3 }}>
-          <SectionHeading title="Replacement Information" />
+          <SectionHeading title="Warranty Claim Information" />
 
           <Box
             sx={{
@@ -554,13 +556,13 @@ const Replacement = () => {
                               dispatch(getReplacements());
 
                               CommonToast(
-                                "Replacement status updated successfully",
+                                "Warranty claim status updated successfully",
                                 "success",
                               );
                             })
                             .catch(() => {
                               CommonToast(
-                                "Failed to update replacement status",
+                                "Failed to update warranty claim status",
                                 "error",
                               );
                             });
