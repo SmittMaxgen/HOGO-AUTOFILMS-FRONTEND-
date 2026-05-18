@@ -2038,7 +2038,7 @@ const WarrantyManagement = () => {
                     {/* Warranty Period */}
                     <TableCell>
                       <Chip
-                        label={`${warranty.warranty_period} mo`}
+                        label={`${warranty.warranty_period} year`}
                         size="small"
                         sx={{
                           fontWeight: 700,
