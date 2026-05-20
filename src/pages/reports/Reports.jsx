@@ -8,6 +8,10 @@ import {
   getProductReport,
   getCategoryReport,
   getRegionReport,
+  downloadDistributorExcel,
+  downloadProductExcel,
+  downloadCategoryExcel,
+  downloadRegionExcel,
 } from "../../feature/reports/reportsThunks";
 
 // ── Clear Actions ─────────────────────────────────────────────
@@ -118,6 +122,28 @@ const TAB_CONFIG = {
       region: entity?.name || entity?.region_name || entity?.title || null,
     }),
     detailKey: "orders",
+  },
+};
+// ── Excel Download Config ─────────────────────────────────────
+const EXCEL_CONFIG = {
+  distributor: {
+    downloadThunk: downloadDistributorExcel,
+    getParams: (id, entity) => ({ distributor_id: id }),
+  },
+  product: {
+    downloadThunk: downloadProductExcel,
+    getParams: (id, entity) => ({ product_id: id }),
+  },
+  category: {
+    downloadThunk: downloadCategoryExcel,
+    getParams: (id, entity) => ({ category_id: id }),
+  },
+  region: {
+    downloadThunk: downloadRegionExcel,
+    getParams: (_id, entity) => ({
+      region:
+        entity?.name || entity?.region_name || entity?.title || entity?.region,
+    }),
   },
 };
 
@@ -264,11 +290,63 @@ const Reports = () => {
 
   const [activeTab, setActiveTab] = useState("distributor");
   const [selectedEntityId, setSelectedEntityId] = useState("");
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [downloadType, setDownloadType] = useState("yearly"); // "yearly" or "monthly"
+  const [selectedDownloadYear, setSelectedDownloadYear] = useState(
+    new Date().getFullYear(),
+  );
+  const [selectedDownloadMonth, setSelectedDownloadMonth] = useState(
+    new Date().getMonth(),
+  );
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [year, setYear] = useState(new Date().getFullYear());
   const [detailRow, setDetailRow] = useState(null); // row shown in modal
 
   const cfg = TAB_CONFIG[activeTab];
+  const excelCfg = EXCEL_CONFIG[activeTab];
+
+  const handleDownloadExcel = () => {
+    if (!selectedEntity || !selectedEntityId) {
+      alert(`Please select a ${cfg.entityName} first`);
+      return;
+    }
+    setDownloadType("yearly");
+    setSelectedDownloadYear(year);
+    setSelectedDownloadMonth(new Date().getMonth());
+    setShowDownloadModal(true);
+  };
+
+  const downloadReport = async () => {
+    setShowDownloadModal(false);
+
+    try {
+      let params = excelCfg.getParams(selectedEntityId, selectedEntity);
+
+      if (downloadType === "monthly") {
+        params.month = toApiMonth(selectedDownloadYear, selectedDownloadMonth);
+      }
+      // For yearly → no month param (downloads full year)
+
+      const blob = await dispatch(excelCfg.downloadThunk(params)).unwrap();
+
+      const fileName =
+        downloadType === "yearly"
+          ? `${activeTab}_target_report_${selectedDownloadYear}.xlsx`
+          : `${activeTab}_target_report_${toDisplayMonth(selectedDownloadYear, selectedDownloadMonth)}.xlsx`;
+
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to download Excel file");
+    }
+  };
 
   const monthlyData = useSelector(cfg.monthlyDataSel);
   const loading = useSelector(cfg.loadingSel);
@@ -488,6 +566,26 @@ const Reports = () => {
                       </option>
                     ))}
                   </select>
+                  {/* Excel Download Button */}
+                  {/* Excel Download Button */}
+                  <button
+                    onClick={handleDownloadExcel}
+                    style={{
+                      padding: "10px 22px",
+                      background: "#166534",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    📥 Download Excel
+                  </button>
                 </div>
               </th>
             </tr>
@@ -632,6 +730,164 @@ const Reports = () => {
           Total = sum of all months
         </span>
       </div>
+
+      {/* Download Options Modal */}
+      {/* Excel Download Modal */}
+      {showDownloadModal && (
+        <div style={s.overlay} onClick={() => setShowDownloadModal(false)}>
+          <div
+            style={{ ...s.modal, maxWidth: 460, padding: "25px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={s.modalHeader}>
+              <div>
+                <div style={s.modalTitle}>Download {cfg.entityName} Report</div>
+                <div style={s.modalSub}>Select options below</div>
+              </div>
+              <button
+                style={s.closeBtn}
+                onClick={() => setShowDownloadModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ padding: "20px 10px" }}>
+              <div style={{ marginBottom: 20 }}>
+                <label
+                  style={{ fontWeight: 600, display: "block", marginBottom: 8 }}
+                >
+                  Report Type
+                </label>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button
+                    onClick={() => setDownloadType("yearly")}
+                    style={{
+                      flex: 1,
+                      padding: "12px",
+                      borderRadius: 8,
+                      border:
+                        downloadType === "yearly"
+                          ? "2px solid #166534"
+                          : "1px solid #ddd",
+                      background:
+                        downloadType === "yearly" ? "#f0fdf4" : "white",
+                      fontWeight: downloadType === "yearly" ? 600 : 500,
+                    }}
+                  >
+                    Yearly (All Months)
+                  </button>
+
+                  <button
+                    onClick={() => setDownloadType("monthly")}
+                    style={{
+                      flex: 1,
+                      padding: "12px",
+                      borderRadius: 8,
+                      border:
+                        downloadType === "monthly"
+                          ? "2px solid #1e40af"
+                          : "1px solid #ddd",
+                      background:
+                        downloadType === "monthly" ? "#eff6ff" : "white",
+                      fontWeight: downloadType === "monthly" ? 600 : 500,
+                    }}
+                  >
+                    Monthly
+                  </button>
+                </div>
+              </div>
+
+              {/* Month & Year Selectors - Show only for Monthly */}
+              {downloadType === "monthly" && (
+                <div style={{ display: "flex", gap: 15, marginTop: 15 }}>
+                  <div style={{ flex: 1 }}>
+                    <label
+                      style={{
+                        fontSize: 13,
+                        color: "#64748b",
+                        display: "block",
+                        marginBottom: 6,
+                      }}
+                    >
+                      Year
+                    </label>
+                    <select
+                      value={selectedDownloadYear}
+                      onChange={(e) =>
+                        setSelectedDownloadYear(Number(e.target.value))
+                      }
+                      style={{
+                        width: "100%",
+                        padding: "10px",
+                        borderRadius: 8,
+                      }}
+                    >
+                      {Array.from({ length: 5 }, (_, i) => {
+                        const y = new Date().getFullYear() - 2 + i;
+                        return (
+                          <option key={y} value={y}>
+                            {y}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <label
+                      style={{
+                        fontSize: 13,
+                        color: "#64748b",
+                        display: "block",
+                        marginBottom: 6,
+                      }}
+                    >
+                      Month
+                    </label>
+                    <select
+                      value={selectedDownloadMonth}
+                      onChange={(e) =>
+                        setSelectedDownloadMonth(Number(e.target.value))
+                      }
+                      style={{
+                        width: "100%",
+                        padding: "10px",
+                        borderRadius: 8,
+                      }}
+                    >
+                      {MONTH_LABELS.map((label, idx) => (
+                        <option key={idx} value={idx}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div style={{ padding: "0 10px 15px" }}>
+              <button
+                onClick={downloadReport}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  background: "#166534",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 10,
+                  fontSize: 16,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                📥 Download Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Detail Modal ── */}
       {detailRow && (
