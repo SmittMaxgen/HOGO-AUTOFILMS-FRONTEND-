@@ -140,10 +140,7 @@ const EXCEL_CONFIG = {
   },
   region: {
     downloadThunk: downloadRegionExcel,
-    getParams: (_id, entity) => ({
-      region:
-        entity?.name || entity?.region_name || entity?.title || entity?.region,
-    }),
+    getParams: (id, entity) => ({ region_id: id }),
   },
 };
 
