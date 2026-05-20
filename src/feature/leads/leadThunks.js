@@ -1,10 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
-// const API_URL = axiosInstance;
-
 // ✅ GET LEADS
-// ✅ Corrected getLeads Thunk
 export const getLeads = createAsyncThunk(
   "leads/getLeads",
   async (params = {}, { rejectWithValue }) => {
@@ -25,9 +22,8 @@ export const getLeads = createAsyncThunk(
 
       const url = `/leads/?${queryParams.toString()}`;
 
-      const res = await axiosInstance.get(url); // ← Correct way
-
-      return res.data; // Expecting { success, count, current_page, total_pages, data }
+      const res = await axiosInstance.get(url);
+      return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Failed to fetch leads");
     }
@@ -39,23 +35,24 @@ export const createLead = createAsyncThunk(
   "leads/createLead",
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`/leads/`, payload);
+      const res = await axiosInstance.post(`/leads/`, payload);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data);
+      return rejectWithValue(err.response?.data || "Failed to create lead");
     }
   },
 );
 
-// ✅ UPDATE LEAD (PATCH)
+// ✅ UPDATE LEAD (Using PATCH)
 export const updateLead = createAsyncThunk(
   "leads/updateLead",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const res = await axios.patch(`/leads/${id}/`, data);
+      const res = await axiosInstance.patch(`/leads/${id}/`, data);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data);
+      console.error("Update Error:", err.response?.data); // For debugging
+      return rejectWithValue(err.response?.data || "Failed to update lead");
     }
   },
 );
@@ -65,10 +62,10 @@ export const deleteLead = createAsyncThunk(
   "leads/deleteLead",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`/leads/${id}/`);
+      await axiosInstance.delete(`/leads/${id}/`);
       return id;
     } catch (err) {
-      return rejectWithValue(err.response?.data);
+      return rejectWithValue(err.response?.data || "Failed to delete lead");
     }
   },
 );

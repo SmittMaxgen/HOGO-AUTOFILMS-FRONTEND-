@@ -172,10 +172,11 @@ const ColoredSelect = ({ value, options, colors, onChange }) => {
     color: "#757575",
     border: "#e0e0e0",
   };
+
   return (
     <Select
       size="small"
-      value={value}
+      value={value || ""} // Fixed: prevent uncontrolled warning
       onChange={(e) => onChange(e.target.value)}
       sx={{
         minWidth: 100,
@@ -311,10 +312,10 @@ const Lead = () => {
 
   useEffect(() => {
     if (createSuccess || updateSuccess) {
-      dispatch(getLeads());
-      handleReset();
+      fetchLeads(); // Better: respects current page & filters
+      // Do not call handleReset() for inline updates
     }
-  }, [createSuccess, updateSuccess, dispatch]);
+  }, [createSuccess, updateSuccess]);
 
   useEffect(() => {
     if (isViewingVisits && selectedLeadForVisits) {
@@ -367,14 +368,26 @@ const Lead = () => {
     setErrors(temp);
     return Object.keys(temp).length === 0;
   };
-
-  const handleInlineUpdate = (leadId, field, value) => {
+  const handleInlineUpdate = async (leadId, field, value) => {
     const lead = leads.find((l) => l.id === leadId);
     if (!lead) return;
-    dispatch(updateLead({ id: leadId, data: { ...lead, [field]: value } }))
-      .unwrap()
-      .then(() => CommonToast(`${field} updated successfully`, "success"))
-      .catch(() => CommonToast(`Failed to update ${field}`, "error"));
+
+    try {
+      const result = await dispatch(
+        updateLead({
+          id: leadId,
+          data: { ...lead, [field]: value },
+        }),
+      ).unwrap();
+
+      CommonToast(`${field} updated successfully`, "success");
+    } catch (error) {
+      console.error("🔥 UPDATE ERROR DETAILS:", error);
+      alert(
+        "Update Failed! Check console for details.\n\n" +
+          JSON.stringify(error, null, 2),
+      );
+    }
   };
 
   const handleSubmit = () => {
