@@ -1275,7 +1275,7 @@ const PurchaseOrder = () => {
   const poPayments = useSelector(selectPOPayments);
   const paymentsLoading = useSelector(selectPOPaymentsLoading);
 
-  const BASE_URL = "http://hogofilm.pythonanywhere.com";
+  const BASE_URL = "https://apidata.hogoautofilms.co.in";
 
   const [isViewingPayments, setIsViewingPayments] = useState(false);
   const [viewPaymentPO, setViewPaymentPO] = useState(null);

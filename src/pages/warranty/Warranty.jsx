@@ -1092,7 +1092,7 @@ import CommonSearchField from "../../components/commonComponents/CommonSearchFie
 
 import { UpdateAdminUser, AdminUser } from "../../feature/Admin/adminThunks";
 
-const BASE_URL = "http://hogofilm.pythonanywhere.com";
+const BASE_URL = "https://apidata.hogoautofilms.co.in";
 
 // ─── Shared Helpers ────────────────────────────────────────────────────────────
 
@@ -1608,7 +1608,7 @@ const WarrantyManagement = () => {
                 },
                 {
                   label: "Warranty Period",
-                  value: `${selectedWarranty.warranty_period} Months`,
+                  value: `${selectedWarranty.warranty_period} year`,
                 },
                 {
                   label: "Warranty Start",
