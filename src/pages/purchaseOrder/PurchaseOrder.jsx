@@ -1220,9 +1220,9 @@ const PurchaseOrder = () => {
     }
   };
 
-  // Warranty Card Bulk PDF Download
-  // Warranty Card Bulk PDF Download
-  // Warranty Card Bulk PDF Download
+  // Barcode Sticker Bulk PDF Download
+  // Barcode Sticker Bulk PDF Download
+  // Barcode Sticker Bulk PDF Download
   const handleDownloadWarrantyCard = async (poNumber) => {
     try {
       const response = await fetch(
@@ -1237,7 +1237,7 @@ const PurchaseOrder = () => {
 
         if (!errorData.success) {
           CommonToast(
-            errorData.message || "Failed to download warranty card",
+            errorData.message || "Failed to download Barcode Sticker",
             "error",
           );
           return;
@@ -1246,7 +1246,7 @@ const PurchaseOrder = () => {
 
       // If it's PDF (success)
       if (!response.ok) {
-        CommonToast("Failed to download warranty card", "error");
+        CommonToast("Failed to download Barcode Sticker", "error");
         return;
       }
 
@@ -1260,10 +1260,10 @@ const PurchaseOrder = () => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
 
-      CommonToast("Warranty card downloaded successfully", "success");
+      CommonToast("Barcode Sticker downloaded successfully", "success");
     } catch (err) {
       console.error("Warranty PDF download error:", err);
-      CommonToast("Failed to download warranty card", "error");
+      CommonToast("Failed to download Barcode Sticker", "error");
     }
   };
   const [errors, setErrors] = useState({});
@@ -3043,7 +3043,7 @@ const PurchaseOrder = () => {
                   "Packed PDF",
                   "Shipment",
                   "Invoice",
-                  "Warranty Card",
+                  "Barcode Sticker",
                 ].map((h) => (
                   <TableCell
                     key={h}
@@ -3350,12 +3350,12 @@ const PurchaseOrder = () => {
                         )}
                       </TableCell>
 
-                      {/* ── Warranty Card PDF ── */}
+                      {/* ── Barcode Sticker PDF ── */}
                       <TableCell align="center">
                         {["PICKED", "PACKED", "DELIVERED"].includes(
                           po?.status,
                         ) && (
-                          <Tooltip title="Download Warranty Card">
+                          <Tooltip title="Download Barcode Sticker">
                             <IconButton
                               size="small"
                               onClick={() =>
