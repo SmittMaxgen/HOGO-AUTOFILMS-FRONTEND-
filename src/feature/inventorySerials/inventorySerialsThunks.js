@@ -43,7 +43,7 @@ export const getInventorySerials = createAsyncThunk(
       // Filters
       if (payload.serial_number) params.serial_number = payload.serial_number;
 
-      if (payload.sku) params.sku = payload.sku;
+      if (payload.product_name) params.product_name = payload.product_name;
 
       if (payload.batch_id) params.batch_id = payload.batch_id;
 

@@ -451,7 +451,7 @@ const InventorySerial = () => {
     serial_number: "",
     batch_id: "",
     status: "",
-    sku: "",
+    product_name: "",
   });
 
   const [isViewing, setIsViewing] = useState(false);
@@ -481,7 +481,7 @@ const InventorySerial = () => {
         payload.serial_number = searchQuery.serial_number;
       if (searchQuery.batch_id) payload.batch_id = searchQuery.batch_id;
       if (searchQuery.status) payload.status = searchQuery.status;
-      if (searchQuery.sku) payload.sku = searchQuery.sku;
+      if (searchQuery.product_name) payload.product_name = searchQuery.product_name;
       dispatch(getInventorySerials(payload));
     }, 500);
     return () => clearTimeout(timeoutId);
@@ -491,7 +491,7 @@ const InventorySerial = () => {
     searchQuery.serial_number,
     searchQuery.batch_id,
     searchQuery.status,
-    searchQuery.sku,
+    searchQuery.product_name,
   ]);
 
   // useEffect(() => {
@@ -503,7 +503,7 @@ const InventorySerial = () => {
     searchQuery.serial_number,
     searchQuery.batch_id,
     searchQuery.status,
-    searchQuery.sku,
+    searchQuery.product_name,
   ]);
   const handleView = (item) => {
     setViewSerial(item);
@@ -610,8 +610,8 @@ const InventorySerial = () => {
             <Grid container spacing={2}>
               {[
                 {
-                  label: "Product SKU",
-                  value: viewSerial.product_sku,
+                  label: "Product Name",
+                  value: viewSerial.product_name,
                   icon: <TagIcon fontSize="small" />,
                 },
                 {
@@ -706,10 +706,10 @@ const InventorySerial = () => {
           </Box>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
             <CommonSearchField
-              value={searchQuery.sku}
-              placeholder="Search by sku ..."
+              value={searchQuery.product_name}
+              placeholder="Search by product name ..."
               onChange={(value) =>
-                setSearchQuery((prev) => ({ ...prev, sku: value }))
+                setSearchQuery((prev) => ({ ...prev, product_name: value }))
               }
             />
             <CommonSearchField
@@ -789,7 +789,7 @@ const InventorySerial = () => {
               >
                 {[
                   "Sr",
-                  "Product SKU",
+                  "Product Name",
                   "Batch",
                   "Serial Number",
                   "Location",
@@ -875,7 +875,7 @@ const InventorySerial = () => {
                           fontSize={13}
                           color="#1a1a1a"
                         >
-                          {item.sku}
+                          {item.product_name}
                         </Typography>
                       </Box>
                     </TableCell>
@@ -958,7 +958,7 @@ const InventorySerial = () => {
                         >
                           <VisibilityIcon fontSize="small" />
                         </IconButton>
-                        <IconButton
+                        {/* <IconButton
                           size="small"
                           disabled={deleteLoading}
                           onClick={() => handleDelete(item.id)}
@@ -970,7 +970,7 @@ const InventorySerial = () => {
                           }}
                         >
                           <DeleteIcon fontSize="small" />
-                        </IconButton>
+                        </IconButton> */}
                       </Box>
                     </TableCell>
                   </TableRow>

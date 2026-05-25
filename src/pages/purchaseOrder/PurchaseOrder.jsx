@@ -73,6 +73,7 @@ import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
 import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
+import CommonSelectField from "../../components/commonComponents/CommonSelectField";
 
 import DownloadIcon from "@mui/icons-material/Download";
 import SearchIcon from "@mui/icons-material/Search";
@@ -1168,6 +1169,9 @@ const PurchaseOrder = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Filters
+  const [statusFilter, setStatusFilter] = useState("");
+  const [distributorFilter, setDistributorFilter] = useState("");
   const [form, setForm] = useState({
     po_number: "",
     distributor_id: "",
@@ -1290,15 +1294,23 @@ const PurchaseOrder = () => {
     dispatch(getDistributors());
   }, []);
   // ================= FETCH DATA =================
+  // Reset page whenever search or filters change
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, statusFilter, distributorFilter]);
+
+  // Fetch purchase orders (debounced) when filters or page change
   useEffect(() => {
     const delay = setTimeout(() => {
-      dispatch(
-        getPurchaseOrders(searchQuery ? { po_number: searchQuery } : {}),
-      );
-      setPage(1);
+      const params = {};
+      if (searchQuery) params.po_number = searchQuery;
+      if (statusFilter) params.status = statusFilter;
+      if (distributorFilter) params.distributor_id = distributorFilter;
+      if (page) params.page = page;
+      dispatch(getPurchaseOrders(params));
     }, 300);
     return () => clearTimeout(delay);
-  }, [dispatch, searchQuery]);
+  }, [dispatch, searchQuery, statusFilter, distributorFilter, page]);
 
   useEffect(() => {
     if (updateError && updateError[0]) {
@@ -1309,9 +1321,12 @@ const PurchaseOrder = () => {
 
   useEffect(() => {
     if (createSuccess || updateSuccess) {
-      dispatch(
-        getPurchaseOrders(searchQuery ? { po_number: searchQuery } : {}),
-      );
+      const params = {};
+      if (searchQuery) params.po_number = searchQuery;
+      if (statusFilter) params.status = statusFilter;
+      if (distributorFilter) params.distributor_id = distributorFilter;
+      if (page) params.page = page;
+      dispatch(getPurchaseOrders(params));
       handleReset();
     }
   }, [createSuccess, updateSuccess, dispatch]);
@@ -3014,10 +3029,35 @@ const PurchaseOrder = () => {
               FILTER P/O
             </Typography>
           </Box>
-          <CommonSearchField
-            value={searchQuery}
-            placeholder="Search PO number…"
-            onChange={(value) => setSearchQuery(value)}
+          <Box display="flex" gap={1}>
+            <CommonSearchField
+              value={searchQuery}
+              placeholder="Search PO number…"
+              onChange={(value) => setSearchQuery(value)}
+            />
+
+            <CommonSelectField
+              value={statusFilter}
+              onChange={(v) => setStatusFilter(v)}
+              options={Object.keys(STATUS_PALETTE).map((s) => ({
+                value: s,
+                label: s,
+              }))}
+              placeholder="Filter by Status"
+              sx={{ width: "250px", ml: 1 }}
+            />
+          </Box>
+          <CommonSelectField
+            value={distributorFilter}
+            onChange={(v) => setDistributorFilter(v)}
+            options={
+              distributors?.map((d) => ({
+                value: d.id ?? d.distributor_id,
+                label: d.distributor_name || d.name || d.distributor_name,
+              })) || []
+            }
+            placeholder="Filter by Distributor"
+            sx={{ width: "200px", ml: 1, mt: 1.5 }}
           />
         </Box>
 
@@ -3232,7 +3272,7 @@ const PurchaseOrder = () => {
                               <EditIcon sx={{ fontSize: 16 }} />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Delete">
+                          {/* <Tooltip title="Delete">
                             <IconButton
                               size="small"
                               color="error"
@@ -3245,7 +3285,7 @@ const PurchaseOrder = () => {
                             >
                               <DeleteIcon sx={{ fontSize: 16 }} />
                             </IconButton>
-                          </Tooltip>
+                          </Tooltip> */}
                         </Stack>
                       </TableCell>
 
