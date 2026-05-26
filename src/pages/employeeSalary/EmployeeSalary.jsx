@@ -170,7 +170,7 @@ const SalaryFormModal = ({
               <option value="">— Select Employee —</option>
               {employees.map((emp) => (
                 <option key={emp.id} value={emp.id}>
-                  {emp.name ||
+                  {`${emp.first_name} ${emp.last_name}` ||
                     emp.full_name ||
                     emp.employee_name ||
                     `Employee #${emp.id}`}
