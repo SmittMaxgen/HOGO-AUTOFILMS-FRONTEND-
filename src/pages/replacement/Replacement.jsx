@@ -337,7 +337,6 @@ const Replacement = () => {
   // ───────────────────────────────────────────────────────────
   // View
   // ───────────────────────────────────────────────────────────
-
   if (isViewing && viewData) {
     return (
       <Box mt={4}>
@@ -366,27 +365,75 @@ const Replacement = () => {
               {
                 label: "Old Serial",
                 value: viewData?.old_serial?.serial_number,
+                icon: "📦",
               },
               {
                 label: "New Serial",
                 value: viewData?.new_serial?.serial_number,
+                icon: "📦",
               },
               {
-                label: "Reason",
-                value: viewData?.reason,
-              },
-              {
-                label: "Status",
-                value: viewData?.status,
-              },
-              {
-                label: "Product",
+                label: "Product Name",
                 value: viewData?.product_detail?.product_name,
+                icon: "🏷️",
+              },
+              { label: "Reason", value: viewData?.reason, icon: "❓" },
+              { label: "Status", value: viewData?.status, icon: "🚦" },
+              {
+                label: "Requested At",
+                value: viewData?.requested_at
+                  ? new Date(viewData.requested_at).toLocaleDateString("en-IN")
+                  : "N/A",
+                icon: "📅",
               },
               {
-                label: "PO Number",
-                value: viewData?.old_po_detail?.po_number,
+                label: "Approved At",
+                value: viewData?.approved_at
+                  ? new Date(viewData.approved_at).toLocaleDateString("en-IN")
+                  : "N/A",
+                icon: "✅",
               },
+              {
+                label: "Completed At",
+                value: viewData?.completed_at
+                  ? new Date(viewData.completed_at).toLocaleDateString("en-IN")
+                  : "N/A",
+                icon: "🏁",
+              },
+              {
+                label: "Remarks",
+                value: viewData?.remarks || "N/A",
+                icon: "📝",
+              },
+
+              // Distributor Info
+              {
+                label: "Distributor",
+                value:
+                  viewData?.distributor_detail?.name ||
+                  viewData?.distributor_detail?.company_name ||
+                  "N/A",
+                icon: "🏢",
+              },
+              {
+                label: "Region",
+                value: viewData?.distributor_detail?.region,
+                icon: "📍",
+              },
+
+              // New Distributor (Fixed - Safe conditional spread)
+              ...(viewData?.new_distributor_detail
+                ? [
+                    {
+                      label: "New Distributor",
+                      value:
+                        viewData?.new_distributor_detail?.name ||
+                        viewData?.new_distributor_detail?.company_name ||
+                        "N/A",
+                      icon: "🏢",
+                    },
+                  ]
+                : []),
             ].map((item) => (
               <Box
                 key={item.label}
@@ -398,13 +445,114 @@ const Replacement = () => {
                 }}
               >
                 <Typography variant="caption" fontWeight={700}>
-                  {item.label}
+                  {item.icon} {item.label}
                 </Typography>
-
                 <Typography mt={0.5}>{item.value || "N/A"}</Typography>
               </Box>
             ))}
           </Box>
+
+          {/* Images Section */}
+          {viewData?.image && viewData.image.length > 0 && (
+            <>
+              <SectionHeading title="Claim Images" />
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+                {viewData.image.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt={`Claim ${index + 1}`}
+                    style={{
+                      maxWidth: "220px",
+                      borderRadius: "8px",
+                      border: "1px solid #ddd",
+                    }}
+                  />
+                ))}
+              </Box>
+            </>
+          )}
+
+          {/* Warranty Details */}
+          {viewData?.warranty_details?.[0] && (
+            <>
+              <SectionHeading title="Warranty Details" />
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                  gap: 2,
+                }}
+              >
+                {[
+                  {
+                    label: "Detailer Name",
+                    value: viewData.warranty_details[0].detailer_name,
+                  },
+                  {
+                    label: "Detailer Mobile",
+                    value: viewData.warranty_details[0].detailer_mobile,
+                  },
+                  {
+                    label: "Car Registration Number",
+                    value: viewData.warranty_details[0].car_registration_number,
+                  },
+                  {
+                    label: "Car Brand",
+                    value: viewData.warranty_details[0].car_brand,
+                  },
+                  {
+                    label: "Car Model",
+                    value: viewData.warranty_details[0].car_model,
+                  },
+                  { label: "Color", value: viewData.warranty_details[0].color },
+                  {
+                    label: "Owner Name",
+                    value: viewData.warranty_details[0].owner_name,
+                  },
+                  {
+                    label: "Owner Mobile",
+                    value: viewData.warranty_details[0].owner_mobile,
+                  },
+                  {
+                    label: "Owner Email",
+                    value: viewData.warranty_details[0].owner_email,
+                  },
+                  {
+                    label: "Installation Date",
+                    value: viewData.warranty_details[0].installation_date,
+                  },
+                  {
+                    label: "Warranty Period",
+                    value: `${viewData.warranty_details[0].warranty_period} Years`,
+                  },
+                  {
+                    label: "Warranty Start",
+                    value: viewData.warranty_details[0].warranty_start_date,
+                  },
+                  {
+                    label: "Warranty End",
+                    value: viewData.warranty_details[0].warranty_end_date,
+                  },
+                ].map((item) => (
+                  <Box
+                    key={item.label}
+                    sx={{
+                      p: 2,
+                      border: "1px solid #eee",
+                      borderRadius: 2,
+                      bgcolor: "#fafafa",
+                    }}
+                  >
+                    <Typography variant="caption" fontWeight={700}>
+                      {item.label}
+                    </Typography>
+                    <Typography mt={0.5}>{item.value || "N/A"}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </>
+          )}
         </Paper>
       </Box>
     );
@@ -495,6 +643,7 @@ const Replacement = () => {
                   "New Serial",
                   "Reason",
                   "Status",
+                  "Requested At",
                   "Actions",
                 ].map((h) => (
                   <TableCell
@@ -595,6 +744,13 @@ const Replacement = () => {
                         <option value="REJECTED">REJECTED</option>
                         <option value="COMPLETED">COMPLETED</option>
                       </TextField>
+                    </TableCell>
+                    <TableCell>
+                      {item?.requested_at
+                        ? new Date(item.requested_at).toLocaleDateString(
+                            "en-IN",
+                          )
+                        : "N/A"}
                     </TableCell>
                     <TableCell>
                       <Box display="flex" gap={1}>
