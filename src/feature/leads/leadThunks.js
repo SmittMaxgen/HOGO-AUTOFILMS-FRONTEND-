@@ -70,7 +70,7 @@ export const deleteLead = createAsyncThunk(
   },
 );
 
-// ✅ DOWNLOAD EMPLOYEE LEAD MONTHLY REPORT
+// ✅ DOWNLOAD EMPLOYEE LEAD MONTHLY REPORT - Direct URL
 export const downloadEmployeeLeadReport = createAsyncThunk(
   "leads/downloadEmployeeLeadReport",
   async (params, { rejectWithValue }) => {
@@ -87,8 +87,8 @@ export const downloadEmployeeLeadReport = createAsyncThunk(
         url += `?${queryParams.toString()}`;
       }
 
-      const res = await axiosInstance.get(url, { responseType: "blob" });
-      return res.data;
+      const res = await axiosInstance.get(url);
+      return res.data; // Now returns JSON with download_url
     } catch (err) {
       const message =
         err.response?.data?.message ||

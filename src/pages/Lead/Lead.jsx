@@ -549,6 +549,7 @@ const Lead = () => {
 
   // Download Excel Report Handler - Only send selected fields
   // Download Excel Report Handler - Dynamic Error Message
+  // Download Excel Report Handler - Using Direct download_url
   const handleDownloadReport = async () => {
     try {
       const payload = {};
@@ -561,32 +562,28 @@ const Lead = () => {
         downloadEmployeeLeadReport(payload),
       ).unwrap();
 
-      const blob = new Blob([result], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
+      // ✅ NEW: API returns download_url directly
+      console.log("📥 Download URL:", result);
+      if (result?.data?.download_url) {
+        const link = document.createElement("a");
+        link.href = result?.data.download_url;
+        link.target = "_blank"; // Open in new tab if needed
+        link.download = result?.data.download_url.split("/").pop(); // Extract filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.download = `lead_report${reportMonth ? `_${reportMonth}` : ""}${reportYear ? `_${reportYear}` : ""}${reportEmployeeId ? `_emp${reportEmployeeId}` : "_all"}.xlsx`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(downloadUrl);
-
-      CommonToast("Report downloaded successfully!", "success");
-      setOpenReportDialog(false);
+        CommonToast("Report downloaded successfully!", "success");
+        setOpenReportDialog(false);
+      } else {
+        CommonToast("Download URL not found in response", "error");
+      }
     } catch (error) {
-      // 🔥 Dynamic Error Message from API
       let errorMsg = "Failed to download report";
 
-      if (error?.message) {
-        errorMsg = error.message; // e.g. "No lead data found for May 2026"
-      } else if (error?.response?.data?.message) {
+      if (error?.message) errorMsg = error.message;
+      else if (error?.response?.data?.message)
         errorMsg = error.response.data.message;
-      } else if (typeof error === "string") {
-        errorMsg = error;
-      }
 
       CommonToast(errorMsg, "error");
     }
