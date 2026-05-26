@@ -434,7 +434,7 @@ const EmployeeSalary = ({ employee_id = "", disabled = false }) => {
   const openAdd = () => {
     setEditRecord(null);
     setModalMode("add");
-    dispatch(clearEmployeeSalaryState());
+    // dispatch(clearEmployeeSalaryState());
   };
 
   // ── Filtered list ──────────────────────────────────────────

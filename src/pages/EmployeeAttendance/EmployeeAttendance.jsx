@@ -20,13 +20,13 @@ function toDateObj(str) {
 }
 function fmtTime(iso) {
   if (!iso) return "—";
-  const d = new Date(iso);
-  if (isNaN(d)) return "—";
-  return d.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+
+  // Extract time part directly from ISO string (e.g., "11:44:04" from "2026-05-26T11:44:04Z")
+  const timePart = iso.split("T")[1]?.split(".")[0] || iso.split("T")[1];
+  if (!timePart) return "—";
+
+  // Return HH:MM (24-hour format)
+  return timePart.substring(0, 5);
 }
 function fmtDate(str) {
   if (!str) return "—";
