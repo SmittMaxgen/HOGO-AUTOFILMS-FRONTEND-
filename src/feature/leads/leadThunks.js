@@ -69,3 +69,32 @@ export const deleteLead = createAsyncThunk(
     }
   },
 );
+
+// ✅ DOWNLOAD EMPLOYEE LEAD MONTHLY REPORT
+export const downloadEmployeeLeadReport = createAsyncThunk(
+  "leads/downloadEmployeeLeadReport",
+  async (params, { rejectWithValue }) => {
+    try {
+      let url = `/employee-lead-monthly-report/`;
+
+      const queryParams = new URLSearchParams();
+      if (params.month) queryParams.append("month", params.month);
+      if (params.year) queryParams.append("year", params.year);
+      if (params.employee_id)
+        queryParams.append("employee_id", params.employee_id);
+
+      if (queryParams.toString()) {
+        url += `?${queryParams.toString()}`;
+      }
+
+      const res = await axiosInstance.get(url, { responseType: "blob" });
+      return res.data;
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        err.response?.data?.detail ||
+        "Failed to download report";
+      return rejectWithValue({ message });
+    }
+  },
+);

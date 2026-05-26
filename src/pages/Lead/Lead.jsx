@@ -71,6 +71,16 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { getTripByVisit } from "../../feature/trip/tripThunks";
 import DemoTripMap from "../OSM/DemoTripMap";
 
+// New for Dialog
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+// import MenuItem from "@mui/material/MenuItem";
+
+// Import the new thunk
+import { downloadEmployeeLeadReport } from "../../feature/leads/leadThunks";
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const LEAD_TYPE_OPTIONS = ["Distributor", "Retailer", "Direct"];
@@ -251,6 +261,12 @@ const Lead = () => {
   const [selectedLeadVisits, setSelectedLeadVisits] = useState([]);
   const [isViewingVisits, setIsViewingVisits] = useState(false);
   const [selectedLeadForVisits, setSelectedLeadForVisits] = useState(null);
+
+  // Report Download States
+  const [openReportDialog, setOpenReportDialog] = useState(false);
+  const [reportEmployeeId, setReportEmployeeId] = useState("");
+  const [reportMonth, setReportMonth] = useState(""); // Start empty
+  const [reportYear, setReportYear] = useState(""); // Start empty
 
   // ── Trip states (declared ONCE) ──────────────────────────────────────────────
   const [selectedTrip, setSelectedTrip] = useState(null);
@@ -531,16 +547,49 @@ const Lead = () => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
-  const clearFilters = () => {
-    setFilters({
-      lead_type: "",
-      interest_level: "",
-      lead_status: "",
-      created_by: "",
-      assigned_to: "",
-    });
-    setSearchQuery("");
-    setPage(1);
+  // Download Excel Report Handler - Only send selected fields
+  // Download Excel Report Handler - Dynamic Error Message
+  const handleDownloadReport = async () => {
+    try {
+      const payload = {};
+
+      if (reportMonth) payload.month = reportMonth;
+      if (reportYear) payload.year = reportYear;
+      if (reportEmployeeId) payload.employee_id = reportEmployeeId;
+
+      const result = await dispatch(
+        downloadEmployeeLeadReport(payload),
+      ).unwrap();
+
+      const blob = new Blob([result], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `lead_report${reportMonth ? `_${reportMonth}` : ""}${reportYear ? `_${reportYear}` : ""}${reportEmployeeId ? `_emp${reportEmployeeId}` : "_all"}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+
+      CommonToast("Report downloaded successfully!", "success");
+      setOpenReportDialog(false);
+    } catch (error) {
+      // 🔥 Dynamic Error Message from API
+      let errorMsg = "Failed to download report";
+
+      if (error?.message) {
+        errorMsg = error.message; // e.g. "No lead data found for May 2026"
+      } else if (error?.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      } else if (typeof error === "string") {
+        errorMsg = error;
+      }
+
+      CommonToast(errorMsg, "error");
+    }
   };
 
   // ── Trip Map View ────────────────────────────────────────────────────────────
@@ -1467,7 +1516,85 @@ const Lead = () => {
       </Box>
     );
   }
+  // ── Excel Report Dialog ───────────────────────────────────────────────────
+  const ReportDialog = (
+    <Dialog
+      open={openReportDialog}
+      onClose={() => setOpenReportDialog(false)}
+      maxWidth="sm"
+      fullWidth
+    >
+      <DialogTitle>📊 Employee Lead Monthly Report</DialogTitle>
+      <DialogContent sx={{ mt: 2 }}>
+        <Stack spacing={3}>
+          <Autocomplete
+            options={employees || []}
+            getOptionLabel={(emp) =>
+              `${emp.first_name || ""} ${emp.last_name || ""}`.trim() ||
+              `Employee #${emp.id}`
+            }
+            value={employees?.find((e) => e.id === reportEmployeeId) || null}
+            onChange={(_, v) => setReportEmployeeId(v ? v.id : "")}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select Employee (Optional)"
+                placeholder="All Employees"
+                fullWidth
+              />
+            )}
+          />
 
+          <Stack direction="row" spacing={2}>
+            <TextField
+              select
+              label="Month"
+              fullWidth
+              value={reportMonth}
+              onChange={(e) => setReportMonth(e.target.value)}
+            >
+              <MenuItem value="">All Months</MenuItem>
+              {Array.from({ length: 12 }, (_, i) => (
+                <MenuItem key={i + 1} value={i + 1}>
+                  {new Date(0, i).toLocaleString("default", { month: "long" })}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              select
+              label="Year"
+              fullWidth
+              value={reportYear}
+              onChange={(e) => setReportYear(e.target.value)}
+            >
+              <MenuItem value="">All Years</MenuItem>
+              {[2025, 2026, 2027, 2028].map((y) => (
+                <MenuItem key={y} value={y}>
+                  {y}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Stack>
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <CommonButton
+          variant="outlined"
+          onClick={() => setOpenReportDialog(false)}
+        >
+          Cancel
+        </CommonButton>
+        <CommonButton
+          variant="contained"
+          onClick={handleDownloadReport}
+          sx={{ bgcolor: "#D20000", "&:hover": { bgcolor: "#a80000" } }}
+        >
+          Download Excel
+        </CommonButton>
+      </DialogActions>
+    </Dialog>
+  );
   // ── List View ────────────────────────────────────────────────────────────────
   return (
     <Box>
@@ -1612,9 +1739,21 @@ const Lead = () => {
             <CommonButton
               variant="outlined"
               color="secondary"
-              onClick={clearFilters}
+              // onClick={clearFilters}
             >
               Clear Filters
+            </CommonButton>
+
+            <CommonButton
+              variant="contained"
+              startIcon={<TrendingUpIcon />}
+              onClick={() => setOpenReportDialog(true)}
+              sx={{
+                bgcolor: "#2e7d32",
+                "&:hover": { bgcolor: "#1b5e20" },
+              }}
+            >
+              📊 Download Excel Report
             </CommonButton>
           </Stack>
         </Box>
@@ -1861,6 +2000,84 @@ const Lead = () => {
           />
         </Box>
       </Paper>
+
+      {/* ✅ Excel Report Dialog - Now Properly Placed */}
+      <Dialog
+        open={openReportDialog}
+        onClose={() => setOpenReportDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>📊 Employee Lead Monthly Report</DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          <Stack spacing={3}>
+            <Autocomplete
+              options={employees || []}
+              getOptionLabel={(emp) =>
+                `${emp.first_name || ""} ${emp.last_name || ""}`.trim() ||
+                `Employee #${emp.id}`
+              }
+              value={employees?.find((e) => e.id === reportEmployeeId) || null}
+              onChange={(_, v) => setReportEmployeeId(v ? v.id : "")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select Employee (Optional)"
+                  placeholder="All Employees"
+                  fullWidth
+                />
+              )}
+            />
+
+            <Stack direction="row" spacing={2}>
+              <TextField
+                select
+                label="Month"
+                fullWidth
+                value={reportMonth}
+                onChange={(e) => setReportMonth(Number(e.target.value))}
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <MenuItem key={i + 1} value={i + 1}>
+                    {new Date(0, i).toLocaleString("default", {
+                      month: "long",
+                    })}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                select
+                label="Year"
+                fullWidth
+                value={reportYear}
+                onChange={(e) => setReportYear(Number(e.target.value))}
+              >
+                {[2025, 2026, 2027, 2028].map((y) => (
+                  <MenuItem key={y} value={y}>
+                    {y}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Stack>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <CommonButton
+            variant="outlined"
+            onClick={() => setOpenReportDialog(false)}
+          >
+            Cancel
+          </CommonButton>
+          <CommonButton
+            variant="contained"
+            onClick={handleDownloadReport}
+            sx={{ bgcolor: "#D20000", "&:hover": { bgcolor: "#a80000" } }}
+          >
+            Download Excel
+          </CommonButton>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
