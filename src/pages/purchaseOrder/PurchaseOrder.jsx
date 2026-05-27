@@ -1186,6 +1186,7 @@ const PurchaseOrder = () => {
     product_name: "",
     quantity: 1,
     unit_distributor_price: 0,
+    total_distributor_price: 0,
     mrp: 0,
   });
 
@@ -1382,6 +1383,7 @@ const PurchaseOrder = () => {
         product_name: value.product_name,
         quantity: 1,
         unit_distributor_price: value.unit_distributor_price || 0,
+        total_distributor_price: value.total_distributor_price || 0,
         mrp: value.mrp || 0,
       });
     } else {
@@ -1390,6 +1392,7 @@ const PurchaseOrder = () => {
         product_name: "",
         quantity: 1,
         unit_distributor_price: 0,
+        total_distributor_price: 0,
         mrp: 0,
       });
     }
@@ -1422,6 +1425,7 @@ const PurchaseOrder = () => {
       product_name: "",
       quantity: 1,
       unit_distributor_price: 0,
+      total_distributor_price: 0,
       mrp: 0,
     });
     CommonToast("Product added successfully", "success");
@@ -1617,6 +1621,7 @@ const PurchaseOrder = () => {
       product_name: "",
       quantity: 1,
       unit_distributor_price: 0,
+      total_distributor_price: 0,
       mrp: 0,
     });
     setSelectedProduct(null);
@@ -2111,6 +2116,7 @@ const PurchaseOrder = () => {
                             "Available Stock",
                             "Qty",
                             "Dist. Price",
+                            "Total Dist. Price",
                             "MRP",
                             "Total Dist.",
                             // "Total MRP",
@@ -2247,6 +2253,34 @@ const PurchaseOrder = () => {
                                     handleUpdateProductItem(
                                       index,
                                       "unit_distributor_price",
+                                      Number(e.target.value),
+                                    )
+                                  }
+                                  size="small"
+                                  type="number"
+                                  InputProps={{
+                                    startAdornment: (
+                                      <InputAdornment position="start">
+                                        ₹
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                  sx={{
+                                    width: 100,
+                                    "& .MuiOutlinedInput-root": {
+                                      borderRadius: 1.5,
+                                    },
+                                  }}
+                                />
+                              </TableCell>
+
+                              <TableCell align="center">
+                                <TextField
+                                  value={item.total_distributor_price || 0}
+                                  onChange={(e) =>
+                                    handleUpdateProductItem(
+                                      index,
+                                      "total_distributor_price",
                                       Number(e.target.value),
                                     )
                                   }
@@ -2857,6 +2891,7 @@ const PurchaseOrder = () => {
                           "Dist. Price",
                           "MRP",
                           "Total Dist.",
+                          "Total Dist. Price",
                           // "Total MRP",
                         ].map((h) => (
                           <TableCell
@@ -2908,6 +2943,11 @@ const PurchaseOrder = () => {
                           <TableCell align="center">
                             <Typography variant="body2" color="#475569">
                               ₹ {item?.unit_distributor_price}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography variant="body2" color="#475569">
+                              ₹ {item?.total_distributor_price}
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
@@ -3078,6 +3118,8 @@ const PurchaseOrder = () => {
                   "Status",
                   "Total Items",
                   "Total Qty",
+                  "Total Dist. Price",
+                  "Paid Amount",
                   "Actions",
                   "Picked PDF",
                   "Packed PDF",
@@ -3230,6 +3272,30 @@ const PurchaseOrder = () => {
                       <TableCell align="center">
                         <Chip
                           label={po.total_quantity}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            fontWeight: 700,
+                            borderColor: "#cbd5e1",
+                            height: 22,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell align="center">
+                        <Chip
+                          label={po.distributor_price}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            fontWeight: 700,
+                            borderColor: "#cbd5e1",
+                            height: 22,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell align="center">
+                        <Chip
+                          label={po.paid_amount || 0}
                           size="small"
                           variant="outlined"
                           sx={{
