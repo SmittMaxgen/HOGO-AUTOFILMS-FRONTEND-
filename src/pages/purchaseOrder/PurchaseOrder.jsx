@@ -1008,7 +1008,7 @@ const PaymentsPanel = ({
                           fontWeight={600}
                           color="#1e293b"
                         >
-                          {payment.admin_name}
+                          {payment.admin_name || "N/A"}
                         </Typography>
                       </TableCell>
                       <TableCell align="center">
