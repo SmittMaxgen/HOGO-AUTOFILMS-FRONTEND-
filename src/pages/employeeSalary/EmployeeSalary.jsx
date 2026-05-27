@@ -428,7 +428,7 @@ const EmployeeSalary = ({ employee_id = "", disabled = false }) => {
   const openEdit = (record) => {
     setEditRecord(record);
     setModalMode("edit");
-    dispatch(clearEmployeeSalaryState());
+    // dispatch(clearEmployeeSalaryState());
   };
 
   const openAdd = () => {
