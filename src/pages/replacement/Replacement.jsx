@@ -690,28 +690,37 @@ const Replacement = () => {
                         size="small"
                         value={item.status || "PENDING"}
                         onChange={(e) => {
-                          const data = {
-                            status: e.target.value,
-                          };
+                          const newStatus = e.target.value;
+
+                          // Optional: Prevent unnecessary call if same status
+                          if (newStatus === item.status) return;
 
                           dispatch(
                             updateReplacement({
                               id: item.id,
-                              data,
+                              data: {
+                                status: newStatus,
+                                // Add other required fields if your backend needs them
+                                // reason: item.reason,
+                                // old_serial_number: item.old_serial?.serial_number,
+                              },
                             }),
                           )
                             .unwrap()
                             .then(() => {
-                              dispatch(getReplacements());
-
+                              dispatch(getReplacements()); // Refresh list
                               CommonToast(
-                                "Warranty claim status updated successfully",
+                                "Status updated successfully",
                                 "success",
                               );
                             })
-                            .catch(() => {
+                            .catch((error) => {
+                              console.error("Status update error:", error); // ← Add this for debugging
                               CommonToast(
-                                "Failed to update warranty claim status",
+                                getErrorMessage(
+                                  error,
+                                  "Failed to update warranty claim status",
+                                ),
                                 "error",
                               );
                             });
