@@ -1949,7 +1949,7 @@ const PurchaseOrder = () => {
 
               <Box sx={{ p: 3 }}>
                 {/* ── Add Product Form ── */}
-                <Box
+                {/* <Box
                   sx={{
                     bgcolor: "#f8fafc",
                     border: "1.5px dashed #cbd5e1",
@@ -2082,7 +2082,7 @@ const PurchaseOrder = () => {
                       </Button>
                     </Grid>
                   </Grid>
-                </Box>
+                </Box> */}
 
                 {/* ── Product Table ── */}
                 {form.product_items.length === 0 ? (
