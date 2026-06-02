@@ -491,6 +491,7 @@ import {
   createShipmentProduct,
   updateShipmentProduct,
   deleteShipmentProduct,
+  downloadShipmentProductExcel, // ← NEW
 } from "../../feature/shipmentProducts/shipmentProductThunks";
 
 import {
@@ -530,6 +531,11 @@ import {
   Button,
   CircularProgress,
   Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  MenuItem,
+  DialogActions,
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
@@ -655,6 +661,9 @@ const ShipmentProducts = () => {
     location_id: null,
     allocation_basis: "",
   });
+  // NEW: Excel Download Dialog State
+  const [excelDialogOpen, setExcelDialogOpen] = useState(false);
+  const [selectedBatchId, setSelectedBatchId] = useState("");
 
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -857,6 +866,39 @@ const ShipmentProducts = () => {
       allocation_basis: "",
     });
     setPage(1);
+  };
+
+  // === NEW: Excel Download Handlers ===
+  const handleOpenExcelDialog = () => {
+    setSelectedBatchId("");
+    setExcelDialogOpen(true);
+  };
+
+  // Get unique batch ids for dropdown
+  const uniqueBatches = [
+    ...new Set(
+      shipmentProducts?.map((item) => item.batch_data).filter(Boolean),
+    ),
+  ];
+
+  const handleDownloadExcel = () => {
+    const batchIdToSend = selectedBatchId?.trim();
+
+    if (!batchIdToSend) {
+      CommonToast("Please enter or select a Batch ID", "warning");
+      return;
+    }
+
+    dispatch(downloadShipmentProductExcel(batchIdToSend))
+      .unwrap()
+      .then(() => {
+        CommonToast("Excel downloaded successfully!", "success");
+        setExcelDialogOpen(false);
+        setSelectedBatchId("");
+      })
+      .catch((err) => {
+        CommonToast(err || "Failed to download Excel", "error");
+      });
   };
 
   const activeFiltersCount = Object.values(filters).filter(
@@ -1390,21 +1432,44 @@ const ShipmentProducts = () => {
           </Typography>
         </Box>
 
-        <CommonButton
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setIsEditing(true)}
-          sx={{
-            bgcolor: "#D20000",
-            "&:hover": { bgcolor: "#a80000" },
-            fontWeight: 700,
-            borderRadius: 1.5,
-            px: 2.5,
-            boxShadow: "0 4px 12px rgba(210,0,0,0.3)",
-          }}
-        >
-          Add Shipment Product
-        </CommonButton>
+        <Stack direction="row" spacing={2}>
+          <CommonButton
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setIsEditing(true)}
+            sx={{ bgcolor: "#D20000", "&:hover": { bgcolor: "#a80000" } }}
+          >
+            Add Shipment Product
+          </CommonButton>
+
+          {/* NEW: Excel Download Button */}
+          {/* <CommonButton
+            variant="outlined"
+            // startIcon={<DownloadIcon />} // You'll need to import this
+            onClick={handleDownloadExcel}
+            sx={{ borderColor: "#D20000", color: "#D20000" }}
+          >
+            Download Excel
+          </CommonButton> */}
+          <button
+            onClick={handleOpenExcelDialog}
+            style={{
+              padding: "10px 22px",
+              background: "#166534",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: "14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            📥 Download Excel
+          </button>
+        </Stack>
       </Stack>
 
       <Paper sx={{ p: 2.5, mb: 3, borderRadius: 3 }}>
@@ -1776,6 +1841,74 @@ const ShipmentProducts = () => {
           />
         </Box>
       </Paper>
+
+      {/* ==================== EXCEL DOWNLOAD DIALOG ==================== */}
+      <Dialog
+        open={excelDialogOpen}
+        onClose={() => setExcelDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ bgcolor: "#f5f5f5", fontWeight: 600 }}>
+          Download Shipment Products Excel
+        </DialogTitle>
+
+        <DialogContent sx={{ pt: 3 }}>
+          <TextField
+            fullWidth
+            label="Enter Batch ID"
+            value={selectedBatchId}
+            onChange={(e) => setSelectedBatchId(e.target.value)}
+            placeholder="e.g. 111"
+            margin="normal"
+            autoFocus
+          />
+
+          {uniqueBatches.length > 0 && (
+            <>
+              <Typography
+                variant="caption"
+                sx={{ mt: 2, display: "block", mb: 1 }}
+              >
+                OR Select Existing Batch
+              </Typography>
+              <TextField
+                select
+                fullWidth
+                label="Select Batch"
+                value={selectedBatchId}
+                onChange={(e) => setSelectedBatchId(e.target.value)}
+                margin="normal"
+              >
+                {uniqueBatches.map((batch) => (
+                  <MenuItem key={batch} value={batch}>
+                    {batch}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </>
+          )}
+        </DialogContent>
+
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button
+            onClick={() => {
+              setExcelDialogOpen(false);
+              setSelectedBatchId("");
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleDownloadExcel}
+            disabled={!selectedBatchId.trim()}
+            sx={{ bgcolor: "#D20000", "&:hover": { bgcolor: "#a80000" } }}
+          >
+            Download Excel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
