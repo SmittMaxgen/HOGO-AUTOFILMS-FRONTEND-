@@ -38,6 +38,7 @@ import VisitsTrips from "../pages/OSM/DemoTripMap";
 import ProtectedRoute from "./ProtectedRoutes";
 
 import AdminLayout from "../layouts/AdminLayout";
+import Testimonials from "../pages/testimonial/Testimonials";
 
 const AppRoutes = ({ toggleTheme, mode }) => {
   const token = localStorage.getItem("token");
@@ -85,6 +86,7 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/replacements" element={<Replacement />} />
           <Route path="/visits-trips" element={<VisitsTrips />} />
+          <Route path="/testimonials" element={<Testimonials />} />
         </Route>
       </Route>
     </Routes>

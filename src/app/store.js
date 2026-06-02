@@ -39,6 +39,7 @@ import reportsReducers from "../feature/reports/reportsSlice";
 import salaryPaymentReducer from "../feature/salaryPayment/salaryPaymentSlice";
 import galleryReducer from "../feature/gallery/galleryslice";
 import replacementReducer from "../feature/replacement/replacementSlice";
+import testimonialsReducer from "../feature/testimonials/testimonialSlice";
 
 export const store = configureStore({
   reducer: {
@@ -83,5 +84,6 @@ export const store = configureStore({
     salaryPayments: salaryPaymentReducer,
     gallery: galleryReducer,
     replacement: replacementReducer,
+    testimonials: testimonialsReducer,
   },
 });
