@@ -1,17 +1,40 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
+// export const getShipmentProducts = createAsyncThunk(
+//   "shipmentProduct/getShipmentProduct",
+//   async (payload, { rejectWithValue }) => {
+//     try {
+//       const response = await axiosInstance.get(
+//         `/shipment_products/${payload ? payload : ""}`,
+//       );
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(
+//         error.response?.data?.message || "Failed to fetch Shipment Products !",
+//       );
+//     }
+//   },
+// );
+
+// Updated getShipmentProducts thunk
 export const getShipmentProducts = createAsyncThunk(
   "shipmentProduct/getShipmentProduct",
-  async (payload, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        `/shipment_products/${payload ? payload : ""}`,
-      );
+      const queryString = new URLSearchParams(
+        Object.entries(params).filter(([_, v]) => v !== "" && v !== null),
+      ).toString();
+
+      const url = queryString
+        ? `/shipment_products/?${queryString}`
+        : "/shipment_products/";
+
+      const response = await axiosInstance.get(url);
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch Shipment Products !",
+        error.response?.data?.message || "Failed to fetch Shipment Products!",
       );
     }
   },

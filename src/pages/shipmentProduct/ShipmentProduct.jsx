@@ -482,7 +482,8 @@
 // };
 
 // export default ShipmentProducts;
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import debounce from "lodash/debounce";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -513,8 +514,8 @@ import {
   Paper,
   Stack,
   Typography,
-  IconButton,
   TextField,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -523,12 +524,16 @@ import {
   TableRow,
   Pagination,
   Autocomplete,
-  CircularProgress,
-  Divider,
-  Grid,
   Chip,
   InputAdornment,
+  Grid,
+  Button,
+  CircularProgress,
+  Divider,
 } from "@mui/material";
+
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -641,9 +646,18 @@ const ShipmentProducts = () => {
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
 
+  // === NEW: Filters State ===
+  const [filters, setFilters] = useState({
+    search: "",
+    shipment_id: null,
+    product_id: null,
+    warehouse_id: null,
+    location_id: null,
+    allocation_basis: "",
+  });
+
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
-
   const [isViewing, setIsViewing] = useState(false);
   const [viewData, setViewData] = useState(null);
 
@@ -662,13 +676,30 @@ const ShipmentProducts = () => {
     per_unit_cost_usd: "",
   });
 
+  // Fetch data with filters
+  const fetchData = useCallback(() => {
+    const payload = {
+      search: filters.search,
+      shipment_id: filters.shipment_id?.id,
+      product_id: filters.product_id?.id,
+      warehouse_id: filters.warehouse_id?.id,
+      location_id: filters.location_id?.id,
+      allocation_basis: filters.allocation_basis,
+      page,
+    };
+    dispatch(getShipmentProducts(payload));
+  }, [dispatch, filters, page]);
+
   useEffect(() => {
-    dispatch(getShipmentProducts());
     dispatch(getShipments());
+    dispatch(getProducts());
     dispatch(getWarehouses());
     dispatch(getLocations());
-    dispatch(getProducts());
   }, [dispatch]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -802,7 +833,35 @@ const ShipmentProducts = () => {
     setIsViewing(false);
     setViewData(null);
   };
+  // === NEW: Filter Handlers ===
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setFilters((prev) => ({ ...prev, search: value }));
+      setPage(1);
+    }, 600),
+    [],
+  );
 
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setPage(1);
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      search: "",
+      shipment_id: null,
+      product_id: null,
+      warehouse_id: null,
+      location_id: null,
+      allocation_basis: "",
+    });
+    setPage(1);
+  };
+
+  const activeFiltersCount = Object.values(filters).filter(
+    (v) => v !== "" && v !== null && (typeof v !== "object" || v?.id),
+  ).length;
   const paginatedData = shipmentProducts?.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage,
@@ -1348,6 +1407,86 @@ const ShipmentProducts = () => {
         </CommonButton>
       </Stack>
 
+      <Paper sx={{ p: 2.5, mb: 3, borderRadius: 3 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} md={3.5}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search product, batch, invoice..."
+              value={filters.search}
+              onChange={(e) => debouncedSearch(e.target.value)}
+              InputProps={{
+                startAdornment: <SearchIcon sx={{ mr: 1, color: "#666" }} />,
+              }}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={2}>
+            <Autocomplete
+              size="small"
+              options={shipments}
+              getOptionLabel={(o) => `#${o.id} - ${o.supplier_invoice_no}`}
+              value={filters.shipment_id}
+              onChange={(_, v) => handleFilterChange("shipment_id", v)}
+              renderInput={(params) => (
+                <TextField {...params} label="Shipment" />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={2}>
+            <Autocomplete
+              size="small"
+              options={products}
+              getOptionLabel={(o) => o.product_name}
+              value={filters.product_id}
+              onChange={(_, v) => handleFilterChange("product_id", v)}
+              renderInput={(params) => (
+                <TextField {...params} label="Product" />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={2}>
+            <Autocomplete
+              size="small"
+              options={warehouses}
+              getOptionLabel={(o) => o.name}
+              value={filters.warehouse_id}
+              onChange={(_, v) => handleFilterChange("warehouse_id", v)}
+              renderInput={(params) => (
+                <TextField {...params} label="Warehouse" />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={2}>
+            <Autocomplete
+              size="small"
+              options={locations}
+              getOptionLabel={(o) => o.name}
+              value={filters.location_id}
+              onChange={(_, v) => handleFilterChange("location_id", v)}
+              renderInput={(params) => (
+                <TextField {...params} label="Location" />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={2}>
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<ClearIcon />}
+              onClick={resetFilters}
+              disabled={activeFiltersCount === 0}
+            >
+              Reset ({activeFiltersCount})
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
       {/* Table Card */}
       <Paper
         elevation={2}
