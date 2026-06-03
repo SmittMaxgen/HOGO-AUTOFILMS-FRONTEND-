@@ -3524,7 +3524,8 @@ export default function Plan() {
   const [selectedTPId, setSelectedTPId] = useState(null);
   const [calYear, setCalYear] = useState(today.getFullYear());
   const [calMonth, setCalMonth] = useState(today.getMonth());
-  const [viewMode, setViewMode] = useState("calendar");
+  const [viewMode, setViewMode] = useState("list");
+  const prevViewMode = React.useRef("list");
   const [filterEmp, setFilterEmp] = useState("");
   const [filterRegion, setFilterRegion] = useState("");
   const [allPlans, setAllPlans] = useState([]);
@@ -3565,11 +3566,9 @@ export default function Plan() {
       getTravelPlans({
         employee_id: filterEmp || "",
         region: filterRegion || "",
-        month: MONTHS[calMonth],
-        year: calYear,
       }),
     );
-  }, [dispatch, filterEmp, filterRegion, calMonth, calYear]);
+  }, [dispatch, filterEmp, filterRegion]);
 
   // All plans (no month/year) — for chips only
   useEffect(() => {
@@ -3577,8 +3576,6 @@ export default function Plan() {
       getTravelPlans({
         employee_id: filterEmp || "",
         region: filterRegion || "",
-        month: MONTHS[calMonth],
-        year: calYear,
       }),
     ).then((res) => {
       const d = res?.payload;
@@ -3591,8 +3588,9 @@ export default function Plan() {
   }, [showTPModal]);
 
   // Auto-select first plan
+  // Auto-select first plan only when an employee is filtered
   useEffect(() => {
-    if (travelPlans.length > 0) setSelectedTPId(travelPlans[0].id);
+    if (travelPlans.length > 0 && filterEmp) setSelectedTPId(travelPlans[0].id);
   }, [travelPlans]);
 
   // Auto-select plan on employee filter change
@@ -3658,6 +3656,7 @@ export default function Plan() {
 
   useEffect(() => {
     if (monthChips.length === 0) return;
+    if (!filterEmp && !filterRegion) return; // don't auto-jump when unfiltered
     const hasActive = monthChips.some(
       (c) => c.monthIndex === calMonth && c.year === calYear,
     );
@@ -3954,7 +3953,20 @@ export default function Plan() {
             </button>
             <button
               style={{ ...S.tBtn, ...(viewMode === "list" ? S.tOn : {}) }}
-              onClick={() => setViewMode("list")}
+              onClick={() => {
+                setViewMode("list");
+                setFilterEmp("");
+                setFilterRegion("");
+                setSelectedTPId(null);
+                dispatch(
+                  getTravelPlans({
+                    employee_id: "",
+                    region: "",
+                    month: "",
+                    year: "",
+                  }),
+                );
+              }}
             >
               List
             </button>
@@ -3963,7 +3975,7 @@ export default function Plan() {
       </div>
 
       {/* Month-Year chips */}
-      {monthChips.length > 0 && (
+      {/* {monthChips.length > 0 && (
         <div style={S.chipRow}>
           {monthChips.map((chip) => (
             <Chip
@@ -3975,10 +3987,10 @@ export default function Plan() {
             </Chip>
           ))}
         </div>
-      )}
+      )} */}
 
       {/* Employee chips */}
-      {employeesWithPlans.length > 0 && (
+      {/* {employeesWithPlans.length > 0 && (
         <div style={S.chipRow}>
           <Chip
             active={filterEmp === ""}
@@ -3995,10 +4007,18 @@ export default function Plan() {
               active={String(emp.id) === String(filterEmp)}
               onClick={() => {
                 setFilterEmp(String(emp.id));
+                setViewMode("calendar");
                 const m = travelPlans.find(
                   (tp) => String(tp.employee_id) === String(emp.id),
                 );
-                if (m) setSelectedTPId(m.id);
+                if (m) {
+                  setSelectedTPId(m.id);
+                  const d = parseDate(m.start_date);
+                  if (d) {
+                    setCalYear(d.getFullYear());
+                    setCalMonth(d.getMonth());
+                  }
+                }
               }}
             >
               {emp.first_name} {emp.last_name}
@@ -4008,7 +4028,7 @@ export default function Plan() {
             </Chip>
           ))}
         </div>
-      )}
+      )} */}
 
       {/* Calendar View */}
       {viewMode === "calendar" && (
