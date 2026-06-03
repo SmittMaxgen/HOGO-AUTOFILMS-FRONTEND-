@@ -3726,18 +3726,25 @@ export default function Plan() {
 
   // ── Travel Plan CRUD ──────────────────────────────────────────────────────
   function openCreateTP() {
+    const prefillEmp = employees.find(
+      (e) => String(e.id) === String(filterEmp),
+    );
     setEditingTP(null);
     setTpForm({
-      employee_id: "",
-      month: "",
+      employee_id: filterEmp || "",
+      month: MONTHS[calMonth] || "",
       start_date: "",
       end_date: "",
-      region: "",
+      region: filterRegion || "",
       states: "",
       rm: "",
       tsm: "",
     });
-    setEmpSearch("");
+    setEmpSearch(
+      prefillEmp
+        ? `${prefillEmp.first_name} ${prefillEmp.last_name} (${prefillEmp.employee_code})`
+        : "",
+    );
     setShowTPModal(true);
   }
   function openEditTP(tp) {
@@ -3775,7 +3782,11 @@ export default function Plan() {
 
   // ── Daily Plan CRUD ───────────────────────────────────────────────────────
   function openCell(day) {
-    if (!selectedTPId || !day) return;
+    if (!day) return;
+    if (!selectedTPId) {
+      openCreateTP();
+      return;
+    }
     const ds = fmt(calYear, calMonth, day);
     setSelDate(ds);
     const ex = dailyByDate[ds];
@@ -3860,9 +3871,9 @@ export default function Plan() {
           <h1 style={S.title}>Travel Plan Manager</h1>
           <p style={S.sub}>View and manage employee travel plans</p>
         </div>
-        {/* <button style={S.addBtn} onClick={openCreateTP}>
+        <button style={S.addBtn} onClick={openCreateTP}>
           + New Travel Plan
-        </button> */}
+        </button>
       </div>
 
       {/* Filter bar */}

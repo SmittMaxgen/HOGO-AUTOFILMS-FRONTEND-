@@ -162,6 +162,12 @@ const fmt = (val) => {
   return n.toLocaleString("en-IN", { maximumFractionDigits: 2 });
 };
 
+const fmtCount = (val) => {
+  const n = parseFloat(val);
+  if (isNaN(n)) return "—";
+  return n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
+};
+
 // ─────────────────────────────────────────────────────────────
 // DetailModal — shows orders / products for a single month
 // ─────────────────────────────────────────────────────────────
@@ -420,6 +426,12 @@ const Reports = () => {
       displayMonth: toDisplayMonth(year, i),
       report,
       target: report?.target ?? null,
+      totalProduct:
+        report?.summary?.total_products ??
+        report?.summary?.total_product ??
+        report?.summary?.total_items ??
+        report?.summary?.product_count ??
+        null,
       orderTotal: report?.summary?.total_order_without_gst ?? null,
       invoiceTotal: report?.summary?.total_invoice_with_gst ?? null,
       hasData,
@@ -429,6 +441,10 @@ const Reports = () => {
   // ── Totals ───────────────────────────────────────────────────
   const totalTarget = monthGrid.reduce(
     (a, r) => a + (parseFloat(r.target) || 0),
+    0,
+  );
+  const totalProducts = monthGrid.reduce(
+    (a, r) => a + (parseFloat(r.totalProduct) || 0),
     0,
   );
   const totalOrder = monthGrid.reduce(
@@ -528,9 +544,9 @@ const Reports = () => {
               >
                 Target
               </th>
-              {/* Actual group spans 2 cols + has entity selector */}
+              {/* Actual group spans 4 cols + has entity selector */}
               <th
-                colSpan={3}
+                colSpan={4}
                 style={{
                   ...s.thGroup,
                   textAlign: "center",
@@ -589,6 +605,9 @@ const Reports = () => {
             {/* Row 2: sub-headers */}
             <tr>
               <th style={{ ...s.th, borderTop: "1px solid #fca5a5" }}>
+                Total Product
+              </th>
+              <th style={{ ...s.th, borderTop: "1px solid #fca5a5" }}>
                 Order (excl. GST)
               </th>
               <th style={{ ...s.th, borderTop: "1px solid #fca5a5" }}>
@@ -632,6 +651,22 @@ const Reports = () => {
                       }}
                     >
                       {noTarget ? "Manual Feed" : row.target}
+                    </span>
+                  </td>
+
+                  {/* Total Product */}
+                  <td style={s.td}>
+                    <span
+                      style={{
+                        color:
+                          row.totalProduct === null ? "#94a3b8" : "#1e40af",
+                        fontStyle:
+                          row.totalProduct === null ? "italic" : "normal",
+                      }}
+                    >
+                      {row.totalProduct === null
+                        ? "—"
+                        : fmtCount(row.totalProduct)}
                     </span>
                   </td>
 
@@ -689,6 +724,9 @@ const Reports = () => {
               </td>
               <td style={{ ...s.totalValue, background: "rgb(26, 26, 46)" }}>
                 {hasTotals ? totalTarget.toLocaleString() : "—"}
+              </td>
+              <td style={s.totalValue}>
+                {hasTotals ? fmtCount(totalProducts) : "—"}
               </td>
               <td style={s.totalValue}>
                 {hasTotals ? `₹${fmt(totalOrder)}` : "—"}

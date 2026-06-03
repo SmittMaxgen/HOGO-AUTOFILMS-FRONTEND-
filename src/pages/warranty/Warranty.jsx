@@ -1065,6 +1065,7 @@ import {
   Person,
   CalendarToday,
   ZoomIn,
+  InfoOutlined,
 } from "@mui/icons-material";
 import {
   getWarranties,
@@ -1160,9 +1161,9 @@ const DetailCard = ({ label, value, icon }) => (
 
 const WARRANTY_STATUS = {
   PENDING: { label: "Pending", color: "warning" },
-  ACTIVE: { label: "Active", color: "success" },
+  ACTIVE: { label: "Approved", color: "success" },
+  HOLD: { label: "Hold", color: "info" },
   EXPIRED: { label: "Expired", color: "error" },
-  VOID: { label: "Void", color: "default" },
 };
 
 const STATUS_CHIP_CONFIG = {
@@ -1174,7 +1175,12 @@ const STATUS_CHIP_CONFIG = {
   ACTIVE: {
     color: "success",
     icon: <CheckCircle fontSize="small" />,
-    label: "Accepted",
+    label: "Approved",
+  },
+  HOLD: {
+    color: "info",
+    icon: <HourglassEmpty fontSize="small" />,
+    label: "Hold",
   },
   // ACCEPT: {
   //   color: "success",
@@ -1213,7 +1219,11 @@ const WarrantyManagement = () => {
   const [selectedWarranty, setSelectedWarranty] = useState(null);
   const [showViewDialog, setShowViewDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [showHoldDialog, setShowHoldDialog] = useState(false);
+  const [showHoldReasonDialog, setShowHoldReasonDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [holdReason, setHoldReason] = useState("");
+  const [holdReasonPreview, setHoldReasonPreview] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
@@ -1259,7 +1269,9 @@ const WarrantyManagement = () => {
       CommonToast("Warranty updated successfully", "success");
       setShowViewDialog(false);
       setShowRejectDialog(false);
+      setShowHoldDialog(false);
       setRejectionReason("");
+      setHoldReason("");
       setSelectedWarranty(null);
       dispatch(getWarranties());
     }
@@ -1281,6 +1293,12 @@ const WarrantyManagement = () => {
 
   const handleWarrantyStatusChange = (status) => {
     if (!selectedWarranty) return;
+    handleCloseMenu();
+    if (status === "HOLD") {
+      setHoldReason(selectedWarranty.hold_reason || "");
+      setShowHoldDialog(true);
+      return;
+    }
     dispatch(
       updateWarranty({
         id: selectedWarranty.id,
@@ -1290,7 +1308,6 @@ const WarrantyManagement = () => {
         },
       }),
     );
-    handleCloseMenu();
   };
 
   const handleAccept = () => {
@@ -1328,6 +1345,24 @@ const WarrantyManagement = () => {
         },
       }),
     );
+  };
+
+  const confirmHold = () => {
+    dispatch(
+      updateWarranty({
+        id: selectedWarranty.id,
+        data: {
+          warranty_status: "HOLD",
+          ...(holdReason.trim() ? { hold_reason: holdReason.trim() } : {}),
+          approved_by: (adminList && adminList?.id) || null,
+        },
+      }),
+    );
+  };
+
+  const handleShowHoldReason = (reason) => {
+    setHoldReasonPreview(reason || "No hold reason provided");
+    setShowHoldReasonDialog(true);
   };
 
   const getStatusChip = (status) => {
@@ -1490,15 +1525,20 @@ const WarrantyManagement = () => {
             </Alert>
           )}
 
-        {/* Identity Strip */}
+        {selectedWarranty.warranty_status === "HOLD" &&
+          selectedWarranty.hold_reason && (
+            <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
+              <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                Hold Reason
+              </Typography>
+              <Typography variant="body2">
+                {selectedWarranty.hold_reason}
+              </Typography>
+            </Alert>
+          )}
         <Paper
-          elevation={3}
-          sx={{
-            borderRadius: 3,
-            overflow: "hidden",
-            border: "1px solid #f0f0f0",
-            mb: 3,
-          }}
+          elevation={2}
+          sx={{ p: 0, mb: 3, borderRadius: 3, border: "1px solid #f0f0f0" }}
         >
           <Box
             sx={{
@@ -1936,7 +1976,7 @@ const WarrantyManagement = () => {
               )}
               {!loading && filteredWarranties.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
+                  <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
                     <Box
                       display="flex"
                       flexDirection="column"
@@ -2096,6 +2136,30 @@ const WarrantyManagement = () => {
                       </Menu>
                     </TableCell>
 
+                    {/* Hold Reason */}
+                    <TableCell>
+                      {warranty.hold_reason ? (
+                        <IconButton
+                          size="small"
+                          onClick={() =>
+                            handleShowHoldReason(warranty.hold_reason)
+                          }
+                          sx={{
+                            color: "#1565c0",
+                            bgcolor: "#e3f2fd",
+                            borderRadius: 1,
+                            p: 0.8,
+                          }}
+                        >
+                          <InfoOutlined fontSize="small" />
+                        </IconButton>
+                      ) : (
+                        <Typography variant="caption" color="text.secondary">
+                          -
+                        </Typography>
+                      )}
+                    </TableCell>
+
                     {/* Action */}
                     <TableCell>
                       <IconButton
@@ -2143,6 +2207,75 @@ const WarrantyManagement = () => {
       </Paper>
 
       {/* Reject Dialog */}
+      <Dialog
+        open={showHoldDialog}
+        onClose={() => setShowHoldDialog(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 3, overflow: "hidden" } }}
+      >
+        <Box
+          sx={{
+            background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+            px: 3,
+            py: 2,
+          }}
+        >
+          <Typography variant="h6" fontWeight={700} color="#fff">
+            Hold Warranty
+          </Typography>
+        </Box>
+        <DialogContent sx={{ pt: 3 }}>
+          <Typography variant="body2" color="text.secondary" mb={2}>
+            Enter a reason for placing this warranty on hold. This field is
+            optional.
+          </Typography>
+          <TextField
+            autoFocus
+            multiline
+            rows={4}
+            fullWidth
+            placeholder="Enter hold reason..."
+            value={holdReason}
+            onChange={(e) => setHoldReason(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root.Mui-focused fieldset": {
+                borderColor: "#D20000",
+              },
+              "& label.Mui-focused": { color: "#D20000" },
+              "& .MuiOutlinedInput-root": { borderRadius: 2 },
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
+          <Button
+            onClick={() => {
+              setShowHoldDialog(false);
+              setHoldReason("");
+            }}
+            disabled={updateLoading}
+            sx={{ textTransform: "none", fontWeight: 600, borderRadius: 1.5 }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmHold}
+            variant="contained"
+            disabled={updateLoading}
+            sx={{
+              textTransform: "none",
+              fontWeight: 700,
+              borderRadius: 1.5,
+              px: 3,
+              bgcolor: "#D20000",
+              "&:hover": { bgcolor: "#a80000" },
+            }}
+          >
+            {updateLoading ? "Saving..." : "Confirm Hold"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Dialog
         open={showRejectDialog}
         onClose={() => setShowRejectDialog(false)}
@@ -2208,6 +2341,39 @@ const WarrantyManagement = () => {
             }}
           >
             {updateLoading ? "Rejecting..." : "Confirm Reject"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={showHoldReasonDialog}
+        onClose={() => setShowHoldReasonDialog(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 3, overflow: "hidden" } }}
+      >
+        <Box
+          sx={{
+            background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+            px: 3,
+            py: 2,
+          }}
+        >
+          <Typography variant="h6" fontWeight={700} color="#fff">
+            Hold Reason
+          </Typography>
+        </Box>
+        <DialogContent sx={{ pt: 3 }}>
+          <Typography variant="body2" color="text.secondary">
+            {holdReasonPreview}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
+          <Button
+            onClick={() => setShowHoldReasonDialog(false)}
+            sx={{ textTransform: "none", fontWeight: 600, borderRadius: 1.5 }}
+          >
+            Close
           </Button>
         </DialogActions>
       </Dialog>
