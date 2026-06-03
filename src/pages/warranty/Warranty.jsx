@@ -1930,13 +1930,14 @@ const WarrantyManagement = () => {
                 }}
               >
                 {[
-                  "Serial ID",
+                  "Serial Number",
                   "Car Details",
                   "Detailer",
                   "Mobile",
                   "Install Date",
                   "Warranty",
                   "Warranty Status",
+                  "Hold Reason",
                   "Action",
                 ].map((h) => (
                   <TableCell
@@ -2003,14 +2004,14 @@ const WarrantyManagement = () => {
                       transition: "background 0.15s",
                     }}
                   >
-                    {/* Serial ID */}
+                    {/* Serial Number */}
                     <TableCell>
                       <Typography
                         fontWeight={700}
                         fontSize={13}
                         color="#D20000"
                       >
-                        {warranty.serial_id}
+                        {warranty.serial_number}
                       </Typography>
                     </TableCell>
 
