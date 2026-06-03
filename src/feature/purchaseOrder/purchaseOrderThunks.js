@@ -36,6 +36,41 @@ export const getPOPayments = createAsyncThunk(
   },
 );
 
+export const createPOPayment = createAsyncThunk(
+  "purchaseOrder/createPOPayment",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const hasFile = payload?.image instanceof File;
+      let response;
+
+      if (hasFile) {
+        const formData = new FormData();
+        formData.append("distributor", payload.distributor);
+        formData.append("purchase_order", payload.purchase_order);
+        formData.append("amount", payload.amount);
+        formData.append("payment_date", payload.payment_date);
+        if (payload.image) {
+          formData.append("image", payload.image);
+        }
+
+        response = await axiosInstance.post("/po-payments/", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } else {
+        response = await axiosInstance.post("/po-payments/", payload);
+      }
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to create payment!",
+      );
+    }
+  },
+);
+
 export const updatePaymentStatus = createAsyncThunk(
   "purchaseOrder/updatePaymentStatus",
   async ({ id, status }, { rejectWithValue }) => {

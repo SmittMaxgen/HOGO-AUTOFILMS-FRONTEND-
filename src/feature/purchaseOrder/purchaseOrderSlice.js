@@ -5,6 +5,7 @@ import {
   updatePurchaseOrder,
   deletePurchaseOrder,
   getPOPayments,
+  createPOPayment,
   updatePaymentStatus,
 } from "./purchaseOrderThunks";
 
@@ -136,6 +137,25 @@ const purchaseOrderSlice = createSlice({
       })
       .addCase(getPOPayments.rejected, (state) => {
         state.paymentsLoading = false;
+      })
+      .addCase(createPOPayment.pending, (state) => {
+        state.paymentsLoading = true;
+        state.error = null;
+      })
+      .addCase(createPOPayment.fulfilled, (state, action) => {
+        state.paymentsLoading = false;
+        const newPayment = action.payload?.data;
+        if (newPayment) {
+          if (Array.isArray(state.poPayments)) {
+            state.poPayments.push(newPayment);
+          } else if (state.poPayments?.payments) {
+            state.poPayments.payments.push(newPayment);
+          }
+        }
+      })
+      .addCase(createPOPayment.rejected, (state, action) => {
+        state.paymentsLoading = false;
+        state.error = action.payload;
       })
       // ================= UPDATE PAYMENT STATUS =================
       .addCase(updatePaymentStatus.pending, (state) => {

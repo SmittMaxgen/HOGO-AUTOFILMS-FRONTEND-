@@ -7,6 +7,7 @@ import {
   updatePurchaseOrder,
   deletePurchaseOrder,
   getPOPayments,
+  createPOPayment,
   updatePaymentStatus,
 } from "../../feature/purchaseOrder/purchaseOrderThunks";
 
@@ -824,10 +825,19 @@ const PaymentsPanel = ({
   BASE_URL,
   dispatch,
   getPOPayments,
+  createPOPayment,
   updatePaymentStatus,
 }) => {
   const PAYMENT_STATUS_OPTIONS = ["Pending", "Approved", "Rejected"];
   const poData = poPayments?.[0];
+
+  const [showAddPaymentDialog, setShowAddPaymentDialog] = useState(false);
+  const [paymentForm, setPaymentForm] = useState({
+    amount: "",
+    payment_date: "",
+    image: null,
+  });
+  const [paymentErrors, setPaymentErrors] = useState({});
 
   const handlePaymentStatusChange = (paymentId, newStatus) => {
     dispatch(updatePaymentStatus({ id: paymentId, status: newStatus }))
@@ -837,6 +847,43 @@ const PaymentsPanel = ({
         dispatch(getPOPayments(poData?.purchase_order));
       })
       .catch(() => CommonToast("Failed to update status", "error"));
+  };
+
+  const validatePaymentForm = () => {
+    const errors = {};
+    if (!paymentForm.amount) errors.amount = "Amount is required";
+    if (!paymentForm.payment_date)
+      errors.payment_date = "Payment date is required";
+    return errors;
+  };
+
+  const handleAddPayment = () => {
+    const errors = validatePaymentForm();
+    if (Object.keys(errors).length > 0) {
+      setPaymentErrors(errors);
+      return;
+    }
+
+    const payload = {
+      distributor: poData?.distributor || poData?.distributor_id,
+      purchase_order: poData?.purchase_order || poData?.id,
+      amount: Number(paymentForm.amount),
+      payment_date: paymentForm.payment_date,
+      image: paymentForm.image || "",
+    };
+
+    dispatch(createPOPayment(payload))
+      .unwrap()
+      .then(() => {
+        CommonToast("Payment added successfully", "success");
+        setShowAddPaymentDialog(false);
+        setPaymentForm({ amount: "", payment_date: "", image: null });
+        setPaymentErrors({});
+        dispatch(getPOPayments(poData?.purchase_order));
+      })
+      .catch((error) => {
+        CommonToast(error?.message || "Failed to add payment", "error");
+      });
   };
 
   return (
@@ -862,7 +909,104 @@ const PaymentsPanel = ({
             {poData?.payments?.length !== 1 ? "s" : ""}
           </Typography>
         </Box>
+        <Box sx={{ marginLeft: "auto" }}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setShowAddPaymentDialog(true)}
+            sx={{
+              textTransform: "none",
+              bgcolor: "#fff",
+              color: "#1e293b",
+              borderRadius: 2,
+              px: 2.5,
+              py: 1,
+              fontWeight: 700,
+              boxShadow: "none",
+              minWidth: 130,
+            }}
+          >
+            Add Payment
+          </Button>
+        </Box>
       </Box>
+
+      <Dialog
+        open={showAddPaymentDialog}
+        onClose={() => {
+          setShowAddPaymentDialog(false);
+          setPaymentErrors({});
+        }}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>Add Payment</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <TextField
+              label="Amount"
+              type="number"
+              value={paymentForm.amount}
+              onChange={(e) => {
+                setPaymentForm((prev) => ({
+                  ...prev,
+                  amount: e.target.value,
+                }));
+                setPaymentErrors((prev) => ({ ...prev, amount: "" }));
+              }}
+              error={Boolean(paymentErrors.amount)}
+              helperText={paymentErrors.amount}
+              fullWidth
+            />
+            <TextField
+              label="Payment Date"
+              type="date"
+              value={paymentForm.payment_date}
+              onChange={(e) => {
+                setPaymentForm((prev) => ({
+                  ...prev,
+                  payment_date: e.target.value,
+                }));
+                setPaymentErrors((prev) => ({ ...prev, payment_date: "" }));
+              }}
+              InputLabelProps={{ shrink: true }}
+              error={Boolean(paymentErrors.payment_date)}
+              helperText={paymentErrors.payment_date}
+              fullWidth
+            />
+            <TextField
+              label="Payment Image"
+              type="file"
+              inputProps={{ accept: "image/*" }}
+              onChange={(e) =>
+                setPaymentForm((prev) => ({
+                  ...prev,
+                  image: e.target.files?.[0] || null,
+                }))
+              }
+              fullWidth
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, pt: 1 }}>
+          <Button
+            onClick={() => {
+              setShowAddPaymentDialog(false);
+              setPaymentErrors({});
+            }}
+            sx={{ textTransform: "none" }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAddPayment}
+            variant="contained"
+            sx={{ textTransform: "none" }}
+          >
+            Add Payment
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Summary strip */}
       {poData && (
@@ -2607,6 +2751,7 @@ const PurchaseOrder = () => {
           BASE_URL={BASE_URL}
           dispatch={dispatch}
           getPOPayments={getPOPayments}
+          createPOPayment={createPOPayment}
           updatePaymentStatus={updatePaymentStatus}
         />
       </Box>
@@ -2984,6 +3129,7 @@ const PurchaseOrder = () => {
           BASE_URL={BASE_URL}
           dispatch={dispatch}
           getPOPayments={getPOPayments}
+          createPOPayment={createPOPayment}
           updatePaymentStatus={updatePaymentStatus}
         />
       </Box>
