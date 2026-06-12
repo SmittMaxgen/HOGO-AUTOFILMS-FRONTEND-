@@ -720,11 +720,11 @@ const WarrantyManagement = () => {
                   value={selectedWarranty.detailer_mobile}
                 />
               </Grid>
-              {selectedWarranty.detailer_email && (
+              {selectedWarranty.email && (
                 <Grid item xs={12} sm={6} md={4}>
                   <DetailCard
                     label="Detailer Email"
-                    value={selectedWarranty.detailer_email}
+                    value={selectedWarranty.email}
                   />
                 </Grid>
               )}
