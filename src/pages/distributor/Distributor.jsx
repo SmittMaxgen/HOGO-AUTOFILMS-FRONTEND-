@@ -4422,6 +4422,7 @@ const Distributors = () => {
   const distributors = useSelector(selectDistributors);
   const regions = useSelector(selectRegions);
   const loading = useSelector(selectDistributorLoading);
+  const distributorsErrors = useSelector(selectDistributorError);
   const createLoading = useSelector(createDistributorLoading);
 
   const [selectedDistributor, setSelectedDistributor] = useState(null);
@@ -4430,6 +4431,7 @@ const Distributors = () => {
   const [createDistributorFlag, setCreateDistributor] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  console.log("formErrors", formErrors);
   const [backendError, setBackendError] = useState(null);
   const [validationAlert, setValidationAlert] = useState(null);
   const [formData, setFormData] = useState({});
@@ -4488,6 +4490,13 @@ const Distributors = () => {
       errors.account_number = "Account number is required";
     if (!newDistributorForm.ifsc_code.trim())
       errors.ifsc_code = "IFSC code is required";
+    else if (
+      !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(
+        newDistributorForm.ifsc_code.trim().toUpperCase(),
+      )
+    )
+      errors.ifsc_code =
+        "IFSC code must be in valid format (e.g., SBIN0001234)";
     if (!newDistributorForm.payment_terms_days)
       errors.payment_terms_days = "Payment terms is required";
     if (!newDistFiles.cancelled_cheque)
@@ -4505,10 +4514,23 @@ const Distributors = () => {
       errors.service_cities = "Service cities is required";
     if (!newDistributorForm.gst_number.trim())
       errors.gst_number = "GST number is required";
+    else if (
+      !/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(
+        newDistributorForm.gst_number.trim().toUpperCase(),
+      )
+    )
+      errors.gst_number = "GST number format is invalid";
     if (!newDistributorForm.years_in_business.trim())
       errors.years_in_business = "Years in business is required";
     if (!newDistributorForm.pan_number.trim())
       errors.pan_number = "PAN number is required";
+    else if (
+      !/^[A-Z]{5}\d{4}[A-Z]{1}$/.test(
+        newDistributorForm.pan_number.trim().toUpperCase(),
+      )
+    )
+      errors.pan_number =
+        "PAN number must be in valid format (e.g., ABCDE1234F)";
     if (!newDistFiles.gst_certificate)
       errors.gst_certificate = "GST certificate is required";
     if (!newDistFiles.pan_card_copy)
@@ -4616,9 +4638,8 @@ const Distributors = () => {
           "board_resolution",
           "partnership_deed",
           "llp_agreement",
-          "agreement_copy",
         ],
-        ["agreement_signed", "kyc_verified", "kyc_verified_by", "remarks"],
+        ["agreement_signed", "kyc_verified", "kyc_verified_by", "remarks", "agreement_copy"],
       ];
       const tabMessages = [
         "Please fill all required fields in Basic Information",
@@ -4771,6 +4792,7 @@ const Distributors = () => {
         setNewDistFiles(EMPTY_FILES);
         setFormErrors({});
       } else {
+        console.log("result===>>>", result);
         setBackendError(
           result.payload?.errors || { general: "Creation failed" },
         );
