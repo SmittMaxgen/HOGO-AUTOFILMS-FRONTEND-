@@ -4443,6 +4443,21 @@ const Distributors = () => {
     dispatch(getRegions());
   }, [dispatch]);
 
+  const distributorError = useSelector(selectDistributorError);
+
+  const getDistributorErrorMessage = (error) => {
+    if (!error) return "Something went wrong";
+
+    if (error?.errors) {
+      const firstField = Object.keys(error.errors)[0];
+
+      if (firstField && error.errors[firstField]?.length) {
+        return error.errors[firstField][0];
+      }
+    }
+
+    return error?.status || "Something went wrong";
+  };
   // ── Validation ───────────────────────────────────────────────────────────────
   const validateForm = () => {
     const errors = {};
@@ -4488,6 +4503,8 @@ const Distributors = () => {
       errors.branch_name = "Branch name is required";
     if (!newDistributorForm.account_number.trim())
       errors.account_number = "Account number is required";
+    else if (!/^\d{9,18}$/.test(newDistributorForm.account_number.trim()))
+      errors.account_number = "Account number must be numeric (9-18 digits)";
     if (!newDistributorForm.ifsc_code.trim())
       errors.ifsc_code = "IFSC code is required";
     else if (
@@ -4497,8 +4514,24 @@ const Distributors = () => {
     )
       errors.ifsc_code =
         "IFSC code must be in valid format (e.g., SBIN0001234)";
+    if (
+      newDistributorForm.credit_limit !== "" &&
+      newDistributorForm.credit_limit !== null &&
+      newDistributorForm.credit_limit !== undefined
+    ) {
+      if (isNaN(newDistributorForm.credit_limit)) {
+        errors.credit_limit = "Only numeric values are allowed";
+      } else if (Number(newDistributorForm.credit_limit) < 0) {
+        errors.credit_limit = "Only positive numbers or 0 are allowed";
+      }
+    }
     if (!newDistributorForm.payment_terms_days)
       errors.payment_terms_days = "Payment terms is required";
+    else if (
+      isNaN(newDistributorForm.payment_terms_days) ||
+      Number(newDistributorForm.payment_terms_days) < 0
+    )
+      errors.payment_terms_days = "Only positive numbers or 0 are allowed";
     if (!newDistFiles.cancelled_cheque)
       errors.cancelled_cheque = "Cancelled cheque is required";
     if (
@@ -4510,6 +4543,12 @@ const Distributors = () => {
     if (!newDistributorForm.monthly_distribution_capacity)
       errors.monthly_distribution_capacity =
         "Monthly distribution capacity is required";
+    else if (
+      isNaN(newDistributorForm.monthly_distribution_capacity) ||
+      Number(newDistributorForm.monthly_distribution_capacity) < 0
+    )
+      errors.monthly_distribution_capacity =
+        "Only positive numbers or 0 are allowed";
     if (!newDistributorForm.service_cities)
       errors.service_cities = "Service cities is required";
     if (!newDistributorForm.gst_number.trim())
@@ -4557,16 +4596,33 @@ const Distributors = () => {
           "Authorized signatory name is required for companies";
       if (!newDistributorForm.signatory_pan?.trim())
         errors.signatory_pan = "Signatory PAN is required for companies";
-      else if (newDistributorForm.signatory_pan.trim().length !== 10)
-        errors.signatory_pan = "PAN must be exactly 10 characters";
+      else if (
+        !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(
+          newDistributorForm.signatory_pan.trim().toUpperCase(),
+        )
+      )
+        errors.signatory_pan = "PAN must be in valid format (e.g., ABCDE1234F)";
       if (!newDistFiles.signatory_pan_copy)
         errors.signatory_pan_copy =
           "Signatory PAN copy is required for companies";
       if (!newDistFiles.agreement_copy)
         errors.agreement_copy = "Agreement copy is required for companies";
     }
+    if (
+      newDistributorForm.storage_area_sqft &&
+      (isNaN(newDistributorForm.storage_area_sqft) ||
+        Number(newDistributorForm.storage_area_sqft) < 0)
+    ) {
+      errors.storage_area_sqft = "Only positive numbers or 0 are allowed";
+    }
     if (!newDistributorForm.kyc_verified_by.trim())
       errors.kyc_verified_by = "KYC verified by is required";
+    if (
+      newDistributorForm.account_number?.trim() &&
+      !newDistributorForm.ifsc_code?.trim()
+    ) {
+      errors.ifsc_code = "IFSC code required when account number is provided";
+    }
     setFormErrors(errors);
     if (Object.keys(errors).length > 0) {
       const errorFields = Object.keys(errors);
@@ -4639,7 +4695,13 @@ const Distributors = () => {
           "partnership_deed",
           "llp_agreement",
         ],
-        ["agreement_signed", "kyc_verified", "kyc_verified_by", "remarks", "agreement_copy"],
+        [
+          "agreement_signed",
+          "kyc_verified",
+          "kyc_verified_by",
+          "remarks",
+          "agreement_copy",
+        ],
       ];
       const tabMessages = [
         "Please fill all required fields in Basic Information",
@@ -4793,9 +4855,24 @@ const Distributors = () => {
         setFormErrors({});
       } else {
         console.log("result===>>>", result);
-        setBackendError(
-          result.payload?.errors || { general: "Creation failed" },
-        );
+        const payload = result.payload;
+
+        let message = "Creation failed";
+        if (payload?.errors && typeof payload.errors === "object") {
+          const [fieldName, fieldErrors] =
+            Object.entries(payload.errors)[0] || [];
+          const firstError = Array.isArray(fieldErrors)
+            ? fieldErrors[0]
+            : fieldErrors;
+          message = fieldName
+            ? `${fieldName.replace(/_/g, " ")}: ${firstError}`
+            : String(firstError);
+        } else if (typeof payload === "string") {
+          message = payload;
+        }
+
+        setBackendError({ general: message });
+        setValidationAlert(message);
       }
     } catch (err) {
       setBackendError({ general: "Unexpected error occurred" });
@@ -5630,7 +5707,13 @@ const Distributors = () => {
                 {renderTextField("State", "state")}
               </Grid>
               <Grid item xs={12} sm={4}>
-                {renderTextField("Pin Code", "pincode")}
+                {renderTextField("Pin Code", "pincode", "tel", {
+                  inputProps: {
+                    inputMode: "numeric",
+                    pattern: "[0-9]*",
+                    maxLength: 6,
+                  },
+                })}
               </Grid>
               <Grid item xs={12}>
                 {renderTextField("Country", "country")}
@@ -5664,13 +5747,21 @@ const Distributors = () => {
                   {renderTextField("Branch Name", "branch_name")}
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Account Number", "account_number")}
+                  {renderTextField("Account Number", "account_number", "tel", {
+                    inputProps: {
+                      inputMode: "numeric",
+                      pattern: "[0-9]*",
+                      maxLength: 18,
+                    },
+                  })}
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField("IFSC Code", "ifsc_code")}
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {renderTextField("Credit Limit", "credit_limit")}
+                  {renderTextField("Credit Limit", "credit_limit", "tel", {
+                    inputProps: { inputMode: "numeric", pattern: "[0-9]*" },
+                  })}
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   {renderTextField(

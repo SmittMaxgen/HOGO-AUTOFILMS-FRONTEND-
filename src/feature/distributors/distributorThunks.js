@@ -38,12 +38,11 @@ export const createDistributor = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to create distributor!",
+        error.response?.data || "Failed to create distributor!",
       );
     }
   },
 );
-
 
 export const updateDistributor = createAsyncThunk(
   "distributor/updateDistributor",
