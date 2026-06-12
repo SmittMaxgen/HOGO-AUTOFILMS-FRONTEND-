@@ -670,12 +670,12 @@ const WarrantyManagement = () => {
               <Grid item xs={12} sm={6} md={4}>
                 <DetailCard label="Color" value={selectedWarranty.color} />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              {/* <Grid item xs={12} sm={6} md={4}>
                 <DetailCard
                   label="License Plate Number"
                   value={selectedWarranty.license_plate_no}
                 />
-              </Grid>
+              </Grid> */}
             </Grid>
 
             {/* Car Owner Information */}
@@ -684,7 +684,7 @@ const WarrantyManagement = () => {
               <Grid item xs={12} sm={6} md={4}>
                 <DetailCard
                   label="Owner Name"
-                  value={selectedWarranty.Owner_name}
+                  value={selectedWarranty.owner_name}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -740,12 +740,12 @@ const WarrantyManagement = () => {
                   icon={<GppGoodIcon fontSize="small" />}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              {/* <Grid item xs={12} sm={6} md={4}>
                 <DetailCard
                   label="Registered By"
                   value={selectedWarranty.registered_by || "N/A"}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12} sm={6} md={4}>
                 <DetailCard
                   label="Installation Date"
