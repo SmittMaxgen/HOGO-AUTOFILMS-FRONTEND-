@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "https://hogofilm.pythonanywhere.com/salary-payment/";
+const API_URL = "https://admin.hogonnindia.com/salary-payment/";
 
 // ✅ GET SALARY PAYMENTS (with filters)
 export const getSalaryPayments = createAsyncThunk(
