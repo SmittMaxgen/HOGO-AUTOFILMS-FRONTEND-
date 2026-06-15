@@ -79,12 +79,16 @@ const testimonialsSlice = createSlice({
       })
       .addCase(deleteTestimonial.fulfilled, (state, action) => {
         state.deleteLoading = false;
-        const list = Array.isArray(state.testimonials?.data)
-          ? state.testimonials.data
-          : Array.isArray(state.testimonials)
-            ? state.testimonials
-            : [];
-        state.testimonials = list.filter((t) => t.id !== action.payload);
+
+        if (Array.isArray(state.testimonials?.data)) {
+          state.testimonials.data = state.testimonials.data.filter(
+            (t) => t.id !== action.payload,
+          );
+        } else if (Array.isArray(state.testimonials)) {
+          state.testimonials = state.testimonials.filter(
+            (t) => t.id !== action.payload,
+          );
+        }
       })
       .addCase(deleteTestimonial.rejected, (state, action) => {
         state.deleteLoading = false;

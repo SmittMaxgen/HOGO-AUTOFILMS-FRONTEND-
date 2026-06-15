@@ -61,7 +61,14 @@ const Testimonials = () => {
   const dispatch = useDispatch();
 
   const testimonialsData = useSelector(selectTestimonials);
-  const testimonials = testimonialsData?.data || testimonialsData || [];
+
+  // Robust array extraction
+  const testimonials = Array.isArray(testimonialsData?.data)
+    ? testimonialsData.data
+    : Array.isArray(testimonialsData)
+      ? testimonialsData
+      : [];
+
   const totalPages = testimonialsData?.total_pages || 1;
   const currentPage = testimonialsData?.current_page || 1;
 
@@ -174,7 +181,10 @@ const Testimonials = () => {
     if (window.confirm("Are you sure you want to delete this testimonial?")) {
       dispatch(deleteTestimonial(id))
         .unwrap()
-        .then(() => CommonToast("Testimonial deleted successfully", "success"))
+        .then(() => {
+          CommonToast("Testimonial deleted successfully", "success");
+          fetchTestimonials(); // Refresh list after delete
+        })
         .catch(() => CommonToast("Failed to delete testimonial", "error"));
     }
   };
@@ -429,7 +439,8 @@ const Testimonials = () => {
 
               {!loading &&
                 testimonials.length > 0 &&
-                testimonials?.map((t, index) => (
+                Array.isArray(testimonials) &&
+                testimonials.map((t, index) => (
                   <TableRow key={t.id} hover>
                     <TableCell>{(currentPage - 1) * 10 + index + 1}</TableCell>
                     <TableCell>
