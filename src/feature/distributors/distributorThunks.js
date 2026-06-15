@@ -18,7 +18,7 @@ export const getDistributors = createAsyncThunk(
         params,
       });
 
-      return response.data; // { success, count, data }
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch distributors!",

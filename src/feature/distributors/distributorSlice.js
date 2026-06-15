@@ -34,7 +34,7 @@ const distributorSlice = createSlice({
       })
       .addCase(getDistributors.fulfilled, (state, action) => {
         state.loading = false;
-        state.list = action.payload?.data || action.payload || [];
+        state.list = action.payload || [];
       })
       .addCase(getDistributors.rejected, (state, action) => {
         state.loading = false;
@@ -47,8 +47,8 @@ const distributorSlice = createSlice({
       })
       .addCase(createDistributor.fulfilled, (state, action) => {
         state.createLoading = false;
-        if (action.payload?.data) {
-          state.list.unshift(action.payload.data);
+        if (action.payload) {
+          state.list.unshift(action.payload);
         }
       })
       .addCase(createDistributor.rejected, (state, action) => {
