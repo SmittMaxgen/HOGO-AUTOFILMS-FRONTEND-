@@ -2127,7 +2127,7 @@ import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
 
-const BASE_URL = "https://apidata.hogoautofilms.co.in";
+const BASE_URL = "https://admin.hogonnindia.com";
 
 // ─── Shared Helpers ────────────────────────────────────────────────────────────
 

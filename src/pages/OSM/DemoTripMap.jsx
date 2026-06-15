@@ -143,7 +143,7 @@ const DemoTripMap = ({ trip, onBack }) => {
       setFetchError(null);
       try {
         const res = await fetch(
-          `https://apidata.hogoautofilms.co.in/trip-location/?trip_id=${trip.id}`,
+          `https://admin.hogonnindia.com/trip-location/?trip_id=${trip.id}`,
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();

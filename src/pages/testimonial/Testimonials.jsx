@@ -158,7 +158,7 @@ const Testimonials = () => {
     });
     setPreviewImage(
       testimonial.image
-        ? `https://apidata.hogoautofilms.co.in${testimonial.image}`
+        ? `https://admin.hogonnindia.com${testimonial.image}`
         : null,
     );
   };
@@ -301,7 +301,7 @@ const Testimonials = () => {
         <Paper elevation={3} sx={{ borderRadius: 3, overflow: "hidden" }}>
           <Box p={4} textAlign="center">
             <Avatar
-              src={`https://apidata.hogoautofilms.co.in${viewTestimonial.image}`}
+              src={`https://admin.hogonnindia.com${viewTestimonial.image}`}
               sx={{
                 width: 120,
                 height: 120,
@@ -434,7 +434,7 @@ const Testimonials = () => {
                     <TableCell>{(currentPage - 1) * 10 + index + 1}</TableCell>
                     <TableCell>
                       <Avatar
-                        src={`https://apidata.hogoautofilms.co.in${t.image}`}
+                        src={`https://admin.hogonnindia.com${t.image}`}
                         variant="rounded"
                         sx={{ width: 60, height: 60 }}
                       />

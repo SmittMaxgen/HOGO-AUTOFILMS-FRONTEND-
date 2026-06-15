@@ -69,7 +69,7 @@ import CommonSearchField from "../../components/commonComponents/CommonSearchFie
 
 import { UpdateAdminUser, AdminUser } from "../../feature/Admin/adminThunks";
 
-const BASE_URL = "https://apidata.hogoautofilms.co.in";
+const BASE_URL = "https://admin.hogonnindia.com";
 
 // ─── Shared Helpers ────────────────────────────────────────────────────────────
 

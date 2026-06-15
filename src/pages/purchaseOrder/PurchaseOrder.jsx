@@ -207,7 +207,7 @@ const ShipmentFormDialog = ({
   const [errors, setErrors] = useState({});
   const fileInputRef = useRef(null);
 
-  const BASE_URL = "https://apidata.hogoautofilms.co.in";
+  const BASE_URL = "https://admin.hogonnindia.com";
 
   useEffect(() => {
     if (!open || !poId) return;
@@ -220,7 +220,7 @@ const ShipmentFormDialog = ({
       setShipmentForm(emptyForm);
       try {
         const res = await fetch(
-          `https://apidata.hogoautofilms.co.in/shipment/?order_id=${poId}`,
+          `https://admin.hogonnindia.com/shipment/?order_id=${poId}`,
         );
         const data = await res.json();
         const shipment = Array.isArray(data)
@@ -1355,7 +1355,7 @@ const PurchaseOrder = () => {
   const handleDownloadInvoice = async (poId) => {
     try {
       const response = await fetch(
-        `https://apidata.hogoautofilms.co.in/purchase-orders/${poId}/invoice-pdf/`,
+        `https://admin.hogonnindia.com/purchase-orders/${poId}/invoice-pdf/`,
       );
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -1375,7 +1375,7 @@ const PurchaseOrder = () => {
   const handleDownloadWarrantyCard = async (poNumber) => {
     try {
       const response = await fetch(
-        `https://apidata.hogoautofilms.co.in/warranty-card/bulk-pdf/?po_number=${poNumber}`,
+        `https://admin.hogonnindia.com/warranty-card/bulk-pdf/?po_number=${poNumber}`,
       );
 
       const contentType = response.headers.get("content-type");
@@ -1424,7 +1424,7 @@ const PurchaseOrder = () => {
   const poPayments = useSelector(selectPOPayments);
   const paymentsLoading = useSelector(selectPOPaymentsLoading);
 
-  const BASE_URL = "https://apidata.hogoautofilms.co.in";
+  const BASE_URL = "https://admin.hogonnindia.com";
 
   const [isViewingPayments, setIsViewingPayments] = useState(false);
   const [viewPaymentPO, setViewPaymentPO] = useState(null);
@@ -1478,7 +1478,7 @@ const PurchaseOrder = () => {
 
   // ADD this new useEffect
   useEffect(() => {
-    fetch("https://apidata.hogoautofilms.co.in/company_profile/")
+    fetch("https://admin.hogonnindia.com/company_profile/")
       .then((res) => res.json())
       .then((data) => {
         if (data?.success) setCompanies(data.data);
@@ -3515,7 +3515,7 @@ const PurchaseOrder = () => {
                               }}
                               onClick={async () => {
                                 const response = await fetch(
-                                  `https://apidata.hogoautofilms.co.in/purchase-orders/${po?.id}/picked-pdf/`,
+                                  `https://admin.hogonnindia.com/purchase-orders/${po?.id}/picked-pdf/`,
                                 );
                                 const blob = await response.blob();
                                 const url = window.URL.createObjectURL(blob);
@@ -3546,7 +3546,7 @@ const PurchaseOrder = () => {
                               }}
                               onClick={async () => {
                                 const response = await fetch(
-                                  `https://apidata.hogoautofilms.co.in/purchase-orders/${po?.id}/packing-pdf/`,
+                                  `https://admin.hogonnindia.com/purchase-orders/${po?.id}/packing-pdf/`,
                                 );
                                 const blob = await response.blob();
                                 ``;

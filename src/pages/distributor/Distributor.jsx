@@ -4092,7 +4092,7 @@ import {
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 
-const BASE_URL = "https://apidata.hogoautofilms.co.in";
+const BASE_URL = "https://admin.hogonnindia.com";
 
 // ─── Shared Design Helpers ─────────────────────────────────────────────────────
 
