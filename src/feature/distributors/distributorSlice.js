@@ -79,7 +79,11 @@ const distributorSlice = createSlice({
       })
       .addCase(deleteDistributor.fulfilled, (state, action) => {
         state.deleteLoading = false;
-        state.list = state.list.filter((i) => i.id !== action.payload);
+
+        if (Array.isArray(state.list)) {
+          state.list = state.list.filter((i) => i.id !== action.payload);
+        }
+        // Else: do nothing (prevents crash if list is null/undefined/object)
       })
       .addCase(deleteDistributor.rejected, (state, action) => {
         state.deleteLoading = false;

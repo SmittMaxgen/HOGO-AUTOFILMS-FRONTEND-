@@ -393,7 +393,7 @@ const TabCard = ({ title, children, editControlsProps }) => (
 const Distributors = () => {
   const dispatch = useDispatch();
   const distributors = useSelector(selectDistributors);
-  const regions = useSelector(selectRegions);
+  const regions = useSelector(selectRegions) || [];
   const loading = useSelector(selectDistributorLoading);
   const distributorsErrors = useSelector(selectDistributorError);
   const createLoading = useSelector(createDistributorLoading);
@@ -1197,139 +1197,140 @@ const Distributors = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {distributors.map((dist, index) => (
-                    <TableRow
-                      key={dist.id}
-                      hover
-                      sx={{
-                        "&:hover": { bgcolor: "#fff5f5" },
-                        "&:last-child td": { border: 0 },
-                        borderBottom: "1px solid #f5f5f5",
-                        transition: "background 0.15s",
-                      }}
-                    >
-                      {/* Sr */}
-                      <TableCell
-                        sx={{ fontWeight: 700, color: "#D20000", width: 50 }}
+                  {Array.isArray(distributors) &&
+                    distributors.map((dist, index) => (
+                      <TableRow
+                        key={dist.id}
+                        hover
+                        sx={{
+                          "&:hover": { bgcolor: "#fff5f5" },
+                          "&:last-child td": { border: 0 },
+                          borderBottom: "1px solid #f5f5f5",
+                          transition: "background 0.15s",
+                        }}
                       >
-                        {index + 1}
-                      </TableCell>
+                        {/* Sr */}
+                        <TableCell
+                          sx={{ fontWeight: 700, color: "#D20000", width: 50 }}
+                        >
+                          {index + 1}
+                        </TableCell>
 
-                      {/* Name */}
-                      <TableCell>
-                        <Box display="flex" alignItems="center" gap={1.2}>
-                          <Box
+                        {/* Name */}
+                        <TableCell>
+                          <Box display="flex" alignItems="center" gap={1.2}>
+                            <Box
+                              sx={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: 1,
+                                bgcolor: "#f0f0f0",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                border: "1px solid #e0e0e0",
+                                flexShrink: 0,
+                              }}
+                            >
+                              <BusinessIcon
+                                sx={{ fontSize: 15, color: "#D20000" }}
+                              />
+                            </Box>
+                            <Typography
+                              fontWeight={600}
+                              fontSize={13}
+                              color="#1a1a1a"
+                            >
+                              {dist.distributor_name || "-"}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+
+                        {/* Type */}
+                        <TableCell>
+                          <Typography fontSize={12} color="text.secondary">
+                            {dist.distributor_type || "-"}
+                          </Typography>
+                        </TableCell>
+
+                        {/* City */}
+                        <TableCell>
+                          <Typography fontSize={13} color="#1a1a1a">
+                            {dist.city || "-"}
+                          </Typography>
+                        </TableCell>
+
+                        {/* State */}
+                        <TableCell>
+                          <Typography fontSize={12} color="text.secondary">
+                            {dist.state || "-"}
+                          </Typography>
+                        </TableCell>
+
+                        {/* Contact */}
+                        <TableCell>
+                          <Typography fontSize={13} color="#1a1a1a">
+                            {dist.mobile_number || "-"}
+                          </Typography>
+                        </TableCell>
+
+                        {/* Status */}
+                        <TableCell>
+                          <PillSelect
+                            value={dist.status || "Pending"}
+                            options={["Pending", "Approved", "Rejected"]}
+                            colorMap={STATUS_COLORS}
+                            onChange={async (v) => {
+                              const fd = new FormData();
+                              fd.append("status", v);
+                              const result = await dispatch(
+                                updateDistributor({ id: dist.id, data: fd }),
+                              );
+                              if (result.type.includes("fulfilled")) {
+                                CommonToast("Status updated", "success");
+                                dispatch(getDistributors());
+                              }
+                            }}
+                          />
+                        </TableCell>
+
+                        {/* KYC */}
+                        <TableCell>
+                          <PillSelect
+                            value={dist.kyc_verified ? "Verified" : "Pending"}
+                            options={["Pending", "Verified"]}
+                            colorMap={KYC_COLORS}
+                            onChange={async (v) => {
+                              const fd = new FormData();
+                              fd.append("kyc_verified", v === "Verified");
+                              const result = await dispatch(
+                                updateDistributor({ id: dist.id, data: fd }),
+                              );
+                              if (result.type.includes("fulfilled")) {
+                                CommonToast("KYC updated", "success");
+                                dispatch(getDistributors());
+                              }
+                            }}
+                          />
+                        </TableCell>
+
+                        {/* Actions */}
+                        <TableCell>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleViewDetails(dist)}
                             sx={{
-                              width: 28,
-                              height: 28,
+                              bgcolor: "#f0f4ff",
+                              color: "#1565c0",
+                              "&:hover": { bgcolor: "#d0deff" },
                               borderRadius: 1,
-                              bgcolor: "#f0f0f0",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              border: "1px solid #e0e0e0",
-                              flexShrink: 0,
                             }}
                           >
-                            <BusinessIcon
-                              sx={{ fontSize: 15, color: "#D20000" }}
-                            />
-                          </Box>
-                          <Typography
-                            fontWeight={600}
-                            fontSize={13}
-                            color="#1a1a1a"
-                          >
-                            {dist.distributor_name || "-"}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-
-                      {/* Type */}
-                      <TableCell>
-                        <Typography fontSize={12} color="text.secondary">
-                          {dist.distributor_type || "-"}
-                        </Typography>
-                      </TableCell>
-
-                      {/* City */}
-                      <TableCell>
-                        <Typography fontSize={13} color="#1a1a1a">
-                          {dist.city || "-"}
-                        </Typography>
-                      </TableCell>
-
-                      {/* State */}
-                      <TableCell>
-                        <Typography fontSize={12} color="text.secondary">
-                          {dist.state || "-"}
-                        </Typography>
-                      </TableCell>
-
-                      {/* Contact */}
-                      <TableCell>
-                        <Typography fontSize={13} color="#1a1a1a">
-                          {dist.mobile_number || "-"}
-                        </Typography>
-                      </TableCell>
-
-                      {/* Status */}
-                      <TableCell>
-                        <PillSelect
-                          value={dist.status || "Pending"}
-                          options={["Pending", "Approved", "Rejected"]}
-                          colorMap={STATUS_COLORS}
-                          onChange={async (v) => {
-                            const fd = new FormData();
-                            fd.append("status", v);
-                            const result = await dispatch(
-                              updateDistributor({ id: dist.id, data: fd }),
-                            );
-                            if (result.type.includes("fulfilled")) {
-                              CommonToast("Status updated", "success");
-                              dispatch(getDistributors());
-                            }
-                          }}
-                        />
-                      </TableCell>
-
-                      {/* KYC */}
-                      <TableCell>
-                        <PillSelect
-                          value={dist.kyc_verified ? "Verified" : "Pending"}
-                          options={["Pending", "Verified"]}
-                          colorMap={KYC_COLORS}
-                          onChange={async (v) => {
-                            const fd = new FormData();
-                            fd.append("kyc_verified", v === "Verified");
-                            const result = await dispatch(
-                              updateDistributor({ id: dist.id, data: fd }),
-                            );
-                            if (result.type.includes("fulfilled")) {
-                              CommonToast("KYC updated", "success");
-                              dispatch(getDistributors());
-                            }
-                          }}
-                        />
-                      </TableCell>
-
-                      {/* Actions */}
-                      <TableCell>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleViewDetails(dist)}
-                          sx={{
-                            bgcolor: "#f0f4ff",
-                            color: "#1565c0",
-                            "&:hover": { bgcolor: "#d0deff" },
-                            borderRadius: 1,
-                          }}
-                        >
-                          <VisibilityIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                            <VisibilityIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
 
                   {distributors.length === 0 && (
                     <TableRow>
@@ -1605,17 +1606,19 @@ const Distributors = () => {
               <Grid sx={{ width: 200 }} item xs={12}>
                 {renderTextField("Sales Region", "sales_region", "text", {
                   select: true,
-                  children: regions
-                    .filter((r) => r.status === "enable") // optional: hide disabled regions
-                    .map((region) => (
-                      <MenuItem
-                        sx={{ width: 200 }}
-                        key={region.id}
-                        value={region.name}
-                      >
-                        {region.name}
-                      </MenuItem>
-                    )),
+                  children: Array.isArray(regions)
+                    ? regions
+                        .filter((r) => r.status === "enable")
+                        .map((region) => (
+                          <MenuItem
+                            sx={{ width: 200 }}
+                            key={region.id}
+                            value={region.name}
+                          >
+                            {region.name}
+                          </MenuItem>
+                        ))
+                    : [],
                 })}
               </Grid>
               <Grid item xs={12}>
