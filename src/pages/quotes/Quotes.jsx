@@ -852,7 +852,7 @@ const Quotes = () => {
           {/* ── Pagination ── */}
           <TablePagination
             component="div"
-            count={quotes.length}
+            count={quotes?.length}
             page={page}
             onPageChange={(_, newPage) => setPage(newPage)}
             rowsPerPage={rowsPerPage}
