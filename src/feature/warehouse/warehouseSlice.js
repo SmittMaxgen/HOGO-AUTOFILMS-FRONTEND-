@@ -42,7 +42,11 @@ const warehouseSlice = createSlice({
       })
       .addCase(getWarehouses.fulfilled, (state, action) => {
         state.loading = false;
-        state.list = action.payload?.data || action.payload || [];
+        state.list = Array.isArray(action.payload?.data)
+          ? action.payload.data
+          : Array.isArray(action.payload)
+            ? action.payload
+            : [];
       })
       .addCase(getWarehouses.rejected, (state, action) => {
         state.loading = false;
