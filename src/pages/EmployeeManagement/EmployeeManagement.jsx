@@ -103,7 +103,7 @@ import AttendanceModule from "../EmployeeAttendance/EmployeeAttendance";
 import SalaryPayment from "../salaryPayment/salaryPayment";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const BASE_URL = "https://admin.hogonnindia.com";
+const BASE_URL = "https://apidata.hogonnindia.com";
 
 const fieldSx = {
   "& .MuiOutlinedInput-root.Mui-focused fieldset": { borderColor: "#D20000" },

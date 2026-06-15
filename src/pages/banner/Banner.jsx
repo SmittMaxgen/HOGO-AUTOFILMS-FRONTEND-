@@ -349,7 +349,7 @@ const Banner = () => {
                 <Box>
                   <Typography variant="subtitle2">Banner Image</Typography>
                   <Avatar
-                    src={`https://admin.hogonnindia.com/${viewBanner.image}`}
+                    src={`https://apidata.hogonnindia.com/${viewBanner.image}`}
                     variant="rounded"
                     sx={{ width: 200, height: 100, mt: 1 }}
                   />
@@ -453,7 +453,7 @@ const Banner = () => {
                   <Avatar
                     // src={item.image}
 
-                    src={`https://admin.hogonnindia.com/${item?.image}`}
+                    src={`https://apidata.hogonnindia.com/${item?.image}`}
                     variant="rounded"
                     sx={{ width: 80, height: 45 }}
                   />
@@ -476,7 +476,7 @@ const Banner = () => {
                       )}
 
                       <Avatar
-                        src={`https://admin.hogonnindia.com/${item?.image}`}
+                        src={`https://apidata.hogonnindia.com/${item?.image}`}
                         variant="rounded"
                         sx={{ width: 48, height: 48 }}
                         imgProps={{

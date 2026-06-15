@@ -165,7 +165,7 @@ const Testimonials = () => {
     });
     setPreviewImage(
       testimonial.image
-        ? `https://admin.hogonnindia.com${testimonial.image}`
+        ? `https://apidata.hogonnindia.com${testimonial.image}`
         : null,
     );
   };
@@ -311,7 +311,7 @@ const Testimonials = () => {
         <Paper elevation={3} sx={{ borderRadius: 3, overflow: "hidden" }}>
           <Box p={4} textAlign="center">
             <Avatar
-              src={`https://admin.hogonnindia.com${viewTestimonial.image}`}
+              src={`https://apidata.hogonnindia.com${viewTestimonial.image}`}
               sx={{
                 width: 120,
                 height: 120,
@@ -445,7 +445,7 @@ const Testimonials = () => {
                     <TableCell>{(currentPage - 1) * 10 + index + 1}</TableCell>
                     <TableCell>
                       <Avatar
-                        src={`https://admin.hogonnindia.com${t.image}`}
+                        src={`https://apidata.hogonnindia.com${t.image}`}
                         variant="rounded"
                         sx={{ width: 60, height: 60 }}
                       />

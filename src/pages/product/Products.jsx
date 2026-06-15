@@ -73,7 +73,7 @@
 //   const [imageLoaded, setImageLoaded] = useState(false);
 //   const [searchQuery, setSearchQuery] = useState("");
 
-//   const BASE_URL = "https://admin.hogonnindia.com";
+//   const BASE_URL = "https://apidata.hogonnindia.com";
 
 //   // Helper function to get image URL
 //   const getImageUrl = (imageValue) => {
@@ -1649,7 +1649,7 @@
 //             >
 //               {viewItem.thumbnail_image ? (
 //                 <Avatar
-//                   src={`https://admin.hogonnindia.com/${viewItem.thumbnail_image}`}
+//                   src={`https://apidata.hogonnindia.com/${viewItem.thumbnail_image}`}
 //                   variant="rounded"
 //                   sx={{
 //                     width: 150,
@@ -1833,7 +1833,7 @@
 //                             }}
 //                           >
 //                             <Avatar
-//                               src={`https://admin.hogonnindia.com${img}`}
+//                               src={`https://apidata.hogonnindia.com${img}`}
 //                               variant="rounded"
 //                               sx={{
 //                                 width: "100%",
@@ -1979,7 +1979,7 @@
 //                       )}
 
 //                       <Avatar
-//                         src={`https://admin.hogonnindia.com/${p.thumbnail_image}`}
+//                         src={`https://apidata.hogonnindia.com/${p.thumbnail_image}`}
 //                         variant="rounded"
 //                         sx={{ width: 48, height: 48 }}
 //                         imgProps={{
@@ -2127,7 +2127,7 @@ import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
 
-const BASE_URL = "https://admin.hogonnindia.com";
+const BASE_URL = "https://apidata.hogonnindia.com";
 
 // ─── Shared Helpers ────────────────────────────────────────────────────────────
 

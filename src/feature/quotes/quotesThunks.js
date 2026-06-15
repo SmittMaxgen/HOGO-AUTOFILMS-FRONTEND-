@@ -1,7 +1,7 @@
 // import { createAsyncThunk } from "@reduxjs/toolkit";
 // import axios from "axios";
 
-// const API_URL = "https://admin.hogonnindia.com/quotes/";
+// const API_URL = "https://apidata.hogonnindia.com/quotes/";
 
 // // ✅ GET QUOTES
 // export const getQuotes = createAsyncThunk(
@@ -58,7 +58,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "https://admin.hogonnindia.com/quotes/";
+const API_URL = "https://apidata.hogonnindia.com/quotes/";
 
 // ✅ GET QUOTES (with optional filters)
 // Usage:

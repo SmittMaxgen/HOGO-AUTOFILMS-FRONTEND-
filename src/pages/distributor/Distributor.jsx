@@ -65,7 +65,7 @@ import {
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 
-const BASE_URL = "https://admin.hogonnindia.com";
+const BASE_URL = "https://apidata.hogonnindia.com";
 
 // ─── Shared Design Helpers ─────────────────────────────────────────────────────
 

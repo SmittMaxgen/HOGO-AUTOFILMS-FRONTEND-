@@ -338,7 +338,7 @@
 //                 <Box mt={2}>
 //                   <Typography variant="subtitle2">Category Image</Typography>
 //                   <Avatar
-//                     src={`https://admin.hogonnindia.com/${viewItem.image}`}
+//                     src={`https://apidata.hogonnindia.com/${viewItem.image}`}
 //                     variant="rounded"
 //                     sx={{ width: 120, height: 120, mt: 1 }}
 //                   />
@@ -420,7 +420,7 @@
 
 //                   {/* <TableCell>
 //                   <Avatar
-//                     src={`https://admin.hogonnindia.com/${item?.image}`}
+//                     src={`https://apidata.hogonnindia.com/${item?.image}`}
 //                     variant="rounded"
 //                     sx={{ width: 52, height: 52 }}
 //                   />
@@ -958,7 +958,7 @@ const Category = () => {
           >
             {viewItem.image ? (
               <Avatar
-                src={`https://admin.hogonnindia.com/${viewItem.image}`}
+                src={`https://apidata.hogonnindia.com/${viewItem.image}`}
                 variant="rounded"
                 sx={{
                   width: 90,
