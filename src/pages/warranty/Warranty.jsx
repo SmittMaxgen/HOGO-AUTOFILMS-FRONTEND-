@@ -66,6 +66,7 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
+import { Download } from "@mui/icons-material";
 
 import { UpdateAdminUser, AdminUser } from "../../feature/Admin/adminThunks";
 
@@ -364,6 +365,55 @@ const WarrantyManagement = () => {
   };
 
   const getImageUrl = (path) => (path ? `${BASE_URL}/${path}` : "");
+
+  // ─── Excel Download ───────────────────────────────────────────────────────────
+  const handleDownloadExcel = async () => {
+    try {
+      let url = `${BASE_URL}/warranty-excel-report/`;
+
+      const params = new URLSearchParams();
+
+      if (searchQuery.serial_id)
+        params.append("serial_id", searchQuery.serial_id);
+      if (searchQuery.detailer_mobile)
+        params.append("detailer_mobile", searchQuery.detailer_mobile);
+      if (searchQuery.installation_date)
+        params.append("installation_date", searchQuery.installation_date);
+      if (searchQuery.warranty_status)
+        params.append("warranty_status", searchQuery.warranty_status);
+      if (searchQuery.product_status)
+        params.append("product_status", searchQuery.product_status);
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to download Excel");
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `warranties_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+
+      CommonToast("Excel downloaded successfully", "success");
+    } catch (err) {
+      CommonToast("Failed to download Excel report", "error");
+      console.error(err);
+    }
+  };
 
   // ── Loading ──────────────────────────────────────────────────────────────────
   // const filteredWarranties = warranties.filter((w) => {
@@ -980,6 +1030,25 @@ const WarrantyManagement = () => {
                 ))}
               </Select>
             </Box>
+
+            {/* Download Excel Button */}
+            <CommonButton
+              variant="contained"
+              startIcon={<Download />}
+              onClick={handleDownloadExcel}
+              sx={{
+                height: 39,
+                px: 3,
+                bgcolor: "#D20000",
+                "&:hover": { bgcolor: "#a80000" },
+                fontWeight: 600,
+                textTransform: "none",
+                borderRadius: "10px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Download Excel
+            </CommonButton>
             {/* <Box sx={{ minWidth: 160 }}>
               <Select
                 value={searchQuery.warranty_status}
