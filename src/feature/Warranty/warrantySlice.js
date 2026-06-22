@@ -1,5 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getWarranties, updateWarranty } from "./warrantyThunks";
+import {
+  createWarranty,
+  getWarranties,
+  updateWarranty,
+} from "./warrantyThunks";
 
 const initialState = {
   warranties: [],
@@ -61,6 +65,18 @@ const warrantySlice = createSlice({
       .addCase(updateWarranty.rejected, (state, action) => {
         state.updateLoading = false;
         state.updateSuccess = false;
+        state.error = action.payload;
+      })
+      // Create Warranty
+      .addCase(createWarranty.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createWarranty.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(createWarranty.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },

@@ -46,6 +46,7 @@ import {
 import {
   getWarranties,
   updateWarranty,
+  createWarranty,
 } from "../../feature/Warranty/warrantyThunks";
 import {
   selectWarrantyList,
@@ -57,6 +58,10 @@ import {
 } from "../../feature/Warranty/warrantySelector";
 
 import { selectAdminList } from "../../feature/Admin/adminSelector";
+import { selectDistributors } from "../../feature/distributors/distributorSelector";
+import { getDistributors } from "../../feature/distributors/distributorThunks";
+import { getProducts } from "../../feature/products/productThunks";
+import { selectProducts } from "../../feature/products/productSelector";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -66,8 +71,8 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
-import { Download } from "@mui/icons-material";
-
+import { Download, Add as AddIcon } from "@mui/icons-material";
+import { FormControlLabel, Switch } from "@mui/material";
 import { UpdateAdminUser, AdminUser } from "../../feature/Admin/adminThunks";
 
 const BASE_URL = "https://apidata.hogonnindia.com";
@@ -192,6 +197,35 @@ const WarrantyManagement = () => {
   const adminList = useSelector(selectAdminList);
   console.log("adminList:::>>>>", adminList);
 
+  const distributors = useSelector(selectDistributors);
+  const products = useSelector(selectProducts);
+
+  const [isCreating, setIsCreating] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    product_id: "",
+    distributor_id: "",
+    detailer_name: "",
+    detailer_mobile: "",
+    email: "",
+    car_registration_number: "",
+    car_brand: "",
+    car_model: "",
+    color: "",
+    installation_date: "",
+    warranty_period: "",
+    warranty_start_date: "",
+    warranty_end_date: "",
+    warranty_status: "PENDING",
+    owner_name: "",
+    owner_email: "",
+    owner_mobile: "",
+    address: "",
+    license_plate_no: "",
+    generate_bill: false,
+  });
+  const [createErrors, setCreateErrors] = useState({});
+  const [createSubmitting, setCreateSubmitting] = useState(false);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedWarranty, setSelectedWarranty] = useState(null);
   const [showViewDialog, setShowViewDialog] = useState(false);
@@ -239,6 +273,8 @@ const WarrantyManagement = () => {
 
   useEffect(() => {
     dispatch(AdminUser());
+    dispatch(getDistributors());
+    dispatch(getProducts());
   }, [dispatch]);
 
   useEffect(() => {
@@ -257,6 +293,118 @@ const WarrantyManagement = () => {
   useEffect(() => {
     if (error) CommonToast(error, "error");
   }, [error, dispatch]);
+
+  const handleCreateFormChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setCreateForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+    if (createErrors[name])
+      setCreateErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const validateCreateForm = () => {
+    const errors = {};
+    if (!createForm.distributor_id)
+      errors.distributor_id = "Distributor is required";
+    if (!createForm.product_id) errors.product_id = "Product is required";
+    if (!createForm.detailer_name.trim())
+      errors.detailer_name = "Detailer name is required";
+    if (!createForm.detailer_mobile.trim())
+      errors.detailer_mobile = "Detailer mobile is required";
+    else if (!/^\d{10}$/.test(createForm.detailer_mobile))
+      errors.detailer_mobile = "Must be 10 digits";
+    if (!createForm.car_registration_number.trim())
+      errors.car_registration_number = "Registration number is required";
+    if (!createForm.car_brand.trim())
+      errors.car_brand = "Car brand is required";
+    if (!createForm.car_model.trim())
+      errors.car_model = "Car model is required";
+    if (!createForm.installation_date)
+      errors.installation_date = "Installation date is required";
+    if (!createForm.warranty_period)
+      errors.warranty_period = "Warranty period is required";
+    if (!createForm.warranty_start_date)
+      errors.warranty_start_date = "Warranty start date is required";
+    if (!createForm.warranty_end_date)
+      errors.warranty_end_date = "Warranty end date is required";
+    if (!createForm.owner_name.trim())
+      errors.owner_name = "Owner name is required";
+    if (!createForm.owner_mobile.trim())
+      errors.owner_mobile = "Owner mobile is required";
+    else if (!/^\d{10}$/.test(createForm.owner_mobile))
+      errors.owner_mobile = "Must be 10 digits";
+    if (createForm.owner_email && !/\S+@\S+\.\S+/.test(createForm.owner_email))
+      errors.owner_email = "Invalid email";
+    setCreateErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleCreateSubmit = async () => {
+    if (!validateCreateForm()) return;
+    setCreateSubmitting(true);
+    try {
+      const payload = {
+        ...createForm,
+        distributor_id: Number(createForm.distributor_id),
+        product_id: Number(createForm.product_id),
+        warranty_period: Number(createForm.warranty_period),
+        approved_by: adminList?.id || null,
+      };
+      const result = await dispatch(createWarranty(payload));
+      if (result.type.includes("fulfilled")) {
+        CommonToast("Warranty created successfully", "success");
+        dispatch(getWarranties());
+        setIsCreating(false);
+        setCreateForm({
+          product_id: "",
+          distributor_id: "",
+          detailer_name: "",
+          detailer_mobile: "",
+          email: "",
+          car_registration_number: "",
+          car_brand: "",
+          car_model: "",
+          color: "",
+          installation_date: "",
+          warranty_period: "",
+          warranty_start_date: "",
+          warranty_end_date: "",
+          warranty_status: "PENDING",
+          owner_name: "",
+          owner_email: "",
+          owner_mobile: "",
+          address: "",
+          license_plate_no: "",
+          generate_bill: false,
+        });
+        setCreateErrors({});
+      } else {
+        const payload_err = result.payload;
+        let message = "Failed to create warranty";
+        if (payload_err && typeof payload_err === "object") {
+          const firstKey = Object.keys(payload_err)[0];
+          const firstVal = payload_err[firstKey];
+          message = Array.isArray(firstVal)
+            ? `${firstKey}: ${firstVal[0]}`
+            : String(firstVal);
+        } else if (typeof payload_err === "string") {
+          message = payload_err;
+        }
+        CommonToast(message, "error");
+      }
+    } catch (err) {
+      CommonToast("Failed to create warranty", "error");
+    } finally {
+      setCreateSubmitting(false);
+    }
+  };
+
+  const fieldSx = {
+    "& .MuiOutlinedInput-root.Mui-focused fieldset": { borderColor: "#D20000" },
+    "& label.Mui-focused": { color: "#D20000" },
+  };
 
   const handleOpenMenu = (e, w) => {
     setAnchorEl(e.currentTarget);
@@ -463,6 +611,464 @@ const WarrantyManagement = () => {
   //     </Box>
   //   );
   // }
+
+  // ── Create View ──────────────────────────────────────────────────────────────
+  if (isCreating) {
+    return (
+      <Box>
+        <PageHeader
+          title="Add New Warranty"
+          onBack={() => {
+            setIsCreating(false);
+            setCreateErrors({});
+          }}
+        />
+
+        <Paper
+          elevation={2}
+          sx={{
+            borderRadius: 3,
+            overflow: "hidden",
+            border: "1px solid #f0f0f0",
+          }}
+        >
+          {/* Distributor & Product */}
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              bgcolor: "#fafafa",
+              borderBottom: "1px solid #ebebeb",
+            }}
+          >
+            <SectionHeading title="Distributor & Product" />
+          </Box>
+          <Box px={4} py={3}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  // fullWidth
+                  required
+                  label="Distributor *"
+                  name="distributor_id"
+                  value={createForm.distributor_id}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.distributor_id}
+                  helperText={createErrors.distributor_id}
+                  sx={{
+                    width: "200px",
+                  }}
+                >
+                  {Array.isArray(distributors) &&
+                    distributors.map((d) => (
+                      <MenuItem key={d.id} value={d.id}>
+                        {d.distributor_name}
+                      </MenuItem>
+                    ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  fullWidth
+                  required
+                  label="Product *"
+                  name="product_id"
+                  value={createForm.product_id}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.product_id}
+                  helperText={createErrors.product_id}
+                  // sx={fieldSx}
+                  sx={{
+                    width: "200px",
+                  }}
+                >
+                  {Array.isArray(products) &&
+                    products.map((p) => (
+                      <MenuItem key={p.id} value={p.id}>
+                        {p.product_name || p.name}
+                      </MenuItem>
+                    ))}
+                </TextField>
+              </Grid>
+            </Grid>
+          </Box>
+
+          {/* Detailer Information */}
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              bgcolor: "#fafafa",
+              borderBottom: "1px solid #ebebeb",
+              borderTop: "1px solid #ebebeb",
+            }}
+          >
+            <SectionHeading title="Detailer Information" />
+          </Box>
+          <Box px={4} py={3}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Detailer Name *"
+                  name="detailer_name"
+                  value={createForm.detailer_name}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.detailer_name}
+                  helperText={createErrors.detailer_name}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Detailer Mobile *"
+                  name="detailer_mobile"
+                  value={createForm.detailer_mobile}
+                  onChange={handleCreateFormChange}
+                  inputProps={{ maxLength: 10, inputMode: "numeric" }}
+                  error={!!createErrors.detailer_mobile}
+                  helperText={createErrors.detailer_mobile}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Detailer Email"
+                  name="email"
+                  type="email"
+                  value={createForm.email}
+                  onChange={handleCreateFormChange}
+                  sx={fieldSx}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+
+          {/* Car Information */}
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              bgcolor: "#fafafa",
+              borderBottom: "1px solid #ebebeb",
+              borderTop: "1px solid #ebebeb",
+            }}
+          >
+            <SectionHeading title="Car Information" />
+          </Box>
+          <Box px={4} py={3}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Car Brand *"
+                  name="car_brand"
+                  value={createForm.car_brand}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.car_brand}
+                  helperText={createErrors.car_brand}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Car Model *"
+                  name="car_model"
+                  value={createForm.car_model}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.car_model}
+                  helperText={createErrors.car_model}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Registration Number *"
+                  name="car_registration_number"
+                  value={createForm.car_registration_number}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.car_registration_number}
+                  helperText={createErrors.car_registration_number}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="License Plate No"
+                  name="license_plate_no"
+                  value={createForm.license_plate_no}
+                  onChange={handleCreateFormChange}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Color"
+                  name="color"
+                  value={createForm.color}
+                  onChange={handleCreateFormChange}
+                  sx={fieldSx}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+
+          {/* Owner Information */}
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              bgcolor: "#fafafa",
+              borderBottom: "1px solid #ebebeb",
+              borderTop: "1px solid #ebebeb",
+            }}
+          >
+            <SectionHeading title="Owner Information" />
+          </Box>
+          <Box px={4} py={3}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Owner Name *"
+                  name="owner_name"
+                  value={createForm.owner_name}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.owner_name}
+                  helperText={createErrors.owner_name}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Owner Mobile *"
+                  name="owner_mobile"
+                  value={createForm.owner_mobile}
+                  onChange={handleCreateFormChange}
+                  inputProps={{ maxLength: 10, inputMode: "numeric" }}
+                  error={!!createErrors.owner_mobile}
+                  helperText={createErrors.owner_mobile}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Owner Email"
+                  name="owner_email"
+                  type="email"
+                  value={createForm.owner_email}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.owner_email}
+                  helperText={createErrors.owner_email}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Address"
+                  name="address"
+                  value={createForm.address}
+                  onChange={handleCreateFormChange}
+                  multiline
+                  minRows={2}
+                  sx={fieldSx}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+
+          {/* Warranty Information */}
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              bgcolor: "#fafafa",
+              borderBottom: "1px solid #ebebeb",
+              borderTop: "1px solid #ebebeb",
+            }}
+          >
+            <SectionHeading title="Warranty Information" />
+          </Box>
+          <Box px={4} py={3}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Installation Date *"
+                  name="installation_date"
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  value={createForm.installation_date}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.installation_date}
+                  helperText={createErrors.installation_date}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Warranty Period (years) *"
+                  name="warranty_period"
+                  type="number"
+                  inputProps={{ min: 1 }}
+                  value={createForm.warranty_period}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.warranty_period}
+                  helperText={createErrors.warranty_period}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Warranty Start Date *"
+                  name="warranty_start_date"
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  value={createForm.warranty_start_date}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.warranty_start_date}
+                  helperText={createErrors.warranty_start_date}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Warranty End Date *"
+                  name="warranty_end_date"
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  value={createForm.warranty_end_date}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.warranty_end_date}
+                  helperText={createErrors.warranty_end_date}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Warranty Status"
+                  name="warranty_status"
+                  value={createForm.warranty_status}
+                  onChange={handleCreateFormChange}
+                  sx={fieldSx}
+                >
+                  {Object.entries(WARRANTY_STATUS).map(([key, val]) => (
+                    <MenuItem key={key} value={key}>
+                      {val.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    height: "100%",
+                    pt: 1,
+                  }}
+                >
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={createForm.generate_bill}
+                        name="generate_bill"
+                        onChange={handleCreateFormChange}
+                        sx={{
+                          "& .MuiSwitch-switchBase.Mui-checked": {
+                            color: "#D20000",
+                          },
+                          "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                            { bgcolor: "#D20000" },
+                        }}
+                      />
+                    }
+                    label={
+                      <Typography variant="body2" fontWeight={600}>
+                        Generate Bill
+                      </Typography>
+                    }
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+
+          {/* Actions */}
+          <Box
+            sx={{
+              px: 4,
+              py: 3,
+              borderTop: "1px solid #ebebeb",
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 2,
+            }}
+          >
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setIsCreating(false);
+                setCreateErrors({});
+              }}
+              sx={{
+                borderColor: "#D20000",
+                color: "#D20000",
+                fontWeight: 700,
+                borderRadius: 1.5,
+                textTransform: "none",
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleCreateSubmit}
+              disabled={createSubmitting}
+              sx={{
+                bgcolor: "#D20000",
+                "&:hover": { bgcolor: "#a80000" },
+                fontWeight: 700,
+                borderRadius: 1.5,
+                textTransform: "none",
+                px: 4,
+              }}
+            >
+              {createSubmitting ? "Creating..." : "Create Warranty"}
+            </Button>
+          </Box>
+        </Paper>
+      </Box>
+    );
+  }
 
   // ── View Detail ──────────────────────────────────────────────────────────────
   if (showViewDialog && selectedWarranty) {
@@ -928,13 +1534,38 @@ const WarrantyManagement = () => {
   return (
     <Box>
       {/* Page Title */}
-      <Box display="flex" alignItems="center" gap={1.5} mb={3}>
-        <Box
-          sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
-        />
-        <Typography variant="h5" fontWeight={800} color="#1a1a1a">
-          Warranty Management
-        </Typography>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={3}
+      >
+        <Box display="flex" alignItems="center" gap={1.5}>
+          <Box
+            sx={{ width: 5, height: 32, bgcolor: "#D20000", borderRadius: 1 }}
+          />
+          <Typography variant="h5" fontWeight={800} color="#1a1a1a">
+            Warranty Management
+          </Typography>
+        </Box>
+        <CommonButton
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => {
+            setIsCreating(true);
+            setCreateErrors({});
+          }}
+          sx={{
+            bgcolor: "#D20000",
+            "&:hover": { bgcolor: "#a80000" },
+            fontWeight: 700,
+            borderRadius: 1.5,
+            px: 2.5,
+            boxShadow: "0 4px 12px rgba(210,0,0,0.3)",
+          }}
+        >
+          Add Warranty
+        </CommonButton>
       </Box>
 
       <Paper

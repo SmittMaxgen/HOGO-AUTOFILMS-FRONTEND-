@@ -40,6 +40,27 @@ export const getWarranties = createAsyncThunk(
 );
 
 /**
+ * CREATE warranty
+ */
+export const createWarranty = createAsyncThunk(
+  "warranty/createWarranty",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/warranty/", data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to create warranty!",
+      );
+    }
+  },
+);
+
+/**
  * UPDATE warranty (approve / reject / status update)
  */
 // export const updateWarranty = createAsyncThunk(
