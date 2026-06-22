@@ -411,6 +411,13 @@ const Distributors = () => {
   const [newDistributorForm, setNewDistributorForm] = useState(EMPTY_FORM);
   const [newDistFiles, setNewDistFiles] = useState(EMPTY_FILES);
 
+  // New state for Approval Dialog
+  const [approvalDialogOpen, setApprovalDialogOpen] = useState(false);
+  console.log("approvalDialogOpen===>>>", approvalDialogOpen);
+  const [selectedForApproval, setSelectedForApproval] = useState(null);
+  const [distributorCode, setDistributorCode] = useState("");
+  const [approvalError, setApprovalError] = useState("");
+
   useEffect(() => {
     dispatch(getDistributors());
     dispatch(getRegions());
@@ -806,6 +813,32 @@ const Distributors = () => {
     setSelectedDistributor(null);
   };
 
+  const handleApproveWithCode = async () => {
+    if (!distributorCode?.trim()) {
+      setApprovalError("Distributor Code is required");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("status", "Approved");
+    formData.append("distributor_code", distributorCode.trim());
+
+    const result = await dispatch(
+      updateDistributor({ id: selectedForApproval.id, data: formData }),
+    );
+
+    if (result.type.includes("fulfilled")) {
+      CommonToast("Distributor approved successfully", "success");
+      dispatch(getDistributors());
+      setApprovalDialogOpen(false);
+      setDistributorCode("");
+      setSelectedForApproval(null);
+      setApprovalError("");
+    } else {
+      setApprovalError("Failed to approve distributor. Please try again.");
+    }
+  };
+
   const handleCreateDistributor = async () => {
     setBackendError(null);
     if (!validateForm()) return;
@@ -1096,6 +1129,64 @@ const Distributors = () => {
   if (!selectedDistributor) {
     return (
       <Box>
+        {/* Approval Dialog - inside list view */}
+        <Dialog
+          open={approvalDialogOpen}
+          onClose={() => {
+            setApprovalDialogOpen(false);
+            setDistributorCode("");
+            setApprovalError("");
+            setSelectedForApproval(null);
+          }}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle
+            sx={{ bgcolor: "#D20000", color: "#fff", fontWeight: 700 }}
+          >
+            Approve Distributor
+          </DialogTitle>
+          <DialogContent sx={{ pt: 3 }}>
+            <Typography variant="body1" gutterBottom>
+              Enter Distributor Code to approve:
+            </Typography>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+              {selectedForApproval?.distributor_name}
+            </Typography>
+            <TextField
+              fullWidth
+              autoFocus
+              label="Distributor Code *"
+              value={distributorCode}
+              onChange={(e) => {
+                setDistributorCode(e.target.value.trim());
+                if (approvalError) setApprovalError("");
+              }}
+              error={!!approvalError}
+              helperText={approvalError}
+            />
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 3 }}>
+            <Button
+              onClick={() => {
+                setApprovalDialogOpen(false);
+                setDistributorCode("");
+                setApprovalError("");
+                setSelectedForApproval(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleApproveWithCode}
+              disabled={!distributorCode.trim()}
+              sx={{ bgcolor: "#D20000", "&:hover": { bgcolor: "#a80000" } }}
+            >
+              Approve
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -1176,6 +1267,7 @@ const Distributors = () => {
                       "City",
                       "State",
                       "Contact",
+                      "Distributor Code",
                       "Status",
                       "KYC",
                       "Actions",
@@ -1274,6 +1366,18 @@ const Distributors = () => {
                           </Typography>
                         </TableCell>
 
+                        {/* Distributor Code */}
+                        <TableCell>
+                          <Typography
+                            fontSize={13}
+                            color="#1a1a1a"
+                            fontWeight={600}
+                          >
+                            {dist.distributor_code || "-"}
+                          </Typography>
+                        </TableCell>
+
+                        {/* Status */}
                         {/* Status */}
                         <TableCell>
                           <PillSelect
@@ -1281,19 +1385,32 @@ const Distributors = () => {
                             options={["Pending", "Approved", "Rejected"]}
                             colorMap={STATUS_COLORS}
                             onChange={async (v) => {
-                              const fd = new FormData();
-                              fd.append("status", v);
-                              const result = await dispatch(
-                                updateDistributor({ id: dist.id, data: fd }),
-                              );
-                              if (result.type.includes("fulfilled")) {
-                                CommonToast("Status updated", "success");
-                                dispatch(getDistributors());
+                              if (v === "Approved") {
+                                // Open dialog
+                                setSelectedForApproval(dist);
+                                setDistributorCode("");
+                                setApprovalError("");
+                                setApprovalDialogOpen(true);
+                              } else {
+                                // Direct update for Pending/Rejected
+                                const fd = new FormData();
+                                fd.append("status", v);
+                                const result = await dispatch(
+                                  updateDistributor({ id: dist.id, data: fd }),
+                                );
+                                if (result.type.includes("fulfilled")) {
+                                  CommonToast("Status updated", "success");
+                                  dispatch(getDistributors());
+                                } else {
+                                  CommonToast(
+                                    "Failed to update status",
+                                    "error",
+                                  );
+                                }
                               }
                             }}
                           />
                         </TableCell>
-
                         {/* KYC */}
                         <TableCell>
                           <PillSelect
@@ -1334,7 +1451,8 @@ const Distributors = () => {
 
                   {distributors.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
+                      <TableCell colSpan={10} align="center" sx={{ py: 6 }}>
+                        {" "}
                         <Box
                           display="flex"
                           flexDirection="column"
@@ -2027,7 +2145,64 @@ const Distributors = () => {
           </Box>
         )}
       </Box>
-
+      {/* Approval Dialog - Distributor Code */}
+      <Dialog
+        open={approvalDialogOpen}
+        onClose={() => {
+          setApprovalDialogOpen(false);
+          setDistributorCode("");
+          setApprovalError("");
+          setSelectedForApproval(null);
+        }}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle
+          sx={{ bgcolor: "#D20000", color: "#fff", fontWeight: 700 }}
+        >
+          Approve Distributor
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <Typography variant="body1" gutterBottom>
+            Enter Distributor Code to approve:
+          </Typography>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+            {selectedForApproval?.distributor_name}
+          </Typography>
+          <TextField
+            fullWidth
+            autoFocus
+            label="Distributor Code *"
+            value={distributorCode}
+            onChange={(e) => {
+              setDistributorCode(e.target.value.trim());
+              if (approvalError) setApprovalError("");
+            }}
+            error={!!approvalError}
+            helperText={approvalError}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button
+            onClick={() => {
+              setApprovalDialogOpen(false);
+              setDistributorCode("");
+              setApprovalError("");
+              setSelectedForApproval(null);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleApproveWithCode}
+            disabled={!distributorCode.trim()}
+            sx={{ bgcolor: "#D20000", "&:hover": { bgcolor: "#a80000" } }}
+          >
+            Approve
+          </Button>
+        </DialogActions>
+      </Dialog>
       {/* Delete Dialog */}
       <Dialog
         open={deleteDialogOpen}
