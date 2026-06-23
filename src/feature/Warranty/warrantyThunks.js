@@ -46,9 +46,12 @@ export const createWarranty = createAsyncThunk(
   "warranty/createWarranty",
   async (data, { rejectWithValue }) => {
     try {
+      const isFormData = data instanceof FormData;
       const response = await axiosInstance.post("/warranty/", data, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": isFormData
+            ? "multipart/form-data"
+            : "application/json",
         },
       });
       return response.data;

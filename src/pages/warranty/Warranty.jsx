@@ -202,6 +202,7 @@ const WarrantyManagement = () => {
 
   const [isCreating, setIsCreating] = useState(false);
   const [createForm, setCreateForm] = useState({
+    serial_number: "",
     product_id: "",
     distributor_id: "",
     detailer_name: "",
@@ -213,15 +214,13 @@ const WarrantyManagement = () => {
     color: "",
     installation_date: "",
     warranty_period: "",
-    warranty_start_date: "",
-    warranty_end_date: "",
-    warranty_status: "PENDING",
     owner_name: "",
     owner_email: "",
     owner_mobile: "",
     address: "",
-    license_plate_no: "",
-    generate_bill: false,
+    car_images: [],
+    installation_images: [],
+    invoice_image: null,
   });
   const [createErrors, setCreateErrors] = useState({});
   const [createSubmitting, setCreateSubmitting] = useState(false);
@@ -306,6 +305,8 @@ const WarrantyManagement = () => {
 
   const validateCreateForm = () => {
     const errors = {};
+    if (!createForm.serial_number?.trim())
+      errors.serial_number = "Serial number is required";
     if (!createForm.distributor_id)
       errors.distributor_id = "Distributor is required";
     if (!createForm.product_id) errors.product_id = "Product is required";
@@ -316,24 +317,15 @@ const WarrantyManagement = () => {
     else if (!/^\d{10}$/.test(createForm.detailer_mobile))
       errors.detailer_mobile = "Must be 10 digits";
     if (!createForm.car_registration_number.trim())
-      errors.car_registration_number = "Registration number is required";
+      errors.car_registration_number = "Car Reg is required";
     if (!createForm.car_brand.trim())
       errors.car_brand = "Car brand is required";
     if (!createForm.car_model.trim())
       errors.car_model = "Car model is required";
+    if (!createForm.color?.trim()) errors.color = "Car color is required";
     if (!createForm.installation_date)
-      errors.installation_date = "Installation date is required";
-    if (!createForm.warranty_period)
-      errors.warranty_period = "Warranty period is required";
-    if (!createForm.warranty_start_date)
-      errors.warranty_start_date = "Warranty start date is required";
-    if (!createForm.warranty_end_date)
-      errors.warranty_end_date = "Warranty end date is required";
-    if (!createForm.owner_name.trim())
-      errors.owner_name = "Owner name is required";
-    if (!createForm.owner_mobile.trim())
-      errors.owner_mobile = "Owner mobile is required";
-    else if (!/^\d{10}$/.test(createForm.owner_mobile))
+      errors.installation_date = "PPF Install Date is required";
+    if (createForm.owner_mobile && !/^\d{10}$/.test(createForm.owner_mobile))
       errors.owner_mobile = "Must be 10 digits";
     if (createForm.owner_email && !/\S+@\S+\.\S+/.test(createForm.owner_email))
       errors.owner_email = "Invalid email";
@@ -345,19 +337,52 @@ const WarrantyManagement = () => {
     if (!validateCreateForm()) return;
     setCreateSubmitting(true);
     try {
-      const payload = {
-        ...createForm,
-        distributor_id: Number(createForm.distributor_id),
-        product_id: Number(createForm.product_id),
-        warranty_period: Number(createForm.warranty_period),
-        approved_by: adminList?.id || null,
-      };
-      const result = await dispatch(createWarranty(payload));
+      const formDataToSend = new FormData();
+      formDataToSend.append("serial_number", createForm.serial_number || "");
+      formDataToSend.append("product_id", Number(createForm.product_id));
+      formDataToSend.append(
+        "distributor_id",
+        Number(createForm.distributor_id),
+      );
+      formDataToSend.append("detailer_name", createForm.detailer_name);
+      formDataToSend.append("detailer_mobile", createForm.detailer_mobile);
+      formDataToSend.append("email", createForm.email || "");
+      formDataToSend.append(
+        "car_registration_number",
+        createForm.car_registration_number,
+      );
+      formDataToSend.append("car_brand", createForm.car_brand);
+      formDataToSend.append("car_model", createForm.car_model);
+      formDataToSend.append("color", createForm.color || "");
+      formDataToSend.append("installation_date", createForm.installation_date);
+      formDataToSend.append(
+        "warranty_period",
+        Number(createForm.warranty_period) || "",
+      );
+      formDataToSend.append("owner_name", createForm.owner_name || "");
+      formDataToSend.append("owner_mobile", createForm.owner_mobile || "");
+      formDataToSend.append("owner_email", createForm.owner_email || "");
+      formDataToSend.append("address", createForm.address || "");
+      formDataToSend.append("approved_by", adminList?.id || "");
+      if (createForm.invoice_image)
+        formDataToSend.append("invoice_image", createForm.invoice_image);
+      if (createForm.car_images?.length) {
+        createForm.car_images.forEach((img) =>
+          formDataToSend.append("car_images", img),
+        );
+      }
+      if (createForm.installation_images?.length) {
+        createForm.installation_images.forEach((img) =>
+          formDataToSend.append("installation_images", img),
+        );
+      }
+      const result = await dispatch(createWarranty(formDataToSend));
       if (result.type.includes("fulfilled")) {
         CommonToast("Warranty created successfully", "success");
         dispatch(getWarranties());
         setIsCreating(false);
         setCreateForm({
+          serial_number: "",
           product_id: "",
           distributor_id: "",
           detailer_name: "",
@@ -369,16 +394,15 @@ const WarrantyManagement = () => {
           color: "",
           installation_date: "",
           warranty_period: "",
-          warranty_start_date: "",
-          warranty_end_date: "",
-          warranty_status: "PENDING",
           owner_name: "",
           owner_email: "",
           owner_mobile: "",
           address: "",
-          license_plate_no: "",
-          generate_bill: false,
+          car_images: [],
+          installation_images: [],
+          invoice_image: null,
         });
+
         setCreateErrors({});
       } else {
         const payload_err = result.payload;
@@ -632,58 +656,54 @@ const WarrantyManagement = () => {
             border: "1px solid #f0f0f0",
           }}
         >
-          {/* Distributor & Product */}
-          <Box
-            sx={{
-              px: 3,
-              py: 2,
-              bgcolor: "#fafafa",
-              borderBottom: "1px solid #ebebeb",
-            }}
-          >
-            <SectionHeading title="Distributor & Product" />
-          </Box>
-          <Box px={4} py={3}>
-            <Grid container spacing={2}>
+          <Box px={4} py={4}>
+            <Grid container spacing={3}>
+              {/* Serial Number search */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Serial"
+                  name="serial_number"
+                  placeholder="Search Serial Number..."
+                  value={createForm.serial_number || ""}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.serial_number}
+                  helperText={createErrors.serial_number}
+                  sx={fieldSx}
+                />
+              </Grid>
+
+              {/* Product dropdown */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   select
                   // fullWidth
                   required
-                  label="Distributor *"
-                  name="distributor_id"
-                  value={createForm.distributor_id}
-                  onChange={handleCreateFormChange}
-                  error={!!createErrors.distributor_id}
-                  helperText={createErrors.distributor_id}
-                  sx={{
-                    width: "200px",
-                  }}
-                >
-                  {Array.isArray(distributors) &&
-                    distributors.map((d) => (
-                      <MenuItem key={d.id} value={d.id}>
-                        {d.distributor_name}
-                      </MenuItem>
-                    ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  select
-                  fullWidth
-                  required
-                  label="Product *"
+                  label="Product"
                   name="product_id"
                   value={createForm.product_id}
-                  onChange={handleCreateFormChange}
+                  onChange={(e) => {
+                    handleCreateFormChange(e);
+                    // auto-fill warranty period from selected product
+                    const selected = Array.isArray(products)
+                      ? products.find((p) => p.id === e.target.value)
+                      : null;
+                    if (selected?.warranty_period) {
+                      setCreateForm((prev) => ({
+                        ...prev,
+                        product_id: e.target.value,
+                        warranty_period: selected.warranty_period,
+                      }));
+                    }
+                  }}
                   error={!!createErrors.product_id}
                   helperText={createErrors.product_id}
-                  // sx={fieldSx}
-                  sx={{
-                    width: "200px",
-                  }}
+                  sx={{ width: "200px" }}
                 >
+                  <MenuItem value="">
+                    <em>Select Product...</em>
+                  </MenuItem>
                   {Array.isArray(products) &&
                     products.map((p) => (
                       <MenuItem key={p.id} value={p.id}>
@@ -692,28 +712,56 @@ const WarrantyManagement = () => {
                     ))}
                 </TextField>
               </Grid>
-            </Grid>
-          </Box>
 
-          {/* Detailer Information */}
-          <Box
-            sx={{
-              px: 3,
-              py: 2,
-              bgcolor: "#fafafa",
-              borderBottom: "1px solid #ebebeb",
-              borderTop: "1px solid #ebebeb",
-            }}
-          >
-            <SectionHeading title="Detailer Information" />
-          </Box>
-          <Box px={4} py={3}>
-            <Grid container spacing={2}>
+              {/* Distributor dropdown */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  // fullWidth
+                  required
+                  label="Distributor"
+                  name="distributor_id"
+                  value={createForm.distributor_id}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.distributor_id}
+                  helperText={createErrors.distributor_id}
+                  sx={{ width: "200px" }}
+                >
+                  <MenuItem value="">
+                    <em>Select Distributor...</em>
+                  </MenuItem>
+                  {Array.isArray(distributors) &&
+                    distributors.map((d) => (
+                      <MenuItem key={d.id} value={d.id}>
+                        {d.distributor_name}
+                      </MenuItem>
+                    ))}
+                </TextField>
+              </Grid>
+
+              {/* Warranty Period - auto from product, read-only display */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Warranty Period"
+                  name="warranty_period"
+                  value={
+                    createForm.warranty_period
+                      ? `${createForm.warranty_period} Year`
+                      : ""
+                  }
+                  InputProps={{ readOnly: true }}
+                  placeholder="Auto-filled from product"
+                  sx={fieldSx}
+                />
+              </Grid>
+
+              {/* Detailer Name */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   required
-                  label="Detailer Name *"
+                  label="Detailer Name"
                   name="detailer_name"
                   value={createForm.detailer_name}
                   onChange={handleCreateFormChange}
@@ -722,11 +770,13 @@ const WarrantyManagement = () => {
                   sx={fieldSx}
                 />
               </Grid>
+
+              {/* Detailer Mobile */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   required
-                  label="Detailer Mobile *"
+                  label="Detailer Mobile"
                   name="detailer_mobile"
                   value={createForm.detailer_mobile}
                   onChange={handleCreateFormChange}
@@ -736,6 +786,8 @@ const WarrantyManagement = () => {
                   sx={fieldSx}
                 />
               </Grid>
+
+              {/* Detailer Email */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
@@ -747,143 +799,12 @@ const WarrantyManagement = () => {
                   sx={fieldSx}
                 />
               </Grid>
-            </Grid>
-          </Box>
 
-          {/* Car Information */}
-          <Box
-            sx={{
-              px: 3,
-              py: 2,
-              bgcolor: "#fafafa",
-              borderBottom: "1px solid #ebebeb",
-              borderTop: "1px solid #ebebeb",
-            }}
-          >
-            <SectionHeading title="Car Information" />
-          </Box>
-          <Box px={4} py={3}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  required
-                  label="Car Brand *"
-                  name="car_brand"
-                  value={createForm.car_brand}
-                  onChange={handleCreateFormChange}
-                  error={!!createErrors.car_brand}
-                  helperText={createErrors.car_brand}
-                  sx={fieldSx}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  required
-                  label="Car Model *"
-                  name="car_model"
-                  value={createForm.car_model}
-                  onChange={handleCreateFormChange}
-                  error={!!createErrors.car_model}
-                  helperText={createErrors.car_model}
-                  sx={fieldSx}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  required
-                  label="Registration Number *"
-                  name="car_registration_number"
-                  value={createForm.car_registration_number}
-                  onChange={handleCreateFormChange}
-                  error={!!createErrors.car_registration_number}
-                  helperText={createErrors.car_registration_number}
-                  sx={fieldSx}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="License Plate No"
-                  name="license_plate_no"
-                  value={createForm.license_plate_no}
-                  onChange={handleCreateFormChange}
-                  sx={fieldSx}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Color"
-                  name="color"
-                  value={createForm.color}
-                  onChange={handleCreateFormChange}
-                  sx={fieldSx}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-
-          {/* Owner Information */}
-          <Box
-            sx={{
-              px: 3,
-              py: 2,
-              bgcolor: "#fafafa",
-              borderBottom: "1px solid #ebebeb",
-              borderTop: "1px solid #ebebeb",
-            }}
-          >
-            <SectionHeading title="Owner Information" />
-          </Box>
-          <Box px={4} py={3}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  required
-                  label="Owner Name *"
-                  name="owner_name"
-                  value={createForm.owner_name}
-                  onChange={handleCreateFormChange}
-                  error={!!createErrors.owner_name}
-                  helperText={createErrors.owner_name}
-                  sx={fieldSx}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  required
-                  label="Owner Mobile *"
-                  name="owner_mobile"
-                  value={createForm.owner_mobile}
-                  onChange={handleCreateFormChange}
-                  inputProps={{ maxLength: 10, inputMode: "numeric" }}
-                  error={!!createErrors.owner_mobile}
-                  helperText={createErrors.owner_mobile}
-                  sx={fieldSx}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Owner Email"
-                  name="owner_email"
-                  type="email"
-                  value={createForm.owner_email}
-                  onChange={handleCreateFormChange}
-                  error={!!createErrors.owner_email}
-                  helperText={createErrors.owner_email}
-                  sx={fieldSx}
-                />
-              </Grid>
+              {/* Detailer Address */}
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Address"
+                  label="Detailer Address"
                   name="address"
                   value={createForm.address}
                   onChange={handleCreateFormChange}
@@ -892,28 +813,73 @@ const WarrantyManagement = () => {
                   sx={fieldSx}
                 />
               </Grid>
-            </Grid>
-          </Box>
 
-          {/* Warranty Information */}
-          <Box
-            sx={{
-              px: 3,
-              py: 2,
-              bgcolor: "#fafafa",
-              borderBottom: "1px solid #ebebeb",
-              borderTop: "1px solid #ebebeb",
-            }}
-          >
-            <SectionHeading title="Warranty Information" />
-          </Box>
-          <Box px={4} py={3}>
-            <Grid container spacing={2}>
+              {/* Car Reg */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   required
-                  label="Installation Date *"
+                  label="Car Reg"
+                  name="car_registration_number"
+                  value={createForm.car_registration_number}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.car_registration_number}
+                  helperText={createErrors.car_registration_number}
+                  sx={fieldSx}
+                />
+              </Grid>
+
+              {/* Car Brand */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Car Brand"
+                  name="car_brand"
+                  value={createForm.car_brand}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.car_brand}
+                  helperText={createErrors.car_brand}
+                  sx={fieldSx}
+                />
+              </Grid>
+
+              {/* Car Model */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Car Model"
+                  name="car_model"
+                  value={createForm.car_model}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.car_model}
+                  helperText={createErrors.car_model}
+                  sx={fieldSx}
+                />
+              </Grid>
+
+              {/* Car Color */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Car Color"
+                  name="color"
+                  value={createForm.color}
+                  onChange={handleCreateFormChange}
+                  error={!!createErrors.color}
+                  helperText={createErrors.color}
+                  sx={fieldSx}
+                />
+              </Grid>
+
+              {/* PPF Install Date */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="PPF Install Date"
                   name="installation_date"
                   type="date"
                   InputLabelProps={{ shrink: true }}
@@ -924,100 +890,175 @@ const WarrantyManagement = () => {
                   sx={fieldSx}
                 />
               </Grid>
+
+              {/* Car Owner Name */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  required
-                  label="Warranty Period (years) *"
-                  name="warranty_period"
-                  type="number"
-                  inputProps={{ min: 1 }}
-                  value={createForm.warranty_period}
+                  label="Car Owner Name"
+                  name="owner_name"
+                  value={createForm.owner_name}
                   onChange={handleCreateFormChange}
-                  error={!!createErrors.warranty_period}
-                  helperText={createErrors.warranty_period}
                   sx={fieldSx}
                 />
               </Grid>
+
+              {/* Car Owner Mobile */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  required
-                  label="Warranty Start Date *"
-                  name="warranty_start_date"
-                  type="date"
-                  InputLabelProps={{ shrink: true }}
-                  value={createForm.warranty_start_date}
+                  label="Car Owner Mobile"
+                  name="owner_mobile"
+                  value={createForm.owner_mobile}
                   onChange={handleCreateFormChange}
-                  error={!!createErrors.warranty_start_date}
-                  helperText={createErrors.warranty_start_date}
+                  inputProps={{ maxLength: 10, inputMode: "numeric" }}
+                  error={!!createErrors.owner_mobile}
+                  helperText={createErrors.owner_mobile}
                   sx={fieldSx}
                 />
               </Grid>
+
+              {/* Car Owner Email */}
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  required
-                  label="Warranty End Date *"
-                  name="warranty_end_date"
-                  type="date"
-                  InputLabelProps={{ shrink: true }}
-                  value={createForm.warranty_end_date}
+                  label="Car Owner Email"
+                  name="owner_email"
+                  type="email"
+                  value={createForm.owner_email}
                   onChange={handleCreateFormChange}
-                  error={!!createErrors.warranty_end_date}
-                  helperText={createErrors.warranty_end_date}
+                  error={!!createErrors.owner_email}
+                  helperText={createErrors.owner_email}
                   sx={fieldSx}
                 />
               </Grid>
+
+              {/* Car Images */}
               <Grid item xs={12} sm={6}>
-                <TextField
-                  select
-                  fullWidth
-                  label="Warranty Status"
-                  name="warranty_status"
-                  value={createForm.warranty_status}
-                  onChange={handleCreateFormChange}
-                  sx={fieldSx}
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  mb={0.5}
+                  fontWeight={500}
                 >
-                  {Object.entries(WARRANTY_STATUS).map(([key, val]) => (
-                    <MenuItem key={key} value={key}>
-                      {val.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box
+                  Car Images
+                </Typography>
+                <Button
+                  variant="outlined"
+                  component="label"
+                  fullWidth
                   sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    height: "100%",
-                    pt: 1,
+                    borderColor: "#ccc",
+                    color: "#555",
+                    justifyContent: "flex-start",
+                    textTransform: "none",
+                    borderRadius: 2,
+                    py: 1.5,
+                    fontWeight: 400,
+                    "&:hover": { borderColor: "#D20000", color: "#D20000" },
                   }}
                 >
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={createForm.generate_bill}
-                        name="generate_bill"
-                        onChange={handleCreateFormChange}
-                        sx={{
-                          "& .MuiSwitch-switchBase.Mui-checked": {
-                            color: "#D20000",
-                          },
-                          "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                            { bgcolor: "#D20000" },
-                        }}
-                      />
-                    }
-                    label={
-                      <Typography variant="body2" fontWeight={600}>
-                        Generate Bill
-                      </Typography>
-                    }
+                  {createForm.car_images?.length
+                    ? `${createForm.car_images.length} file(s) chosen`
+                    : "Choose Files  No file chosen"}
+                  <input
+                    type="file"
+                    hidden
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => {
+                      setCreateForm((prev) => ({
+                        ...prev,
+                        car_images: Array.from(e.target.files),
+                      }));
+                    }}
                   />
-                </Box>
+                </Button>
+              </Grid>
+
+              {/* Installation Images */}
+              <Grid item xs={12} sm={6}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  mb={0.5}
+                  fontWeight={500}
+                >
+                  Installation Images
+                </Typography>
+                <Button
+                  variant="outlined"
+                  component="label"
+                  fullWidth
+                  sx={{
+                    borderColor: "#ccc",
+                    color: "#555",
+                    justifyContent: "flex-start",
+                    textTransform: "none",
+                    borderRadius: 2,
+                    py: 1.5,
+                    fontWeight: 400,
+                    "&:hover": { borderColor: "#D20000", color: "#D20000" },
+                  }}
+                >
+                  {createForm.installation_images?.length
+                    ? `${createForm.installation_images.length} file(s) chosen`
+                    : "Choose Files  No file chosen"}
+                  <input
+                    type="file"
+                    hidden
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => {
+                      setCreateForm((prev) => ({
+                        ...prev,
+                        installation_images: Array.from(e.target.files),
+                      }));
+                    }}
+                  />
+                </Button>
+              </Grid>
+
+              {/* Invoice */}
+              <Grid item xs={12} sm={6}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  mb={0.5}
+                  fontWeight={500}
+                >
+                  Invoice
+                </Typography>
+                <Button
+                  variant="outlined"
+                  component="label"
+                  fullWidth
+                  sx={{
+                    borderColor: "#ccc",
+                    color: "#555",
+                    justifyContent: "flex-start",
+                    textTransform: "none",
+                    borderRadius: 2,
+                    py: 1.5,
+                    fontWeight: 400,
+                    "&:hover": { borderColor: "#D20000", color: "#D20000" },
+                  }}
+                >
+                  {createForm.invoice_image
+                    ? createForm.invoice_image.name
+                    : "Choose File  No file chosen"}
+                  <input
+                    type="file"
+                    hidden
+                    accept="image/*,.pdf"
+                    onChange={(e) => {
+                      setCreateForm((prev) => ({
+                        ...prev,
+                        invoice_image: e.target.files[0] || null,
+                      }));
+                    }}
+                  />
+                </Button>
               </Grid>
             </Grid>
           </Box>
