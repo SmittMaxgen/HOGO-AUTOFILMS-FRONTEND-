@@ -203,6 +203,7 @@ const EMPTY_FORM = {
   password: "",
   distributor_type: "Pvt Ltd",
   brand_name: "",
+  distributor_code: "",
   email_id: "",
   mobile_number: "",
   alternate_mobile: "",
@@ -715,6 +716,7 @@ const Distributors = () => {
       password: dist.password || "",
       distributor_type: dist.distributor_type || "",
       brand_name: dist.brand_name || "",
+      distributor_code: dist.distributor_code || "",
       business_type: dist.business_type || "",
       firm_type: dist.firm_type || "",
       years_in_business: dist.years_in_business || "",
@@ -1706,8 +1708,22 @@ const Distributors = () => {
               <Grid item xs={12} sm={6}>
                 {renderTextField("Distributor Type", "distributor_type")}
               </Grid>
+              {/* <Grid item xs={12} sm={6}>
+                {renderTextField("Brand Name", "brand_name")}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                {renderTextField(
+                  "Date of Registration",
+                  "date_of_registration",
+                  "date",
+                  { InputLabelProps: { shrink: true } },
+                )}
+              </Grid> */}
               <Grid item xs={12} sm={6}>
                 {renderTextField("Brand Name", "brand_name")}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                {renderTextField("Distributor Code", "distributor_code")}
               </Grid>
               <Grid item xs={12} sm={6}>
                 {renderTextField(
@@ -2093,6 +2109,7 @@ const Distributors = () => {
                     "text",
                     {
                       select: true,
+                      sx: { width: "200px" },
                       children: [
                         <MenuItem key="Aadhaar" value="Aadhaar">
                           Aadhaar
