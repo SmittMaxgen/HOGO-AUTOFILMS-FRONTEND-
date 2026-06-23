@@ -75,8 +75,9 @@ import { Download, Add as AddIcon } from "@mui/icons-material";
 import { FormControlLabel, Switch } from "@mui/material";
 import { UpdateAdminUser, AdminUser } from "../../feature/Admin/adminThunks";
 
-const BASE_URL = "https://apidata.hogonnindia.com";
+import { State, City } from "country-state-city";
 
+const BASE_URL = "https://apidata.hogonnindia.com";
 // ─── Shared Helpers ────────────────────────────────────────────────────────────
 
 const SectionHeading = ({ title }) => (
@@ -218,6 +219,8 @@ const WarrantyManagement = () => {
     owner_email: "",
     owner_mobile: "",
     address: "",
+    state: "",
+    city: "",
     car_images: [],
     installation_images: [],
     invoice_image: null,
@@ -363,6 +366,8 @@ const WarrantyManagement = () => {
       formDataToSend.append("owner_mobile", createForm.owner_mobile || "");
       formDataToSend.append("owner_email", createForm.owner_email || "");
       formDataToSend.append("address", createForm.address || "");
+      formDataToSend.append("state", createForm.state || "");
+      formDataToSend.append("city", createForm.city || "");
       formDataToSend.append("approved_by", adminList?.id || "");
       if (createForm.invoice_image)
         formDataToSend.append("invoice_image", createForm.invoice_image);
@@ -398,6 +403,8 @@ const WarrantyManagement = () => {
           owner_email: "",
           owner_mobile: "",
           address: "",
+          state: "",
+          city: "",
           car_images: [],
           installation_images: [],
           invoice_image: null,
@@ -689,11 +696,11 @@ const WarrantyManagement = () => {
                     const selected = Array.isArray(products)
                       ? products.find((p) => p.id === e.target.value)
                       : null;
-                    if (selected?.warranty_period) {
+                    if (selected?.warranty) {
                       setCreateForm((prev) => ({
                         ...prev,
                         product_id: e.target.value,
-                        warranty_period: selected.warranty_period,
+                        warranty_period: selected.warranty,
                       }));
                     }
                   }}
@@ -747,7 +754,7 @@ const WarrantyManagement = () => {
                   name="warranty_period"
                   value={
                     createForm.warranty_period
-                      ? `${createForm.warranty_period} Year`
+                      ? `${createForm.warranty_period} ${createForm.warranty_period > 1 ? "" : ""}`
                       : ""
                   }
                   InputProps={{ readOnly: true }}
@@ -812,6 +819,63 @@ const WarrantyManagement = () => {
                   minRows={2}
                   sx={fieldSx}
                 />
+              </Grid>
+
+              {/* State */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  fullWidth
+                  label="State"
+                  name="state"
+                  value={createForm.state}
+                  onChange={(e) => {
+                    setCreateForm((prev) => ({
+                      ...prev,
+                      state: e.target.value,
+                      city: "",
+                    }));
+                  }}
+                  sx={{ ...fieldSx, width: "200px" }}
+                >
+                  <MenuItem value="">
+                    <em>Select State...</em>
+                  </MenuItem>
+                  {State.getStatesOfCountry("IN").map((s) => (
+                    <MenuItem key={s.isoCode} value={s.isoCode}>
+                      {s.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+
+              {/* City */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  // fullWidth
+                  sx={{ ...fieldSx, width: "200px" }}
+                  label="City"
+                  name="city"
+                  value={createForm.city}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({
+                      ...prev,
+                      city: e.target.value,
+                    }))
+                  }
+                  disabled={!createForm.state}
+                  sx={{ ...fieldSx, width: "200px" }}
+                >
+                  <MenuItem value="">
+                    <em>Select City...</em>
+                  </MenuItem>
+                  {City.getCitiesOfState("IN", createForm.state).map((c) => (
+                    <MenuItem key={c.name} value={c.name}>
+                      {c.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </Grid>
 
               {/* Car Reg */}

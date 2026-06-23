@@ -65,8 +65,9 @@ import {
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 
-const BASE_URL = "https://apidata.hogonnindia.com";
+import { State, City } from "country-state-city";
 
+const BASE_URL = "https://apidata.hogonnindia.com";
 // ─── Shared Design Helpers ─────────────────────────────────────────────────────
 
 const SectionHeading = ({ title }) => (
@@ -412,6 +413,7 @@ const Distributors = () => {
   const [newDistFiles, setNewDistFiles] = useState(EMPTY_FILES);
 
   // New state for Approval Dialog
+  const [selectedState, setSelectedState] = useState("");
   const [approvalDialogOpen, setApprovalDialogOpen] = useState(false);
   console.log("approvalDialogOpen===>>>", approvalDialogOpen);
   const [selectedForApproval, setSelectedForApproval] = useState(null);
@@ -1795,10 +1797,105 @@ const Distributors = () => {
                 {renderTextField("Address Line 2", "address_line_2")}
               </Grid>
               <Grid item xs={12} sm={4}>
-                {renderTextField("City", "city")}
+                {createDistributorFlag || editMode ? (
+                  <TextField
+                    select
+                    fullWidth
+                    label="State *"
+                    value={
+                      createDistributorFlag
+                        ? newDistributorForm.state
+                        : formData.state
+                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setSelectedState(val);
+                      if (createDistributorFlag) {
+                        setNewDistributorForm((prev) => ({
+                          ...prev,
+                          state: val,
+                          city: "",
+                        }));
+                        clearFieldError("state");
+                      } else {
+                        setFormData((prev) => ({
+                          ...prev,
+                          state: val,
+                          city: "",
+                        }));
+                      }
+                    }}
+                    error={createDistributorFlag && !!formErrors.state}
+                    helperText={createDistributorFlag && formErrors.state}
+                    sx={{ ...fieldSx, width: "200px" }}
+                  >
+                    <MenuItem value="">
+                      <em>Select State...</em>
+                    </MenuItem>
+                    {State.getStatesOfCountry("IN").map((s) => (
+                      <MenuItem key={s.isoCode} value={s.name}>
+                        {s.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                ) : (
+                  renderTextField("State", "state")
+                )}
               </Grid>
               <Grid item xs={12} sm={4}>
-                {renderTextField("State", "state")}
+                {createDistributorFlag || editMode ? (
+                  <TextField
+                    select
+                    // fullWidth
+                    sx={{ width: "200px" }}
+                    label="City *"
+                    value={
+                      createDistributorFlag
+                        ? newDistributorForm.city
+                        : formData.city
+                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (createDistributorFlag) {
+                        setNewDistributorForm((prev) => ({
+                          ...prev,
+                          city: val,
+                        }));
+                        clearFieldError("city");
+                      } else {
+                        setFormData((prev) => ({ ...prev, city: val }));
+                      }
+                    }}
+                    disabled={
+                      createDistributorFlag
+                        ? !newDistributorForm.state
+                        : !formData.state
+                    }
+                    error={createDistributorFlag && !!formErrors.city}
+                    helperText={createDistributorFlag && formErrors.city}
+                    sx={{ ...fieldSx, width: "200px" }}
+                  >
+                    <MenuItem value="">
+                      <em>Select City...</em>
+                    </MenuItem>
+                    {City.getCitiesOfState(
+                      "IN",
+                      State.getStatesOfCountry("IN").find(
+                        (s) =>
+                          s.name ===
+                          (createDistributorFlag
+                            ? newDistributorForm.state
+                            : formData.state),
+                      )?.isoCode || "",
+                    ).map((c) => (
+                      <MenuItem key={c.name} value={c.name}>
+                        {c.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                ) : (
+                  renderTextField("City", "city")
+                )}
               </Grid>
               <Grid item xs={12} sm={4}>
                 {renderTextField("Pin Code", "pincode", "tel", {
