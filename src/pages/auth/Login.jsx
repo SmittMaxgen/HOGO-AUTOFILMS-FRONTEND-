@@ -32,6 +32,7 @@ const Login = () => {
 
   const [resetToken, setResetToken] = useState("");
   const [resetForm, setResetForm] = useState({
+    otp: "",
     new_password: "",
     confirm_password: "",
   });
@@ -57,13 +58,7 @@ const Login = () => {
       );
 
       if (forgotPassword.fulfilled.match(resultAction)) {
-        const token = resultAction.payload?.token;
-        if (token) {
-          setResetToken(token);
-          setShowReset(true); // Show reset password form
-        } else {
-          alert("Token not received. Please check your email.");
-        }
+        setShowReset(true);
       }
     } catch (err) {
       console.error("Forgot password error:", err);
@@ -71,21 +66,31 @@ const Login = () => {
   };
 
   const handleResetPassword = async () => {
-    if (!resetToken) return alert("Invalid token!");
+    if (!resetForm.otp)
+      return alert("Please enter the OTP sent to your email.");
+    if (!resetForm.new_password || !resetForm.confirm_password)
+      return alert("Please fill all fields.");
     if (resetForm.new_password !== resetForm.confirm_password)
       return alert("Passwords do not match!");
 
     try {
-      await dispatch(resetPassword({ token: resetToken, ...resetForm }));
-      alert("Password reset successfully!");
+      const resultAction = await dispatch(
+        resetPassword({
+          email: forgotEmail,
+          otp: resetForm.otp,
+          new_password: resetForm.new_password,
+          confirm_password: resetForm.confirm_password,
+        }),
+      );
 
-      // Reset state and go back to login
-      setShowReset(false);
-      setShowForgot(false);
-      setResetToken("");
-      setResetForm({ new_password: "", confirm_password: "" });
-      setForgotEmail("");
-      dispatch(clearForgotPasswordState());
+      if (resetPassword.fulfilled.match(resultAction)) {
+        setShowReset(false);
+        setShowForgot(false);
+        setResetToken("");
+        setResetForm({ otp: "", new_password: "", confirm_password: "" });
+        setForgotEmail("");
+        dispatch(clearForgotPasswordState());
+      }
     } catch (err) {
       console.error("Reset password error:", err);
     }
@@ -233,9 +238,23 @@ const Login = () => {
         {/* RESET PASSWORD FORM */}
         {showReset && (
           <>
-            <Typography variant="h5" fontWeight="700" mb={2}>
+            <Typography variant="h5" fontWeight="700" mb={1}>
               Reset Password
             </Typography>
+            <Typography variant="body2" color="text.secondary" mb={2}>
+              Enter the OTP sent to <strong>{forgotEmail}</strong>
+            </Typography>
+
+            <TextField
+              fullWidth
+              placeholder="Enter OTP"
+              variant="outlined"
+              sx={{ mb: 2 }}
+              value={resetForm.otp}
+              onChange={(e) =>
+                setResetForm({ ...resetForm, otp: e.target.value })
+              }
+            />
 
             <TextField
               fullWidth
@@ -304,7 +323,11 @@ const Login = () => {
               onClick={() => {
                 setShowReset(false);
                 setShowForgot(false);
-                setResetForm({ new_password: "", confirm_password: "" });
+                setResetForm({
+                  otp: "",
+                  new_password: "",
+                  confirm_password: "",
+                });
                 setForgotEmail("");
                 dispatch(clearForgotPasswordState());
               }}
