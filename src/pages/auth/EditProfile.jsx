@@ -13,10 +13,8 @@ import {
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import CloseIcon from "@mui/icons-material/Close";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import XIcon from "@mui/icons-material/X";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import InstagramIcon from "@mui/icons-material/Instagram";
+import LockResetIcon from "@mui/icons-material/LockReset";
+import SaveIcon from "@mui/icons-material/Save";
 
 import { useDispatch, useSelector } from "react-redux";
 import { selectAdminList } from "../../feature/Admin/adminSelector";
@@ -34,6 +32,35 @@ import {
 
 import HogoAFM from "../../../public/hogoAFM.png";
 import CommonToast from "../../components/commonComponents/Toster";
+
+const gradientBtn = {
+  background: "linear-gradient(90deg, #D20000 0%, #8B0000 100%)",
+  color: "#fff",
+  fontWeight: 600,
+  textTransform: "none",
+  borderRadius: "8px",
+  px: 3,
+  "&:hover": {
+    background: "linear-gradient(90deg, #b30000 0%, #6a0000 100%)",
+  },
+  "&:disabled": {
+    opacity: 0.6,
+    color: "#fff",
+  },
+};
+
+const cancelBtn = {
+  borderColor: "#0d0e36",
+  color: "#0d0e36",
+  fontWeight: 600,
+  textTransform: "none",
+  borderRadius: "8px",
+  px: 3,
+  "&:hover": {
+    background: "#f5f5f5",
+    borderColor: "#0d0e36",
+  },
+};
 
 const EditProfile = () => {
   const dispatch = useDispatch();
@@ -148,7 +175,6 @@ const EditProfile = () => {
       new_password: "",
       confirm_password: "",
     });
-
     setPasswordError("");
     setShowPasswordSection(false);
     dispatch(clearForgotPasswordState());
@@ -157,6 +183,7 @@ const EditProfile = () => {
   const getAdminUser = () => {
     dispatch(AdminUser());
   };
+
   useEffect(() => {
     if (apiCall === true) {
       getAdminUser();
@@ -166,117 +193,172 @@ const EditProfile = () => {
   }, [apiCall]);
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* <Paper sx={{ p: 3, borderRadius: 3 }}>
-        <Grid container alignItems="center" spacing={2}>
-          <Grid item>
-            <Avatar src={HogoAFM} sx={{ width: 64, height: 64 }} />
-          </Grid>
-
-          <Grid item xs>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                label="Full Name"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-              />
-            ) : (
-              <Typography fontWeight={700}>
-                {adminList?.name || "Admin User"}
-              </Typography>
-            )}
-
-            <Typography variant="body2" color="text.secondary">
-              Administrator
-            </Typography>
-          </Grid>
-
-          <Grid item>
-            <IconButton>
-              <FacebookIcon />
-            </IconButton>
-            <IconButton>
-              <XIcon />
-            </IconButton>
-            <IconButton>
-              <LinkedInIcon />
-            </IconButton>
-            <IconButton>
-              <InstagramIcon />
-            </IconButton>
-          </Grid>
-        </Grid>
-      </Paper> */}
-
-      <Paper sx={{ p: 3, borderRadius: 3, mt: 3 }}>
-        <Typography fontWeight={700} mb={2}>
-          Personal Information
-        </Typography>
-
-        <Divider sx={{ mb: 2 }} />
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
-            <Typography variant="caption">Email</Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-              />
-            ) : (
-              <Typography fontWeight={600}>
-                {adminList?.email || "N/A"}
-              </Typography>
-            )}
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Typography variant="caption">Phone</Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="mobile"
-                value={form.mobile}
-                onChange={handleChange}
-              />
-            ) : (
-              <Typography fontWeight={600}>
-                {adminList?.mobile || "N/A"}
-              </Typography>
-            )}
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Typography variant="caption">Role</Typography>
-            <Typography fontWeight={600}>Administrator</Typography>
-          </Grid>
-        </Grid>
-      </Paper>
-
-      <Paper sx={{ p: 3, borderRadius: 3, mt: 3 }}>
+    <Box sx={{ p: 3, backgroundColor: "#fff", minHeight: "100vh" }}>
+      {/* Personal Information Card */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          borderRadius: 3,
+          border: "1px solid #e0e0e0",
+          backgroundColor: "#fff",
+        }}
+      >
         <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="center"
           mb={2}
         >
-          <Typography fontWeight={700}>Change Password</Typography>
-          {!showPasswordSection && (
+          <Typography fontWeight={700} fontSize={16} color="#0d0e36">
+            Personal Information
+          </Typography>
+
+          {!isEditing && (
             <Button
               variant="outlined"
-              size="small"
-              onClick={() => setShowPasswordSection(true)}
+              startIcon={<EditOutlinedIcon />}
+              onClick={() => setIsEditing(true)}
+              sx={{
+                borderColor: "#0d0e36",
+                color: "#0d0e36",
+                fontWeight: 600,
+                textTransform: "none",
+                borderRadius: "8px",
+                px: 2.5,
+                "&:hover": {
+                  background: "#f5f5f5",
+                  borderColor: "#0d0e36",
+                },
+              }}
             >
-              Change
+              Edit
             </Button>
           )}
         </Stack>
 
-        {/* <Divider sx={{ mb: 2 }} /> */}
+        <Divider sx={{ mb: 3 }} />
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={500}
+            >
+              Email
+            </Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                size="small"
+                sx={{ mt: 0.5 }}
+              />
+            ) : (
+              <Typography fontWeight={600} color="#0d0e36" mt={0.5}>
+                {adminList?.email || "N/A"}
+              </Typography>
+            )}
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={500}
+            >
+              Phone
+            </Typography>
+            {isEditing ? (
+              <TextField
+                fullWidth
+                name="mobile"
+                value={form.mobile}
+                onChange={handleChange}
+                size="small"
+                sx={{ mt: 0.5 }}
+              />
+            ) : (
+              <Typography fontWeight={600} color="#0d0e36" mt={0.5}>
+                {adminList?.mobile || "N/A"}
+              </Typography>
+            )}
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={500}
+            >
+              Role
+            </Typography>
+            <Typography fontWeight={600} color="#0d0e36" mt={0.5}>
+              Administrator
+            </Typography>
+          </Grid>
+        </Grid>
+
+        {/* Save / Cancel inside the card when editing */}
+        {isEditing && (
+          <Stack direction="row" justifyContent="flex-end" spacing={2} mt={3}>
+            <Button
+              variant="outlined"
+              startIcon={<CloseIcon />}
+              onClick={handleCancel}
+              sx={cancelBtn}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<SaveIcon />}
+              onClick={handleSave}
+              sx={gradientBtn}
+            >
+              Save Changes
+            </Button>
+          </Stack>
+        )}
+      </Paper>
+
+      {/* Change Password Card */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          borderRadius: 3,
+          mt: 3,
+          border: "1px solid #e0e0e0",
+          backgroundColor: "#fff",
+        }}
+      >
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
+          <Typography fontWeight={700} fontSize={16} color="#0d0e36">
+            Change Password
+          </Typography>
+
+          {!showPasswordSection && (
+            <Button
+              variant="contained"
+              startIcon={<LockResetIcon />}
+              onClick={() => setShowPasswordSection(true)}
+              sx={gradientBtn}
+            >
+              Change Password
+            </Button>
+          )}
+        </Stack>
+
+        <Divider sx={{ mb: 3 }} />
 
         {showPasswordSection ? (
           <>
@@ -289,6 +371,7 @@ const EditProfile = () => {
                   type="password"
                   value={passwordForm.old_password}
                   onChange={handlePasswordChange}
+                  size="small"
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -299,6 +382,7 @@ const EditProfile = () => {
                   type="password"
                   value={passwordForm.new_password}
                   onChange={handlePasswordChange}
+                  size="small"
                 />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -309,66 +393,45 @@ const EditProfile = () => {
                   type="password"
                   value={passwordForm.confirm_password}
                   onChange={handlePasswordChange}
+                  size="small"
                 />
               </Grid>
+
               {passwordError && (
                 <Grid item xs={12}>
-                  <Typography color="error" variant="body2">
+                  <Typography color="error" variant="body2" fontWeight={500}>
                     {passwordError}
                   </Typography>
                 </Grid>
               )}
             </Grid>
-            <Stack direction="row" justifyContent="flex-end" spacing={2} mt={2}>
+
+            <Stack direction="row" justifyContent="flex-end" spacing={2} mt={3}>
               <Button
                 variant="outlined"
-                color="inherit"
                 startIcon={<CloseIcon />}
                 onClick={handleCancelPassword}
+                sx={cancelBtn}
               >
                 Cancel
               </Button>
               <Button
                 variant="contained"
+                startIcon={<SaveIcon />}
                 onClick={handleResetPassword}
                 disabled={forgotPasswordLoading}
+                sx={gradientBtn}
               >
                 {forgotPasswordLoading ? "Saving..." : "Save Password"}
               </Button>
             </Stack>
           </>
         ) : (
-          <></>
+          <Typography variant="body2" color="text.secondary">
+            Click "Change Password" to update your password.
+          </Typography>
         )}
       </Paper>
-
-      <Stack direction="row" justifyContent="flex-end" spacing={2} mt={3}>
-        {" "}
-        {isEditing ? (
-          <>
-            <Button
-              variant="outlined"
-              color="inherit"
-              startIcon={<CloseIcon />}
-              onClick={handleCancel}
-            >
-              Cancel
-            </Button>
-
-            <Button variant="contained" onClick={handleSave}>
-              Save
-            </Button>
-          </>
-        ) : (
-          <Button
-            variant="outlined"
-            startIcon={<EditOutlinedIcon />}
-            onClick={() => setIsEditing(true)}
-          >
-            Edit
-          </Button>
-        )}
-      </Stack>
     </Box>
   );
 };
