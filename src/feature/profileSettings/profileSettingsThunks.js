@@ -22,7 +22,7 @@ export const resetPassword = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
-        `/admin_reset_password//`,
+        `/admin_reset_password/`,
         payload,
       );
       return response.data;
