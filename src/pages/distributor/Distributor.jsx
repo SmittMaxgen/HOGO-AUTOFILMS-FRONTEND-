@@ -442,273 +442,310 @@ const Distributors = () => {
     return error?.status || "Something went wrong";
   };
   // ── Validation ───────────────────────────────────────────────────────────────
+  // const validateForm = () => {
+  //   const errors = {};
+  //   if (!newDistributorForm.distributor_name.trim())
+  //     errors.distributor_name = "Distributor name is required";
+  //   if (!newDistributorForm.password.trim())
+  //     errors.password = "Password is required";
+  //   if (!newDistributorForm.distributor_type.trim())
+  //     errors.distributor_type = "Distributor type is required";
+  //   if (!newDistributorForm.owner_name.trim())
+  //     errors.owner_name = "Owner name is required";
+  //   if (!newDistributorForm.date_of_registration)
+  //     errors.date_of_registration = "Date of registration is required";
+  //   if (!newDistributorForm.sales_region)
+  //     errors.sales_region = "Sales region is required";
+  //   if (!newDistributorForm.authorized_products)
+  //     errors.authorized_products = "Authorized Products is required";
+  //   if (!newDistributorForm.contact_person_name.trim())
+  //     errors.contact_person_name = "Contact person name is required";
+  //   if (!newDistributorForm.designation.trim())
+  //     errors.designation = "Designation is required";
+  //   if (!newDistributorForm.mobile_number.trim())
+  //     errors.mobile_number = "Mobile number is required";
+  //   else if (!/^\d{10}$/.test(newDistributorForm.mobile_number))
+  //     errors.mobile_number = "Mobile number must be 10 digits";
+  //   if (!newDistributorForm.email_id.trim())
+  //     errors.email_id = "Email is required";
+  //   else if (!/\S+@\S+\.\S+/.test(newDistributorForm.email_id))
+  //     errors.email_id = "Email is invalid";
+  //   if (!newDistributorForm.address_line_1.trim())
+  //     errors.address_line_1 = "Address line 1 is required";
+  //   if (!newDistributorForm.city.trim()) errors.city = "City is required";
+  //   if (!newDistributorForm.state.trim()) errors.state = "State is required";
+  //   if (!newDistributorForm.pincode.trim())
+  //     errors.pincode = "Pin code is required";
+  //   else if (!/^\d{6}$/.test(newDistributorForm.pincode))
+  //     errors.pincode = "Pin code must be 6 digits";
+  //   if (!newDistributorForm.bank_account_name.trim())
+  //     errors.bank_account_name = "Bank account name is required";
+  //   if (!newDistributorForm.bank_name.trim())
+  //     errors.bank_name = "Bank name is required";
+  //   if (!newDistributorForm.branch_name.trim())
+  //     errors.branch_name = "Branch name is required";
+  //   if (!newDistributorForm.account_number.trim())
+  //     errors.account_number = "Account number is required";
+  //   else if (!/^\d{9,18}$/.test(newDistributorForm.account_number.trim()))
+  //     errors.account_number = "Account number must be numeric (9-18 digits)";
+  //   if (!newDistributorForm.ifsc_code.trim())
+  //     errors.ifsc_code = "IFSC code is required";
+  //   else if (
+  //     !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(
+  //       newDistributorForm.ifsc_code.trim().toUpperCase(),
+  //     )
+  //   )
+  //     errors.ifsc_code =
+  //       "IFSC code must be in valid format (e.g., SBIN0001234)";
+  //   if (
+  //     newDistributorForm.credit_limit !== "" &&
+  //     newDistributorForm.credit_limit !== null &&
+  //     newDistributorForm.credit_limit !== undefined
+  //   ) {
+  //     if (isNaN(newDistributorForm.credit_limit)) {
+  //       errors.credit_limit = "Only numeric values are allowed";
+  //     } else if (Number(newDistributorForm.credit_limit) < 0) {
+  //       errors.credit_limit = "Only positive numbers or 0 are allowed";
+  //     }
+  //   }
+  //   if (!newDistributorForm.payment_terms_days)
+  //     errors.payment_terms_days = "Payment terms is required";
+  //   else if (
+  //     isNaN(newDistributorForm.payment_terms_days) ||
+  //     Number(newDistributorForm.payment_terms_days) < 0
+  //   )
+  //     errors.payment_terms_days = "Only positive numbers or 0 are allowed";
+  //   if (!newDistFiles.cancelled_cheque)
+  //     errors.cancelled_cheque = "Cancelled cheque is required";
+  //   if (
+  //     newDistributorForm.warehouse_available &&
+  //     !newDistributorForm.warehouse_address.trim()
+  //   )
+  //     errors.warehouse_address =
+  //       "Warehouse address is required when warehouse is available";
+  //   if (!newDistributorForm.monthly_distribution_capacity)
+  //     errors.monthly_distribution_capacity =
+  //       "Monthly distribution capacity is required";
+  //   else if (
+  //     isNaN(newDistributorForm.monthly_distribution_capacity) ||
+  //     Number(newDistributorForm.monthly_distribution_capacity) < 0
+  //   )
+  //     errors.monthly_distribution_capacity =
+  //       "Only positive numbers or 0 are allowed";
+  //   if (!newDistributorForm.service_cities)
+  //     errors.service_cities = "Service cities is required";
+  //   if (!newDistributorForm.gst_number.trim())
+  //     errors.gst_number = "GST number is required";
+  //   else if (
+  //     !/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(
+  //       newDistributorForm.gst_number.trim().toUpperCase(),
+  //     )
+  //   )
+  //     errors.gst_number = "GST number format is invalid";
+  //   if (!newDistributorForm.years_in_business.trim())
+  //     errors.years_in_business = "Years in business is required";
+  //   if (!newDistributorForm.pan_number.trim())
+  //     errors.pan_number = "PAN number is required";
+  //   else if (
+  //     !/^[A-Z]{5}\d{4}[A-Z]{1}$/.test(
+  //       newDistributorForm.pan_number.trim().toUpperCase(),
+  //     )
+  //   )
+  //     errors.pan_number =
+  //       "PAN number must be in valid format (e.g., ABCDE1234F)";
+  //   if (!newDistFiles.gst_certificate)
+  //     errors.gst_certificate = "GST certificate is required";
+  //   if (!newDistFiles.pan_card_copy)
+  //     errors.pan_card_copy = "PAN card copy is required";
+  //   if (!newDistributorForm.owner_dob)
+  //     errors.owner_dob = "Owner date of birth is required";
+  //   if (!newDistributorForm.aadhaar_number.trim())
+  //     errors.aadhaar_number = "Aadhaar number is required";
+  //   else if (!/^\d{12}$/.test(newDistributorForm.aadhaar_number))
+  //     errors.aadhaar_number = "Aadhaar number must be 12 digits";
+  //   if (!newDistFiles.aadhaar_front)
+  //     errors.aadhaar_front = "Aadhaar front copy is required";
+  //   if (!newDistFiles.aadhaar_back)
+  //     errors.aadhaar_back = "Aadhaar back copy is required";
+  //   if (!newDistFiles.owner_photo)
+  //     errors.owner_photo = "Owner photo is required";
+  //   if (!newDistributorForm.address_proof.trim())
+  //     errors.address_proof = "Address proof type is required";
+  //   if (!newDistFiles.address_proof_copy)
+  //     errors.address_proof_copy = "Address proof copy is required";
+  //   if (newDistributorForm.firm_type === "company") {
+  //     if (!newDistributorForm.authorized_signatory_name.trim())
+  //       errors.authorized_signatory_name =
+  //         "Authorized signatory name is required for companies";
+  //     if (!newDistributorForm.signatory_pan?.trim())
+  //       errors.signatory_pan = "Signatory PAN is required for companies";
+  //     else if (
+  //       !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(
+  //         newDistributorForm.signatory_pan.trim().toUpperCase(),
+  //       )
+  //     )
+  //       errors.signatory_pan = "PAN must be in valid format (e.g., ABCDE1234F)";
+  //     if (!newDistFiles.signatory_pan_copy)
+  //       errors.signatory_pan_copy =
+  //         "Signatory PAN copy is required for companies";
+  //     if (!newDistFiles.agreement_copy)
+  //       errors.agreement_copy = "Agreement copy is required for companies";
+  //   }
+  //   if (
+  //     newDistributorForm.storage_area_sqft &&
+  //     (isNaN(newDistributorForm.storage_area_sqft) ||
+  //       Number(newDistributorForm.storage_area_sqft) < 0)
+  //   ) {
+  //     errors.storage_area_sqft = "Only positive numbers or 0 are allowed";
+  //   }
+  //   if (!newDistributorForm.kyc_verified_by.trim())
+  //     errors.kyc_verified_by = "KYC verified by is required";
+  //   if (
+  //     newDistributorForm.account_number?.trim() &&
+  //     !newDistributorForm.ifsc_code?.trim()
+  //   ) {
+  //     errors.ifsc_code = "IFSC code required when account number is provided";
+  //   }
+  //   setFormErrors(errors);
+  //   if (Object.keys(errors).length > 0) {
+  //     const errorFields = Object.keys(errors);
+  //     const tabMap = [
+  //       [
+  //         "distributor_name",
+  //         "password",
+  //         "distributor_type",
+  //         "owner_name",
+  //         "date_of_registration",
+  //         "sales_region",
+  //         "authorized_products",
+  //       ],
+  //       [
+  //         "contact_person_name",
+  //         "designation",
+  //         "mobile_number",
+  //         "alternate_mobile",
+  //         "email_id",
+  //         "address_line_1",
+  //         "address_line_2",
+  //         "city",
+  //         "state",
+  //         "pincode",
+  //         "country",
+  //       ],
+  //       [
+  //         "bank_account_name",
+  //         "bank_name",
+  //         "branch_name",
+  //         "account_number",
+  //         "ifsc_code",
+  //         "branch_name",
+  //         "payment_terms_days",
+  //         "credit_limit",
+  //         "cancelled_cheque",
+  //       ],
+  //       [
+  //         "warehouse_available",
+  //         "warehouse_address",
+  //         "storage_area_sqft",
+  //         "logistics_partner",
+  //         "monthly_distribution_capacity",
+  //         "service_cities",
+  //       ],
+  //       [
+  //         "business_type",
+  //         "years_in_business",
+  //         "gst_number",
+  //         "pan_number",
+  //         "cin_llpin",
+  //         "gst_certificate",
+  //         "pan_card_copy",
+  //         "incorporation_certificate",
+  //       ],
+  //       [
+  //         "owner_dob",
+  //         "aadhaar_number",
+  //         "aadhaar_front",
+  //         "aadhaar_back",
+  //         "owner_photo",
+  //         "address_proof",
+  //         "address_proof_copy",
+  //       ],
+  //       [
+  //         "authorized_signatory_name",
+  //         "signatory_pan",
+  //         "signatory_pan_copy",
+  //         "board_resolution",
+  //         "partnership_deed",
+  //         "llp_agreement",
+  //       ],
+  //       [
+  //         "agreement_signed",
+  //         "kyc_verified",
+  //         "kyc_verified_by",
+  //         "remarks",
+  //         "agreement_copy",
+  //       ],
+  //     ];
+  //     const tabMessages = [
+  //       "Please fill all required fields in Basic Information",
+  //       "Please fill all required fields in Contact & Address",
+  //       "Please fill all required fields in Bank & Financial",
+  //       "Please fill all required fields in Distribution Capability",
+  //       "Please fill all required fields in Business & Legal",
+  //       "Please fill all required fields in KYC – Individual",
+  //       "Please fill all required fields in KYC – Company",
+  //       "Please fill all required fields in Compliance",
+  //     ];
+  //     const tabIdx = tabMap.findIndex((fields) =>
+  //       errorFields.some((f) => fields.includes(f)),
+  //     );
+  //     if (tabIdx >= 0) {
+  //       setActiveTab(tabIdx);
+  //       setValidationAlert(tabMessages[tabIdx]);
+  //     }
+  //     return false;
+  //   }
+  //   setValidationAlert(null);
+  //   return true;
+  // };
+
+  // ── Validation ───────────────────────────────────────────────────────────────
   const validateForm = () => {
     const errors = {};
-    if (!newDistributorForm.distributor_name.trim())
+
+    // Only these fields will be validated
+    if (!newDistributorForm.distributor_name?.trim())
       errors.distributor_name = "Distributor name is required";
-    if (!newDistributorForm.password.trim())
+
+    if (!newDistributorForm.password?.trim())
       errors.password = "Password is required";
-    if (!newDistributorForm.distributor_type.trim())
-      errors.distributor_type = "Distributor type is required";
-    if (!newDistributorForm.owner_name.trim())
-      errors.owner_name = "Owner name is required";
+
     if (!newDistributorForm.date_of_registration)
       errors.date_of_registration = "Date of registration is required";
-    if (!newDistributorForm.sales_region)
-      errors.sales_region = "Sales region is required";
-    if (!newDistributorForm.authorized_products)
-      errors.authorized_products = "Authorized Products is required";
-    if (!newDistributorForm.contact_person_name.trim())
+
+    if (!newDistributorForm.contact_person_name?.trim())
       errors.contact_person_name = "Contact person name is required";
-    if (!newDistributorForm.designation.trim())
-      errors.designation = "Designation is required";
-    if (!newDistributorForm.mobile_number.trim())
+
+    if (!newDistributorForm.mobile_number?.trim())
       errors.mobile_number = "Mobile number is required";
     else if (!/^\d{10}$/.test(newDistributorForm.mobile_number))
       errors.mobile_number = "Mobile number must be 10 digits";
-    if (!newDistributorForm.email_id.trim())
+
+    if (!newDistributorForm.email_id?.trim())
       errors.email_id = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(newDistributorForm.email_id))
       errors.email_id = "Email is invalid";
-    if (!newDistributorForm.address_line_1.trim())
-      errors.address_line_1 = "Address line 1 is required";
-    if (!newDistributorForm.city.trim()) errors.city = "City is required";
-    if (!newDistributorForm.state.trim()) errors.state = "State is required";
-    if (!newDistributorForm.pincode.trim())
-      errors.pincode = "Pin code is required";
-    else if (!/^\d{6}$/.test(newDistributorForm.pincode))
-      errors.pincode = "Pin code must be 6 digits";
-    if (!newDistributorForm.bank_account_name.trim())
-      errors.bank_account_name = "Bank account name is required";
-    if (!newDistributorForm.bank_name.trim())
-      errors.bank_name = "Bank name is required";
-    if (!newDistributorForm.branch_name.trim())
-      errors.branch_name = "Branch name is required";
-    if (!newDistributorForm.account_number.trim())
-      errors.account_number = "Account number is required";
-    else if (!/^\d{9,18}$/.test(newDistributorForm.account_number.trim()))
-      errors.account_number = "Account number must be numeric (9-18 digits)";
-    if (!newDistributorForm.ifsc_code.trim())
-      errors.ifsc_code = "IFSC code is required";
-    else if (
-      !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(
-        newDistributorForm.ifsc_code.trim().toUpperCase(),
-      )
-    )
-      errors.ifsc_code =
-        "IFSC code must be in valid format (e.g., SBIN0001234)";
-    if (
-      newDistributorForm.credit_limit !== "" &&
-      newDistributorForm.credit_limit !== null &&
-      newDistributorForm.credit_limit !== undefined
-    ) {
-      if (isNaN(newDistributorForm.credit_limit)) {
-        errors.credit_limit = "Only numeric values are allowed";
-      } else if (Number(newDistributorForm.credit_limit) < 0) {
-        errors.credit_limit = "Only positive numbers or 0 are allowed";
-      }
-    }
-    if (!newDistributorForm.payment_terms_days)
-      errors.payment_terms_days = "Payment terms is required";
-    else if (
-      isNaN(newDistributorForm.payment_terms_days) ||
-      Number(newDistributorForm.payment_terms_days) < 0
-    )
-      errors.payment_terms_days = "Only positive numbers or 0 are allowed";
-    if (!newDistFiles.cancelled_cheque)
-      errors.cancelled_cheque = "Cancelled cheque is required";
-    if (
-      newDistributorForm.warehouse_available &&
-      !newDistributorForm.warehouse_address.trim()
-    )
-      errors.warehouse_address =
-        "Warehouse address is required when warehouse is available";
-    if (!newDistributorForm.monthly_distribution_capacity)
-      errors.monthly_distribution_capacity =
-        "Monthly distribution capacity is required";
-    else if (
-      isNaN(newDistributorForm.monthly_distribution_capacity) ||
-      Number(newDistributorForm.monthly_distribution_capacity) < 0
-    )
-      errors.monthly_distribution_capacity =
-        "Only positive numbers or 0 are allowed";
-    if (!newDistributorForm.service_cities)
-      errors.service_cities = "Service cities is required";
-    if (!newDistributorForm.gst_number.trim())
-      errors.gst_number = "GST number is required";
-    else if (
-      !/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(
-        newDistributorForm.gst_number.trim().toUpperCase(),
-      )
-    )
-      errors.gst_number = "GST number format is invalid";
-    if (!newDistributorForm.years_in_business.trim())
-      errors.years_in_business = "Years in business is required";
-    if (!newDistributorForm.pan_number.trim())
-      errors.pan_number = "PAN number is required";
-    else if (
-      !/^[A-Z]{5}\d{4}[A-Z]{1}$/.test(
-        newDistributorForm.pan_number.trim().toUpperCase(),
-      )
-    )
-      errors.pan_number =
-        "PAN number must be in valid format (e.g., ABCDE1234F)";
-    if (!newDistFiles.gst_certificate)
-      errors.gst_certificate = "GST certificate is required";
-    if (!newDistFiles.pan_card_copy)
-      errors.pan_card_copy = "PAN card copy is required";
-    if (!newDistributorForm.owner_dob)
-      errors.owner_dob = "Owner date of birth is required";
-    if (!newDistributorForm.aadhaar_number.trim())
-      errors.aadhaar_number = "Aadhaar number is required";
-    else if (!/^\d{12}$/.test(newDistributorForm.aadhaar_number))
-      errors.aadhaar_number = "Aadhaar number must be 12 digits";
-    if (!newDistFiles.aadhaar_front)
-      errors.aadhaar_front = "Aadhaar front copy is required";
-    if (!newDistFiles.aadhaar_back)
-      errors.aadhaar_back = "Aadhaar back copy is required";
-    if (!newDistFiles.owner_photo)
-      errors.owner_photo = "Owner photo is required";
-    if (!newDistributorForm.address_proof.trim())
-      errors.address_proof = "Address proof type is required";
-    if (!newDistFiles.address_proof_copy)
-      errors.address_proof_copy = "Address proof copy is required";
-    if (newDistributorForm.firm_type === "company") {
-      if (!newDistributorForm.authorized_signatory_name.trim())
-        errors.authorized_signatory_name =
-          "Authorized signatory name is required for companies";
-      if (!newDistributorForm.signatory_pan?.trim())
-        errors.signatory_pan = "Signatory PAN is required for companies";
-      else if (
-        !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(
-          newDistributorForm.signatory_pan.trim().toUpperCase(),
-        )
-      )
-        errors.signatory_pan = "PAN must be in valid format (e.g., ABCDE1234F)";
-      if (!newDistFiles.signatory_pan_copy)
-        errors.signatory_pan_copy =
-          "Signatory PAN copy is required for companies";
-      if (!newDistFiles.agreement_copy)
-        errors.agreement_copy = "Agreement copy is required for companies";
-    }
-    if (
-      newDistributorForm.storage_area_sqft &&
-      (isNaN(newDistributorForm.storage_area_sqft) ||
-        Number(newDistributorForm.storage_area_sqft) < 0)
-    ) {
-      errors.storage_area_sqft = "Only positive numbers or 0 are allowed";
-    }
-    if (!newDistributorForm.kyc_verified_by.trim())
-      errors.kyc_verified_by = "KYC verified by is required";
-    if (
-      newDistributorForm.account_number?.trim() &&
-      !newDistributorForm.ifsc_code?.trim()
-    ) {
-      errors.ifsc_code = "IFSC code required when account number is provided";
-    }
+
     setFormErrors(errors);
+
     if (Object.keys(errors).length > 0) {
-      const errorFields = Object.keys(errors);
-      const tabMap = [
-        [
-          "distributor_name",
-          "password",
-          "distributor_type",
-          "owner_name",
-          "date_of_registration",
-          "sales_region",
-          "authorized_products",
-        ],
-        [
-          "contact_person_name",
-          "designation",
-          "mobile_number",
-          "alternate_mobile",
-          "email_id",
-          "address_line_1",
-          "address_line_2",
-          "city",
-          "state",
-          "pincode",
-          "country",
-        ],
-        [
-          "bank_account_name",
-          "bank_name",
-          "branch_name",
-          "account_number",
-          "ifsc_code",
-          "branch_name",
-          "payment_terms_days",
-          "credit_limit",
-          "cancelled_cheque",
-        ],
-        [
-          "warehouse_available",
-          "warehouse_address",
-          "storage_area_sqft",
-          "logistics_partner",
-          "monthly_distribution_capacity",
-          "service_cities",
-        ],
-        [
-          "business_type",
-          "years_in_business",
-          "gst_number",
-          "pan_number",
-          "cin_llpin",
-          "gst_certificate",
-          "pan_card_copy",
-          "incorporation_certificate",
-        ],
-        [
-          "owner_dob",
-          "aadhaar_number",
-          "aadhaar_front",
-          "aadhaar_back",
-          "owner_photo",
-          "address_proof",
-          "address_proof_copy",
-        ],
-        [
-          "authorized_signatory_name",
-          "signatory_pan",
-          "signatory_pan_copy",
-          "board_resolution",
-          "partnership_deed",
-          "llp_agreement",
-        ],
-        [
-          "agreement_signed",
-          "kyc_verified",
-          "kyc_verified_by",
-          "remarks",
-          "agreement_copy",
-        ],
-      ];
-      const tabMessages = [
-        "Please fill all required fields in Basic Information",
-        "Please fill all required fields in Contact & Address",
-        "Please fill all required fields in Bank & Financial",
-        "Please fill all required fields in Distribution Capability",
-        "Please fill all required fields in Business & Legal",
-        "Please fill all required fields in KYC – Individual",
-        "Please fill all required fields in KYC – Company",
-        "Please fill all required fields in Compliance",
-      ];
-      const tabIdx = tabMap.findIndex((fields) =>
-        errorFields.some((f) => fields.includes(f)),
-      );
-      if (tabIdx >= 0) {
-        setActiveTab(tabIdx);
-        setValidationAlert(tabMessages[tabIdx]);
-      }
+      setValidationAlert("Please fill all required fields");
       return false;
     }
+
     setValidationAlert(null);
     return true;
   };
-
   // ── Data Loading ──────────────────────────────────────────────────────────────
   const loadFormData = (dist) => {
     setFormData({
