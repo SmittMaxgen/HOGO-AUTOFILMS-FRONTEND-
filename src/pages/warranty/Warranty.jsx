@@ -543,7 +543,7 @@ const WarrantyManagement = () => {
     });
   };
 
-  const getImageUrl = (path) => (path ? `${BASE_URL}/${path}` : "");
+  const getImageUrl = (path) => (path ? `${BASE_URL}${path}` : "");
 
   // ─── Excel Download ───────────────────────────────────────────────────────────
   const handleDownloadExcel = async () => {
