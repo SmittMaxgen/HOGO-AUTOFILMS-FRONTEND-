@@ -713,28 +713,30 @@ const Distributors = () => {
   const validateForm = () => {
     const errors = {};
 
-    // Only these fields will be validated
+    if (!newDistributorForm.brand_name?.trim())
+      errors.brand_name = "Company name is required";
+
     if (!newDistributorForm.distributor_name?.trim())
       errors.distributor_name = "Distributor name is required";
 
-    if (!newDistributorForm.password?.trim())
-      errors.password = "Password is required";
-
-    if (!newDistributorForm.date_of_registration)
-      errors.date_of_registration = "Date of registration is required";
-
-    if (!newDistributorForm.contact_person_name?.trim())
-      errors.contact_person_name = "Contact person name is required";
+    if (!newDistributorForm.email_id?.trim())
+      errors.email_id = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(newDistributorForm.email_id))
+      errors.email_id = "Email is invalid";
 
     if (!newDistributorForm.mobile_number?.trim())
       errors.mobile_number = "Mobile number is required";
     else if (!/^\d{10}$/.test(newDistributorForm.mobile_number))
       errors.mobile_number = "Mobile number must be 10 digits";
 
-    if (!newDistributorForm.email_id?.trim())
-      errors.email_id = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(newDistributorForm.email_id))
-      errors.email_id = "Email is invalid";
+    if (!newDistributorForm.distributor_code?.trim())
+      errors.distributor_code = "Distributor code is required";
+
+    if (!newDistributorForm.sales_region?.trim())
+      errors.sales_region = "Region is required";
+
+    if (!newDistributorForm.password?.trim())
+      errors.password = "Password is required";
 
     setFormErrors(errors);
 
@@ -1671,7 +1673,7 @@ const Distributors = () => {
       )}
 
       {/* Tabs */}
-      <Box sx={{ bgcolor: "#fff", borderBottom: "1px solid #ebebeb" }}>
+      <Box sx={{ bgcolor: "#fff", borderBottom: "1px solid #ebebeb", display: createDistributorFlag ? "none" : "block" }}>
         <Tabs
           value={activeTab}
           onChange={(_, v) => setActiveTab(v)}
@@ -1732,6 +1734,129 @@ const Distributors = () => {
 
       {/* Tab Content */}
       <Box sx={{ p: 3 }}>
+        {createDistributorFlag ? (
+          <TabCard title="Add Distributor">
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Company Name *"
+                  value={newDistributorForm.brand_name}
+                  onChange={(e) => {
+                    setNewDistributorForm((prev) => ({ ...prev, brand_name: e.target.value }));
+                    clearFieldError("brand_name");
+                  }}
+                  error={!!formErrors.brand_name}
+                  helperText={formErrors.brand_name}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Distributor Name *"
+                  value={newDistributorForm.distributor_name}
+                  onChange={(e) => {
+                    setNewDistributorForm((prev) => ({ ...prev, distributor_name: e.target.value }));
+                    clearFieldError("distributor_name");
+                  }}
+                  error={!!formErrors.distributor_name}
+                  helperText={formErrors.distributor_name}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Email *"
+                  type="email"
+                  value={newDistributorForm.email_id}
+                  onChange={(e) => {
+                    setNewDistributorForm((prev) => ({ ...prev, email_id: e.target.value }));
+                    clearFieldError("email_id");
+                  }}
+                  error={!!formErrors.email_id}
+                  helperText={formErrors.email_id}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Number *"
+                  value={newDistributorForm.mobile_number}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/\D/g, "");
+                    setNewDistributorForm((prev) => ({ ...prev, mobile_number: v }));
+                    clearFieldError("mobile_number");
+                  }}
+                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", maxLength: 10 }}
+                  error={!!formErrors.mobile_number}
+                  helperText={formErrors.mobile_number}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Distributor Code *"
+                  value={newDistributorForm.distributor_code}
+                  onChange={(e) => {
+                    setNewDistributorForm((prev) => ({ ...prev, distributor_code: e.target.value }));
+                    clearFieldError("distributor_code");
+                  }}
+                  error={!!formErrors.distributor_code}
+                  helperText={formErrors.distributor_code}
+                  sx={fieldSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Region *"
+                  value={newDistributorForm.sales_region}
+                  onChange={(e) => {
+                    setNewDistributorForm((prev) => ({ ...prev, sales_region: e.target.value }));
+                    clearFieldError("sales_region");
+                  }}
+                  error={!!formErrors.sales_region}
+                  helperText={formErrors.sales_region}
+                  sx={{ ...fieldSx, width: 250 }}
+                >
+                  <MenuItem value="">
+                    <em>Select Region...</em>
+                  </MenuItem>
+                  {Array.isArray(regions)
+                    ? regions
+                        .filter((r) => r.status === "enable")
+                        .map((region) => (
+                          <MenuItem key={region.id} value={region.name}>
+                            {region.name}
+                          </MenuItem>
+                        ))
+                    : []}
+                </TextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Password *"
+                  type="password"
+                  value={newDistributorForm.password}
+                  onChange={(e) => {
+                    setNewDistributorForm((prev) => ({ ...prev, password: e.target.value }));
+                    clearFieldError("password");
+                  }}
+                  error={!!formErrors.password}
+                  helperText={formErrors.password}
+                  sx={fieldSx}
+                />
+              </Grid>
+            </Grid>
+          </TabCard>
+        ) : (
+          <>
         {/* TAB 0: BASIC INFORMATION */}
         <TabPanel value={activeTab} index={0}>
           <TabCard
@@ -2273,6 +2398,8 @@ const Distributors = () => {
             </Box>
           </TabCard>
         </TabPanel>
+          </>
+        )}
 
         {/* Submit Button */}
         {createDistributorFlag && (
