@@ -6,6 +6,7 @@ import { loginUser } from "../../feature/auth/authThunks";
 import {
   forgotPassword,
   resetPassword,
+  resetPasswordAdmin
 } from "../../feature/profileSettings/profileSettingsThunks";
 import {
   clearForgotPasswordState,
@@ -65,36 +66,67 @@ const Login = () => {
     }
   };
 
-  const handleResetPassword = async () => {
-    if (!resetForm.otp)
-      return alert("Please enter the OTP sent to your email.");
-    if (!resetForm.new_password || !resetForm.confirm_password)
-      return alert("Please fill all fields.");
-    if (resetForm.new_password !== resetForm.confirm_password)
-      return alert("Passwords do not match!");
+const handleResetPassword = async () => {
+  if (!resetForm.otp)
+    return alert("Please enter the OTP sent to your email.");
+  if (!resetForm.new_password || !resetForm.confirm_password)
+    return alert("Please fill all fields.");
+  if (resetForm.new_password !== resetForm.confirm_password)
+    return alert("Passwords do not match!");
 
-    try {
-      const resultAction = await dispatch(
-        resetPassword({
-          email: forgotEmail,
-          otp: resetForm.otp,
-          new_password: resetForm.new_password,
-          confirm_password: resetForm.confirm_password,
-        }),
-      );
+  try {
+    const resultAction = await dispatch(
+      resetPasswordAdmin({
+        email: forgotEmail,
+        otp: resetForm.otp,
+        new_password: resetForm.new_password,
+        confirm_password: resetForm.confirm_password,
+      }),
+    );
 
-      if (resetPassword.fulfilled.match(resultAction)) {
-        setShowReset(false);
-        setShowForgot(false);
-        setResetToken("");
-        setResetForm({ otp: "", new_password: "", confirm_password: "" });
-        setForgotEmail("");
-        dispatch(clearForgotPasswordState());
-      }
-    } catch (err) {
-      console.error("Reset password error:", err);
+    if (resetPasswordAdmin.fulfilled.match(resultAction)) {
+      setShowReset(false);
+      setShowForgot(false);
+      setResetToken("");
+      setResetForm({ otp: "", new_password: "", confirm_password: "" });
+      setForgotEmail("");
+      dispatch(clearForgotPasswordState());
+      // Optional: show success message
+      alert("Password reset successfully! Please login with new password.");
     }
-  };
+  } catch (err) {
+    console.error("Reset password error:", err);
+  }
+};
+  //   if (!resetForm.otp)
+  //     return alert("Please enter the OTP sent to your email.");
+  //   if (!resetForm.new_password || !resetForm.confirm_password)
+  //     return alert("Please fill all fields.");
+  //   if (resetForm.new_password !== resetForm.confirm_password)
+  //     return alert("Passwords do not match!");
+
+  //   try {
+  //     const resultAction = await dispatch(
+  //       resetPassword({
+  //         email: forgotEmail,
+  //         otp: resetForm.otp,
+  //         new_password: resetForm.new_password,
+  //         confirm_password: resetForm.confirm_password,
+  //       }),
+  //     );
+
+  //     if (resetPassword.fulfilled.match(resultAction)) {
+  //       setShowReset(false);
+  //       setShowForgot(false);
+  //       setResetToken("");
+  //       setResetForm({ otp: "", new_password: "", confirm_password: "" });
+  //       setForgotEmail("");
+  //       dispatch(clearForgotPasswordState());
+  //     }
+  //   } catch (err) {
+  //     console.error("Reset password error:", err);
+  //   }
+  // };
 
   return (
     <Box

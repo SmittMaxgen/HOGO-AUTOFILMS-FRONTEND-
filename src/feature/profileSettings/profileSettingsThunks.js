@@ -33,3 +33,20 @@ export const resetPassword = createAsyncThunk(
     }
   },
 );
+
+export const resetPasswordAdmin = createAsyncThunk(
+  "forgotPass/AdminResetPassword/",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.patch(
+        `/admin_forgot_password/`,
+        payload,
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to reset password"
+      );
+    }
+  },
+);
