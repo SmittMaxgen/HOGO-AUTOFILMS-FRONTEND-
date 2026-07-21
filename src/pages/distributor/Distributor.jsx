@@ -1904,6 +1904,7 @@ const Distributors = () => {
                   error={!!formErrors.password}
                   helperText={formErrors.password}
                   sx={fieldSx}
+                  autoComplete="new-password"
                 />
               </Grid>
             </Grid>
