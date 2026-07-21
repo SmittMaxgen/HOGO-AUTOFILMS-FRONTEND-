@@ -1305,8 +1305,8 @@ const Distributors = () => {
                   >
                     {[
                       "Sr",
-                      "Distributor Name",
-                      "Type",
+                      "Distributor Brand Name",
+                      "Distributor Owner Name",
                       "City",
                       "State",
                       "Contact",
@@ -1376,16 +1376,38 @@ const Distributors = () => {
                               fontSize={13}
                               color="#1a1a1a"
                             >
-                              {dist.distributor_name || "-"}
+                              {dist.brand_name || "-"}
                             </Typography>
                           </Box>
                         </TableCell>
-
-                        {/* Type */}
+                        {/* Name */}
                         <TableCell>
-                          <Typography fontSize={12} color="text.secondary">
-                            {dist.distributor_type || "-"}
-                          </Typography>
+                          <Box display="flex" alignItems="center" gap={1.2}>
+                            <Box
+                              sx={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: 1,
+                                bgcolor: "#f0f0f0",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                border: "1px solid #e0e0e0",
+                                flexShrink: 0,
+                              }}
+                            >
+                              <BusinessIcon
+                                sx={{ fontSize: 15, color: "#D20000" }}
+                              />
+                            </Box>
+                            <Typography
+                              fontWeight={600}
+                              fontSize={13}
+                              color="#1a1a1a"
+                            >
+                              {dist.distributor_name || "-"}
+                            </Typography>
+                          </Box>
                         </TableCell>
 
                         {/* City */}
@@ -1673,7 +1695,13 @@ const Distributors = () => {
       )}
 
       {/* Tabs */}
-      <Box sx={{ bgcolor: "#fff", borderBottom: "1px solid #ebebeb", display: createDistributorFlag ? "none" : "block" }}>
+      <Box
+        sx={{
+          bgcolor: "#fff",
+          borderBottom: "1px solid #ebebeb",
+          display: createDistributorFlag ? "none" : "block",
+        }}
+      >
         <Tabs
           value={activeTab}
           onChange={(_, v) => setActiveTab(v)}
@@ -1740,10 +1768,13 @@ const Distributors = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Company Name *"
+                  label="Distributor Brand Name *"
                   value={newDistributorForm.brand_name}
                   onChange={(e) => {
-                    setNewDistributorForm((prev) => ({ ...prev, brand_name: e.target.value }));
+                    setNewDistributorForm((prev) => ({
+                      ...prev,
+                      brand_name: e.target.value,
+                    }));
                     clearFieldError("brand_name");
                   }}
                   error={!!formErrors.brand_name}
@@ -1754,10 +1785,13 @@ const Distributors = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Distributor Name *"
+                  label="Distributor Owner Name *"
                   value={newDistributorForm.distributor_name}
                   onChange={(e) => {
-                    setNewDistributorForm((prev) => ({ ...prev, distributor_name: e.target.value }));
+                    setNewDistributorForm((prev) => ({
+                      ...prev,
+                      distributor_name: e.target.value,
+                    }));
                     clearFieldError("distributor_name");
                   }}
                   error={!!formErrors.distributor_name}
@@ -1772,7 +1806,10 @@ const Distributors = () => {
                   type="email"
                   value={newDistributorForm.email_id}
                   onChange={(e) => {
-                    setNewDistributorForm((prev) => ({ ...prev, email_id: e.target.value }));
+                    setNewDistributorForm((prev) => ({
+                      ...prev,
+                      email_id: e.target.value,
+                    }));
                     clearFieldError("email_id");
                   }}
                   error={!!formErrors.email_id}
@@ -1783,14 +1820,21 @@ const Distributors = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Number *"
+                  label="Phone Number *"
                   value={newDistributorForm.mobile_number}
                   onChange={(e) => {
                     const v = e.target.value.replace(/\D/g, "");
-                    setNewDistributorForm((prev) => ({ ...prev, mobile_number: v }));
+                    setNewDistributorForm((prev) => ({
+                      ...prev,
+                      mobile_number: v,
+                    }));
                     clearFieldError("mobile_number");
                   }}
-                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", maxLength: 10 }}
+                  inputProps={{
+                    inputMode: "numeric",
+                    pattern: "[0-9]*",
+                    maxLength: 10,
+                  }}
                   error={!!formErrors.mobile_number}
                   helperText={formErrors.mobile_number}
                   sx={fieldSx}
@@ -1802,7 +1846,10 @@ const Distributors = () => {
                   label="Distributor Code *"
                   value={newDistributorForm.distributor_code}
                   onChange={(e) => {
-                    setNewDistributorForm((prev) => ({ ...prev, distributor_code: e.target.value }));
+                    setNewDistributorForm((prev) => ({
+                      ...prev,
+                      distributor_code: e.target.value,
+                    }));
                     clearFieldError("distributor_code");
                   }}
                   error={!!formErrors.distributor_code}
@@ -1817,7 +1864,10 @@ const Distributors = () => {
                   label="Region *"
                   value={newDistributorForm.sales_region}
                   onChange={(e) => {
-                    setNewDistributorForm((prev) => ({ ...prev, sales_region: e.target.value }));
+                    setNewDistributorForm((prev) => ({
+                      ...prev,
+                      sales_region: e.target.value,
+                    }));
                     clearFieldError("sales_region");
                   }}
                   error={!!formErrors.sales_region}
@@ -1845,7 +1895,10 @@ const Distributors = () => {
                   type="password"
                   value={newDistributorForm.password}
                   onChange={(e) => {
-                    setNewDistributorForm((prev) => ({ ...prev, password: e.target.value }));
+                    setNewDistributorForm((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }));
                     clearFieldError("password");
                   }}
                   error={!!formErrors.password}
@@ -1857,20 +1910,20 @@ const Distributors = () => {
           </TabCard>
         ) : (
           <>
-        {/* TAB 0: BASIC INFORMATION */}
-        <TabPanel value={activeTab} index={0}>
-          <TabCard
-            editControlsProps={editControlsProps}
-            title="Basic Distributor Information"
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                {renderTextField("Distributor Name", "distributor_name")}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {renderTextField("Distributor Type", "distributor_type")}
-              </Grid>
-              {/* <Grid item xs={12} sm={6}>
+            {/* TAB 0: BASIC INFORMATION */}
+            <TabPanel value={activeTab} index={0}>
+              <TabCard
+                editControlsProps={editControlsProps}
+                title="Basic Distributor Information"
+              >
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Distributor Brand Name", "brand_name")}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Distributor Type", "distributor_type")}
+                  </Grid>
+                  {/* <Grid item xs={12} sm={6}>
                 {renderTextField("Brand Name", "brand_name")}
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -1881,523 +1934,554 @@ const Distributors = () => {
                   { InputLabelProps: { shrink: true } },
                 )}
               </Grid> */}
-              <Grid item xs={12} sm={6}>
-                {renderTextField("Brand Name", "brand_name")}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {renderTextField("Distributor Code", "distributor_code")}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {renderTextField(
-                  "Date of Registration",
-                  "date_of_registration",
-                  "date",
-                  { InputLabelProps: { shrink: true } },
-                )}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {renderTextField("Owner Name", "owner_name")}
-              </Grid>
-              {/* <Grid item xs={12}>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField(
+                      "Distributor Owner Name",
+                      "distributor_name",
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Distributor Code", "distributor_code")}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField(
+                      "Date of Registration",
+                      "date_of_registration",
+                      "date",
+                      { InputLabelProps: { shrink: true } },
+                    )}
+                  </Grid>
+                  {/* <Grid item xs={12} sm={6}>
+                    {renderTextField("Owner Name", "owner_name")}
+                  </Grid> */}
+                  {/* <Grid item xs={12}>
                 {renderTextField("Sales Region", "sales_region")}
               </Grid> */}
-              <Grid sx={{ width: 200 }} item xs={12}>
-                {renderTextField("Sales Region", "sales_region", "text", {
-                  select: true,
-                  children: Array.isArray(regions)
-                    ? regions
-                        .filter((r) => r.status === "enable")
-                        .map((region) => (
-                          <MenuItem
-                            sx={{ width: 200 }}
-                            key={region.id}
-                            value={region.name}
-                          >
-                            {region.name}
-                          </MenuItem>
-                        ))
-                    : [],
-                })}
-              </Grid>
-              <Grid item xs={12}>
-                {renderTextField("Authorized Products", "authorized_products")}
-              </Grid>
-              <Grid item xs={12}>
-                {renderTextField("Password", "password", "password")}
-              </Grid>
-            </Grid>
-          </TabCard>
-        </TabPanel>
-
-        {/* TAB 1: CONTACT & ADDRESS */}
-        <TabPanel value={activeTab} index={1}>
-          <TabCard
-            editControlsProps={editControlsProps}
-            title="Contact & Address Details"
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                {renderTextField("Contact Person", "contact_person_name")}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {renderTextField("Designation", "designation")}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {renderTextField("Mobile", "mobile_number", "tel", {
-                  inputProps: {
-                    inputMode: "numeric",
-                    pattern: "[0-9]*",
-                    maxLength: 10,
-                  },
-                })}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {renderTextField(
-                  "Alternate Mobile",
-                  "alternate_mobile",
-                  "tel",
-                  {
-                    inputProps: {
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
-                      maxLength: 10,
-                    },
-                  },
-                )}
-              </Grid>
-              <Grid item xs={12}>
-                {renderTextField("Email", "email_id", "email")}
-              </Grid>
-              <Grid item xs={12}>
-                {renderTextField("Address Line 1", "address_line_1")}
-              </Grid>
-              <Grid item xs={12}>
-                {renderTextField("Address Line 2", "address_line_2")}
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                {createDistributorFlag || editMode ? (
-                  <TextField
-                    select
-                    fullWidth
-                    label="State *"
-                    value={
-                      createDistributorFlag
-                        ? newDistributorForm.state
-                        : formData.state
-                    }
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setSelectedState(val);
-                      if (createDistributorFlag) {
-                        setNewDistributorForm((prev) => ({
-                          ...prev,
-                          state: val,
-                          city: "",
-                        }));
-                        clearFieldError("state");
-                      } else {
-                        setFormData((prev) => ({
-                          ...prev,
-                          state: val,
-                          city: "",
-                        }));
-                      }
-                    }}
-                    error={createDistributorFlag && !!formErrors.state}
-                    helperText={createDistributorFlag && formErrors.state}
-                    sx={{ ...fieldSx, width: "200px" }}
-                  >
-                    <MenuItem value="">
-                      <em>Select State...</em>
-                    </MenuItem>
-                    {State.getStatesOfCountry("IN").map((s) => (
-                      <MenuItem key={s.isoCode} value={s.name}>
-                        {s.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                ) : (
-                  renderTextField("State", "state")
-                )}
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                {createDistributorFlag || editMode ? (
-                  <TextField
-                    select
-                    // fullWidth
-                    sx={{ width: "200px" }}
-                    label="City *"
-                    value={
-                      createDistributorFlag
-                        ? newDistributorForm.city
-                        : formData.city
-                    }
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (createDistributorFlag) {
-                        setNewDistributorForm((prev) => ({
-                          ...prev,
-                          city: val,
-                        }));
-                        clearFieldError("city");
-                      } else {
-                        setFormData((prev) => ({ ...prev, city: val }));
-                      }
-                    }}
-                    disabled={
-                      createDistributorFlag
-                        ? !newDistributorForm.state
-                        : !formData.state
-                    }
-                    error={createDistributorFlag && !!formErrors.city}
-                    helperText={createDistributorFlag && formErrors.city}
-                    sx={{ ...fieldSx, width: "200px" }}
-                  >
-                    <MenuItem value="">
-                      <em>Select City...</em>
-                    </MenuItem>
-                    {City.getCitiesOfState(
-                      "IN",
-                      State.getStatesOfCountry("IN").find(
-                        (s) =>
-                          s.name ===
-                          (createDistributorFlag
-                            ? newDistributorForm.state
-                            : formData.state),
-                      )?.isoCode || "",
-                    ).map((c) => (
-                      <MenuItem key={c.name} value={c.name}>
-                        {c.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                ) : (
-                  renderTextField("City", "city")
-                )}
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                {renderTextField("Pin Code", "pincode", "tel", {
-                  inputProps: {
-                    inputMode: "numeric",
-                    pattern: "[0-9]*",
-                    maxLength: 6,
-                  },
-                })}
-              </Grid>
-              <Grid item xs={12}>
-                {renderTextField("Country", "country")}
-              </Grid>
-            </Grid>
-          </TabCard>
-        </TabPanel>
-
-        {/* TAB 2: BANK & FINANCIAL */}
-        <TabPanel value={activeTab} index={2}>
-          <TabCard
-            editControlsProps={editControlsProps}
-            title="Bank & Financial Details"
-          >
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                gap: 3,
-                alignItems: "flex-start",
-              }}
-            >
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Bank Account Name", "bank_account_name")}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Bank Name", "bank_name")}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Branch Name", "branch_name")}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Account Number", "account_number", "tel", {
-                    inputProps: {
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
-                      maxLength: 18,
-                    },
-                  })}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("IFSC Code", "ifsc_code")}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Credit Limit", "credit_limit", "tel", {
-                    inputProps: { inputMode: "numeric", pattern: "[0-9]*" },
-                  })}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField(
-                    "Payment Terms (Days)",
-                    "payment_terms_days",
-                  )}
-                </Grid>
-              </Grid>
-              {renderFileUpload("Cancelled Cheque", "cancelled_cheque", true)}
-            </Box>
-          </TabCard>
-        </TabPanel>
-
-        {/* TAB 3: DISTRIBUTION CAPABILITY */}
-        <TabPanel value={activeTab} index={3}>
-          <TabCard
-            editControlsProps={editControlsProps}
-            title="Distribution Capability & Infrastructure"
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                {renderTextField("Warehouse Address", "warehouse_address")}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {renderTextField(
-                  "Storage Area (Sq Ft)",
-                  "storage_area_sqft",
-                  "tel",
-                  { inputProps: { inputMode: "numeric", pattern: "[0-9]*" } },
-                )}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {renderTextField("Logistics Partner", "logistics_partner")}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {renderTextField(
-                  "Monthly Distribution Capacity",
-                  "monthly_distribution_capacity",
-                  "tel",
-                  { inputProps: { inputMode: "numeric", pattern: "[0-9]*" } },
-                )}
-              </Grid>
-              <Grid item xs={12}>
-                {renderTextField("Service Cities", "service_cities")}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {renderTextField(
-                  "Warehouse Available",
-                  "warehouse_available",
-                  "boolean",
-                )}
-              </Grid>
-            </Grid>
-          </TabCard>
-        </TabPanel>
-
-        {/* TAB 4: BUSINESS & LEGAL */}
-        <TabPanel value={activeTab} index={4}>
-          <TabCard
-            editControlsProps={editControlsProps}
-            title="Business & Legal Information"
-          >
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                gap: 3,
-                alignItems: "flex-start",
-              }}
-            >
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Business Type", "business_type")}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField(
-                    "Years in Business",
-                    "years_in_business",
-                    "tel",
-                    { inputProps: { inputMode: "numeric", pattern: "[0-9]*" } },
-                  )}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("GST Number", "gst_number")}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("PAN Number", "pan_number")}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("CIN / LLPIN", "cin_llpin")}
-                </Grid>
-              </Grid>
-              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                <Box sx={{ minWidth: 160, flex: 1 }}>
-                  {renderFileUpload("GST Certificate", "gst_certificate", true)}
-                </Box>
-                <Box sx={{ minWidth: 160, flex: 1 }}>
-                  {renderFileUpload("PAN Card Copy", "pan_card_copy", true)}
-                </Box>
-                <Box sx={{ minWidth: 160, flex: 1 }}>
-                  {renderFileUpload(
-                    "Incorporation Certificate",
-                    "incorporation_certificate",
-                  )}
-                </Box>
-              </Box>
-            </Box>
-          </TabCard>
-        </TabPanel>
-
-        {/* TAB 5: KYC – INDIVIDUAL */}
-        <TabPanel value={activeTab} index={5}>
-          <TabCard
-            editControlsProps={editControlsProps}
-            title="KYC – Individual / Proprietor"
-          >
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                gap: 3,
-                alignItems: "flex-start",
-              }}
-            >
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Owner DOB", "owner_dob", "date", {
-                    InputLabelProps: { shrink: true },
-                  })}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Aadhaar Number", "aadhaar_number")}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField(
-                    "Address Proof Type",
-                    "address_proof",
-                    "text",
-                    {
+                  <Grid sx={{ width: 200 }} item xs={12}>
+                    {renderTextField("Sales Region", "sales_region", "text", {
                       select: true,
-                      sx: { width: "200px" },
-                      children: [
-                        <MenuItem key="Aadhaar" value="Aadhaar">
-                          Aadhaar
-                        </MenuItem>,
-                        <MenuItem key="Passport" value="Passport">
-                          Passport
-                        </MenuItem>,
-                        <MenuItem key="Voter ID" value="Voter ID">
-                          Voter ID
-                        </MenuItem>,
-                      ],
-                    },
-                  )}
+                      children: Array.isArray(regions)
+                        ? regions
+                            .filter((r) => r.status === "enable")
+                            .map((region) => (
+                              <MenuItem
+                                sx={{ width: 200 }}
+                                key={region.id}
+                                value={region.name}
+                              >
+                                {region.name}
+                              </MenuItem>
+                            ))
+                        : [],
+                    })}
+                  </Grid>
+                  <Grid item xs={12}>
+                    {renderTextField(
+                      "Authorized Products",
+                      "authorized_products",
+                    )}
+                  </Grid>
+                  <Grid item xs={12}>
+                    {renderTextField("Password", "password", "password")}
+                  </Grid>
                 </Grid>
-              </Grid>
-              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                <Box sx={{ minWidth: 150, flex: 1 }}>
+              </TabCard>
+            </TabPanel>
+
+            {/* TAB 1: CONTACT & ADDRESS */}
+            <TabPanel value={activeTab} index={1}>
+              <TabCard
+                editControlsProps={editControlsProps}
+                title="Contact & Address Details"
+              >
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Contact Person", "contact_person_name")}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Designation", "designation")}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Mobile", "mobile_number", "tel", {
+                      inputProps: {
+                        inputMode: "numeric",
+                        pattern: "[0-9]*",
+                        maxLength: 10,
+                      },
+                    })}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField(
+                      "Alternate Mobile",
+                      "alternate_mobile",
+                      "tel",
+                      {
+                        inputProps: {
+                          inputMode: "numeric",
+                          pattern: "[0-9]*",
+                          maxLength: 10,
+                        },
+                      },
+                    )}
+                  </Grid>
+                  <Grid item xs={12}>
+                    {renderTextField("Email", "email_id", "email")}
+                  </Grid>
+                  <Grid item xs={12}>
+                    {renderTextField("Address Line 1", "address_line_1")}
+                  </Grid>
+                  <Grid item xs={12}>
+                    {renderTextField("Address Line 2", "address_line_2")}
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    {createDistributorFlag || editMode ? (
+                      <TextField
+                        select
+                        fullWidth
+                        label="State *"
+                        value={
+                          createDistributorFlag
+                            ? newDistributorForm.state
+                            : formData.state
+                        }
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setSelectedState(val);
+                          if (createDistributorFlag) {
+                            setNewDistributorForm((prev) => ({
+                              ...prev,
+                              state: val,
+                              city: "",
+                            }));
+                            clearFieldError("state");
+                          } else {
+                            setFormData((prev) => ({
+                              ...prev,
+                              state: val,
+                              city: "",
+                            }));
+                          }
+                        }}
+                        error={createDistributorFlag && !!formErrors.state}
+                        helperText={createDistributorFlag && formErrors.state}
+                        sx={{ ...fieldSx, width: "200px" }}
+                      >
+                        <MenuItem value="">
+                          <em>Select State...</em>
+                        </MenuItem>
+                        {State.getStatesOfCountry("IN").map((s) => (
+                          <MenuItem key={s.isoCode} value={s.name}>
+                            {s.name}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    ) : (
+                      renderTextField("State", "state")
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    {createDistributorFlag || editMode ? (
+                      <TextField
+                        select
+                        // fullWidth
+                        sx={{ width: "200px" }}
+                        label="City *"
+                        value={
+                          createDistributorFlag
+                            ? newDistributorForm.city
+                            : formData.city
+                        }
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (createDistributorFlag) {
+                            setNewDistributorForm((prev) => ({
+                              ...prev,
+                              city: val,
+                            }));
+                            clearFieldError("city");
+                          } else {
+                            setFormData((prev) => ({ ...prev, city: val }));
+                          }
+                        }}
+                        disabled={
+                          createDistributorFlag
+                            ? !newDistributorForm.state
+                            : !formData.state
+                        }
+                        error={createDistributorFlag && !!formErrors.city}
+                        helperText={createDistributorFlag && formErrors.city}
+                        sx={{ ...fieldSx, width: "200px" }}
+                      >
+                        <MenuItem value="">
+                          <em>Select City...</em>
+                        </MenuItem>
+                        {City.getCitiesOfState(
+                          "IN",
+                          State.getStatesOfCountry("IN").find(
+                            (s) =>
+                              s.name ===
+                              (createDistributorFlag
+                                ? newDistributorForm.state
+                                : formData.state),
+                          )?.isoCode || "",
+                        ).map((c) => (
+                          <MenuItem key={c.name} value={c.name}>
+                            {c.name}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    ) : (
+                      renderTextField("City", "city")
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    {renderTextField("Pin Code", "pincode", "tel", {
+                      inputProps: {
+                        inputMode: "numeric",
+                        pattern: "[0-9]*",
+                        maxLength: 6,
+                      },
+                    })}
+                  </Grid>
+                  <Grid item xs={12}>
+                    {renderTextField("Country", "country")}
+                  </Grid>
+                </Grid>
+              </TabCard>
+            </TabPanel>
+
+            {/* TAB 2: BANK & FINANCIAL */}
+            <TabPanel value={activeTab} index={2}>
+              <TabCard
+                editControlsProps={editControlsProps}
+                title="Bank & Financial Details"
+              >
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                    gap: 3,
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField(
+                        "Bank Account Name",
+                        "bank_account_name",
+                      )}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField("Bank Name", "bank_name")}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField("Branch Name", "branch_name")}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField(
+                        "Account Number",
+                        "account_number",
+                        "tel",
+                        {
+                          inputProps: {
+                            inputMode: "numeric",
+                            pattern: "[0-9]*",
+                            maxLength: 18,
+                          },
+                        },
+                      )}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField("IFSC Code", "ifsc_code")}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField("Credit Limit", "credit_limit", "tel", {
+                        inputProps: { inputMode: "numeric", pattern: "[0-9]*" },
+                      })}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField(
+                        "Payment Terms (Days)",
+                        "payment_terms_days",
+                      )}
+                    </Grid>
+                  </Grid>
                   {renderFileUpload(
-                    "Address Proof Copy",
-                    "address_proof_copy",
+                    "Cancelled Cheque",
+                    "cancelled_cheque",
                     true,
                   )}
                 </Box>
-                <Box sx={{ minWidth: 150, flex: 1 }}>
-                  {renderFileUpload("Aadhaar Front", "aadhaar_front", true)}
-                </Box>
-                <Box sx={{ minWidth: 150, flex: 1 }}>
-                  {renderFileUpload("Aadhaar Back", "aadhaar_back", true)}
-                </Box>
-                <Box sx={{ minWidth: 150, flex: 1 }}>
-                  {renderFileUpload("Owner Photo", "owner_photo", true)}
-                </Box>
-              </Box>
-            </Box>
-          </TabCard>
-        </TabPanel>
+              </TabCard>
+            </TabPanel>
 
-        {/* TAB 6: KYC – COMPANY */}
-        <TabPanel value={activeTab} index={6}>
-          <TabCard
-            editControlsProps={editControlsProps}
-            title="KYC – Company / Partnership / LLP"
-          >
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                gap: 3,
-                alignItems: "flex-start",
-              }}
-            >
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField(
-                    "Authorized Signatory Name",
-                    "authorized_signatory_name",
-                  )}
+            {/* TAB 3: DISTRIBUTION CAPABILITY */}
+            <TabPanel value={activeTab} index={3}>
+              <TabCard
+                editControlsProps={editControlsProps}
+                title="Distribution Capability & Infrastructure"
+              >
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    {renderTextField("Warehouse Address", "warehouse_address")}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField(
+                      "Storage Area (Sq Ft)",
+                      "storage_area_sqft",
+                      "tel",
+                      {
+                        inputProps: { inputMode: "numeric", pattern: "[0-9]*" },
+                      },
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField("Logistics Partner", "logistics_partner")}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField(
+                      "Monthly Distribution Capacity",
+                      "monthly_distribution_capacity",
+                      "tel",
+                      {
+                        inputProps: { inputMode: "numeric", pattern: "[0-9]*" },
+                      },
+                    )}
+                  </Grid>
+                  <Grid item xs={12}>
+                    {renderTextField("Service Cities", "service_cities")}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {renderTextField(
+                      "Warehouse Available",
+                      "warehouse_available",
+                      "boolean",
+                    )}
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  {renderTextField("Signatory PAN", "signatory_pan")}
-                </Grid>
-              </Grid>
-              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                <Box sx={{ minWidth: 150, flex: 1 }}>
-                  {renderFileUpload(
-                    "Signatory PAN Copy",
-                    "signatory_pan_copy",
-                    newDistributorForm.firm_type === "company",
-                  )}
-                </Box>
-                <Box sx={{ minWidth: 150, flex: 1 }}>
-                  {renderFileUpload("Board Resolution", "board_resolution")}
-                </Box>
-                <Box sx={{ minWidth: 150, flex: 1 }}>
-                  {renderFileUpload("Partnership Deed", "partnership_deed")}
-                </Box>
-                <Box sx={{ minWidth: 150, flex: 1 }}>
-                  {renderFileUpload("LLP Agreement", "llp_agreement")}
-                </Box>
-              </Box>
-            </Box>
-          </TabCard>
-        </TabPanel>
+              </TabCard>
+            </TabPanel>
 
-        {/* TAB 7: COMPLIANCE */}
-        <TabPanel value={activeTab} index={7}>
-          <TabCard
-            editControlsProps={editControlsProps}
-            title="Compliance & Declarations"
-          >
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                gap: 3,
-                alignItems: "flex-start",
-              }}
-            >
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  {renderTextField("KYC Verified By", "kyc_verified_by")}
-                </Grid>
-                <Grid item xs={12}>
-                  {renderTextField("Remarks", "remarks", "text", {
-                    multiline: true,
-                    minRows: 3,
-                  })}
-                </Grid>
-                <Grid item xs={12}>
-                  {renderTextField(
-                    "Agreement Signed",
-                    "agreement_signed",
-                    "boolean",
-                  )}
-                </Grid>
-              </Grid>
-              <Box>
-                {renderFileUpload(
-                  "Agreement Copy",
-                  "agreement_copy",
-                  newDistributorForm.firm_type === "company",
-                )}
-              </Box>
-            </Box>
-          </TabCard>
-        </TabPanel>
+            {/* TAB 4: BUSINESS & LEGAL */}
+            <TabPanel value={activeTab} index={4}>
+              <TabCard
+                editControlsProps={editControlsProps}
+                title="Business & Legal Information"
+              >
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                    gap: 3,
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField("Business Type", "business_type")}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField(
+                        "Years in Business",
+                        "years_in_business",
+                        "tel",
+                        {
+                          inputProps: {
+                            inputMode: "numeric",
+                            pattern: "[0-9]*",
+                          },
+                        },
+                      )}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField("GST Number", "gst_number")}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField("PAN Number", "pan_number")}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField("CIN / LLPIN", "cin_llpin")}
+                    </Grid>
+                  </Grid>
+                  <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                    <Box sx={{ minWidth: 160, flex: 1 }}>
+                      {renderFileUpload(
+                        "GST Certificate",
+                        "gst_certificate",
+                        true,
+                      )}
+                    </Box>
+                    <Box sx={{ minWidth: 160, flex: 1 }}>
+                      {renderFileUpload("PAN Card Copy", "pan_card_copy", true)}
+                    </Box>
+                    <Box sx={{ minWidth: 160, flex: 1 }}>
+                      {renderFileUpload(
+                        "Incorporation Certificate",
+                        "incorporation_certificate",
+                      )}
+                    </Box>
+                  </Box>
+                </Box>
+              </TabCard>
+            </TabPanel>
+
+            {/* TAB 5: KYC – INDIVIDUAL */}
+            <TabPanel value={activeTab} index={5}>
+              <TabCard
+                editControlsProps={editControlsProps}
+                title="KYC – Individual / Proprietor"
+              >
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                    gap: 3,
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField("Owner DOB", "owner_dob", "date", {
+                        InputLabelProps: { shrink: true },
+                      })}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField("Aadhaar Number", "aadhaar_number")}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField(
+                        "Address Proof Type",
+                        "address_proof",
+                        "text",
+                        {
+                          select: true,
+                          sx: { width: "200px" },
+                          children: [
+                            <MenuItem key="Aadhaar" value="Aadhaar">
+                              Aadhaar
+                            </MenuItem>,
+                            <MenuItem key="Passport" value="Passport">
+                              Passport
+                            </MenuItem>,
+                            <MenuItem key="Voter ID" value="Voter ID">
+                              Voter ID
+                            </MenuItem>,
+                          ],
+                        },
+                      )}
+                    </Grid>
+                  </Grid>
+                  <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                    <Box sx={{ minWidth: 150, flex: 1 }}>
+                      {renderFileUpload(
+                        "Address Proof Copy",
+                        "address_proof_copy",
+                        true,
+                      )}
+                    </Box>
+                    <Box sx={{ minWidth: 150, flex: 1 }}>
+                      {renderFileUpload("Aadhaar Front", "aadhaar_front", true)}
+                    </Box>
+                    <Box sx={{ minWidth: 150, flex: 1 }}>
+                      {renderFileUpload("Aadhaar Back", "aadhaar_back", true)}
+                    </Box>
+                    <Box sx={{ minWidth: 150, flex: 1 }}>
+                      {renderFileUpload("Owner Photo", "owner_photo", true)}
+                    </Box>
+                  </Box>
+                </Box>
+              </TabCard>
+            </TabPanel>
+
+            {/* TAB 6: KYC – COMPANY */}
+            <TabPanel value={activeTab} index={6}>
+              <TabCard
+                editControlsProps={editControlsProps}
+                title="KYC – Company / Partnership / LLP"
+              >
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                    gap: 3,
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField(
+                        "Authorized Signatory Name",
+                        "authorized_signatory_name",
+                      )}
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      {renderTextField("Signatory PAN", "signatory_pan")}
+                    </Grid>
+                  </Grid>
+                  <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                    <Box sx={{ minWidth: 150, flex: 1 }}>
+                      {renderFileUpload(
+                        "Signatory PAN Copy",
+                        "signatory_pan_copy",
+                        newDistributorForm.firm_type === "company",
+                      )}
+                    </Box>
+                    <Box sx={{ minWidth: 150, flex: 1 }}>
+                      {renderFileUpload("Board Resolution", "board_resolution")}
+                    </Box>
+                    <Box sx={{ minWidth: 150, flex: 1 }}>
+                      {renderFileUpload("Partnership Deed", "partnership_deed")}
+                    </Box>
+                    <Box sx={{ minWidth: 150, flex: 1 }}>
+                      {renderFileUpload("LLP Agreement", "llp_agreement")}
+                    </Box>
+                  </Box>
+                </Box>
+              </TabCard>
+            </TabPanel>
+
+            {/* TAB 7: COMPLIANCE */}
+            <TabPanel value={activeTab} index={7}>
+              <TabCard
+                editControlsProps={editControlsProps}
+                title="Compliance & Declarations"
+              >
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                    gap: 3,
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      {renderTextField("KYC Verified By", "kyc_verified_by")}
+                    </Grid>
+                    <Grid item xs={12}>
+                      {renderTextField("Remarks", "remarks", "text", {
+                        multiline: true,
+                        minRows: 3,
+                      })}
+                    </Grid>
+                    <Grid item xs={12}>
+                      {renderTextField(
+                        "Agreement Signed",
+                        "agreement_signed",
+                        "boolean",
+                      )}
+                    </Grid>
+                  </Grid>
+                  <Box>
+                    {renderFileUpload(
+                      "Agreement Copy",
+                      "agreement_copy",
+                      newDistributorForm.firm_type === "company",
+                    )}
+                  </Box>
+                </Box>
+              </TabCard>
+            </TabPanel>
           </>
         )}
 
