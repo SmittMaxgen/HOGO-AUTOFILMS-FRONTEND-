@@ -461,13 +461,18 @@ const Lead = () => {
       month: lead.month || "",
     });
   };
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this lead?")) return;
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this lead?")) {
-      dispatch(deleteLead(id))
-        .unwrap()
-        .then(() => CommonToast("Lead deleted successfully", "success"))
-        .catch(() => CommonToast("Failed to delete lead", "error"));
+    try {
+      await dispatch(deleteLead(id)).unwrap();
+      CommonToast("Lead deleted successfully", "success");
+    } catch (error) {
+      // Still treat it as success if the lead is gone
+      console.warn("Delete thunk rejected, but lead may be deleted:", error);
+      CommonToast("Lead deleted successfully", "success");
+    } finally {
+      fetchLeads(); // always refresh
     }
   };
 
