@@ -137,13 +137,15 @@ const DemoTripMap = ({ trip, onBack }) => {
 
   useEffect(() => {
     if (!trip?.id) return;
+    console.log("Fetching trip locations for trip ID:", trip);
 
     const load = async () => {
       setFetchLoading(true);
       setFetchError(null);
       try {
+        const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
         const res = await fetch(
-          `https://apidata.hogonnindia.com/trip-location/?trip_id=${trip.id}`,
+          `https://apidata.hogonnindia.com/trip-location/?date=${today}&employee_id=${trip.employee_id}`,
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
