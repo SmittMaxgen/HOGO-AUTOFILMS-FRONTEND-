@@ -34,6 +34,7 @@ import SalaryPayment from "../pages/salaryPayment/salaryPayment";
 import Gallery from "../pages/gallery/Gallery";
 import Replacement from "../pages/replacement/Replacement";
 import VisitsTrips from "../pages/OSM/DemoTripMap";
+import EmployeeTripMap from "../pages/OSM/VisitsTrips";
 
 import ProtectedRoute from "./ProtectedRoutes";
 
@@ -85,7 +86,7 @@ const AppRoutes = ({ toggleTheme, mode }) => {
           <Route path="/salary-payment" element={<SalaryPayment />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/replacements" element={<Replacement />} />
-          <Route path="/visits-trips" element={<VisitsTrips />} />
+          <Route path="/visits-trips" element={<EmployeeTripMap />} />
           <Route path="/testimonials" element={<Testimonials />} />
         </Route>
       </Route>
