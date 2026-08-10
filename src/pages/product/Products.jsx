@@ -57,6 +57,7 @@ import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
+import RichTextEditor from "../../components/commonComponents/RichTextEditor";
 
 const BASE_URL = "https://apidata.hogonnindia.com";
 
@@ -1089,7 +1090,7 @@ const Product = () => {
                 )}
               </Box>
             </Grid> */}
-            <Grid item xs={12} sm={4}>
+            {/* <Grid item xs={12} sm={4}>
               <Box
                 sx={{
                   display: "flex",
@@ -1132,6 +1133,18 @@ const Product = () => {
                   </span>
                 )}
               </Box>
+            </Grid> */}
+          
+          <Grid item xs={12}>
+              <RichTextEditor
+                label="Description"
+                value={form.description}
+                onChange={(content) =>
+                  setForm((prev) => ({ ...prev, description: content }))
+                }
+                error={!!errors.description}
+                helperText={errors.description}
+              />
             </Grid>
           </Box>
 
@@ -1824,6 +1837,22 @@ const Product = () => {
             </Box>
 
             <Box px={4} py={3}>
+              {viewItem.description && (
+                <>
+                  <SectionHeading title="Description" />
+                  <Box
+                    sx={{
+                      p: 2,
+                      mb: 3,
+                      bgcolor: "#fafafa",
+                      border: "1px solid #ebebeb",
+                      borderRadius: 1.5,
+                      "& img": { maxWidth: "100%" },
+                    }}
+                    dangerouslySetInnerHTML={{ __html: viewItem.description }}
+                  />
+                </>
+              )}
               <SectionHeading title="Basic Details" />
               <Grid container spacing={2} mb={3}>
                 {[

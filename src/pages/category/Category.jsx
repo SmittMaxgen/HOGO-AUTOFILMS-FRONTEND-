@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -53,6 +52,7 @@ import CommonButton from "../../components/commonComponents/CommonButton";
 import CommonLabel from "../../components/commonComponents/CommonLabel";
 import CommonToast from "../../components/commonComponents/Toster";
 import CommonSearchField from "../../components/commonComponents/CommonSearchField";
+import RichTextEditor from "../../components/commonComponents/RichTextEditor";
 import { makeStyles } from "@mui/styles";
 
 // ─── Shared helpers ────────────────────────────────────────────────────────────
@@ -362,22 +362,14 @@ const Category = () => {
                 }}
               />
 
-              <TextField
+              <RichTextEditor
                 label="Description"
-                name="description"
                 value={form.description}
-                onChange={handleChange}
+                onChange={(content) =>
+                  setForm((prev) => ({ ...prev, description: content }))
+                }
                 error={!!errors.description}
                 helperText={errors.description}
-                fullWidth
-                multiline
-                minRows={2}
-                sx={{
-                  "& .MuiOutlinedInput-root.Mui-focused fieldset": {
-                    borderColor: "#D20000",
-                  },
-                  "& label.Mui-focused": { color: "#D20000" },
-                }}
               />
 
               <TextField
@@ -685,7 +677,6 @@ const Category = () => {
               {[
                 { label: "Category Name", value: viewItem.name },
                 { label: "Slug", value: viewItem.slug },
-                { label: "Description", value: viewItem.description },
                 { label: "Breadcrumb", value: viewItem.breadcrumb },
                 { label: "Meta Title", value: viewItem.meta_title },
                 { label: "Meta Description", value: viewItem.meta_description },
@@ -720,6 +711,22 @@ const Category = () => {
                 </Box>
               ))}
             </Box>
+
+            {viewItem.description && (
+              <Box mt={3}>
+                <SectionHeading title="Description" />
+                <Box
+                  sx={{
+                    p: 2,
+                    bgcolor: "#fafafa",
+                    border: "1px solid #ebebeb",
+                    borderRadius: 1.5,
+                    "& img": { maxWidth: "100%" },
+                  }}
+                  dangerouslySetInnerHTML={{ __html: viewItem.description }}
+                />
+              </Box>
+            )}
           </Box>
         </Paper>
       </Box>
