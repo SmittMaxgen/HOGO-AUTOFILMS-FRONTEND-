@@ -265,7 +265,7 @@ const EmployeeTripMap = ({ onBack }) => {
 
       <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
         {/* ── Selector row ──────────────────────────────────────────────── */}
-<Stack
+        <Stack
           direction={{ xs: "column", sm: "row" }}
           spacing={2}
           mb={3}
@@ -278,9 +278,11 @@ const EmployeeTripMap = ({ onBack }) => {
             value={employeeId}
             onChange={(e) => setEmployeeId(e.target.value)}
             size="small"
-            // sx={{ flex: { sm: "1 1 320px" }, minWidth: 240 }}
+            sx={{ width: 200 }}
             disabled={empLoading}
-            helperText={empError ? `Failed to load employees: ${empError}` : " "}
+            helperText={
+              empError ? `Failed to load employees: ${empError}` : " "
+            }
             error={Boolean(empError)}
           >
             <MenuItem value="">
@@ -295,7 +297,7 @@ const EmployeeTripMap = ({ onBack }) => {
             ))}
           </TextField>
 
-<TextField
+          <TextField
             label="Date"
             type="date"
             size="small"
@@ -328,7 +330,7 @@ const EmployeeTripMap = ({ onBack }) => {
         {employeeId && (
           <>
             {/* ── Summary strip ─────────────────────────────────────────── */}
-<Stack
+            <Stack
               direction={{ xs: "column", sm: "row" }}
               spacing={2}
               flexWrap="wrap"
