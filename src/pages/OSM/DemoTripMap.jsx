@@ -486,26 +486,31 @@ const DemoTripMap = ({ trip, onBack }) => {
   const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
-    if (!trip?.id) return;
+    if (!trip?.start_time || !trip?.employee_id) return;
+
+    // Derive YYYY-MM-DD from start_time (e.g. "2026-08-12T14:21:58.431007Z" -> "2026-08-12")
+    const tripDate = trip.start_time.slice(0, 10);
 
     const load = async () => {
       setFetchLoading(true);
       setFetchError(null);
       try {
-        const res = await fetch(
-          `https://apidata.hogonnindia.com/trip-location/?trip_id=${trip.id}`,
-        );
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
+        let url = `https://apidata.hogonnindia.com/trip-location/?employee_id=${trip.employee_id}&date=${tripDate}`;
+        let allData = [];
 
-        // Handle both array response and { data: [...] } / { results: [...] }
-        const raw = Array.isArray(json)
-          ? json
-          : (json.data ?? json.results ?? []);
+        // Walk through every page via the "next" link — same as EmployeeTripMap
+        while (url) {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const json = await res.json();
+          const pageData = Array.isArray(json.data) ? json.data : [];
+          allData = allData.concat(pageData);
+          url = json.next || null;
+        }
 
-        // Sort by time so polyline draws in correct order
-        const sorted = [...raw].sort(
-          (a, b) => new Date(a.time) - new Date(b.time),
+        // Sort by timestamp so polyline draws in correct order
+        const sorted = [...allData].sort(
+          (a, b) => new Date(a.timestamp) - new Date(b.timestamp),
         );
         setLocations(sorted);
       } catch (err) {
@@ -516,7 +521,7 @@ const DemoTripMap = ({ trip, onBack }) => {
     };
 
     load();
-  }, [trip?.id]);
+  }, [trip?.start_time, trip?.employee_id]);
 
   if (!trip) return <div>Loading Trip…</div>;
 
