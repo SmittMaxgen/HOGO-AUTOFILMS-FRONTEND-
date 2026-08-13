@@ -490,12 +490,12 @@ const DemoTripMap = ({ trip, onBack }) => {
 
     // Derive YYYY-MM-DD from start_time (e.g. "2026-08-12T14:21:58.431007Z" -> "2026-08-12")
     const tripDate = trip.start_time.slice(0, 10);
-
+    console.log("trip===???", trip);
     const load = async () => {
       setFetchLoading(true);
       setFetchError(null);
       try {
-        let url = `https://apidata.hogonnindia.com/trip-location/?employee_id=${trip.employee_id}&date=${tripDate}`;
+        let url = `https://apidata.hogonnindia.com/trip-location/?employee_id=${trip.employee_id}&visit_id=${trip.visit_id}&date=${tripDate}`;
         let allData = [];
 
         // Walk through every page via the "next" link — same as EmployeeTripMap
