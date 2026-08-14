@@ -1837,6 +1837,7 @@ const WarrantyManagement = () => {
                 {[
                   "Serial Number",
                   "Car Details",
+                  "Distributor",
                   "Detailer",
                   "Mobile",
                   "Install Date",
@@ -1865,7 +1866,7 @@ const WarrantyManagement = () => {
             <TableBody>
               {loading && (
                 <TableRow>
-                  <TableCell colSpan={9} align="center" sx={{ py: 5 }}>
+                  <TableCell colSpan={10} align="center" sx={{ py: 5 }}>
                     <Box
                       display="flex"
                       flexDirection="column"
@@ -1882,7 +1883,7 @@ const WarrantyManagement = () => {
               )}
               {!loading && filteredWarranties.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
+                  <TableCell colSpan={10} align="center" sx={{ py: 6 }}>
                     <Box
                       display="flex"
                       flexDirection="column"
@@ -1952,6 +1953,22 @@ const WarrantyManagement = () => {
                             {warranty.car_registration_number}
                           </Typography>
                         </Box>
+                      </Box>
+                    </TableCell>
+
+                    {/* Distributor / City */}
+                    <TableCell>
+                      <Box>
+                        <Typography
+                          fontWeight={600}
+                          fontSize={13}
+                          color="#1a1a1a"
+                        >
+                          {warranty.distributor_name || "—"}
+                        </Typography>
+                        <Typography fontSize={11} color="text.secondary">
+                          {warranty.city || "—"}
+                        </Typography>
                       </Box>
                     </TableCell>
 

@@ -11,6 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import {
   MapContainer,
   TileLayer,
@@ -19,8 +20,10 @@ import {
   Popup,
   useMap,
 } from "react-leaflet";
+import { Download, Add as AddIcon } from "@mui/icons-material";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import * as XLSX from "xlsx";
 
 import { getEmployees } from "../../feature/employee/employeeThunks";
 import {
@@ -28,6 +31,7 @@ import {
   selectEmployeeLoading,
   selectEmployeeError,
 } from "../../feature/employee/employeeSelector";
+import CommonButton from "../../components/commonComponents/CommonButton";
 
 // ─── Fix Leaflet default marker icons ────────────────────────────────────────
 delete L.Icon.Default.prototype._getIconUrl;
@@ -256,6 +260,45 @@ const EmployeeTripMap = ({ onBack }) => {
 
   const defaultCenter = [23.0225, 72.5714]; // Ahmedabad fallback
 
+  // ── Export current locations to Excel ────────────────────────────────────
+  const handleExportExcel = () => {
+    if (!locations.length) return;
+
+    const rows = locations.map((loc, i) => ({
+      "#": i + 1,
+      "Trip ID": loc.trip_id ?? loc.visit_id ?? loc.id ?? "—",
+      Employee: loc.employee_name || employeeName || "—",
+      Date: date,
+      Timestamp: loc.timestamp || "—",
+      Latitude: loc.latitude,
+      Longitude: loc.longitude,
+      Status: loc.status || "—",
+      "Distance From Prev (m)":
+        typeof loc.distance_from_previous === "number"
+          ? loc.distance_from_previous.toFixed(2)
+          : "—",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    worksheet["!cols"] = [
+      { wch: 5 },
+      { wch: 10 },
+      { wch: 20 },
+      { wch: 12 },
+      { wch: 24 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 20 },
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Trip Locations");
+
+    const empLabel = (employeeName || `emp-${employeeId}`).replace(/\s+/g, "_");
+    XLSX.writeFile(workbook, `trip-report_${empLabel}_${date}.xlsx`);
+  };
+
   return (
     <Box mt={4}>
       <PageHeader
@@ -269,43 +312,69 @@ const EmployeeTripMap = ({ onBack }) => {
           direction={{ xs: "column", sm: "row" }}
           spacing={2}
           mb={3}
-          // alignItems={{ xs: "stretch", sm: "flex-end" }}
+          justifyContent="space-between"
+          alignItems={{ xs: "stretch", sm: "flex-end" }}
           sx={{ width: "100%" }}
         >
-          <TextField
-            select
-            label="Employee"
-            value={employeeId}
-            onChange={(e) => setEmployeeId(e.target.value)}
-            size="small"
-            sx={{ width: 200 }}
-            disabled={empLoading}
-            helperText={
-              empError ? `Failed to load employees: ${empError}` : " "
-            }
-            error={Boolean(empError)}
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={2}
+            // alignItems={{ xs: "stretch", sm: "flex-end" }}
           >
-            <MenuItem value="">
-              <em>Select Employee</em>
-            </MenuItem>
-            {employees.map((emp) => (
-              <MenuItem key={emp.id} value={emp.id}>
-                {`${emp.first_name ?? ""} ${emp.last_name ?? ""}`.trim() ||
-                  `Employee #${emp.id}`}
-                {emp.employee_code ? ` (${emp.employee_code})` : ""}
+            <TextField
+              select
+              label="Employee"
+              value={employeeId}
+              onChange={(e) => setEmployeeId(e.target.value)}
+              size="small"
+              sx={{ width: 200 }}
+              disabled={empLoading}
+              helperText={
+                empError ? `Failed to load employees: ${empError}` : " "
+              }
+              error={Boolean(empError)}
+            >
+              <MenuItem value="">
+                <em>Select Employee</em>
               </MenuItem>
-            ))}
-          </TextField>
+              {employees.map((emp) => (
+                <MenuItem key={emp.id} value={emp.id}>
+                  {`${emp.first_name ?? ""} ${emp.last_name ?? ""}`.trim() ||
+                    `Employee #${emp.id}`}
+                  {emp.employee_code ? ` (${emp.employee_code})` : ""}
+                </MenuItem>
+              ))}
+            </TextField>
 
-          <TextField
-            label="Date"
-            type="date"
-            size="small"
-            value={date}
-            onChange={(e) => setDate(e.target.value || todayStr)}
-            InputLabelProps={{ shrink: true }}
-            // sx={{ flex: { sm: "1 1 220px" }, minWidth: 180 }}
-          />
+            <TextField
+              label="Date"
+              type="date"
+              size="small"
+              value={date}
+              onChange={(e) => setDate(e.target.value || todayStr)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Stack>
+
+          <CommonButton
+            variant="contained"
+            startIcon={<Download />}
+            disabled={!employeeId || !locations.length}
+            onClick={handleExportExcel}
+            sx={{
+              height: 39,
+              px: 3,
+              mb: "30px !important",
+              bgcolor: "#D20000",
+              "&:hover": { bgcolor: "#a80000" },
+              fontWeight: 600,
+              textTransform: "none",
+              borderRadius: "10px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Download Excel
+          </CommonButton>
         </Stack>
 
         {/* ── No employee selected ─────────────────────────────────────── */}
